@@ -1,0 +1,4231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>St. Augustine Academic Foundation</title>
+
+<style>
+
+/* =========================
+   BASIC
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#eef5ff,#ffffff,#eef8ff);
+    color:#333;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+    background:linear-gradient(135deg,#082f5c,#125b91,#0b3d70);
+    color:white;
+    padding:12px 5%;
+    min-height:115px;
+    display:flex;
+    align-items:center;
+    position:relative;
+    z-index:1000;
+    box-shadow:0 4px 15px rgba(0,0,0,.25);
+}
+
+.logo-area{
+    width:120px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.school-logo{
+    width:120px;
+    height:120px;
+    object-fit:contain;
+    border-radius:50%;
+    background:white;
+    padding:6px;
+    box-shadow:0 3px 12px rgba(0,0,0,.3);
+}
+
+.school-heading{
+    flex:1;
+    text-align:center;
+}
+
+.school-heading h1{
+    font-size:30px;
+    font-weight:bold;
+    letter-spacing:1px;
+}
+
+.school-heading p{
+    margin-top:6px;
+    font-size:15px;
+    color:#dbeafe;
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+nav{
+    width:100%;
+    position:absolute;
+    bottom:-43px;
+    left:0;
+    background:#06294f;
+    padding:11px;
+    text-align:center;
+    box-shadow:0 3px 8px rgba(0,0,0,.2);
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+    margin:0 18px;
+    font-size:18px;
+    font-weight:bold;
+    display:inline-block;
+    padding:5px 8px;
+    transition:.3s;
+}
+
+nav a:hover{
+    color:#ffd166;
+    transform:scale(1.08);
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    min-height:620px;
+
+    background:
+        linear-gradient(
+            rgba(0,25,55,.58),
+            rgba(0,25,55,.68)
+        ),
+        url("school.jpeg") center/cover no-repeat;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    color:white;
+    padding:40px 20px;
+}
+
+.hero-content{
+    max-width:900px;
+    margin-top:380px;
+}
+
+.hero h2{
+    font-size:48px;
+    margin-bottom:18px;
+    text-shadow:3px 3px 8px rgba(0,0,0,.6);
+}
+
+.hero p{
+    font-size:21px;
+    margin-bottom:30px;
+}
+
+
+/* =========================
+   GENERAL BUTTON
+========================= */
+
+.btn{
+    display:inline-block;
+    background:#ffd166;
+    color:#17202a;
+    padding:14px 30px;
+    text-decoration:none;
+    border-radius:30px;
+    font-weight:bold;
+    box-shadow:0 5px 15px rgba(0,0,0,.25);
+    transition:.3s;
+}
+
+.btn:hover{
+    background:white;
+    transform:scale(1.04);
+}
+
+
+/* =========================
+   COMMON SECTION
+========================= */
+
+.section{
+    padding:70px 7%;
+    text-align:center;
+    background:linear-gradient(135deg,#f4f9ff,#eaf4ff);
+}
+
+.section h2{
+    color:#123c69;
+    font-size:32px;
+    margin-bottom:25px;
+}
+
+.section-divider{
+    width:80px;
+    height:4px;
+    background:#ffd166;
+    margin:-12px auto 25px;
+    border-radius:10px;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.explore-button,
+.media-btn,
+.monthly-report-btn,
+.school-info-btn{
+
+    border:none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #123c69,
+            #1976b8
+        );
+
+    color:white;
+
+    padding:15px 35px;
+
+    border-radius:30px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.22);
+
+    transition:.3s;
+}
+
+.explore-button:hover,
+.media-btn:hover,
+.monthly-report-btn:hover,
+.school-info-btn:hover{
+
+    transform:translateY(-3px) scale(1.03);
+
+    background:
+        linear-gradient(
+            135deg,
+            #0b3157,
+            #125f96
+        );
+}
+
+
+/* =========================
+   SCHOOL INFO
+========================= */
+
+.school-info-container{
+    text-align:center;
+    padding:35px 10px;
+    background:linear-gradient(135deg,#eef5ff,#ffffff);
+}
+
+.school-info-btn{
+    font-size:18px;
+    padding:16px 38px;
+}
+
+
+/* =========================
+   POPUP
+========================= */
+
+.popup{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:9999;
+
+    background:rgba(0,0,0,.78);
+
+    overflow-y:auto;
+
+    padding:30px 10px;
+}
+
+.popup-box{
+
+    background:white;
+
+    width:94%;
+
+    max-width:1200px;
+
+    margin:20px auto;
+
+    padding:30px;
+
+    border-radius:22px;
+
+    position:relative;
+
+    box-shadow:0 15px 45px rgba(0,0,0,.4);
+
+    animation:popupOpen .25s ease;
+}
+
+@keyframes popupOpen{
+
+    from{
+        transform:scale(.92);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+.close-btn{
+
+    position:absolute;
+
+    right:20px;
+
+    top:10px;
+
+    font-size:38px;
+
+    font-weight:bold;
+
+    color:#555;
+
+    cursor:pointer;
+
+    z-index:10;
+}
+
+.close-btn:hover{
+    color:red;
+}
+
+.popup-box>h2{
+
+    text-align:center;
+
+    color:#123c69;
+
+    margin-bottom:30px;
+
+    font-size:30px;
+}
+
+
+/* =========================
+   EXPLORE GRID
+========================= */
+
+.explore-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:25px;
+}
+
+.explore-card{
+
+    background:#f8fbff;
+
+    border:1px solid #dbe5ef;
+
+    border-radius:16px;
+
+    padding:15px;
+
+    text-align:center;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    transition:.3s;
+}
+
+.explore-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+
+.explore-card img{
+
+    width:100%;
+
+    height:210px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    cursor:pointer;
+}
+
+.explore-card h3{
+
+    color:#123c69;
+
+    margin-top:15px;
+
+    margin-bottom:8px;
+}
+
+.explore-card p{
+
+    color:#000000;
+
+    text-align:justify;
+
+    line-height:1.8;
+
+    font-size:16px;
+}
+
+
+/* =========================
+   MEDIA BUTTONS
+========================= */
+
+.media-buttons{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:18px;
+
+    flex-wrap:wrap;
+
+    margin:30px 0;
+}
+
+
+/* =========================
+   MEDIA GRID
+========================= */
+
+.media-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:22px;
+}
+
+.media-card{
+
+    background:#f8fbff;
+
+    border:1px solid #dbe5ef;
+
+    border-radius:15px;
+
+    padding:12px;
+
+    text-align:center;
+}
+
+.media-card img,
+.media-card video{
+
+    width:100%;
+
+    height:220px;
+
+    object-fit:cover;
+
+    border-radius:10px;
+
+    display:block;
+}
+
+.media-card img{
+    cursor:pointer;
+}
+
+.media-card video{
+    background:black;
+}
+
+.media-card h3{
+
+    color:#123c69;
+
+    margin-top:12px;
+
+    font-size:17px;
+
+    line-height:1.4;
+}
+
+
+/* =========================
+   PHOTO LIGHTBOX
+========================= */
+
+.photo-lightbox{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:20000;
+
+    background:rgba(0,0,0,.94);
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:30px;
+}
+
+.photo-lightbox img{
+
+    max-width:95%;
+
+    max-height:90vh;
+
+    object-fit:contain;
+
+    border-radius:10px;
+}
+
+.photo-close{
+
+    position:absolute;
+
+    top:15px;
+
+    right:25px;
+
+    color:white;
+
+    font-size:45px;
+
+    cursor:pointer;
+}
+
+
+/* =========================
+   STAFF GRID
+========================= */
+
+.staff-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:22px;
+}
+
+.staff-card{
+
+    text-align:center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8fbff,
+            #eef5fc
+        );
+
+    padding:20px;
+
+    border-radius:18px;
+
+    border:1px solid #dce6ef;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.09);
+
+    transition:.3s;
+}
+
+.staff-card:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+
+.staff-card img{
+
+    width:135px;
+
+    height:135px;
+
+    object-fit:cover;
+
+    border-radius:50%;
+
+    display:block;
+
+    margin:0 auto 14px;
+
+    border:4px solid white;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.18);
+}
+
+.staff-card h3{
+
+    color:#123c69;
+
+    margin-bottom:7px;
+
+    font-size:19px;
+}
+
+.designation{
+
+    color:#1976b8;
+
+    font-weight:bold;
+
+    margin-bottom:7px;
+
+    font-size:15px;
+}
+
+.staff-phone{
+
+    color:#000000;
+
+    margin-bottom:4px;
+}
+
+
+/* =========================
+   MORE DETAILS BUTTON
+========================= */
+
+.more-details-btn{
+
+    margin-top:12px;
+
+    border:none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #123c69,
+            #1976b8
+        );
+
+    color:white;
+
+    padding:9px 20px;
+
+    border-radius:22px;
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    box-shadow:0 4px 10px rgba(0,0,0,.15);
+}
+
+.more-details-btn:hover{
+
+    transform:scale(1.05);
+
+    background:
+        linear-gradient(
+            135deg,
+            #0b3157,
+            #125f96
+        );
+}
+
+
+/* =========================
+   STAFF DETAILS
+========================= */
+
+.staff-details-page{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:30000;
+
+    background:rgba(0,0,0,.84);
+
+    overflow-y:auto;
+
+    padding:30px 10px;
+}
+
+.staff-details-box{
+
+    background:white;
+
+    width:94%;
+
+    max-width:850px;
+
+    margin:20px auto;
+
+    padding:35px;
+
+    border-radius:22px;
+
+    position:relative;
+
+    box-shadow:0 15px 45px rgba(0,0,0,.4);
+
+    animation:popupOpen .25s ease;
+}
+
+.staff-details-back{
+
+    border:none;
+
+    background:#ffd166;
+
+    color:#17202a;
+
+    padding:11px 24px;
+
+    border-radius:25px;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    margin-bottom:25px;
+}
+
+.staff-details-back:hover{
+    background:#f5bd35;
+}
+
+.staff-details-content{
+    text-align:center;
+}
+
+.staff-details-photo{
+
+    width:190px;
+
+    height:190px;
+
+    object-fit:cover;
+
+    border-radius:50%;
+
+    border:5px solid #123c69;
+
+    box-shadow:0 5px 18px rgba(0,0,0,.2);
+
+    margin-bottom:18px;
+}
+
+.staff-details-content h1{
+
+    color:#123c69;
+
+    font-size:30px;
+
+    margin-bottom:8px;
+}
+
+.staff-details-designation{
+
+    color:#1976b8;
+
+    font-weight:bold;
+
+    font-size:18px;
+
+    margin-bottom:25px;
+}
+
+.staff-detail-row{
+
+    text-align:justify;
+
+    background:#f5f9fd;
+
+    border:1px solid #dce6ef;
+
+    border-radius:12px;
+
+    padding:15px 18px;
+
+    margin-top:12px;
+
+    line-height:1.9;
+
+    color:#000000;
+}
+
+.staff-detail-row strong{
+    color:#123c69;
+}
+
+.staff-detail-about{
+
+    text-align:justify;
+
+    background:#f5f9fd;
+
+    border:1px solid #dce6ef;
+
+    border-radius:12px;
+
+    padding:18px;
+
+    margin-top:12px;
+
+    line-height:1.9;
+
+    color:#000000;
+}
+
+.staff-detail-about strong{
+    color:#123c69;
+}
+
+
+/* =========================
+   MONTHLY REPORT
+========================= */
+
+.monthly-report-container{
+
+    text-align:center;
+
+    padding:35px 10px;
+}
+
+.month-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:18px;
+
+    margin-top:20px;
+}
+
+.month-btn{
+
+    border:none;
+
+    padding:16px 12px;
+
+    border-radius:15px;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #123c69,
+            #1976b8
+        );
+
+    cursor:pointer;
+
+    box-shadow:0 5px 12px rgba(0,0,0,.18);
+
+    transition:.3s;
+}
+
+.month-btn:hover{
+
+    transform:translateY(-4px) scale(1.03);
+}
+
+.report-back-btn{
+
+    border:none;
+
+    background:#ffd166;
+
+    color:#17202a;
+
+    padding:11px 25px;
+
+    border-radius:25px;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    margin-bottom:25px;
+}
+
+.report-title{
+
+    text-align:center;
+
+    color:#123c69;
+
+    font-size:28px;
+
+    margin-bottom:25px;
+}
+
+
+/* =========================
+   ABOUT
+========================= */
+
+.about{
+
+    max-width:850px;
+
+    margin:auto;
+
+    line-height:2;
+
+    color:#000000;
+
+    font-size:17px;
+
+    text-align:justify;
+
+    font-weight:400;
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:18px;
+
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+
+
+/* =========================
+   PROGRAMS
+========================= */
+
+.cards{
+
+    display:flex;
+
+    gap:25px;
+
+    justify-content:center;
+
+    margin-top:30px;
+
+    flex-wrap:wrap;
+}
+
+.card{
+
+    background:white;
+
+    width:280px;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    box-shadow:0 6px 20px rgba(0,0,0,.12);
+}
+
+.card h3{
+
+    color:#123c69;
+
+    margin-bottom:12px;
+}
+
+.card p{
+
+    color:#000000;
+
+    text-align:justify;
+
+    line-height:1.8;
+
+    font-size:16px;
+}
+
+
+/* =========================
+   NOTICE
+========================= */
+
+.notice{
+
+    background:
+        linear-gradient(
+            135deg,
+            #082f5c,
+            #125b91
+        );
+
+    color:white;
+}
+
+.notice h2{
+    color:white;
+}
+
+.notice-box{
+
+    background:white;
+
+    color:#000000;
+
+    max-width:800px;
+
+    margin:12px auto;
+
+    padding:17px 20px;
+
+    border-radius:10px;
+
+    text-align:justify;
+
+    line-height:1.8;
+
+    font-size:16px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+
+
+/* =========================
+   CONTACT
+========================= */
+
+.contact{
+    background:white;
+}
+
+.contact-box{
+
+    max-width:700px;
+
+    margin:auto;
+
+    line-height:2.2;
+
+    font-size:17px;
+
+    color:#000000;
+
+    text-align:left;
+}
+
+.contact-box p{
+
+    color:#000000 !important;
+
+    text-align:left;
+
+    line-height:2.2;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+
+    background:#061f3a;
+
+    color:white;
+
+    text-align:center;
+
+    padding:25px;
+
+    line-height:1.8;
+}
+
+footer span{
+
+    color:#ffd166;
+
+    font-weight:bold;
+}
+
+
+/* =========================
+   EASY READING
+========================= */
+
+.about,
+.card p,
+.notice-box,
+.contact-box,
+.contact-box p,
+.explore-card p,
+.staff-detail-row,
+.staff-detail-about{
+
+    font-family:Arial,sans-serif;
+
+    color:#000000 !important;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media(max-width:900px){
+
+    .school-heading h1{
+        font-size:24px;
+    }
+
+    .explore-grid,
+    .media-grid,
+    .staff-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    nav a{
+
+        margin:0 8px;
+
+        font-size:15px;
+    }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+    header{
+
+        min-height:145px;
+
+        padding:10px;
+    }
+
+    .logo-area{
+        width:70px;
+    }
+
+    .school-logo{
+
+        width:58px;
+
+        height:58px;
+    }
+
+    .school-heading h1{
+
+        font-size:17px;
+
+        letter-spacing:0;
+    }
+
+    .school-heading p{
+        font-size:12px;
+    }
+
+    nav{
+
+        bottom:-42px;
+
+        padding:9px 2px;
+    }
+
+    nav a{
+
+        margin:0 5px;
+
+        font-size:13px;
+
+        padding:5px 3px;
+    }
+
+    .hero{
+        min-height:520px;
+    }
+
+    .hero-content{
+        margin-top:60px;
+    }
+
+    .hero h2{
+        font-size:30px;
+    }
+
+    .hero p{
+        font-size:17px;
+    }
+
+    .section{
+        padding:50px 5%;
+    }
+
+    .explore-grid,
+    .media-grid,
+    .staff-grid{
+        grid-template-columns:1fr;
+    }
+
+    .popup-box{
+
+        width:95%;
+
+        padding:20px;
+
+        margin:10px auto;
+    }
+
+    .explore-card img{
+        height:210px;
+    }
+
+    .media-card img,
+    .media-card video{
+        height:210px;
+    }
+
+    .month-grid{
+        grid-template-columns:1fr;
+    }
+
+    .month-btn{
+        padding:14px;
+    }
+
+    .staff-details-box{
+
+        width:95%;
+
+        padding:22px 16px;
+
+        margin:10px auto;
+    }
+
+    .staff-details-photo{
+
+        width:145px;
+
+        height:145px;
+    }
+
+    .staff-details-content h1{
+        font-size:24px;
+    }
+
+    .school-info-btn,
+    .monthly-report-btn{
+        width:95%;
+        max-width:400px;
+    }
+
+    .about,
+    .card p,
+    .notice-box,
+    .explore-card p,
+    .staff-detail-row,
+    .staff-detail-about{
+
+        font-size:16px;
+
+        line-height:1.8;
+
+        text-align:justify;
+
+    }
+
+    .contact-box,
+    .contact-box p{
+
+        font-size:16px;
+
+        line-height:2;
+
+        color:#000000 !important;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <div class="logo-area">
+
+        <img
+            src="logo.jpeg"
+            class="school-logo"
+            alt="School Logo">
+
+    </div>
+
+    <div class="school-heading">
+
+        <h1>
+            ST. AUGUSTINE ACADEMIC FOUNDATION
+        </h1>
+
+        <p>
+            Suryodaya - 11, Ilam, Nepal
+        </p>
+
+    </div>
+
+    <nav>
+
+        <a href="#">Home</a>
+        <a href="#about">About</a>
+        <a href="#programs">Programs</a>
+        <a href="#media">Gallery</a>
+        <a href="#notice">Notice</a>
+        <a href="#contact">Contact</a>
+
+    </nav>
+
+</header>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <h2>
+            Welcome to St. Augustine Academic Foundation
+        </h2>
+
+        <p>
+            Quality Education • Discipline • Creativity • Success
+        </p>
+
+        <a
+            href="#explore-button-section"
+            class="btn">
+
+            Explore Our School
+
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     EXPLORE
+========================= -->
+
+<section
+    class="section"
+    id="explore-button-section">
+
+    <h2>
+        Explore Our School
+    </h2>
+
+    <div class="section-divider"></div>
+
+    <button
+        class="explore-button"
+        onclick="openPopup('explorePopup')">
+
+        🏫 Explore Our School
+
+    </button>
+
+</section>
+
+
+<!-- =========================
+     EXPLORE POPUP
+========================= -->
+
+<div
+    id="explorePopup"
+    class="popup">
+
+    <div class="popup-box">
+
+        <span
+            class="close-btn"
+            onclick="closePopup('explorePopup')">
+
+            &times;
+
+        </span>
+
+        <h2>
+            🏫 Explore Our School
+        </h2>
+
+        <div class="explore-grid">
+
+            <div class="explore-card">
+                <img src="Our school.jpeg"
+                     alt="Our School"
+                     onclick="openPhoto(this.src)">
+                <h3>Our School</h3>
+                <p>
+                    Learn more about our school,
+                    environment and facilities.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="Our Students.jpeg"
+                     alt="Our Students"
+                     onclick="openPhoto(this.src)">
+                <h3>Our Students</h3>
+                <p>
+                    Our students, their talents,
+                    creativity and achievements.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="Our activities.jpeg"
+                     alt="School Activities"
+                     onclick="openPhoto(this.src)">
+                <h3>School Activities</h3>
+                <p>
+                    Academic and extracurricular
+                    activities of our school.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="Infrastructure.jpeg"
+                     alt="School Infrastructure"
+                     onclick="openPhoto(this.src)">
+                <h3>School Infrastructure</h3>
+                <p>
+                    Explore our classrooms,
+                    buildings and learning spaces.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="photo.jpeg"
+                     alt="Learning Environment"
+                     onclick="openPhoto(this.src)">
+                <h3>Learning Environment</h3>
+                <p>
+                    A safe, friendly and inspiring
+                    learning environment.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="photo.jpeg"
+                     alt="School Events"
+                     onclick="openPhoto(this.src)">
+                <h3>School Events</h3>
+                <p>
+                    Celebrations, programs and
+                    memorable school events.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="photo.jpeg"
+                     alt="Our Classrooms"
+                     onclick="openPhoto(this.src)">
+                <h3>Our Classrooms</h3>
+                <p>
+                    Comfortable classrooms designed
+                    for effective learning.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="photo.jpeg"
+                     alt="Sports and Activities"
+                     onclick="openPhoto(this.src)">
+                <h3>Sports & Activities</h3>
+                <p>
+                    Sports, games and physical
+                    development activities.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="photo.jpeg"
+                     alt="Creative Learning"
+                     onclick="openPhoto(this.src)">
+                <h3>Creative Learning</h3>
+                <p>
+                    Art, creativity, teamwork and
+                    practical learning.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="photo.jpeg"
+                     alt="School Library"
+                     onclick="openPhoto(this.src)">
+                <h3>School Library</h3>
+                <p>
+                    A learning space for reading,
+                    knowledge and research.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="photo.jpeg"
+                     alt="School Assembly"
+                     onclick="openPhoto(this.src)">
+                <h3>School Assembly</h3>
+                <p>
+                    Morning assembly and important
+                    school activities.
+                </p>
+            </div>
+
+            <div class="explore-card">
+                <img src="photo.jpeg"
+                     alt="Student Achievement"
+                     onclick="openPhoto(this.src)">
+                <h3>Student Achievement</h3>
+                <p>
+                    Celebrating the success and
+                    achievements of our students.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     GALLERY
+========================= -->
+
+<section
+    class="section"
+    id="media">
+
+    <h2>School Gallery</h2>
+
+    <div class="section-divider"></div>
+
+    <div class="media-buttons">
+
+        <button
+            class="media-btn"
+            onclick="openPopup('photoPopup')">
+
+            📸 PHOTOS
+
+        </button>
+
+        <button
+            class="media-btn"
+            onclick="openPopup('videoPopup')">
+
+            🎥 VIDEOS
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     PHOTO POPUP
+========================= -->
+
+<div
+    id="photoPopup"
+    class="popup">
+
+    <div class="popup-box">
+
+        <span
+            class="close-btn"
+            onclick="closePopup('photoPopup')">
+
+            &times;
+
+        </span>
+
+        <h2>📸 School Photos</h2>
+
+        <div class="media-grid">
+
+            <div class="media-card">
+                <img src="photo1.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 1">
+                <h3>Grooming Tomorrow's Leaders</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo2.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 2">
+                <h3>Capacity Building</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo3.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 3">
+                <h3>Professional, Joyful and Proud</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo4.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 4">
+                <h3>Upcoming Leadership</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo5.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 5">
+                <h3>Unity in Diversity</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo6.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 6">
+                <h3>Big Achievement</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo7.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 7">
+                <h3>School Activity</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo8.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 8">
+                <h3>School Memories</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo9.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 9">
+                <h3>Learning Together</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo10.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 10">
+                <h3>Beautiful School Moment</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo11.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 11">
+                <h3>School Activity</h3>
+            </div>
+
+            <div class="media-card">
+                <img src="photo12.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 12">
+                <h3>Student Activity</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo13.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 13">
+                <h3>photo 13</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo14.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 14">
+                <h3>photo 14</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo15.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 15">
+                <h3>photo 15</h3>
+            </div>
+<div class="media-card">
+                <img src="photo16.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 16">
+                <h3>photo 16</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo17.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 17">
+                <h3>photo 17</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo18.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 18">
+                <h3>photo 18</h3>
+            </div>
+<div class="media-card">
+                <img src="photo19.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 19">
+                <h3>photo 19</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo20.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 20">
+                <h3>photo 20</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo21.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 21">
+                <h3>photo 21</h3>
+            </div>
+<div class="media-card">
+                <img src="photo22.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 22">
+                <h3>photo 22</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo23.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 23">
+                <h3>photo 23</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo24.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 24">
+                <h3>photo 24</h3>
+            </div>
+<div class="media-card">
+                <img src="photo24.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 28">
+                <h3>photo 24</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo25.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 25">
+                <h3>photo 25</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo26.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 26">
+                <h3>photo 26</h3>
+            </div>
+<div class="media-card">
+                <img src="photo27.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 27">
+                <h3>photo 27</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo29.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 29">
+                <h3>photo 29</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo30.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 30">
+                <h3>photo 30</h3>
+            </div>
+<div class="media-card">
+                <img src="photo31.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 31">
+                <h3>photo 31</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo32.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 32">
+                <h3>photo 32</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo33.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 33">
+                <h3>photo 33</h3>
+            </div>
+<div class="media-card">
+                <img src="photo34.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 34">
+                <h3>photo 34</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo35.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 35">
+                <h3>photo 35</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo36.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 36">
+                <h3>photo 36</h3>
+            </div>
+<div class="media-card">
+                <img src="photo37.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 37">
+                <h3>photo 37</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo38.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 38">
+                <h3>photo 38</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo39.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 39">
+                <h3>photo 39</h3>
+            </div>
+<div class="media-card">
+                <img src="photo40.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 40">
+                <h3>photo 40</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo41.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 41">
+                <h3>photo 41</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo45.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 45">
+                <h3>photo 45</h3>
+            </div>
+<div class="media-card">
+                <img src="photo46.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 46">
+                <h3>photo 46</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo47.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 47">
+                <h3>photo 47</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo48.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 48">
+                <h3>photo 48</h3>
+            </div>
+<div class="media-card">
+                <img src="photo49.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 49">
+                <h3>photo 49</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo50.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 50">
+                <h3>photo 50</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo51.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 51">
+                <h3>photo 51</h3>
+            </div>
+<div class="media-card">
+                <img src="photo42.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 42">
+                <h3>photo 42</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo43.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 43">
+                <h3>photo 43</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo44.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 44">
+                <h3>photo 44</h3>
+            </div>
+<div class="media-card">
+                <img src="photo52.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 52">
+                <h3>photo 52</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo53.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 53">
+                <h3>photo 53</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo54.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 54">
+                <h3>photo 54</h3>
+            </div>
+<div class="media-card">
+                <img src="photo55.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 55">
+                <h3>photo 55</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo56.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 56">
+                <h3>photo 56</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo57.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 57">
+                <h3>photo 57</h3>
+            </div>
+<div class="media-card">
+                <img src="photo58.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 58">
+                <h3>photo 58</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo59.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 59">
+                <h3>photo 59</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo60.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 60">
+                <h3>photo 60</h3>
+            </div>
+<div class="media-card">
+                <img src="photo61.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 61">
+                <h3>photo 61</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo62.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 62">
+                <h3>photo 62</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo63.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 63">
+                <h3>photo 63</h3>
+            </div>
+<div class="media-card">
+                <img src="photo64.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 64">
+                <h3>photo 64</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo65.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 65">
+                <h3>photo 65</h3>
+            </div>
+ <div class="media-card">
+                <img src="photo66.jpeg"
+                     onclick="openPhoto(this.src)"
+                     alt="Photo 66">
+                <h3>photo 66</h3>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     VIDEO POPUP
+========================= -->
+
+<div
+    id="videoPopup"
+    class="popup">
+
+    <div class="popup-box">
+
+        <span
+            class="close-btn"
+            onclick="closePopup('videoPopup')">
+
+            &times;
+
+        </span>
+
+        <h2>🎥 School Videos</h2>
+
+        <div class="media-grid">
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video1.mp4" type="video/mp4">
+                </video>
+
+                <h3>
+                    Message delivering by: Aakriti Rai
+                    on the Occasion of Martyrs' Day
+                </h3>
+            </div>
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video2.mp4" type="video/mp4">
+                </video>
+                <h3>Video 2</h3>
+            </div>
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video3.mp4" type="video/mp4">
+                </video>
+                <h3>Video 3</h3>
+            </div>
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video4.mp4" type="video/mp4">
+                </video>
+                <h3>Video 4</h3>
+            </div>
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video5.mp4" type="video/mp4">
+                </video>
+                <h3>Video 5</h3>
+            </div>
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video6.mp4" type="video/mp4">
+                </video>
+                <h3>Video 6</h3>
+            </div>
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video7.mp4" type="video/mp4">
+                </video>
+                <h3>Video 7</h3>
+            </div>
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video8.mp4" type="video/mp4">
+                </video>
+                <h3>Video 8</h3>
+            </div>
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video9.mp4" type="video/mp4">
+                </video>
+                <h3>Video 9</h3>
+            </div>
+
+            <div class="media-card">
+                <video controls>
+                    <source src="video10.mp4" type="video/mp4">
+                </video>
+                <h3>Video 10</h3>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     PHOTO LIGHTBOX
+========================= -->
+
+<div
+    id="photoLightbox"
+    class="photo-lightbox"
+    onclick="closePhoto()">
+
+    <span
+        class="photo-close"
+        onclick="closePhoto()">
+
+        &times;
+
+    </span>
+
+    <img
+        id="largePhoto"
+        src=""
+        alt="Large Photo"
+        onclick="event.stopPropagation()">
+
+</div>
+
+
+<!-- =========================
+     MONTHLY REPORT BUTTON
+========================= -->
+
+<div class="monthly-report-container">
+
+    <button
+        class="monthly-report-btn"
+        onclick="openPopup('monthlyReportPopup')">
+
+        📊 SCHOOL MONTHLY REPORT
+
+    </button>
+
+</div>
+
+
+<!-- =========================
+     MONTHLY REPORT POPUP
+========================= -->
+
+<div
+    id="monthlyReportPopup"
+    class="popup">
+
+    <div class="popup-box">
+
+        <span
+            class="close-btn"
+            onclick="closePopup('monthlyReportPopup')">
+
+            &times;
+
+        </span>
+
+        <h2>
+            📊 School Monthly Report
+        </h2>
+
+        <div
+            id="monthButtons"
+            class="month-grid">
+
+            <button class="month-btn"
+                onclick="showMonthReport('Baishakh','baishakh')">
+                🌸 Baishakh
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Jestha','jestha')">
+                ☀️ Jestha
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Ashadh','ashadh')">
+                🌧️ Ashadh
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Shrawan','shrawan')">
+                🌿 Shrawan
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Bhadra','bhadra')">
+                🌼 Bhadra
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Ashwin','ashwin')">
+                🍂 Ashwin
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Kartik','kartik')">
+                🪔 Kartik
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Mangsir','mangsir')">
+                🍁 Mangsir
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Poush','poush')">
+                ❄️ Poush
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Magh','magh')">
+                🧣 Magh
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Falgun','falgun')">
+                🌺 Falgun
+            </button>
+
+            <button class="month-btn"
+                onclick="showMonthReport('Chaitra','chaitra')">
+                🌸 Chaitra
+            </button>
+
+        </div>
+
+        <div
+            id="monthlyPhotos"
+            style="display:none;">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     STAFF INFORMATION BUTTON
+========================= -->
+
+<div class="school-info-container">
+
+    <button
+        class="school-info-btn"
+        onclick="openPopup('staffPopup')">
+
+        👨‍🏫 STAFF INFORMATION
+
+    </button>
+
+</div>
+
+
+<!-- =========================
+     STAFF INFORMATION POPUP
+========================= -->
+
+<div
+    id="staffPopup"
+    class="popup">
+
+    <div class="popup-box">
+
+        <span
+            class="close-btn"
+            onclick="closePopup('staffPopup')">
+
+            &times;
+
+        </span>
+
+        <h2>
+            👨‍🏫 Staff Information
+        </h2>
+
+        <div class="staff-grid">
+
+
+            <!-- =========================
+                 CEO
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="ceo.jpeg" alt="Suresh Rai">
+
+                <h3>SURESH RAI</h3>
+
+                <p class="designation">
+                    Chief Executive Officer
+                </p>
+
+                <p class="staff-phone">
+                    📞 9749206863
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('ceo')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 MD
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="md.jpeg" alt="Sanjeev Rai">
+
+                <h3>SANJEEV RAI</h3>
+
+                <p class="designation">
+                    Managing Director
+                </p>
+
+                <p class="staff-phone">
+                    📞 9864185122
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('md')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 PRINCIPAL
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="principal.jpeg" alt="Joseph Shanker">
+
+                <h3>JOSEPH SHANKER</h3>
+
+                <p class="designation">
+                    Principal
+                </p>
+
+                <p class="staff-phone">
+                    📞 9863983951
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('principal')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 VICE PRINCIPAL
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="vice principal.jpeg" alt="Ranjana Rai">
+
+                <h3>RANJANA RAI</h3>
+
+                <p class="designation">
+                    Vice Principal
+                </p>
+
+                <p class="staff-phone">
+                    📞 9767777438
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('viceprincipal')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 PAYROLL
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="accountant.jpeg" alt="Sagar Adhikari">
+
+                <h3>SAGAR ADHIKARI</h3>
+
+                <p class="designation">
+                    Payroll Department
+                </p>
+
+                <p class="staff-phone">
+                    📞 9869854482
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('payroll')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 ABHISHEK
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="teacher1.jpeg" alt="Abhishek Kalikotay">
+
+                <h3>ABHISHEK KALIKOTAY</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('abhishek')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 SUNYATA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="sunyata.jpeg" alt="Sunyata Rai">
+
+                <h3>SUNYATA RAI</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('sunyata')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 SUSHMA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="sushma.jpeg" alt="Sushma Rai">
+
+                <h3>SUSHMA RAI</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('sushma')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 KRITIKA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="kritika.jpeg" alt="Kritika Magar">
+
+                <h3>KRITIKA MAGAR</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('kritika')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 AMISHA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="amisha.jpeg" alt="Amisha Rai">
+
+                <h3>AMISHA RAI</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('amisha')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 SWASTIKA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="swastika.jpeg" alt="Swastika Limbu">
+
+                <h3>SWASTIKA LIMBU</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('swastika')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 SANJAYA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="sanjaya.jpeg" alt="Sanjaya Rai">
+
+                <h3>SANJAYA RAI</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('sanjaya')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 SUJATA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="sujata.jpeg" alt="Sujata Rai">
+
+                <h3>SUJATA RAI</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('sujata')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 SHEKHAR
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="shekhar.jpeg" alt="Shekhar Kumar Acharya">
+
+                <h3>SHEKHAR KUMAR ACHARYA</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('shekhar')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 PADAM
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="padam.jpeg" alt="Padam Karki">
+
+                <h3>PADAM KARKI</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('padam')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 RUFINA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="rufina.jpeg" alt="Rufina Pradhan">
+
+                <h3>RUFINA PRADHAN</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('rufina')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 LIZA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="liza.jpeg" alt="Liza Rai">
+
+                <h3>LIZA RAI</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('liza')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 KALPANA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="kalpana.jpeg" alt="Kalpana Rai">
+
+                <h3>KALPANA RAI</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('kalpana')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 PUNITA
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="punita.jpeg" alt="Punita Rai">
+
+                <h3>PUNITA RAI</h3>
+
+                <p class="designation">
+                    Teacher
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('punita')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 DEVI MAYA TAMANG
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="devi.jpeg" alt="Devi Maya Tamang">
+
+                <h3>DEVI MAYA TAMANG</h3>
+
+                <p class="designation">
+                    School Support Staff
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('devi')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 LILA RAI
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="lila.jpeg" alt="Lila Rai">
+
+                <h3>LILA RAI</h3>
+
+                <p class="designation">
+                    School Support Staff
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('lila')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 SABINA LIMBU
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="sabina.jpeg" alt="Sabina Limbu">
+
+                <h3>SABINA LIMBU</h3>
+
+                <p class="designation">
+                    School Support Staff
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('sabina')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 AMIT RAI
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="amit.jpeg" alt="Amit Rai">
+
+                <h3>AMIT RAI</h3>
+
+                <p class="designation">
+                    Driver
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('amit')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 BHUPENDRA RAI
+            ========================= -->
+
+            <div class="staff-card">
+
+                <img src="bhupendra.jpeg" alt="Bhupendra Rai">
+
+                <h3>BHUPENDRA RAI</h3>
+
+                <p class="designation">
+                    Driver
+                </p>
+
+                <button
+                    class="more-details-btn"
+                    onclick="showStaffDetails('bhupendra')">
+
+                    More Details
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     STAFF DETAILS PAGE
+========================= -->
+
+<div
+    id="staffDetailsPage"
+    class="staff-details-page">
+
+    <div class="staff-details-box">
+
+        <button
+            class="staff-details-back"
+            onclick="backToStaffInformation()">
+
+            ← Back to Staff Information
+
+        </button>
+
+        <div class="staff-details-content">
+
+            <img
+                id="staffDetailPhoto"
+                class="staff-details-photo"
+                src=""
+                alt="Staff Photo">
+
+            <h1 id="staffDetailName"></h1>
+
+            <p
+                id="staffDetailDesignation"
+                class="staff-details-designation">
+            </p>
+
+            <div
+                id="staffDetailPhone"
+                class="staff-detail-row">
+            </div>
+
+            <div
+                id="staffDetailExperience"
+                class="staff-detail-row">
+            </div>
+
+            <div
+                id="staffDetailAbout"
+                class="staff-detail-about">
+            </div>
+
+            <div
+                id="staffDetailResponsibility"
+                class="staff-detail-about">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     ABOUT
+========================= -->
+
+<section
+    class="section"
+    id="about">
+
+    <h2>About Our School</h2>
+
+    <div class="section-divider"></div>
+
+    <p class="about">
+
+        St. Augustine Academic Foundation is dedicated
+        to providing quality education in a safe,
+        disciplined and inspiring environment.
+
+        We focus on academic excellence, creativity,
+        confidence, leadership and the overall
+        development of every student.
+
+    </p>
+
+</section>
+
+
+<!-- =========================
+     PROGRAMS
+========================= -->
+
+<section
+    class="section"
+    id="programs">
+
+    <h2>Our Programs</h2>
+
+    <div class="section-divider"></div>
+
+    <div class="cards">
+
+        <div class="card">
+
+            <h3>📚 Academic Excellence</h3>
+
+            <p>
+                Quality teaching and learning
+                activities for better academic
+                performance.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>⚽ Extra Activities</h3>
+
+            <p>
+                Sports, music, art, quiz and
+                various extracurricular activities.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>🌟 Student Development</h3>
+
+            <p>
+                Building confidence, leadership,
+                discipline and communication skills.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>🎨 Creative Learning</h3>
+
+            <p>
+                Encouraging creativity, imagination,
+                teamwork and practical learning.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     NOTICE
+========================= -->
+
+<section
+    class="section notice"
+    id="notice">
+
+    <h2>📢 Latest Notices</h2>
+
+    <div class="section-divider"></div>
+
+    <div class="notice-box">
+        📢 First Terminal Examination Result Published
+    </div>
+
+    <div class="notice-box">
+        📢 Parent-Teacher Meeting on Sunday
+    </div>
+
+    <div class="notice-box">
+        📢 New Admission Open for Academic Session
+    </div>
+
+</section>
+
+
+<!-- =========================
+     CONTACT
+========================= -->
+
+<section
+    class="section contact"
+    id="contact">
+
+    <h2>Contact Us</h2>
+
+    <div class="section-divider"></div>
+
+    <div class="contact-box">
+
+        <p>
+            📍 <strong>Address:</strong>
+            Suryodaya - 11, Tinghare, Ilam, Nepal
+        </p>
+
+        <p>
+            📞 <strong>Phone:</strong>
+            9864185122
+        </p>
+
+        <p>
+            📞 <strong>Phone:</strong>
+            9863983951
+        </p>
+
+        <p>
+            ✉️ <strong>Email:</strong>
+            sagar.godak1@gmail.com
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    © 2026
+
+    <span>
+        St. Augustine Academic Foundation
+    </span>
+
+    <br>
+
+    Suryodaya - 11, Ilam, Nepal
+
+    <br>
+
+    All Rights Reserved
+
+</footer>
+
+
+<script>
+
+/* =====================================================
+   GENERAL POPUP
+===================================================== */
+
+function openPopup(id){
+
+    const popup = document.getElementById(id);
+
+    if(popup){
+
+        popup.style.display = "block";
+
+        document.body.style.overflow = "hidden";
+
+    }
+
+}
+
+
+function closePopup(id){
+
+    const popup = document.getElementById(id);
+
+    if(popup){
+
+        popup.style.display = "none";
+
+    }
+
+    document.body.style.overflow = "auto";
+
+}
+
+
+/* =====================================================
+   PHOTO LIGHTBOX
+===================================================== */
+
+function openPhoto(src){
+
+    document.getElementById("largePhoto").src = src;
+
+    document.getElementById("photoLightbox").style.display = "flex";
+
+}
+
+
+function closePhoto(){
+
+    document.getElementById("photoLightbox").style.display = "none";
+
+}
+
+
+/* =====================================================
+   MONTHLY REPORT
+===================================================== */
+
+function showMonthReport(monthName,fileName){
+
+    document.getElementById("monthButtons").style.display = "none";
+
+    const monthlyPhotos =
+        document.getElementById("monthlyPhotos");
+
+    monthlyPhotos.style.display = "block";
+
+    monthlyPhotos.innerHTML = `
+
+        <button
+            class="report-back-btn"
+            onclick="backToMonths()">
+
+            ← Back to Months
+
+        </button>
+
+        <h2 class="report-title">
+            📊 ${monthName} Monthly Report
+        </h2>
+
+        <div class="media-grid">
+
+            ${[1,2,3,4,5].map(number => `
+
+                <div class="media-card">
+
+                    <img
+                        src="${fileName}${number}.jpeg"
+                        onclick="openPhoto(this.src)"
+                        alt="${monthName} Photo ${number}">
+
+                    <h3>
+                        ${monthName} - Activity ${number}
+                    </h3>
+
+                </div>
+
+            `).join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+function backToMonths(){
+
+    document.getElementById("monthlyPhotos").style.display = "none";
+
+    document.getElementById("monthlyPhotos").innerHTML = "";
+
+    document.getElementById("monthButtons").style.display = "grid";
+
+}
+
+
+/* =====================================================
+   STAFF DETAILS DATABASE
+===================================================== */
+
+const staffDetails = {
+
+
+    /* =========================
+       CEO
+    ========================= */
+
+    ceo:{
+
+        name:"SURESH RAI",
+
+        designation:"Chief Executive Officer",
+
+        photo:"ceo.jpeg",
+
+        phone:"9749206863",
+
+        experience:"10 Years",
+
+        about:`
+CEO, St. Augustine Academic Foundation.
+
+Education is not just about marks and degrees. It is about building character, confidence, and a sense of unity in diversity.
+
+I founded St. Augustine Academic Foundation with a clear vision: big achievements can come from small hands. I believe every child has the basic and fundamental right to quality education.
+
+As a responsible citizen of my community, I took the initiative to ensure that even underprivileged children get the opportunity to learn to the best of my ability.
+
+With over years of experience in education and leadership, my goal has been to create a learning environment where every student is encouraged to grow, lead, and serve.
+
+My leadership is guided by three core values: Excellence, Integrity, and Service.
+
+I believe that for any long journey, we must choose what is suitable over what is just beautiful. That means investing in strong foundations — in our teachers, our students, and our community here in Tinghare, Suryodaya Municipality-11, Ilam.
+`,
+
+        responsibility:`
+Provides overall leadership and strategic direction to the institution and supports the overall development of the school.
+`
+
+    },
+
+
+    /* =========================
+       MD
+    ========================= */
+
+    md:{
+
+        name:"SANJEEV RAI",
+
+        designation:"Managing Director",
+
+        photo:"md.jpeg",
+
+        phone:"9864185122",
+
+        experience:"10 Years",
+
+        about:`
+Managing Director, St. Augustine Academic Foundation.
+
+Behind every strong school is strong financial custodianship.
+
+As Managing Director, I am responsible for overseeing the overall income, expenses, and all financial operations of St. Augustine Academic Foundation.
+
+My role is to ensure that every resource is managed with transparency, accountability, and purpose.
+
+I believe that careful management today creates bigger opportunities for our children tomorrow.
+`,
+
+        responsibility:`
+Responsible for institutional management, planning, development and coordination of the school.
+`
+
+    },
+
+
+    /* =========================
+       PRINCIPAL
+    ========================= */
+
+    principal:{
+
+        name:"JOSEPH SHANKER",
+
+        designation:"Principal",
+
+        photo:"principal.jpeg",
+
+        phone:"9863983951",
+
+        experience:"10 Years",
+
+        about:`
+Joseph Shanker is the Principal of St. Augustine Academic Foundation. He is committed to maintaining academic excellence, discipline, effective school management, and a positive learning environment for students.
+`,
+
+        responsibility:`
+Leads academic activities, supervises teachers, supports students and manages the overall academic administration of the school.
+`
+
+    },
+
+
+    /* =========================
+       VICE PRINCIPAL
+    ========================= */
+
+    viceprincipal:{
+
+        name:"RANJANA RAI",
+
+        designation:"Vice Principal",
+
+        photo:"vice principal.jpeg",
+
+        phone:"9767777438",
+
+        experience:"10 Years",
+
+        about:`
+Vice Principal, St. Augustine Academic Foundation She is the heart of discipline and care at St. Augustine Academic Foundation.
+A deeply caring and genuine person, she believes that every child deserves attention, guidance, and a safe place to grow. She works extra hard for weak students, giving them the extra time, encouragement, and support they need to build confidence and succeed.
+She takes strong initiative for the discipline and safety of students. From maintaining a positive learning environment to ensuring every child feels respected, her presence brings order, and trust to the school.`,
+
+        responsibility:`
+Supports the Principal in academic and administrative activities and coordinates with teachers and students.
+`
+
+    },
+
+
+    /* =========================
+       PAYROLL
+    ========================= */
+
+    payroll:{
+
+        name:"SAGAR ADHIKARI",
+
+        designation:"Payroll Department",
+
+        photo:"accountant.jpeg",
+
+        phone:"9869854482",
+
+        experience:"12 Years",
+
+        about:`
+Accountant, St. Augustine Academic Foundation.
+
+He is the financial backbone of St. Augustine Academic Foundation. Known for his efficiency, he manages the school's accounts with accuracy, transparency, and complete responsibility.
+
+But his role goes far beyond accounting. He takes strong initiative for the welfare of the school and acts as a strong pillar of the institution.
+
+Whether it is accounting or supporting day-to-day operations, he is always ready to contribute to the smooth functioning of the school.
+
+He is not only dedicated to his work, but is always available for the school with an honest heart. Teachers, staff, and management know they can count on him for support, guidance, and solutions.
+`,
+
+        responsibility:`
+Responsible for payroll-related work, salary records, financial coordination and related administrative responsibilities.
+`
+
+    },
+
+
+    /* =========================
+       ABHISHEK
+    ========================= */
+
+    abhishek:{
+
+        name:"ABHISHEK KALIKOTAY",
+
+        designation:"Teacher",
+
+        photo:"teacher1.jpeg",
+
+        subject:"English & Health Education",
+
+        experience:"10 Years",
+
+        about:`
+Mr. Abhishek Kalikotay is a dedicated, experienced, and inspiring educator at St. Augustine Academic Foundation. He teaches English and Health Education and brings more than 10 years of teaching experience to his profession. His experience is not limited to Nepal; he has also gained valuable exposure and professional experience abroad, which has broadened his perspective on education, teaching, and student development.
+
+Known for his friendly, cooperative, and supportive nature, Mr. Kalikotay maintains a positive relationship with both students and colleagues. He is actively involved in extracurricular activities and has strong leadership qualities.
+
+From leading school assemblies to guiding and supporting the Captain and prefect. He encourages students to take responsibility, develop confidence, and become responsible young leaders.
+
+He strongly believes that education should go beyond textbooks and classrooms. He motivates students to explore new ideas, learn new skills, participate actively in school activities, and discover their own potential.
+
+Through his experience, leadership, creativity, and dedication, he continues to contribute meaningfully to the academic, personal, and overall development of the students.
+
+His commitment to education, cooperative spirit, leadership ability, and passion for helping children learn and grow make him a valuable and respected member of the St. Augustine Academic Foundation family.
+`,
+
+        responsibility:`
+Responsible for teaching English and Health Education, classroom management, lesson planning, student guidance, and academic support.
+
+He also actively contributes to school assemblies, extracurricular activities, the Captain and prefect, student leadership development, and various school programs.
+
+He encourages students to learn new things, participate confidently, develop leadership skills, and take responsibility in their school life.
+`
+
+    },
+
+
+    /* =========================
+       SUNYATA
+    ========================= */
+
+    sunyata:{
+
+        name:"SUNYATA RAI",
+
+        designation:"Teacher",
+
+        photo:"sunyata.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Sunyata Rai is a dedicated and responsible teacher at St. Augustine Academic Foundation. She is committed to supporting students in their academic learning and overall development.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       SUSHMA
+    ========================= */
+
+    sushma:{
+
+        name:"SUSHMA RAI",
+
+        designation:"Teacher",
+
+        photo:"sushma.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Sushma Rai is a dedicated teacher at St. Augustine Academic Foundation. She is committed to creating a positive and supportive classroom environment where students can learn confidently.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       KRITIKA
+    ========================= */
+
+    kritika:{
+
+        name:"KRITIKA MAGAR",
+
+        designation:"Teacher",
+
+        photo:"kritika.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Kritika Magar is a dedicated teacher at St. Augustine Academic Foundation. She supports students in their academic learning and encourages them to participate actively in classroom and school activities.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       AMISHA
+    ========================= */
+
+    amisha:{
+
+        name:"AMISHA RAI",
+
+        designation:"Teacher",
+
+        photo:"amisha.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Amisha Rai is a dedicated teacher at St. Augustine Academic Foundation. She is committed to supporting students in their learning and encouraging their overall development.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+ 
+    /* =========================
+       SWASTIKA
+    ========================= */
+
+    swastika:{
+
+        name:"SWASTIKA LIMBU",
+
+        designation:"Teacher",
+
+        photo:"swastika.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Swastika Limbu is a dedicated teacher at St. Augustine Academic Foundation. She is committed to providing students with a supportive and engaging learning environment.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       SANJAYA
+    ========================= */
+
+    sanjaya:{
+
+        name:"SANJAYA RAI",
+
+        designation:"Teacher",
+
+        photo:"sanjaya.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Sanjaya Rai is a dedicated teacher at St. Augustine Academic Foundation. He is committed to supporting students in academic learning and school activities.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       SUJATA
+    ========================= */
+
+    sujata:{
+
+        name:"SUJATA RAI",
+
+        designation:"Teacher",
+
+        photo:"sujata.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Sujata Rai is a dedicated teacher at St. Augustine Academic Foundation. She is committed to helping students develop academically and personally.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       SHEKHAR
+    ========================= */
+
+    shekhar:{
+
+        name:"SHEKHAR KUMAR ACHARYA",
+
+        designation:"Teacher",
+
+        photo:"shekhar.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Shekhar Kumar Acharya is a dedicated teacher at St. Augustine Academic Foundation. He is committed to effective teaching and the overall development of students.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       PADAM
+    ========================= */
+
+    padam:{
+
+        name:"PADAM KARKI",
+
+        designation:"Teacher",
+
+        photo:"padam.jpeg",
+
+        subject:"Mathematics",
+
+        experience:"25 Years",
+
+        about:`
+Mr. Padam Karki is a dedicated and enthusiastic Mathematics educator committed to making mathematical concepts clear, practical, and engaging for students.
+
+He encourages students to develop logical thinking, problem-solving skills, and confidence in Mathematics through interactive and student-centered learning.
+
+With a focus on building strong mathematical foundations, he supports students in understanding concepts, applying their knowledge to real-life situations, and developing a positive attitude toward learning Mathematics.
+
+His commitment to students’ academic progress and overall development makes him a valuable member of the teaching team at St. Augustine Academic Foundation.
+`,
+
+        responsibility:`
+Responsible for teaching Mathematics, classroom management, student guidance, problem-solving activities and academic development.
+`
+
+    },
+
+
+    /* =========================
+       RUFINA
+    ========================= */
+
+    rufina:{
+
+        name:"RUFINA PRADHAN",
+
+        designation:"Teacher",
+
+        photo:"rufina.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Rufina Pradhan is a dedicated teacher at St. Augustine Academic Foundation. She is committed to supporting students in their academic and personal development.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       LIZA
+    ========================= */
+
+    liza:{
+
+        name:"LIZA RAI",
+
+        designation:"Teacher",
+
+        photo:"liza.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Liza Rai is a dedicated teacher at St. Augustine Academic Foundation. She is committed to providing students with a positive and supportive learning environment.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       KALPANA
+    ========================= */
+
+    kalpana:{
+
+        name:"KALPANA RAI",
+
+        designation:"Teacher",
+
+        photo:"kalpana.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Kalpana Rai is a dedicated teacher at St. Augustine Academic Foundation. She supports students in their academic learning and overall development.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =========================
+       PUNITA
+    ========================= */
+
+    punita:{
+
+        name:"PUNITA RAI",
+
+        designation:"Teacher",
+
+        photo:"punita.jpeg",
+
+        subject:"Subject to be updated",
+
+        experience:"5 Years",
+
+        about:`
+Punita Rai is a dedicated teacher at St. Augustine Academic Foundation. She is committed to helping students learn, grow and participate actively in school activities.
+`,
+
+        responsibility:`
+Responsible for teaching, classroom management, student guidance and academic activities.
+`
+
+    },
+
+
+    /* =====================================================
+       SCHOOL SUPPORT STAFF
+    ===================================================== */
+
+
+    devi:{
+
+        name:"DEVI MAYA TAMANG",
+
+        designation:"School Support Staff",
+
+        photo:"devi.jpeg",
+
+        experience:"5 Years",
+
+        about:`
+Devi Maya Tamang is a dedicated School Support Staff member at St. Augustine Academic Foundation.
+
+She is committed to supporting the school environment and helping students and teachers whenever needed.
+
+Her cooperative nature and dedication contribute positively to the smooth functioning of the school.
+`,
+
+        responsibility:`
+Responsible for supporting daily school activities, assisting students and teachers, maintaining a supportive school environment and contributing to various school programs.
+`
+
+    },
+
+
+    lila:{
+
+        name:"LILA RAI",
+
+        designation:"School Support Staff",
+
+        photo:"lila.jpeg",
+
+        experience:"5 Years",
+
+        about:`
+Lila Rai is a dedicated School Support Staff member at St. Augustine Academic Foundation.
+
+She is committed to supporting the school community and contributing to a safe, friendly and positive learning environment.
+`,
+
+        responsibility:`
+Responsible for supporting daily school activities, assisting students and teachers, helping with school programs and contributing to the smooth operation of the school.
+`
+
+    },
+
+
+    sabina:{
+
+        name:"SABINA LIMBU",
+
+        designation:"School Support Staff",
+
+        photo:"sabina.jpeg",
+
+        experience:"5 Years",
+
+        about:`
+Sabina Limbu is a dedicated School Support Staff member at St. Augustine Academic Foundation.
+
+She is committed to supporting students, teachers and the school community through her responsible and cooperative work.
+`,
+
+        responsibility:`
+Responsible for supporting daily school activities, assisting students and teachers, helping during school programs and maintaining a positive school environment.
+`
+
+    },
+
+
+    /* =====================================================
+       DRIVER
+    ===================================================== */
+
+
+    amit:{
+
+        name:"AMIT RAI",
+
+        designation:"Driver",
+
+        photo:"amit.jpeg",
+
+        experience:"5 Years",
+
+        about:`
+Amit Rai is a responsible and dedicated Driver at St. Augustine Academic Foundation.
+
+He is committed to providing safe, careful and reliable transportation support for the school community.
+`,
+
+        responsibility:`
+Responsible for safe school transportation, vehicle care, following traffic and safety rules, and supporting transportation-related school activities.
+`
+
+    },
+
+
+    bhupendra:{
+
+        name:"BHUPENDRA RAI",
+
+        designation:"Driver",
+
+        photo:"bhupendra.jpeg",
+
+        experience:"5 Years",
+
+        about:`
+Bhupendra Rai is a responsible and dedicated Driver at St. Augustine Academic Foundation.
+
+He is committed to ensuring safe and reliable transportation and supporting the school whenever transportation services are required.
+`,
+
+        responsibility:`
+Responsible for safe school transportation, vehicle care, following traffic and safety rules, and supporting transportation-related school activities.
+`
+
+    }
+
+};
+
+
+/* =====================================================
+   SHOW STAFF DETAILS
+===================================================== */
+
+function showStaffDetails(staffId){
+
+    const staff = staffDetails[staffId];
+
+    if(!staff){
+
+        console.error("Staff not found:",staffId);
+
+        return;
+
+    }
+
+
+    document.getElementById("staffDetailPhoto").src =
+        staff.photo;
+
+
+    document.getElementById("staffDetailName").textContent =
+        staff.name;
+
+
+    document.getElementById("staffDetailDesignation").textContent =
+        staff.designation;
+
+
+    /*
+       TEACHER:
+       SHOW SUBJECT
+
+       CEO / MD / PRINCIPAL / VICE PRINCIPAL / PAYROLL:
+       SHOW CONTACT
+
+       SCHOOL SUPPORT STAFF / DRIVER:
+       SHOW NOTHING
+    */
+
+
+    if(staff.designation === "Teacher"){
+
+        document.getElementById("staffDetailPhone").innerHTML =
+            "<strong>📚 Subject:</strong> " +
+            staff.subject;
+
+        document.getElementById("staffDetailPhone").style.display =
+            "block";
+
+    }
+
+    else if(
+        staff.designation === "Chief Executive Officer" ||
+        staff.designation === "Managing Director" ||
+        staff.designation === "Principal" ||
+        staff.designation === "Vice Principal" ||
+        staff.designation === "Payroll Department"
+    ){
+
+        document.getElementById("staffDetailPhone").innerHTML =
+            "<strong>📞 Contact:</strong> " +
+            staff.phone;
+
+        document.getElementById("staffDetailPhone").style.display =
+            "block";
+
+    }
+
+    else{
+
+        document.getElementById("staffDetailPhone").innerHTML =
+            "";
+
+        document.getElementById("staffDetailPhone").style.display =
+            "none";
+
+    }
+
+
+    document.getElementById("staffDetailExperience").innerHTML =
+        "<strong>💼 Experience:</strong> " +
+        staff.experience;
+
+
+    document.getElementById("staffDetailAbout").innerHTML =
+        "<strong>👤 About:</strong><br>" +
+        staff.about.replace(/\n/g,"<br>");
+
+
+    document.getElementById("staffDetailResponsibility").innerHTML =
+        "<strong>📋 Responsibilities:</strong><br>" +
+        staff.responsibility.replace(/\n/g,"<br>");
+
+
+    document.getElementById("staffDetailsPage").style.display =
+        "block";
+
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+/* =====================================================
+   BACK TO STAFF
+===================================================== */
+
+function backToStaffInformation(){
+
+    document.getElementById("staffDetailsPage").style.display =
+        "none";
+
+    document.getElementById("staffPopup").style.display =
+        "block";
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+/* =====================================================
+   ESC KEY
+===================================================== */
+
+document.addEventListener("keydown",function(event){
+
+    if(event.key === "Escape"){
+
+        document.querySelectorAll(".popup").forEach(function(popup){
+
+            popup.style.display = "none";
+
+        });
+
+
+        document.getElementById("staffDetailsPage").style.display =
+            "none";
+
+
+        closePhoto();
+
+
+        document.body.style.overflow =
+            "auto";
+
+    }
+
+});
+
+
+/* =====================================================
+   CLICK OUTSIDE POPUP
+===================================================== */
+
+document.querySelectorAll(".popup").forEach(function(popup){
+
+    popup.addEventListener("click",function(event){
+
+        if(event.target === popup){
+
+            popup.style.display = "none";
+
+            document.body.style.overflow = "auto";
+
+        }
+
+    });
+
+});
+
+
+/* =====================================================
+   ONLY ONE VIDEO PLAYS
+===================================================== */
+
+const videos = document.querySelectorAll("video");
+
+videos.forEach(function(video){
+
+    video.addEventListener("play",function(){
+
+        videos.forEach(function(otherVideo){
+
+            if(otherVideo !== video){
+
+                otherVideo.pause();
+
+            }
+
+        });
+
+    });
+
+});
+
+</script>
+
+</body>
+
+</html>
