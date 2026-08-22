@@ -28,6 +28,7 @@ body{
     font-family:Arial,sans-serif;
     background:linear-gradient(135deg,#eef5ff,#ffffff,#eef8ff);
     color:#333;
+    transition:background .35s ease,color .35s ease;
 }
 
 
@@ -111,6 +112,45 @@ nav a{
 nav a:hover{
     color:#ffd166;
     transform:scale(1.08);
+}
+
+
+/* =========================
+   DARK MODE BUTTON
+========================= */
+
+.theme-toggle{
+    position:absolute;
+    right:18px;
+    top:15px;
+
+    border:2px solid rgba(255,255,255,.55);
+
+    background:rgba(0,0,0,.20);
+
+    color:white;
+
+    width:48px;
+    height:48px;
+
+    border-radius:50%;
+
+    font-size:23px;
+
+    cursor:pointer;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    transition:.3s;
+
+    z-index:20;
+}
+
+.theme-toggle:hover{
+    transform:rotate(15deg) scale(1.08);
+    background:rgba(255,255,255,.15);
 }
 
 
@@ -507,7 +547,7 @@ nav a:hover{
 
 
 /* =========================
-   PHOTO LIGHTBOX
+   PHOTO LIGHTBOX / SLIDER
 ========================= */
 
 .photo-lightbox{
@@ -520,7 +560,7 @@ nav a:hover{
 
     z-index:20000;
 
-    background:rgba(0,0,0,.94);
+    background:rgba(0,0,0,.96);
 
     justify-content:center;
 
@@ -531,20 +571,26 @@ nav a:hover{
 
 .photo-lightbox img{
 
-    max-width:95%;
+    max-width:88%;
 
-    max-height:90vh;
+    max-height:86vh;
 
     object-fit:contain;
 
     border-radius:10px;
+
+    user-select:none;
+
+    -webkit-user-drag:none;
+
+    box-shadow:0 8px 35px rgba(0,0,0,.5);
 }
 
 .photo-close{
 
     position:absolute;
 
-    top:15px;
+    top:10px;
 
     right:25px;
 
@@ -553,6 +599,92 @@ nav a:hover{
     font-size:45px;
 
     cursor:pointer;
+
+    z-index:10;
+}
+
+.photo-close:hover{
+    color:#ffd166;
+}
+
+
+/* PHOTO SLIDER BUTTONS */
+
+.photo-prev,
+.photo-next{
+
+    position:absolute;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:58px;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.18);
+
+    color:white;
+
+    font-size:38px;
+
+    cursor:pointer;
+
+    z-index:10;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    transition:.3s;
+}
+
+.photo-prev{
+    left:20px;
+}
+
+.photo-next{
+    right:20px;
+}
+
+.photo-prev:hover,
+.photo-next:hover{
+
+    background:#ffd166;
+
+    color:#17202a;
+
+    transform:translateY(-50%) scale(1.08);
+}
+
+.photo-counter{
+
+    position:absolute;
+
+    bottom:22px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    color:white;
+
+    background:rgba(0,0,0,.55);
+
+    padding:7px 15px;
+
+    border-radius:20px;
+
+    font-size:15px;
+
+    z-index:10;
 }
 
 
@@ -1148,6 +1280,102 @@ nav a:hover{
 
 
 /* =========================
+   LOCATION MAP
+========================= */
+
+.location-section{
+
+    padding:70px 7%;
+
+    text-align:center;
+
+    background:linear-gradient(135deg,#eef5ff,#ffffff);
+}
+
+.location-section h2{
+
+    color:#123c69;
+
+    font-size:32px;
+
+    margin-bottom:25px;
+}
+
+.map-box{
+
+    max-width:1000px;
+
+    margin:25px auto 0;
+
+    background:white;
+
+    padding:12px;
+
+    border-radius:18px;
+
+    box-shadow:0 7px 25px rgba(0,0,0,.15);
+}
+
+.map-box iframe{
+
+    width:100%;
+
+    height:420px;
+
+    border:0;
+
+    border-radius:13px;
+
+    display:block;
+}
+
+.map-address{
+
+    margin-top:18px;
+
+    font-size:17px;
+
+    line-height:1.8;
+
+    color:#000;
+}
+
+
+/* =========================
+   POLICY / TERMS
+========================= */
+
+.policy-box{
+
+    max-width:900px;
+
+    margin:auto;
+
+    line-height:1.9;
+
+    text-align:justify;
+
+    color:#000;
+}
+
+.policy-box h3{
+
+    color:#123c69;
+
+    margin-top:22px;
+
+    margin-bottom:8px;
+
+    font-size:20px;
+}
+
+.policy-box p{
+
+    margin-bottom:12px;
+}
+
+
+/* =========================
    FOOTER
 ========================= */
 
@@ -1171,6 +1399,39 @@ footer span{
     font-weight:bold;
 }
 
+.footer-links{
+
+    margin-top:12px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:18px;
+
+    flex-wrap:wrap;
+}
+
+.footer-links a{
+
+    color:#ffd166;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.footer-links a:hover{
+
+    color:white;
+
+    text-decoration:underline;
+}
+
 
 /* =========================
    EASY READING
@@ -1188,6 +1449,151 @@ footer span{
     font-family:Arial,sans-serif;
 
     color:#000000 !important;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark-mode{
+
+    background:#101820;
+
+    color:#eeeeee;
+}
+
+body.dark-mode .section{
+
+    background:linear-gradient(135deg,#151f29,#1b2835);
+
+}
+
+body.dark-mode .section h2{
+
+    color:#8ecbff;
+}
+
+body.dark-mode .school-info-container{
+
+    background:#151f29;
+}
+
+body.dark-mode .location-section{
+
+    background:#151f29;
+}
+
+body.dark-mode .location-section h2{
+
+    color:#8ecbff;
+}
+
+body.dark-mode .contact{
+
+    background:#151f29;
+}
+
+body.dark-mode .contact-box,
+body.dark-mode .contact-box p{
+
+    color:#eeeeee !important;
+}
+
+body.dark-mode .about,
+body.dark-mode .card,
+body.dark-mode .explore-card,
+body.dark-mode .media-card,
+body.dark-mode .staff-card{
+
+    background:#1d2935;
+
+    border-color:#34485b;
+
+    color:#eeeeee;
+}
+
+body.dark-mode .about,
+body.dark-mode .card p,
+body.dark-mode .explore-card p,
+body.dark-mode .staff-phone{
+
+    color:#eeeeee !important;
+}
+
+body.dark-mode .card h3,
+body.dark-mode .explore-card h3,
+body.dark-mode .staff-card h3{
+
+    color:#8ecbff;
+}
+
+body.dark-mode .popup-box,
+body.dark-mode .staff-details-box{
+
+    background:#18232e;
+
+    color:#eeeeee;
+}
+
+body.dark-mode .popup-box>h2,
+body.dark-mode .staff-details-content h1,
+body.dark-mode .report-title{
+
+    color:#8ecbff;
+}
+
+body.dark-mode .staff-detail-row,
+body.dark-mode .staff-detail-about{
+
+    background:#22313f;
+
+    border-color:#3a4e61;
+
+    color:#eeeeee;
+}
+
+body.dark-mode .staff-detail-row strong,
+body.dark-mode .staff-detail-about strong{
+
+    color:#8ecbff;
+}
+
+body.dark-mode .staff-details-designation{
+
+    color:#69bfff;
+}
+
+body.dark-mode .notice-box{
+
+    background:#1d2935;
+
+    color:#eeeeee;
+}
+
+body.dark-mode .map-box{
+
+    background:#1d2935;
+}
+
+body.dark-mode .map-address{
+
+    color:#eeeeee;
+}
+
+body.dark-mode .policy-box{
+
+    color:#eeeeee;
+}
+
+body.dark-mode .policy-box h3{
+
+    color:#8ecbff;
+}
+
+body.dark-mode .popup .close-btn{
+
+    color:#ddd;
 }
 
 
@@ -1212,6 +1618,19 @@ footer span{
         margin:0 8px;
 
         font-size:15px;
+    }
+
+    .theme-toggle{
+
+        right:10px;
+
+        top:10px;
+
+        width:42px;
+
+        height:42px;
+
+        font-size:20px;
     }
 }
 
@@ -1249,6 +1668,19 @@ footer span{
 
     .school-heading p{
         font-size:12px;
+    }
+
+    .theme-toggle{
+
+        width:36px;
+
+        height:36px;
+
+        right:6px;
+
+        top:7px;
+
+        font-size:18px;
     }
 
     nav{
@@ -1380,6 +1812,70 @@ footer span{
         font-size:14px;
     }
 
+
+    /* MOBILE PHOTO SLIDER */
+
+    .photo-lightbox{
+
+        padding:15px;
+
+    }
+
+    .photo-lightbox img{
+
+        max-width:92%;
+
+        max-height:78vh;
+
+    }
+
+    .photo-prev,
+    .photo-next{
+
+        width:45px;
+
+        height:45px;
+
+        font-size:28px;
+
+    }
+
+    .photo-prev{
+
+        left:8px;
+
+    }
+
+    .photo-next{
+
+        right:8px;
+
+    }
+
+    .photo-close{
+
+        top:5px;
+
+        right:12px;
+
+        font-size:38px;
+
+    }
+
+    .photo-counter{
+
+        bottom:12px;
+
+        font-size:13px;
+
+    }
+
+    .map-box iframe{
+
+        height:320px;
+
+    }
+
 }
 
 </style>
@@ -1416,6 +1912,20 @@ footer span{
         </p>
 
     </div>
+
+
+    <!-- NIGHT MODE TOGGLE -->
+
+    <button
+        id="themeToggle"
+        class="theme-toggle"
+        onclick="toggleTheme()"
+        aria-label="Toggle Night Mode">
+
+        🌙
+
+    </button>
+
 
     <nav>
 
@@ -1882,7 +2392,7 @@ footer span{
 
 
 <!-- =========================
-     PHOTO LIGHTBOX
+     PHOTO LIGHTBOX SLIDER
 ========================= -->
 
 <div
@@ -1898,11 +2408,39 @@ footer span{
 
     </span>
 
+
+    <button
+        class="photo-prev"
+        onclick="event.stopPropagation();previousPhoto()">
+
+        ‹
+
+    </button>
+
+
     <img
         id="largePhoto"
         src=""
         alt="Large Photo"
         onclick="event.stopPropagation()">
+
+
+    <button
+        class="photo-next"
+        onclick="event.stopPropagation();nextPhoto()">
+
+        ›
+
+    </button>
+
+
+    <div
+        id="photoCounter"
+        class="photo-counter">
+
+        1 / 1
+
+    </div>
 
 </div>
 
@@ -2340,9 +2878,7 @@ footer span{
             </div>
 
 
-            <!-- =========================
-                 PAYROLL LINKS ONLY
-            ========================= -->
+            <!-- PAYROLL LINKS ONLY -->
 
             <div
                 id="payrollLinks"
@@ -2538,6 +3074,250 @@ footer span{
 
 
 <!-- =========================
+     LOCATION MAP
+========================= -->
+
+<section class="location-section">
+
+    <h2>📍 Find Our School</h2>
+
+    <div class="section-divider"></div>
+
+    <div class="map-box">
+
+        <iframe
+            src="https://www.google.com/maps?q=St.%20Augustine%20Academic%20Foundation%2C%20Suryodaya-11%2C%20Tinghare%2C%20Ilam%2C%20Nepal&output=embed"
+            loading="lazy"
+            allowfullscreen>
+        </iframe>
+
+        <p class="map-address">
+
+            📍 St. Augustine Academic Foundation,
+            Suryodaya - 11, Tinghare, Ilam, Nepal
+
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     TERMS OF SERVICE POPUP
+========================= -->
+
+<div
+    id="termsPopup"
+    class="popup">
+
+    <div class="popup-box">
+
+        <span
+            class="close-btn"
+            onclick="closePopup('termsPopup')">
+
+            &times;
+
+        </span>
+
+        <h2>
+            📜 Terms of Service
+        </h2>
+
+        <div class="policy-box">
+
+            <p>
+                Welcome to the official website of
+                St. Augustine Academic Foundation.
+                By using this website, you agree to
+                the following terms.
+            </p>
+
+            <h3>1. Website Information</h3>
+
+            <p>
+                The information published on this website
+                is provided for general school-related
+                information, communication and educational
+                purposes.
+            </p>
+
+            <h3>2. School Content</h3>
+
+            <p>
+                School photos, videos, notices, staff
+                information and other materials are
+                published for official school purposes.
+                Users should not copy, modify or
+                redistribute school content without
+                appropriate permission.
+            </p>
+
+            <h3>3. Accuracy of Information</h3>
+
+            <p>
+                The school makes reasonable efforts to
+                keep the information on this website
+                accurate and updated. Information may
+                occasionally change without prior notice.
+            </p>
+
+            <h3>4. External Links</h3>
+
+            <p>
+                This website may contain links to external
+                services such as WhatsApp, Facebook,
+                Gmail and map services. The school is not
+                responsible for the content or policies
+                of external websites.
+            </p>
+
+            <h3>5. Website Use</h3>
+
+            <p>
+                Users agree to use this website only for
+                lawful and appropriate purposes and not
+                to misuse, damage or interfere with the
+                website.
+            </p>
+
+            <h3>6. Changes to These Terms</h3>
+
+            <p>
+                St. Augustine Academic Foundation may
+                update these terms when necessary to
+                reflect changes in school services or
+                website functionality.
+            </p>
+
+            <h3>7. Contact</h3>
+
+            <p>
+                For questions regarding these terms,
+                please contact St. Augustine Academic
+                Foundation through the contact details
+                provided on this website.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     PRIVACY POLICY POPUP
+========================= -->
+
+<div
+    id="privacyPopup"
+    class="popup">
+
+    <div class="popup-box">
+
+        <span
+            class="close-btn"
+            onclick="closePopup('privacyPopup')">
+
+            &times;
+
+        </span>
+
+        <h2>
+            🔒 Privacy Policy
+        </h2>
+
+        <div class="policy-box">
+
+            <p>
+                St. Augustine Academic Foundation respects
+                the privacy of visitors to this website.
+                This Privacy Policy explains how information
+                may be handled when you use our website.
+            </p>
+
+            <h3>1. Information We Provide</h3>
+
+            <p>
+                This website may display school information,
+                staff information, contact details, photos,
+                videos, notices and other educational
+                information for official purposes.
+            </p>
+
+            <h3>2. Personal Information</h3>
+
+            <p>
+                We do not intentionally request sensitive
+                personal information from general visitors
+                through this website unless it is required
+                for a specific school-related service.
+            </p>
+
+            <h3>3. Contact Information</h3>
+
+            <p>
+                If you contact the school through email,
+                telephone, WhatsApp or other communication
+                methods, the information you provide may
+                be used to respond to your enquiry.
+            </p>
+
+            <h3>4. Photos and Videos</h3>
+
+            <p>
+                School photographs and videos displayed on
+                this website are intended for school-related
+                communication, activities and memories.
+                If there is a legitimate concern regarding
+                published media, please contact the school.
+            </p>
+
+            <h3>5. Cookies and Local Storage</h3>
+
+            <p>
+                This website may use browser local storage
+                to remember preferences such as Light Mode
+                or Night Mode. This information remains
+                within the visitor's browser.
+            </p>
+
+            <h3>6. Third-Party Services</h3>
+
+            <p>
+                The website may use third-party services
+                such as Google Maps, Facebook, WhatsApp and
+                Gmail. Those services may have their own
+                privacy policies and terms.
+            </p>
+
+            <h3>7. Policy Updates</h3>
+
+            <p>
+                This Privacy Policy may be updated when
+                necessary. Any updated version may be
+                published on this website.
+            </p>
+
+            <h3>8. Contact</h3>
+
+            <p>
+                For privacy-related questions or concerns,
+                please contact St. Augustine Academic
+                Foundation using the contact information
+                available on this website.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
      FOOTER
 ========================= -->
 
@@ -2556,6 +3336,25 @@ footer span{
     <br>
 
     All Rights Reserved
+
+
+    <div class="footer-links">
+
+        <a
+            onclick="openPopup('termsPopup')">
+
+            Terms of Service
+
+        </a>
+
+        <a
+            onclick="openPopup('privacyPopup')">
+
+            Privacy Policy
+
+        </a>
+
+    </div>
 
 </footer>
 
@@ -2597,23 +3396,238 @@ function closePopup(id){
 
 
 /* =====================================================
-   PHOTO LIGHTBOX
+   PHOTO LIGHTBOX + PHOTO SLIDER
 ===================================================== */
+
+let photoList = [];
+
+let currentPhotoIndex = 0;
+
+
+/*
+   Collect every image which already uses
+   openPhoto(this.src).
+*/
+
+function buildPhotoList(){
+
+    const images = document.querySelectorAll(
+        'img[onclick*="openPhoto"]'
+    );
+
+    photoList = [];
+
+    images.forEach(function(img){
+
+        if(img.src){
+
+            photoList.push(img.src);
+
+        }
+
+    });
+
+}
+
 
 function openPhoto(src){
 
-    document.getElementById("largePhoto").src = src;
+    buildPhotoList();
 
-    document.getElementById("photoLightbox").style.display = "flex";
+    currentPhotoIndex =
+        photoList.indexOf(src);
+
+    if(currentPhotoIndex < 0){
+
+        currentPhotoIndex = 0;
+
+        photoList.push(src);
+
+    }
+
+    updatePhoto();
+
+    document.getElementById(
+        "photoLightbox"
+    ).style.display = "flex";
+
+    document.body.style.overflow = "hidden";
+
+}
+
+
+function updatePhoto(){
+
+    if(photoList.length === 0){
+        return;
+    }
+
+    document.getElementById(
+        "largePhoto"
+    ).src = photoList[currentPhotoIndex];
+
+
+    document.getElementById(
+        "photoCounter"
+    ).textContent =
+        (currentPhotoIndex + 1) +
+        " / " +
+        photoList.length;
+
+}
+
+
+function nextPhoto(){
+
+    if(photoList.length === 0){
+        return;
+    }
+
+    currentPhotoIndex++;
+
+    if(currentPhotoIndex >= photoList.length){
+
+        currentPhotoIndex = 0;
+
+    }
+
+    updatePhoto();
+
+}
+
+
+function previousPhoto(){
+
+    if(photoList.length === 0){
+        return;
+    }
+
+    currentPhotoIndex--;
+
+    if(currentPhotoIndex < 0){
+
+        currentPhotoIndex =
+            photoList.length - 1;
+
+    }
+
+    updatePhoto();
 
 }
 
 
 function closePhoto(){
 
-    document.getElementById("photoLightbox").style.display = "none";
+    document.getElementById(
+        "photoLightbox"
+    ).style.display = "none";
+
+    document.body.style.overflow = "auto";
 
 }
+
+
+/* =====================================================
+   PHOTO SWIPE ON MOBILE
+===================================================== */
+
+let touchStartX = 0;
+
+let touchEndX = 0;
+
+
+const photoLightbox =
+    document.getElementById("photoLightbox");
+
+
+photoLightbox.addEventListener(
+    "touchstart",
+    function(event){
+
+        touchStartX =
+            event.changedTouches[0].screenX;
+
+    },
+    {passive:true}
+);
+
+
+photoLightbox.addEventListener(
+    "touchend",
+    function(event){
+
+        touchEndX =
+            event.changedTouches[0].screenX;
+
+        handlePhotoSwipe();
+
+    },
+    {passive:true}
+);
+
+
+function handlePhotoSwipe(){
+
+    const difference =
+        touchEndX - touchStartX;
+
+
+    if(Math.abs(difference) < 50){
+
+        return;
+
+    }
+
+
+    if(difference < 0){
+
+        nextPhoto();
+
+    }
+
+    else{
+
+        previousPhoto();
+
+    }
+
+}
+
+
+/* =====================================================
+   KEYBOARD PHOTO SLIDER
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        const lightbox =
+            document.getElementById(
+                "photoLightbox"
+            );
+
+
+        if(
+            lightbox.style.display === "flex"
+        ){
+
+            if(event.key === "ArrowRight"){
+
+                nextPhoto();
+
+            }
+
+            if(event.key === "ArrowLeft"){
+
+                previousPhoto();
+
+            }
+
+        }
+
+    }
+);
 
 
 /* =====================================================
@@ -3226,6 +4240,84 @@ function backToStaffInformation(){
 
 
 /* =====================================================
+   NIGHT MODE / LIGHT MODE
+===================================================== */
+
+function toggleTheme(){
+
+    document.body.classList.toggle("dark-mode");
+
+
+    const isDark =
+        document.body.classList.contains("dark-mode");
+
+
+    const button =
+        document.getElementById("themeToggle");
+
+
+    if(isDark){
+
+        button.textContent = "☀️";
+
+        localStorage.setItem(
+            "schoolTheme",
+            "dark"
+        );
+
+    }
+
+    else{
+
+        button.textContent = "🌙";
+
+        localStorage.setItem(
+            "schoolTheme",
+            "light"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOAD SAVED THEME
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const savedTheme =
+            localStorage.getItem("schoolTheme");
+
+
+        if(savedTheme === "dark"){
+
+            document.body.classList.add(
+                "dark-mode"
+            );
+
+            document.getElementById(
+                "themeToggle"
+            ).textContent = "☀️";
+
+        }
+
+        else{
+
+            document.getElementById(
+                "themeToggle"
+            ).textContent = "🌙";
+
+        }
+
+    }
+);
+
+
+/* =====================================================
    ESC KEY
 ===================================================== */
 
@@ -3299,6 +4391,33 @@ videos.forEach(function(video){
     });
 
 });
+
+
+/* =====================================================
+   REBUILD PHOTO LIST AFTER DYNAMIC MONTHLY PHOTOS
+===================================================== */
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            event.target &&
+            event.target.tagName === "IMG" &&
+            event.target.getAttribute("onclick") &&
+            event.target.getAttribute("onclick").includes("openPhoto")
+        ){
+
+            setTimeout(function(){
+
+                buildPhotoList();
+
+            },100);
+
+        }
+
+    }
+);
 
 </script>
 
