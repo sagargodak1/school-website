@@ -5115,192 +5115,330 @@ document.addEventListener(
 
 
 
+
 /* =====================================================
-   STUDENT PORTFOLIO
+   STUDENT PORTFOLIO — FINAL A-Z STUDENT DIRECTORY
 ===================================================== */
+const STUDENT_DIRECTORY = [
+    {className:'Nursery', studentId:'NUR001', name:'AAROSH RAI', passwordHash:'6c9c7213e55410c5f2912015856a51d760878adae7d0d4dcf9ddb3f5f06430ee'},
+    {className:'Nursery', studentId:'NUR002', name:'AAVASH PRADHAN', passwordHash:'165a57b0caea08fedd05f1672d4e7f2720f78884f1fc698e3b6c0e0e12eef908'},
+    {className:'Nursery', studentId:'NUR003', name:'AAYAN BHOLAN', passwordHash:'d7049c28b32d82a1de6ade85469a5d7045fd8a33dc1da6dbc094860068daa8ac'},
+    {className:'Nursery', studentId:'NUR004', name:'ALEXA MAHAT', passwordHash:'8548e9a151ee52d385b417ba8edd9d22f4ed5865d1300a8517285867dfdb98c5'},
+    {className:'Nursery', studentId:'NUR005', name:'ALIYAS RAI', passwordHash:'45af8750dbf4a2ea6f3986df96692e0b931498e39a2167b6938c84929fe034d8'},
+    {className:'Nursery', studentId:'NUR006', name:'ARINA KATWAL', passwordHash:'c603e0c6e607f8d77a606aeab404cfb0ef81d807683e2f098727acbc29baaf4a'},
+    {className:'Nursery', studentId:'NUR007', name:'BRAYANA TAMANG', passwordHash:'357e9f4b59574ef32720246819c20c3a84f6422341c77159c22f17e0f21cfaf0'},
+    {className:'Nursery', studentId:'NUR008', name:'CHHANMI RAI', passwordHash:'a2c45961fccc994451e74d01c4c8b7764d40c9fdbca4bb9784b6a7cdd6accc6c'},
+    {className:'Nursery', studentId:'NUR009', name:'DIKSHIT RAI', passwordHash:'2c35d1ac07eec5d0b2ed1c8cc4dfdb70054012e1ed49099444ed43dda8c9ab7c'},
+    {className:'Nursery', studentId:'NUR010', name:'KEREN DEWAN', passwordHash:'f10d54560be9e24ae604f812154522482fd766ed050bb412b9f4f3be714461d9'},
+    {className:'Nursery', studentId:'NUR011', name:'KRIPA LIMBU', passwordHash:'d9fc92222ad8324b7ff8faa2683493af84e90166db5666e420c8d2fd0535b5e4'},
+    {className:'Nursery', studentId:'NUR012', name:'NAYUHANGMA RAI', passwordHash:'cee5c70b327772ac13b2f27714dbd08954678c5d12ebc6dc7daf5f18198ff13b'},
+    {className:'Nursery', studentId:'NUR013', name:'NEIZAN RAI', passwordHash:'182a1c1c75535a868965a2aa5e6d86ba8eabd8d63a7b33f92e47448a6c4d22f7'},
+    {className:'Nursery', studentId:'NUR014', name:'NIWAMA RAI', passwordHash:'9209c5aefa65b778cf2afc9dd1291c25bf27da47839c82a37f557eb36da05e81'},
+    {className:'Nursery', studentId:'NUR015', name:'NUHANG RAI', passwordHash:'ed901bcab49c26a943ed9fbf2f9edfa783dd776255447c331d71a37697d87d06'},
+    {className:'Nursery', studentId:'NUR016', name:'NUNGNIMA YAMPHU RAI', passwordHash:'74328be2effaddade317e5f7d37a69289f96c07d8202c5bfc3e42fe5ee24be35'},
+    {className:'Nursery', studentId:'NUR017', name:'PRAGYA ACHARYA', passwordHash:'f193b0a671b0d48c7fecd84b7834f33f84cc624cd60cad149fbc23cfcdfe4cc1'},
+    {className:'Nursery', studentId:'NUR018', name:'PRENA RAI', passwordHash:'143ab47ac620b36b498ff728b15489bd65114c37423c53912fc2457329fdbf32'},
+    {className:'Nursery', studentId:'NUR019', name:'PRIYANSH RAI', passwordHash:'2616b6421cc184c9cbceaef2ed0e1c5729c6662c66d82374892880a68de1cd19'},
+    {className:'Nursery', studentId:'NUR020', name:'REYYAN RAI', passwordHash:'573b8b4400c56c46150666389def271cfdc921a35965d26a8af2fceb3e1c11ee'},
+    {className:'Nursery', studentId:'NUR021', name:'RUHAMA JABEGU', passwordHash:'74c14137fb29f7a2bb184825b113febe7d96a62bff0f31e51280de65a1afbfc2'},
+    {className:'Nursery', studentId:'NUR022', name:'SAIRA RAI', passwordHash:'f653836133927651d80e8d411643bbbd68c85fe76d80d6d1d19c155c6b3a04b3'},
+    {className:'Nursery', studentId:'NUR023', name:'SANGAM RAI', passwordHash:'89b49888bf6130e2c70835769c205d313be73536c5dec44c70ec1f08559df3d3'},
+    {className:'Nursery', studentId:'NUR024', name:'SAPHIRA RAI', passwordHash:'9af3c3ad96ae1e65192a621f98adf15c2031adf9b0838867855d77816900d6e8'},
+    {className:'Nursery', studentId:'NUR025', name:'SARA LIMBU', passwordHash:'08955e71062b8a159de4e42ce9ce54b4770313d2e9d1e0c83b3692d4e522ecfc'},
+    {className:'Nursery', studentId:'NUR026', name:'SHREYANG RAI', passwordHash:'349161fb2914b13cc194d8a72e9b6877a25f5032cea385fa7b60395b48d3ef45'},
+    {className:'Nursery', studentId:'NUR027', name:'SUYEN LIMBU', passwordHash:'ab0a43180840ea0371576b5d00e94dce0e701fed8bc830da755e2b141223da58'},
+    {className:'Nursery', studentId:'NUR028', name:'SWARNA RAI', passwordHash:'f29238e0a890fdc0cfc2f6686cd84b61ddd9b41d902482c4c0222a9526011269'},
+    {className:'LKG', studentId:'LKG001', name:'ADITY YONTIMCHHA CHAMBLING RAI', passwordHash:'c26e22769960d46fc60c03ad2b54eae33bd6ffbbf87f30b8fa962aa550961f52'},
+    {className:'LKG', studentId:'LKG002', name:'JENI LIMBU', passwordHash:'72288529b1311b6aa961deb54904c7f3ac7da6fa624a093d1a633c3ebb9d3910'},
+    {className:'LKG', studentId:'LKG003', name:'KABYA RIMAL', passwordHash:'1b15f0ca5dfd7fc3799834e2cdb3d1b222c0cd95c2a84d6779493c8b9c9141ce'},
+    {className:'LKG', studentId:'LKG004', name:'LADIPMA RAI', passwordHash:'f7124bd82f47a2cdf88b72397326a43d6840f3a2294bdf21272a0f4420c312c4'},
+    {className:'LKG', studentId:'LKG005', name:'NISHANT DHAKAL', passwordHash:'5360c1a0f5e17e7630dd2c36e7b5255fff320a341a17f8880313cea98268df5d'},
+    {className:'LKG', studentId:'LKG006', name:'PHUNGMA LIMBU', passwordHash:'315b5b0bc0fd17580849fbe223fc80722964642bdcbdb1dbff687b2932ec13d5'},
+    {className:'LKG', studentId:'LKG007', name:'PRIYANSHA LIMBU', passwordHash:'1ccd8f441034cd339fb64c0bbd40f5585dcf9212b273f6494e79da7cf81f53a9'},
+    {className:'LKG', studentId:'LKG008', name:'SAIME SUNUWAR', passwordHash:'1d04782d73d72a7cb6182496eff4087ed72881cbd2aa72bf518b81fa6deb9edf'},
+    {className:'LKG', studentId:'LKG009', name:'SAYAHANG RAI', passwordHash:'8ccf0417125c7801b4aade6a4b411d9dc5c24222246ab742ad3b643517ffb22f'},
+    {className:'LKG', studentId:'LKG010', name:'SAYANSH KHAWAS', passwordHash:'b3bca8f57c81cb0e0de6bcd8f2ffb8542af19f9ab40056d386438b6178089219'},
+    {className:'LKG', studentId:'LKG011', name:'SEJASHREE KARKI', passwordHash:'b0760371d7ebb9219f175029bd5b7ce29196dff2fc460c1d916af2b8ee508f24'},
+    {className:'LKG', studentId:'LKG012', name:'SEMIN LAPCHA', passwordHash:'3775184aa8d87164ff9689d8cb27297ad038d8fe1e3c2edc8327eb9c948eea54'},
+    {className:'LKG', studentId:'LKG013', name:'SHALVI DAHAL', passwordHash:'a96ffb7f069795897933e556785f7ff1f6083960aaa6b175e19e377796571b79'},
+    {className:'LKG', studentId:'LKG014', name:'YADAH RAI', passwordHash:'67de0a4547832b43151cb39007625a504b4d289a1642df3a201176a3ddf6b969'},
+    {className:'UKG', studentId:'UKG001', name:'AASHIK PRADHAN', passwordHash:'0699823d4b424761d7f9ff57f9b3ece8308c54b8081605673acc7c06a0d8c031'},
+    {className:'UKG', studentId:'UKG002', name:'ALISH RAI', passwordHash:'e8d8fdaca3fa46e73dc895aca2cd5a9cf1e6a91db9f8403344632f227de9179f'},
+    {className:'UKG', studentId:'UKG003', name:'AMEJAN PRADHAN', passwordHash:'abc3e250e705fadf26fd3b3a5eaf59a566f361a3ecdb44241492132c090fd81c'},
+    {className:'UKG', studentId:'UKG004', name:'ANUP DHAKAL', passwordHash:'d8e49ef15e15a94dc55014e017fb3aa30c748fb9b5b51dc1a2f74652395380c7'},
+    {className:'UKG', studentId:'UKG005', name:'ENI CHAMBLING RAI', passwordHash:'dc55f9a83102c5565f3c81c19f2e68c9916e367116b16607b7c38bf6af2c6481'},
+    {className:'UKG', studentId:'UKG006', name:'ETHEN LAYO MAGAR', passwordHash:'f59c7fe475bed52c5c311c1dbd177d891bf92c6a8b155f1700890a0cd3657bbb'},
+    {className:'UKG', studentId:'UKG007', name:'GRISHAN RAI', passwordHash:'e9174f501867dbe3c4609b842a1ebf812718fca287689d3b34238ce4491f6822'},
+    {className:'UKG', studentId:'UKG008', name:'KAUSAL RAI', passwordHash:'c38d28a3c0cbf16989c9d5a9524cbfbd6285500c24f0192dfa07aed9e69ca829'},
+    {className:'UKG', studentId:'UKG009', name:'LAXMI RAI', passwordHash:'a671448afd4254e7fd23ef59206ed03a6a33e75a561bbcd084c9352aa89db11c'},
+    {className:'UKG', studentId:'UKG010', name:'MUKSAM LINGDEN', passwordHash:'322d7918dff2f626c24c36dd3f0d63a2cbbb96443f0c6351f244b8a73bf585a1'},
+    {className:'UKG', studentId:'UKG011', name:'NAYANSHI RAI', passwordHash:'56e0d3fa81dc398e5cb9f0a4e73a4cbeecc00deb6ffe6217c2b32b6fca901d48'},
+    {className:'UKG', studentId:'UKG012', name:'PRISKILA RAI', passwordHash:'c8899ce79100247f2eca1e25c643832e8837e65727709061e547569d8dfc8b89'},
+    {className:'UKG', studentId:'UKG013', name:'ROJINA PRADHAN', passwordHash:'ba68c15d3c7461cc2aa654270b018edbe32e64d298351513c66e34b257d98dea'},
+    {className:'UKG', studentId:'UKG014', name:'SANGMU SHERPA', passwordHash:'f3a4755b50752c86ec2d813989f23e248bc9d054f985599feee2759367b38530'},
+    {className:'UKG', studentId:'UKG015', name:'SUMNIMA RAI', passwordHash:'dcee3f3a660c32ddf9cb9a9e9c33d07c09d01136c192e3d3ab8f52e617836016'},
+    {className:'Class 1', studentId:'G1001', name:'AARIYA RAI', passwordHash:'971c76dc1e652ce2e27772428a6085ae424b4d329762c9cad5ac5f4a48edd82d'},
+    {className:'Class 1', studentId:'G1002', name:'ABARAN TIMSINA', passwordHash:'5cbd175dce17c1c24de64c681d9bb4da4749c5065c770f9784da6a18ea82ac3c'},
+    {className:'Class 1', studentId:'G1003', name:'ANUPAM RAI', passwordHash:'50e7db9161020ddd351b5d6e837a45478e8814620218c754253cf3318e4bda7f'},
+    {className:'Class 1', studentId:'G1004', name:'ARJU SINJALI', passwordHash:'8deff57c619964f1f1c3a35ee87ae98367bcf1cc273381184d7f0abb7782f7fb'},
+    {className:'Class 1', studentId:'G1005', name:'DANIYEL RAI', passwordHash:'75ef33eedd0daa3e7b30d9226ae50b8f5b731d5fb93200aec06eb5cc87f20786'},
+    {className:'Class 1', studentId:'G1006', name:'DIPSHIKA PRADHAN', passwordHash:'25abb9cfe20fcecec15ade3a714c88570b5991fc7b6d78865d962eca1f027cca'},
+    {className:'Class 1', studentId:'G1007', name:'HIMANSHI RAI', passwordHash:'331fbf59554a16c496ea7680a2533d2575ae30fb3845327eabb0df910c913f38'},
+    {className:'Class 1', studentId:'G1008', name:'JENNYFOR ACHARYA', passwordHash:'f491e59a4c2eb28fae7897593abfabf6b2b73313f729a23182e686d187c463e7'},
+    {className:'Class 1', studentId:'G1009', name:'LIYANA RAI', passwordHash:'befea71ef1dbacd6f310bd936f0308e0a3ff1ca3f8ff80a648c2092c4574d59d'},
+    {className:'Class 1', studentId:'G1010', name:'MERCY RAI', passwordHash:'a78eac27f5cf95d57ed2a471eb288fcd70a18b3a8599394d96f6be6796fd6585'},
+    {className:'Class 1', studentId:'G1011', name:'PRINCESS RAI', passwordHash:'c468f835aae1c4d54eaec0c3758bfed29786ef101fd17bf39824c2f13ac25b9a'},
+    {className:'Class 1', studentId:'G1012', name:'PRINJAL RAI', passwordHash:'04e66d56faf1ee57eb19061245b130d76d7a1d5f50f11b2fc2f3eb129a6cbe7a'},
+    {className:'Class 1', studentId:'G1013', name:'PRITAM RAI', passwordHash:'f63582fa05efd724c6997b38f51394e5ef583cf73fd956d9e8223835c30e600f'},
+    {className:'Class 1', studentId:'G1014', name:'PRIYANSHI ACHARYA', passwordHash:'4c6cff65c3399ba4426dba08eb73d1b0d0493b2ec13a559d872e0a8130763ec0'},
+    {className:'Class 1', studentId:'G1015', name:'RHYDAM RAI', passwordHash:'1b2b4e0c3f6bee87c66739902155ee65d70bfe7a2bac4e302ab6c114a9cfb1c1'},
+    {className:'Class 1', studentId:'G1016', name:'RIDAM GHALE', passwordHash:'0857ec1203be3b83c7ce6dd6eb78870e09df79ec3f4055349b7d8559da03fb3f'},
+    {className:'Class 1', studentId:'G1017', name:'SANGHE TAMANG', passwordHash:'04f9eff6bdb671db1ec55da5c92f16c54a78342807461dfc4625b7fb5fedb80e'},
+    {className:'Class 1', studentId:'G1018', name:'SEWAHANG RAI', passwordHash:'fba090a81674e6bf9fb063759c5ef8972fe8d2591044c588a440a820c6ae2e6b'},
+    {className:'Class 1', studentId:'G1019', name:'SUJIN RAI', passwordHash:'0271f83b57a46c6dda773980fa29157f8a66bc6e8e0e33157e1c4f0f914f5897'},
+    {className:'Class 1', studentId:'G1020', name:'UMANG RAI', passwordHash:'ea5c953011d069306e929f31319999d41c8e677ae8c0ce6a40ae08e57ada076d'},
+    {className:'Class 1', studentId:'G1021', name:'YUMINSA RAI', passwordHash:'27cd833a821bcedcd35aa7cb60d1cd47a3a97290f0baf2055a7a43ab6801bfba'},
+    {className:'Class 2', studentId:'G2001', name:'AAROSH LAPCHA', passwordHash:'0cdfe8adfa6542db951159f3dc831d4aa767a65ea17a8dd060f50b40c2e2f3e6'},
+    {className:'Class 2', studentId:'G2002', name:'ABISHNA TAMANG', passwordHash:'a706e539b92d559470de595556415e73f392a8185853734d71564c7285fe055a'},
+    {className:'Class 2', studentId:'G2003', name:'ANJAL RAI', passwordHash:'0e665790fbb814c7362bb2e51d079a3048a0af0cd62a67d72c8ab6fe85a6ac05'},
+    {className:'Class 2', studentId:'G2004', name:'ELEKSA RAI', passwordHash:'dced0522eb499be59c95555966aaafea8eef5abd2d260cf587fe007e76f19da9'},
+    {className:'Class 2', studentId:'G2005', name:'GRISH ACHARYA', passwordHash:'83ac78fd49fed61b27bd80848cb432820e4b316a4c3be92a2188b786761e03c1'},
+    {className:'Class 2', studentId:'G2006', name:'IMAN TAMANG', passwordHash:'4ac6191d6812b9b9802bd398516d91e6789652a572f509ba37f0aef40964297b'},
+    {className:'Class 2', studentId:'G2007', name:'JUSAN LIMBU', passwordHash:'2efe87e1c6ea0b82ab3da83abf93ceca674589a54061973be12547dbe1cc462e'},
+    {className:'Class 2', studentId:'G2008', name:'KAYARA TAMANG', passwordHash:'ca53878f47c9178eadcf698069772889c851a466203d713ec66632e59d7a2dd4'},
+    {className:'Class 2', studentId:'G2009', name:'MIHANG RAI', passwordHash:'55fab4bb112a887d68f51686442780696fdf2a209ca784dc67ef943d5bf2723b'},
+    {className:'Class 2', studentId:'G2010', name:'NIHANG RAI', passwordHash:'5dbd73091a353d1682e6c89ea37b08f752ba4e39ae6b45ee84abe2a1777e1f0e'},
+    {className:'Class 2', studentId:'G2011', name:'ROHINA PRADHAN', passwordHash:'e305362af03021220e24667a86b31d1e83b28f1bb606e4eb18217c45e9902dee'},
+    {className:'Class 2', studentId:'G2012', name:'SAMRIDDHI RAI', passwordHash:'a2b41a89b747f80d9e31e7014243a3b827499237f3ceac2b9b813ee9949d1c0f'},
+    {className:'Class 2', studentId:'G2013', name:'SAMYOG RAI', passwordHash:'d02f556c3a8f469a2e13819d7e4e21987899a4a14b1e09438dd641db4acd5e9c'},
+    {className:'Class 2', studentId:'G2014', name:'SANCHI TAMANG', passwordHash:'d12d94b557b0188827c82dec7c97f9531609aef1eacf8cacf09bccfeb9c12d60'},
+    {className:'Class 2', studentId:'G2015', name:'SANKENMA RAI A', passwordHash:'d9c15703ac0983d7ec614baa55097b3eb883da6470cbee8bfc17ebae056502d4'},
+    {className:'Class 2', studentId:'G2016', name:'SANKENMA RAI B', passwordHash:'0d08aa5df1d8701a9ab2e47bc1781646997adb64af9a165862bfcd3d1610d450'},
+    {className:'Class 2', studentId:'G2017', name:'SPARSH RAI', passwordHash:'86fe6ac4286ea1a8c53442d395d5f5ae37b2295a29c552f1765939340ea8d898'},
+    {className:'Class 2', studentId:'G2018', name:'YAMIMA RAI', passwordHash:'4544e5f862b1d4933968b5ceb5340f01730425bc5ee518cc71f8c6575263916d'},
+    {className:'Class 3', studentId:'G3001', name:'ALJINA TAMANG', passwordHash:'a20153052b7355d4989000a9347211594f2a5b83bd224609bb3fcdcd9f8f9881'},
+    {className:'Class 3', studentId:'G3002', name:'APRINA RAI', passwordHash:'e3c7c65e0dd9843b81b7488a6f48d636a0f106f4b2c47b521a630960cb708ed8'},
+    {className:'Class 3', studentId:'G3003', name:'INSHIKA RAI', passwordHash:'64aa20098c707be0c3f7c00fe8327ecbd4cc9b5430f3dc9e2aa11fe96ebbac85'},
+    {className:'Class 3', studentId:'G3004', name:'JELI SINGALI', passwordHash:'ae011f25bf1c2b6689c0dccff7c49d2d2c0110754704e479f8cc76fa377a8c47'},
+    {className:'Class 3', studentId:'G3005', name:'KABYA RAI', passwordHash:'05e7364ec9a85ed8e46114b50ee566219f9110240fe13eb176cf4255f46ff4e6'},
+    {className:'Class 3', studentId:'G3006', name:'LARISHA RAI', passwordHash:'7bfa716374a67f16659076a21920ff0d5c2b2c1bf441c3b27bd4c69da862d502'},
+    {className:'Class 3', studentId:'G3007', name:'MIKSHANA LIMBU', passwordHash:'9f97affb5e62391e08a454640f3f478d60ca73abe2193224bf2ad31ce29949bc'},
+    {className:'Class 3', studentId:'G3008', name:'NAINA RAI', passwordHash:'707a1fbe93a14ca8caf8ef24d7616be318152ca917aa41facd6ef56a1d6f56e8'},
+    {className:'Class 3', studentId:'G3009', name:'PALLABI RAI', passwordHash:'56f7d5b2cb93d3052dfa65e40d55babf5053aa6d8de27aac56fe25390b4e14c7'},
+    {className:'Class 3', studentId:'G3010', name:'PRAKRITI RAI', passwordHash:'37c35454117aff30d2c507aeb51bb79308b1adf68c70990ff314de14f8dfec5d'},
+    {className:'Class 3', studentId:'G3011', name:'PRIYANSI DHAKAL', passwordHash:'6e601de2c2d89e0e940f9232e0aea26811413389d9dda4cdb1992848a061c7d7'},
+    {className:'Class 3', studentId:'G3012', name:'RUMIBUNG RAI', passwordHash:'8c705f8a92a18a505611283cd833a7aa4e709b3115cae63a070cd639f21dcec4'},
+    {className:'Class 3', studentId:'G3013', name:'RUTH MAGAR', passwordHash:'a2c030d2f3943cff23783f47e3d4e01d7cedafba26ce2787c061c7050733ec6c'},
+    {className:'Class 3', studentId:'G3014', name:'SANGIT PRADHAN', passwordHash:'5a2bb71d1b1cd59324c70b3d938579659a5af6040551d111c6af774951b364f5'},
+    {className:'Class 3', studentId:'G3015', name:'SANJAL RAI', passwordHash:'db7615d2772bbde660ca2c40e92a2a955c2ae935820ab323a05500803daa3164'},
+    {className:'Class 3', studentId:'G3016', name:'SOFIYAN GURUNG', passwordHash:'676d55465d4c4e1b9a3b7a7712ca2c8c06e79f6dd4d6e6cfcd902755c2ddd360'},
+    {className:'Class 3', studentId:'G3017', name:'TRIFONESH SHRESTHA', passwordHash:'d065cf0b4a5ac51909107468fa54c0469db1f1b5c2a53d904173cf0dcfe0ace3'},
+    {className:'Class 3', studentId:'G3018', name:'UNIK MAGAR', passwordHash:'6cf4565c86b55f6f7bf5335e00f8353fcee3c8724858d3101d76f4d7d82070e3'},
+    {className:'Class 3', studentId:'G3019', name:'YUNA NEPAL', passwordHash:'99e026f02ea9c1cbbbcb591a957121fd527d384e392920247ef22c70bb73db3a'},
+    {className:'Class 4', studentId:'G4001', name:'AAYAN LIMBU', passwordHash:'c242eafd58e958cb64d85d0b935943d5aecdbd90d63b752076c0640c667e34e4'},
+    {className:'Class 4', studentId:'G4002', name:'ALIPH RAI', passwordHash:'52478bc91b15c342a1e5414103c88244b7dd64bd6ef2bf8aa45db4071ead8587'},
+    {className:'Class 4', studentId:'G4003', name:'ALONE RAI', passwordHash:'c26133e423da597d40eb25054bc84e1c36245ca84b7cad1419744831e2830d2d'},
+    {className:'Class 4', studentId:'G4004', name:'APSAN RAI', passwordHash:'f4f886bc9c0a0fe9459c857456a4b4299bb12739162f2f627128c1c65722b612'},
+    {className:'Class 4', studentId:'G4005', name:'ARIKA KATWAL', passwordHash:'0d2a9dd1c5bf3997a5d4677a289ed21119c2fc141dca576e003a930f65ca46ce'},
+    {className:'Class 4', studentId:'G4006', name:'BIBIDH RAI', passwordHash:'856a58c5283bdd4a3629d3547b40aad61b5e9d38992b88d51a6bcf8cbee7085c'},
+    {className:'Class 4', studentId:'G4007', name:'DIPSHIKA RAI', passwordHash:'6d565b8cc0b4b86670d389b4e5631e5c19f99a11884eb5eb05058b699d736576'},
+    {className:'Class 4', studentId:'G4008', name:'JAYAL LIMBU', passwordHash:'0cb11e4c81ac0c1c4544afc2f277b20ef520abdfda3adf439cde1ab6b4426879'},
+    {className:'Class 4', studentId:'G4009', name:'JESEE SUNUWAR', passwordHash:'e2d2db35ece04e6a5c0071e58d10a632722c4aa4a2750b13321cecbbc5a032db'},
+    {className:'Class 4', studentId:'G4010', name:'KANXAM RAI', passwordHash:'0739598c439fb4afa655f3244b1b2cf855bfc9b0b3f9827525fc1275423090b6'},
+    {className:'Class 4', studentId:'G4011', name:'MARK DEWAN', passwordHash:'edb3e7701e3a783f35b6b41f54dcf8e2f6b84dd119e8d03adc4a17389a536ca9'},
+    {className:'Class 4', studentId:'G4012', name:'NUMAPHUNG RAI', passwordHash:'3e60510b315fb14cd006258376e2e09bd0f2046086c571e63723402556676ad9'},
+    {className:'Class 4', studentId:'G4013', name:'NUMASHA LIMBU', passwordHash:'390c18e5555853312416a3d03b696e6a943865c4f4ce46dff750dc941f3b0fb3'},
+    {className:'Class 4', studentId:'G4014', name:'PRAPTI RAI', passwordHash:'d6e328eada517c217105c64b2f920279e875942486780ec70b9291efc3ff460f'},
+    {className:'Class 4', studentId:'G4015', name:'PRATIK RAI', passwordHash:'89a869373d14f0152734a331a00c4c80dfcb41f695c27c38cb48db4d9099c149'},
+    {className:'Class 4', studentId:'G4016', name:'PRATIT RAI', passwordHash:'3d5a20102d7f3815dbe59e4fd8a58d2304715387d832c114ab23e1ba3bc53b26'},
+    {className:'Class 4', studentId:'G4017', name:'PRINJAL TAMANG', passwordHash:'529fc00c8b26b27465611efa162c7a8ffce6c1524b71a828722a82242954131a'},
+    {className:'Class 4', studentId:'G4018', name:'REHAT RAI', passwordHash:'7bb3e7a69012edf1d5b32d648dc943a549ef45d4e7469e6fdb9e9951c8277a04'},
+    {className:'Class 4', studentId:'G4019', name:'RIDAM RAI', passwordHash:'3bed9fe163895e16580ec88658c652960580cb8c5437f46d2e646de1c869ccaf'},
+    {className:'Class 4', studentId:'G4020', name:'ROHIT RAI', passwordHash:'6923ec5a13e9a433f236fbbb223571b59f6f2fb14518daae10358a6934ba350d'},
+    {className:'Class 4', studentId:'G4021', name:'ROJAN PRADHAN', passwordHash:'319735119a3b4059c5bcc766505f894bd939faadf290156f0bb118df5e92230c'},
+    {className:'Class 4', studentId:'G4022', name:'SAMYAM MISHRA', passwordHash:'63d469ac74e5337fa5c48dd5c702d88d7fbf774f64e4a73aec91572327fd016a'},
+    {className:'Class 4', studentId:'G4023', name:'SANKEN RAI', passwordHash:'11dfb10e72b85ec6b5503a897fccda12a3adece6da2cafdaa7ae2fc8bccbad21'},
+    {className:'Class 4', studentId:'G4024', name:'SAPHIKA TAMANG', passwordHash:'7fdaebc41147fed1d9659e8b06df5d9cd43bc118121cfd50864d906029f9de6f'},
+    {className:'Class 4', studentId:'G4025', name:'SEMBUNG RAI', passwordHash:'c47733b7f071f0b0b71fd6e924ed323e2a3901f0eeb8096c6524d23e621d1164'},
+    {className:'Class 4', studentId:'G4026', name:'SHRESHA MAGAR', passwordHash:'4edcf2dc741efd6dab80ba06f7ae34abc8fd66976daa510d91040aeecf277c47'},
+    {className:'Class 4', studentId:'G4027', name:'SUHANAG RAI', passwordHash:'fa5c1edcbb16605af62a8af7a1411d8a047f09613bf3b308ebdef8dcea261556'},
+    {className:'Class 4', studentId:'G4028', name:'SURAKSHA RAI', passwordHash:'4b356ea54956b9d624f2c904d5c601f8b2fac51652986355be99626ca6c235f8'},
+    {className:'Class 4', studentId:'G4029', name:'SUSAHANG RAI', passwordHash:'b7b6c3b38a3a5916167f9579eaf211a7c4b079e9fbdf9956a7a93a9b1747ad21'},
+    {className:'Class 4', studentId:'G4030', name:'WAYANG RAI', passwordHash:'6f96287dcba6064642a868b24d0ba57387727633eebd348fd075ee6221665e42'},
+    {className:'Class 5', studentId:'G5001', name:'AAYUSH PRADHAN', passwordHash:'ee73b8ecd9bf0bc27e42054737be1f1a7789e9122524e465e9280f8a5bd61b5a'},
+    {className:'Class 5', studentId:'G5002', name:'ABHUSAN TIMSINA', passwordHash:'0e6c6a7663d96ce45b97e56592fe162d46f5333841c4e43455436519a295a37d'},
+    {className:'Class 5', studentId:'G5003', name:'BIHAN SIWA', passwordHash:'75a9a4900a90f1622b119adeaaacd9c27c4743a812bd543a9dd16d85a7657aa2'},
+    {className:'Class 5', studentId:'G5004', name:'INOJ DEWAN', passwordHash:'4a33ef55e2ab771a12ef85dedd61b31f9a7de97a1bbcdc67bd9c496769f26e72'},
+    {className:'Class 5', studentId:'G5005', name:'JUSTINA RAI', passwordHash:'c373a7d4b4b1670db91b99fa63ad6c817b48ccecdb23228329f536eb462c9d6d'},
+    {className:'Class 5', studentId:'G5006', name:'KARINA RAI', passwordHash:'c87de84af40d273cc34be50e71251aac3f90fcdccc1a1ca44ce79e11d53554a9'},
+    {className:'Class 5', studentId:'G5007', name:'MANDIP POUDEL', passwordHash:'df49329d3102aea48d58c852c79d47f7eb386a9ced68f31557e6c3289e4ddd33'},
+    {className:'Class 5', studentId:'G5008', name:'MERIT RAI', passwordHash:'4752b558afaa6d5eea2e15ef87d9587078f517d238c3a7485706e80676b7519c'},
+    {className:'Class 5', studentId:'G5009', name:'MIZON RAI', passwordHash:'6b934b6f630fae503140d1aaad9984f6ab29942ffea81166576d0b804b265a61'},
+    {className:'Class 5', studentId:'G5010', name:'NIHANGMA RAI', passwordHash:'039e16947f4fa62b9c984906cf84cd1a74555eafde27936b35246cfbb98c847a'},
+    {className:'Class 5', studentId:'G5011', name:'NORDEN TAMANG', passwordHash:'b1406007988bf8e33d99f9ef16fa6fa98a6cbc6255e1620c4b2e2e8c0621fff1'},
+    {className:'Class 5', studentId:'G5012', name:'PRAKRITI RAI', passwordHash:'44f708ea8d36de31289f875688043f9097aa384278dfec5596f0a69dc54066b5'},
+    {className:'Class 5', studentId:'G5013', name:'PRISKILA RAI', passwordHash:'e2872089c021a65ed466f5cabecb8d13c0100961dbf88170e98ad38ac914ca04'},
+    {className:'Class 5', studentId:'G5014', name:'RIJAN RAI', passwordHash:'7555611192b85aed9d2bc12f0cc14d2609140ae1095503597462ed89cd277fc4'},
+    {className:'Class 5', studentId:'G5015', name:'RIYAAN RAI', passwordHash:'09a840ae0f0784d2644f4315e0c8b980887efec314ba2017375c9587f8037e58'},
+    {className:'Class 5', studentId:'G5016', name:'ROJAN PRADHAN', passwordHash:'a35eac442f807a1d164dbe1299858c1c53675938a3485b926ef89b87f720abc9'},
+    {className:'Class 5', studentId:'G5017', name:'RUTH RAI', passwordHash:'244255ef149417d841d5b611910a8610f3879a862198e14b5dba87f76665a5e7'},
+    {className:'Class 5', studentId:'G5018', name:'SADIKSHYA ACHARYA', passwordHash:'5b0d6a8f4eab4253675a2648b79a004f85fffee6d2291e652341e7cb91939ea1'},
+    {className:'Class 5', studentId:'G5019', name:'SAMANA KHATIWADA', passwordHash:'8746d69ccaf41e78b7152587a88abe9cf3469d62a85ebed9b7b3061df477bcf4'},
+    {className:'Class 5', studentId:'G5020', name:'SAMUEL RAI', passwordHash:'3fb2aebece4aa84831dfa1cb51cd14cf310df80f206e8020717dd52d3a3b4ccd'},
+    {className:'Class 5', studentId:'G5021', name:'SASHIBUNG RAI', passwordHash:'82aa3f5d4890aa5e1aae6d2bad9222eace0cc7091f5c2ef8fb8b0e5961d98be8'},
+    {className:'Class 5', studentId:'G5022', name:'SEBIKA RAI', passwordHash:'5fb0c2937cf49fef97e52b245d4896d24ac5029ff048a61a49d2601b986f501b'},
+    {className:'Class 5', studentId:'G5023', name:'SUBIN PRADHAN', passwordHash:'eaf0d49bf8182865dc86738e9538933059b0fcec051cc4d228e0f1eb4b8316aa'},
+    {className:'Class 5', studentId:'G5024', name:'SULAV RAI', passwordHash:'22ef34ff4f43870aec255d1d33bacdc80b98682b12003e2015020275ae541d84'}
+];
+
+function getStudentsByClass(className){
+    return STUDENT_DIRECTORY.filter(student => student.className === className);
+}
+
+function getStudentRecord(className, studentId){
+    return STUDENT_DIRECTORY.find(
+        student => student.className === className && student.studentId === studentId
+    ) || null;
+}
 
 function showStudentRolls(className){
-
     document.getElementById("studentClassView").style.display = "none";
-
-    const rollView =
-        document.getElementById("studentRollView");
-
+    const rollView = document.getElementById("studentRollView");
     rollView.style.display = "block";
 
+    const students = getStudentsByClass(className);
+
     let html = `
-        <button
-            class="student-back-btn"
-            onclick="backToStudentClasses()">
-
-            ← Back to Classes
-
-        </button>
-
-        <h2 class="student-portfolio-title">
-            🎓 ${className} - Student Portfolio
-        </h2>
-
+        <button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button>
+        <h2 class="student-portfolio-title">🎓 ${className} - Student Portfolio</h2>
         <div class="student-grid">
     `;
 
-    // Each class has 26 student entries: Name A through Name Z.
-    const studentNames = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
-    studentNames.forEach(function(nameLetter){
-
+    students.forEach(student => {
         html += `
-            <button
-                class="student-roll-btn"
-                onclick="showStudentProfile('${className}', '${nameLetter}')">
-
-                👤 Name ${nameLetter}
-
+            <button class="student-roll-btn"
+                onclick="showStudentProfile('${className}','${student.studentId}')">
+                👤 ${student.name}
             </button>
         `;
-
     });
 
     html += `</div>`;
-
     rollView.innerHTML = html;
 }
 
-
 function backToStudentClasses(){
-
     document.getElementById("studentRollView").style.display = "none";
-
     document.getElementById("studentRollView").innerHTML = "";
-
     document.getElementById("studentClassView").style.display = "grid";
-
 }
-
 
 let pendingStudentClass = "";
-let pendingStudentRoll = null;
+let pendingStudentId = "";
 
-function showStudentProfile(className, rollNo){
+function showStudentProfile(className, studentId){
+    const student = getStudentRecord(className, studentId);
+    if(!student) return;
 
     pendingStudentClass = className;
-    pendingStudentRoll = rollNo;
-    openStudentPassword();
+    pendingStudentId = studentId;
+    openStudentPassword(student);
 }
 
-
-function renderStudentProfile(className, rollNo){
-
+function renderStudentProfile(className, studentId){
     const rollView = document.getElementById("studentRollView");
+    const student = getStudentRecord(className, studentId);
+    if(!student) return;
 
     rollView.style.display = "block";
-
     rollView.innerHTML = `
-        <button
-            class="student-back-btn"
-            onclick="backToStudentClasses()">
-            ← Back to Classes
+        <button class="student-back-btn" onclick="showStudentRolls('${className}')">
+            ← Back to ${className}
         </button>
-
-        <h2 class="student-portfolio-title">
-            🎓 ${className} - Name ${rollNo}
-        </h2>
-
+        <h2 class="student-portfolio-title">🎓 ${student.name}</h2>
         <div class="student-profile">
             <div class="student-profile-icon">👤</div>
-
-            <h3>
-                ${className} - Name ${rollNo}
-            </h3>
-
-            <div class="student-profile-row">
-                <strong>Student Name:</strong>
-                Name ${rollNo}
-            </div>
-
-            <div class="student-profile-row">
-                <strong>Class:</strong>
-                ${className}
-            </div>
-
-            <div class="student-profile-row">
-                <strong>Date of Birth:</strong>
-                To be updated
-            </div>
-
-            <div class="student-profile-row">
-                <strong>Parent / Guardian:</strong>
-                To be updated
-            </div>
-
-            <div class="student-profile-row">
-                <strong>Academic Performance:</strong>
-                To be updated
-            </div>
-
-            <div class="student-profile-row">
-                <strong>Remarks:</strong>
-                To be updated
-            </div>
+            <h3>${student.name}</h3>
+            <div class="student-profile-row"><strong>Student ID:</strong>${student.studentId}</div>
+            <div class="student-profile-row"><strong>Student Name:</strong>${student.name}</div>
+            <div class="student-profile-row"><strong>Class:</strong>${student.className}</div>
+            <div class="student-profile-row"><strong>Date of Birth:</strong>To be updated</div>
+            <div class="student-profile-row"><strong>Parent / Guardian:</strong>To be updated</div>
+            <div class="student-profile-row"><strong>Academic Performance:</strong>To be updated</div>
+            <div class="student-profile-row"><strong>Remarks:</strong>To be updated</div>
         </div>
     `;
 }
 
-
-/* =====================================================
-   STUDENT PORTFOLIO ACCESS GATE
-   IMPORTANT: This is a client-side gate, not a replacement for
-   Firebase Authentication / server-side authorization.
-===================================================== */
-const STUDENT_ACCESS_HASH = "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5";
 let studentAccessFailures = 0;
 let studentLockUntil = 0;
 
-async function sha256Hex(text){
-    const bytes = new TextEncoder().encode(text);
+async function sha256Hex(value){
+    const bytes = new TextEncoder().encode(value);
     const digest = await crypto.subtle.digest("SHA-256", bytes);
-    return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,"0")).join("");
+    return Array.from(new Uint8Array(digest))
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
 }
 
-function openStudentPassword(){
+function openStudentPassword(student){
     const popup = document.getElementById("studentPasswordPopup");
     const input = document.getElementById("studentPasswordInput");
     const error = document.getElementById("studentPasswordError");
-    if(!popup || !input || !error){
-        console.error("Student password popup elements are missing.");
-        return;
-    }
+
+    if(!popup || !input || !error) return;
+
+    const heading = popup.querySelector("h2");
+    const hint = popup.querySelector("p");
+
+    if(heading) heading.textContent = "🔐 Student Login";
+    if(hint) hint.textContent =
+        `${student.name} (${student.studentId}) — enter this student's password.`;
+
     popup.style.display = "flex";
     input.value = "";
     error.style.display = "none";
     document.body.style.overflow = "hidden";
-    setTimeout(()=>input.focus(),100);
+    setTimeout(() => input.focus(), 100);
 }
 
 async function checkStudentPassword(){
     const input = document.getElementById("studentPasswordInput");
     const error = document.getElementById("studentPasswordError");
     const popup = document.getElementById("studentPasswordPopup");
+
     if(!input || !error || !popup) return;
 
     const now = Date.now();
     if(now < studentLockUntil){
-        const seconds = Math.ceil((studentLockUntil-now)/1000);
+        const seconds = Math.ceil((studentLockUntil - now) / 1000);
         error.textContent = `⏳ Too many attempts. Try again in ${seconds} seconds.`;
         error.style.display = "block";
         return;
     }
 
+    const student = STUDENT_DIRECTORY.find(s => s.studentId === pendingStudentId);
+    if(!student){
+        error.textContent = "⚠️ Student login is not configured.";
+        error.style.display = "block";
+        return;
+    }
+
     const candidateHash = await sha256Hex(input.value.trim());
-    if(candidateHash !== STUDENT_ACCESS_HASH){
-        studentAccessFailures += 1;
+
+    if(candidateHash !== student.passwordHash){
+        studentAccessFailures++;
+
         if(studentAccessFailures >= 5){
             studentLockUntil = Date.now() + 30000;
             studentAccessFailures = 0;
-            error.textContent = "⏳ Too many incorrect attempts. Access is locked for 30 seconds.";
+            error.textContent =
+                "⏳ Too many incorrect attempts. Access is locked for 30 seconds.";
         }else{
-            error.textContent = `❌ Incorrect password. ${5-studentAccessFailures} attempt(s) remaining before a short lock.`;
+            error.textContent =
+                `❌ Incorrect password. ${5 - studentAccessFailures} attempt(s) remaining.`;
         }
+
         error.style.display = "block";
         input.value = "";
         input.focus();
@@ -5312,9 +5450,8 @@ async function checkStudentPassword(){
     popup.style.display = "none";
     input.value = "";
 
-    if(pendingStudentClass && pendingStudentRoll !== null){
-        renderStudentProfile(pendingStudentClass, pendingStudentRoll);
-    }
+    renderStudentProfile(pendingStudentClass, pendingStudentId);
+
     const portfolioPopup = document.getElementById("studentPortfolioPopup");
     if(portfolioPopup) portfolioPopup.style.display = "block";
     document.body.style.overflow = "hidden";
@@ -5325,6 +5462,7 @@ function closeStudentPassword(){
     if(popup) popup.style.display = "none";
     document.body.style.overflow = "auto";
 }
+
 
 /* =====================================================
    MONTHLY REPORT
@@ -6185,6 +6323,8 @@ window.addEventListener('resize',()=>{
     if(window.innerWidth>768) closeMobileMenu();
 });
 </script>
+
+
 
 </body>
 
