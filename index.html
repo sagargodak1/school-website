@@ -215,6 +215,254 @@ nav a:hover{
 }
 
 
+
+/* =========================================================
+   STUDENT PORTFOLIO
+========================================================= */
+
+.student-portfolio-container{
+    text-align:center;
+    padding:35px 10px;
+    background:linear-gradient(135deg,#eef5ff,#ffffff);
+}
+
+.student-portfolio-btn{
+    border:none;
+    background:linear-gradient(135deg,#123c69,#1976b8);
+    color:white;
+    padding:16px 38px;
+    border-radius:30px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,.22);
+    transition:.3s;
+}
+
+.student-portfolio-btn:hover{
+    transform:translateY(-3px) scale(1.03);
+    background:linear-gradient(135deg,#0b3157,#125f96);
+}
+
+.student-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.student-class-btn,
+.student-roll-btn{
+    border:none;
+    background:linear-gradient(135deg,#123c69,#1976b8);
+    color:white;
+    padding:16px 12px;
+    border-radius:15px;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 5px 12px rgba(0,0,0,.18);
+    transition:.3s;
+}
+
+.student-class-btn:hover,
+.student-roll-btn:hover{
+    transform:translateY(-4px) scale(1.03);
+}
+
+.student-back-btn{
+    border:none;
+    background:#ffd166;
+    color:#17202a;
+    padding:11px 25px;
+    border-radius:25px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-bottom:25px;
+}
+
+.student-back-btn:hover{
+    background:#f5bd35;
+}
+
+.student-portfolio-title{
+    text-align:center;
+    color:#123c69;
+    font-size:28px;
+    margin-bottom:25px;
+}
+
+.student-profile{
+    max-width:650px;
+    margin:0 auto;
+    text-align:center;
+    background:#f5f9fd;
+    border:1px solid #dce6ef;
+    border-radius:18px;
+    padding:25px;
+    line-height:1.9;
+}
+
+.student-profile-icon{
+    font-size:70px;
+    margin-bottom:10px;
+}
+
+.student-profile h3{
+    color:#123c69;
+    font-size:24px;
+    margin-bottom:12px;
+}
+
+.student-profile-row{
+    text-align:left;
+    background:white;
+    border:1px solid #dce6ef;
+    border-radius:10px;
+    padding:12px 15px;
+    margin-top:10px;
+}
+
+.student-profile-row strong{
+    color:#123c69;
+}
+
+body.dark-mode .student-portfolio-container{
+    background:#151f29;
+}
+
+body.dark-mode .student-portfolio-title{
+    color:#8ecbff;
+}
+
+body.dark-mode .student-profile{
+    background:#22313f;
+    border-color:#3a4e61;
+}
+
+body.dark-mode .student-profile-row{
+    background:#1d2935;
+    border-color:#34485b;
+    color:#eeeeee;
+}
+
+body.dark-mode .student-profile-row strong{
+    color:#8ecbff;
+}
+
+@media(max-width:900px){
+    .student-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:600px){
+    .student-grid{
+        grid-template-columns:1fr;
+    }
+
+    .student-portfolio-btn{
+        width:95%;
+        max-width:400px;
+    }
+}
+
+/* =========================================================
+   STUDENT PASSWORD POPUP
+========================================================= */
+
+.student-password-popup{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    background:rgba(0,0,0,.78);
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.student-password-box{
+    width:min(92%,400px);
+    background:white;
+    padding:30px;
+    border-radius:18px;
+    text-align:center;
+    box-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+
+.student-password-box h2{
+    color:#123c69;
+    margin-bottom:10px;
+}
+
+.student-password-box > p{
+    margin:15px 0;
+}
+
+#studentPasswordInput{
+    width:100%;
+    padding:12px;
+    font-size:16px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    outline:none;
+}
+
+#studentPasswordInput:focus{
+    border-color:#1976b8;
+    box-shadow:0 0 0 3px rgba(25,118,184,.12);
+}
+
+.student-password-actions{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:15px;
+    flex-wrap:wrap;
+}
+
+.student-password-actions button{
+    border:none;
+    border-radius:8px;
+    padding:11px 22px;
+    color:white;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.student-password-actions button:first-child{
+    background:#007bff;
+}
+
+.student-password-actions button:last-child{
+    background:#777;
+}
+
+.student-password-error{
+    display:none;
+    color:red;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+body.dark-mode .student-password-box{
+    background:#22313f;
+    color:#eee;
+}
+
+body.dark-mode .student-password-box h2{
+    color:#8ecbff;
+}
+
+body.dark-mode #studentPasswordInput{
+    background:#1d2935;
+    color:#fff;
+    border-color:#526579;
+}
+
+
 /* =========================
    COMMON SECTION
 ========================= */
@@ -1878,12 +2126,845 @@ body.dark-mode .popup .close-btn{
 
 }
 
+
+/* =========================================================
+   PROFESSIONAL DESIGN ENHANCEMENT
+   VISUAL ONLY — EXISTING CONTENT/DATA UNCHANGED
+========================================================= */
+
+:root{
+    --pro-primary:#123c69;
+    --pro-secondary:#1976b8;
+    --pro-accent:#f4b942;
+    --pro-bg:#f5f8fc;
+    --pro-card:#ffffff;
+    --pro-text:#17202a;
+    --pro-muted:#66788a;
+    --pro-shadow:0 12px 35px rgba(18,60,105,.12);
+    --pro-radius:18px;
+}
+
+body{
+    background:var(--pro-bg);
+    color:var(--pro-text);
+    line-height:1.65;
+    letter-spacing:.1px;
+}
+
+header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    box-shadow:0 4px 22px rgba(0,0,0,.10);
+}
+
+nav a{
+    transition:all .25s ease;
+    position:relative;
+}
+
+nav a::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:-5px;
+    width:0;
+    height:2px;
+    background:var(--pro-accent);
+    transform:translateX(-50%);
+    transition:width .25s ease;
+}
+
+nav a:hover::after{
+    width:70%;
+}
+
+section{
+    scroll-margin-top:95px;
+}
+
+.media-card,
+.staff-card,
+.explore-card,
+.info-card,
+.card{
+    border-radius:var(--pro-radius);
+    box-shadow:var(--pro-shadow);
+    transition:transform .3s ease, box-shadow .3s ease;
+    overflow:hidden;
+}
+
+.media-card:hover,
+.staff-card:hover,
+.explore-card:hover,
+.info-card:hover,
+.card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 18px 42px rgba(18,60,105,.18);
+}
+
+.media-card img{
+    transition:transform .45s ease;
+}
+
+.media-card:hover img{
+    transform:scale(1.035);
+}
+
+button,
+.btn,
+a.button{
+    transition:transform .25s ease, box-shadow .25s ease, filter .25s ease;
+}
+
+button:hover,
+.btn:hover,
+a.button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(0,0,0,.14);
+}
+
+.hero{
+    position:relative;
+    overflow:hidden;
+}
+
+.hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        90deg,
+        rgba(7,29,52,.60),
+        rgba(7,29,52,.20),
+        rgba(7,29,52,.08)
+    );
+    pointer-events:none;
+}
+
+.hero > *{
+    position:relative;
+    z-index:1;
+}
+
+.popup{
+    backdrop-filter:blur(7px);
+    -webkit-backdrop-filter:blur(7px);
+}
+
+.popup-box{
+    border-radius:22px !important;
+    box-shadow:0 25px 70px rgba(0,0,0,.25) !important;
+    border:1px solid rgba(255,255,255,.35);
+}
+
+footer{
+    box-shadow:0 -8px 30px rgba(0,0,0,.08);
+}
+
+.footer-links a{
+    transition:color .25s ease;
+}
+
+.footer-links a:hover{
+    color:var(--pro-accent);
+}
+
+.student-portfolio-container{
+    position:relative;
+    padding:42px 15px;
+    background:
+        radial-gradient(circle at 10% 20%,rgba(25,118,184,.10),transparent 30%),
+        radial-gradient(circle at 90% 80%,rgba(244,185,66,.12),transparent 30%),
+        linear-gradient(135deg,#f8fbff,#eef5fb);
+}
+
+.student-portfolio-btn{
+    min-width:260px;
+    letter-spacing:.4px;
+}
+
+.student-grid{
+    gap:22px;
+}
+
+.student-class-btn,
+.student-roll-btn{
+    min-height:58px;
+}
+
+.student-profile{
+    box-shadow:0 14px 38px rgba(18,60,105,.12);
+}
+
+@media(max-width:768px){
+    header{
+        position:relative;
+    }
+
+    .hero::after{
+        background:linear-gradient(
+            180deg,
+            rgba(7,29,52,.48),
+            rgba(7,29,52,.18)
+        );
+    }
+
+    .media-card,
+    .staff-card,
+    .explore-card,
+    .info-card,
+    .card{
+        transform:none !important;
+    }
+
+    .student-portfolio-container{
+        padding:32px 12px;
+    }
+}
+
+@media(prefers-reduced-motion:reduce){
+    *,
+    *::before,
+    *::after{
+        scroll-behavior:auto !important;
+        transition:none !important;
+        animation:none !important;
+    }
+}
+
+
+/* =========================================================
+   ADMISSION FORM - NEW FEATURE ONLY
+========================================================= */
+.admission-section{padding:42px 15px;text-align:center;background:linear-gradient(135deg,#f8fbff,#eef5fb)}
+.admission-open-btn{border:0;padding:16px 36px;border-radius:30px;background:linear-gradient(135deg,#123c69,#1976b8);color:#fff;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 8px 22px rgba(18,60,105,.22);transition:.25s}
+.admission-open-btn:hover{transform:translateY(-3px);filter:brightness(1.05)}
+.admission-form-box{max-width:900px;width:94%;margin:20px auto;background:#fff;border-radius:22px;padding:30px;box-shadow:0 20px 60px rgba(18,60,105,.16)}
+.admission-form-title{text-align:center;color:#123c69;margin-bottom:8px}
+.admission-form-subtitle{text-align:center;color:#66788a;margin-bottom:25px}
+.admission-form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.admission-field{text-align:left}.admission-field.full{grid-column:1/-1}
+.admission-field label{display:block;margin-bottom:6px;color:#123c69;font-weight:700}
+.admission-field input,.admission-field select,.admission-field textarea{width:100%;padding:12px 14px;border:1px solid #ccd8e4;border-radius:10px;outline:none;font:inherit;background:#fff;box-sizing:border-box}
+.admission-field textarea{min-height:110px;resize:vertical}
+.admission-field input:focus,.admission-field select:focus,.admission-field textarea:focus{border-color:#1976b8;box-shadow:0 0 0 3px rgba(25,118,184,.10)}
+.admission-submit-btn{display:block;width:100%;margin-top:24px;border:0;border-radius:12px;padding:15px;background:linear-gradient(135deg,#123c69,#1976b8);color:#fff;font-size:17px;font-weight:700;cursor:pointer}
+.admission-note{margin-top:12px;font-size:13px;color:#66788a;text-align:center}
+@media(max-width:650px){.admission-form-grid{grid-template-columns:1fr}.admission-field.full{grid-column:auto}.admission-form-box{padding:20px 15px}}
+body.dark-mode .admission-section{background:#151f29}body.dark-mode .admission-form-box{background:#22313f}body.dark-mode .admission-form-title,body.dark-mode .admission-field label{color:#8ecbff}body.dark-mode .admission-field input,body.dark-mode .admission-field select,body.dark-mode .admission-field textarea{background:#1d2935;color:#fff;border-color:#405467}
+
+
+
+/* =========================
+   SCHOOL REVIEWS / RATINGS
+========================= */
+.review-section{
+    background:linear-gradient(135deg,#f8fbff,#eef6ff);
+    padding:42px 6%;
+}
+.review-section h2{font-size:28px;margin-bottom:18px;}
+.review-section>p{font-size:14px!important;max-width:650px!important;margin:0 auto 18px!important;}
+.review-summary{
+    max-width:720px;
+    margin:0 auto 20px;
+    display:grid;
+    grid-template-columns:170px 1fr;
+    gap:28px;
+    align-items:center;
+    background:#fff;
+    border:1px solid #dce6ef;
+    border-radius:22px;
+    padding:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+.review-average{ text-align:center; }
+.review-average-number{font-size:38px;font-weight:800;color:#123c69;line-height:1;}
+.review-stars-display{color:#f5b301;font-size:22px;letter-spacing:2px;margin:8px 0;}
+.review-count{color:#667085;font-size:14px;}
+.review-form{
+    max-width:720px; margin:0 auto 24px; background:#fff; padding:20px;
+    border:1px solid #dce6ef; border-radius:22px; box-shadow:0 8px 25px rgba(0,0,0,.07);
+}
+.review-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.review-field{display:flex;flex-direction:column;gap:7px;}
+.review-field.full{grid-column:1/-1;}
+.review-field label{font-weight:700;color:#123c69;}
+.review-field input,.review-field select,.review-field textarea{
+    width:100%; padding:13px 14px; border:1px solid #ccd8e5; border-radius:12px;
+    font:inherit; outline:none; transition:.2s; background:#fff;
+}
+.review-field textarea{min-height:90px;resize:vertical;}
+.review-field input:focus,.review-field select:focus,.review-field textarea:focus{border-color:#1976b8;box-shadow:0 0 0 3px rgba(25,118,184,.12);}
+.star-picker{display:flex;gap:6px;flex-direction:row-reverse;justify-content:flex-end;}
+.star-picker input{display:none;}
+.star-picker label{font-size:30px;color:#cbd5e1;cursor:pointer;line-height:1;transition:.15s;}
+.star-picker label:hover,.star-picker label:hover~label,.star-picker input:checked~label{color:#f5b301;transform:scale(1.05);}
+.review-submit{margin-top:18px;border:none;background:linear-gradient(135deg,#123c69,#1976b8);color:#fff;padding:13px 28px;border-radius:28px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.15);}
+.review-submit:disabled{opacity:.6;cursor:not-allowed;}
+.review-message{margin-top:12px;font-weight:600;display:none;}
+.review-list{max-width:820px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+.review-card{background:#fff;border:1px solid #dce6ef;border-radius:15px;padding:16px;text-align:left;box-shadow:0 6px 18px rgba(0,0,0,.06);}
+.review-card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;}
+.review-card-name{font-weight:800;color:#123c69;font-size:17px;}
+.review-role{font-size:13px;color:#667085;margin-top:3px;}
+.review-card-stars{color:#f5b301;font-size:18px;white-space:nowrap;}
+.review-card-text{margin-top:13px;line-height:1.7;color:#344054;}
+.review-date{margin-top:12px;font-size:12px;color:#98a2b3;}
+.review-empty{text-align:center;color:#667085;padding:25px;grid-column:1/-1;}
+.admin-review-link{margin-top:20px;background:transparent;border:1px solid #cbd5e1;color:#475467;padding:8px 15px;border-radius:20px;cursor:pointer;font-size:13px;}
+.admin-panel{display:none;max-width:820px;margin:25px auto 0;background:#fff;border:1px solid #dce6ef;border-radius:20px;padding:25px;}
+.admin-pending-card{border:1px solid #e4e7ec;border-radius:14px;padding:16px;margin-top:12px;}
+.admin-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.admin-actions button{border:none;border-radius:20px;padding:8px 16px;font-weight:700;cursor:pointer;}
+.admin-approve{background:#12b76a;color:white;}
+.admin-delete{background:#f04438;color:white;}
+.admin-login{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;}
+.admin-login input{padding:11px;border:1px solid #ccd8e5;border-radius:10px;}
+@media(max-width:700px){
+    .review-summary{grid-template-columns:1fr;}
+    .review-form-grid,.review-list,.admin-login{grid-template-columns:1fr;}
+    .review-field.full{grid-column:auto;}
+    .review-card-head{flex-direction:column;}
+}
+body.dark-mode .review-section{background:#151f29;}
+body.dark-mode .review-summary,body.dark-mode .review-form,body.dark-mode .review-card,body.dark-mode .admin-panel{background:#22313f;border-color:#3a4e61;}
+body.dark-mode .review-average-number,body.dark-mode .review-field label,body.dark-mode .review-card-name{color:#8ecbff;}
+body.dark-mode .review-card-text{color:#eee;}
+body.dark-mode .review-field input,body.dark-mode .review-field select,body.dark-mode .review-field textarea,body.dark-mode .admin-login input{background:#1d2935;color:#eee;border-color:#3a4e61;}
+
+
+
+/* =========================================================
+   2026 ACCESSIBILITY, MOBILE & UX IMPROVEMENTS
+========================================================= */
+.skip-link{
+    position:fixed;left:12px;top:-60px;z-index:100000;
+    background:#fff;color:#123c69;padding:10px 15px;border-radius:8px;
+    box-shadow:0 5px 18px rgba(0,0,0,.25);font-weight:700;text-decoration:none;
+}
+.skip-link:focus{top:12px;}
+
+.menu-toggle{
+    display:none;position:absolute;right:62px;top:15px;width:48px;height:48px;
+    border:2px solid rgba(255,255,255,.55);border-radius:50%;
+    background:rgba(0,0,0,.20);color:#fff;font-size:23px;cursor:pointer;
+    align-items:center;justify-content:center;z-index:21;
+}
+
+.contact-link{color:#0b63a8;text-decoration:none;font-weight:700;overflow-wrap:anywhere;}
+.contact-link:hover{text-decoration:underline;}
+.contact-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+.contact-action-btn{
+    display:inline-flex;align-items:center;justify-content:center;text-decoration:none;
+    background:linear-gradient(135deg,#123c69,#1976b8);color:#fff!important;
+    padding:10px 16px;border-radius:24px;font-weight:700;line-height:1.2;
+}
+.review-honeypot{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;}
+.review-privacy-note{font-size:12px;color:#667085;margin-top:10px;line-height:1.5;}
+
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+    outline:3px solid #ffd166;outline-offset:3px;
+}
+
+body.dark-mode .contact-link{color:#8ecbff;}
+body.dark-mode .review-privacy-note{color:#c5d0db;}
+
+@media(max-width:768px){
+    header{min-height:105px!important;padding-right:115px!important;}
+    .menu-toggle{display:flex;}
+    .theme-toggle{right:8px!important;top:15px!important;}
+    nav#mainNav{
+        display:none;position:absolute;left:0;right:0;top:100%;bottom:auto!important;
+        width:100%;padding:10px 14px 15px;background:#06294f;
+        box-shadow:0 8px 20px rgba(0,0,0,.2);text-align:left;
+    }
+    nav#mainNav.open{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+    nav#mainNav a{margin:0!important;padding:11px 12px!important;font-size:15px!important;border-radius:8px;}
+    nav#mainNav a:hover{background:rgba(255,255,255,.09);transform:none;}
+    nav#mainNav a::after{display:none;}
+    .school-heading{padding:0 4px;}
+    .school-heading h1{font-size:18px!important;line-height:1.25;}
+    .school-heading p{font-size:12px!important;}
+    .hero{min-height:480px!important;}
+    .hero-content{margin-top:20px!important;}
+    .hero h2{font-size:31px!important;line-height:1.2;}
+    .hero p{font-size:17px!important;}
+    .contact-actions{flex-direction:column;align-items:stretch;}
+    .contact-action-btn{width:100%;}
+}
+
+@media(max-width:480px){
+    header{padding:10px 105px 10px 8px!important;min-height:96px!important;}
+    .logo-area{width:56px!important;}
+    .school-logo{width:52px!important;height:52px!important;}
+    .menu-toggle{right:54px;top:12px;width:38px;height:38px;font-size:19px;}
+    .theme-toggle{right:7px!important;top:12px!important;width:38px!important;height:38px!important;}
+    nav#mainNav.open{grid-template-columns:1fr;}
+    .school-heading h1{font-size:15px!important;}
+    .school-heading p{font-size:11px!important;}
+    .review-section{padding:34px 4%;}
+    .review-summary,.review-form{border-radius:16px;}
+}
+
+
+/* =========================================================
+   PREMIUM 10/10 VISUAL POLISH — NON-DESTRUCTIVE OVERRIDES
+   Existing content, IDs, JS and Firebase logic remain intact.
+========================================================= */
+:root{
+    --premium-navy:#082f5c;
+    --premium-blue:#176fa8;
+    --premium-sky:#eaf4ff;
+    --premium-gold:#f2bd4b;
+    --premium-ink:#15283b;
+    --premium-muted:#66788a;
+    --premium-surface:#ffffff;
+    --premium-border:rgba(18,60,105,.11);
+    --premium-shadow:0 16px 46px rgba(18,60,105,.12);
+    --premium-shadow-hover:0 22px 58px rgba(18,60,105,.18);
+}
+
+body{
+    background:
+      radial-gradient(circle at 8% 4%,rgba(25,118,184,.08),transparent 24%),
+      radial-gradient(circle at 94% 18%,rgba(242,189,75,.09),transparent 20%),
+      #f6f9fc;
+    color:var(--premium-ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+}
+
+/* HEADER */
+header{
+    background:linear-gradient(118deg,#06294f 0%,#0b4678 48%,#126a9f 100%);
+    border-bottom:1px solid rgba(255,255,255,.12);
+    box-shadow:0 10px 30px rgba(3,31,58,.22);
+}
+.school-logo{
+    border:4px solid rgba(255,255,255,.88);
+    box-shadow:0 8px 24px rgba(0,0,0,.24);
+}
+.school-heading h1{
+    text-shadow:0 2px 12px rgba(0,0,0,.22);
+    letter-spacing:.8px;
+}
+.school-heading p{opacity:.93;letter-spacing:.4px;}
+nav{
+    background:rgba(5,35,66,.96);
+    border-top:1px solid rgba(255,255,255,.08);
+}
+nav a{border-radius:10px;}
+nav a:hover{
+    background:rgba(255,255,255,.07);
+    color:#ffe08a;
+}
+.theme-toggle,.menu-toggle{
+    box-shadow:0 7px 22px rgba(0,0,0,.20);
+    backdrop-filter:blur(8px);
+}
+
+/* HERO */
+.hero{
+    min-height:650px;
+    background:
+      linear-gradient(90deg,rgba(4,29,55,.78) 0%,rgba(4,29,55,.55) 48%,rgba(4,29,55,.25) 100%),
+      url("school.jpeg") center/cover no-repeat;
+    isolation:isolate;
+}
+.hero::before{
+    content:"";
+    position:absolute;
+    left:-8%;bottom:-150px;
+    width:440px;height:440px;border-radius:50%;
+    background:rgba(255,255,255,.08);
+    filter:blur(2px);
+    pointer-events:none;
+}
+.hero-content{
+    max-width:980px;
+    margin-top:330px;
+    padding:26px 28px;
+    border-radius:26px;
+    background:linear-gradient(135deg,rgba(5,35,66,.36),rgba(5,35,66,.10));
+    border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(3px);
+}
+.hero h2{
+    font-size:50px;
+    line-height:1.12;
+    letter-spacing:-.4px;
+    text-shadow:0 6px 24px rgba(0,0,0,.45);
+}
+.hero p{color:#f3f8ff;letter-spacing:.3px;}
+.btn{
+    background:linear-gradient(135deg,#ffd875,#f2b735);
+    box-shadow:0 10px 26px rgba(242,183,53,.26);
+    border:1px solid rgba(255,255,255,.55);
+}
+.btn:hover{background:#fff;color:#0a3b66;}
+
+/* SECTION RHYTHM */
+.section,.location-section,.student-portfolio-container,.school-info-container,.admission-section,.review-section{
+    position:relative;
+}
+.section{padding-top:78px;padding-bottom:78px;}
+.section h2,.location-section h2{
+    letter-spacing:-.35px;
+    font-weight:800;
+}
+.section-divider{
+    width:72px;height:4px;
+    background:linear-gradient(90deg,#f2bd4b,#ffd873);
+    box-shadow:0 3px 10px rgba(242,189,75,.24);
+}
+
+/* PREMIUM CARD SYSTEM */
+.card,.explore-card,.media-card,.staff-card,.student-profile,.review-summary,.review-form,.review-card,.admin-panel,.map-box,.about,.admission-form-box{
+    border:1px solid var(--premium-border) !important;
+    box-shadow:var(--premium-shadow) !important;
+}
+.card,.explore-card,.media-card,.staff-card,.review-card{
+    background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+}
+.card:hover,.explore-card:hover,.media-card:hover,.staff-card:hover,.review-card:hover{
+    transform:translateY(-7px);
+    box-shadow:var(--premium-shadow-hover) !important;
+}
+.explore-card img,.media-card img{
+    box-shadow:0 8px 22px rgba(18,60,105,.09);
+}
+.staff-card img{
+    border:5px solid #fff;
+    box-shadow:0 9px 26px rgba(18,60,105,.18);
+}
+
+/* BUTTON CONSISTENCY */
+.explore-button,.media-btn,.monthly-report-btn,.school-info-btn,.student-portfolio-btn,.student-class-btn,.student-roll-btn,.month-btn,.review-submit,.admission-submit-btn,.admission-open-btn{
+    background:linear-gradient(135deg,#0b3f70,#1976b8);
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 9px 24px rgba(18,60,105,.20);
+    letter-spacing:.15px;
+}
+.explore-button:hover,.media-btn:hover,.monthly-report-btn:hover,.school-info-btn:hover,.student-portfolio-btn:hover,.student-class-btn:hover,.student-roll-btn:hover,.month-btn:hover,.review-submit:hover,.admission-submit-btn:hover,.admission-open-btn:hover{
+    background:linear-gradient(135deg,#082f5c,#0f629b);
+    filter:none;
+}
+.student-back-btn,.report-back-btn,.staff-details-back{
+    background:linear-gradient(135deg,#ffd66e,#f2b735);
+    box-shadow:0 7px 18px rgba(242,183,53,.18);
+}
+
+/* ABOUT / NOTICE */
+.about{
+    border-radius:24px;
+    padding:34px 36px;
+}
+.notice{
+    background:linear-gradient(135deg,#06294f 0%,#0b4f82 58%,#146e9e 100%);
+}
+.notice-box{
+    border:1px solid rgba(255,255,255,.22);
+    border-left:5px solid var(--premium-gold);
+    border-radius:14px;
+    box-shadow:0 10px 28px rgba(0,0,0,.12);
+}
+
+/* POPUPS */
+.popup,.staff-details-page,.student-password-popup{
+    background:rgba(4,20,35,.76);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+}
+.popup-box,.staff-details-box,.student-password-box{
+    border:1px solid rgba(255,255,255,.48);
+    box-shadow:0 28px 90px rgba(0,0,0,.34) !important;
+}
+.close-btn{
+    width:42px;height:42px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(18,60,105,.07);
+    font-size:30px;
+}
+.close-btn:hover{background:#fff0f0;}
+
+/* ADMISSION */
+.admission-section{
+    padding:56px 15px;
+    background:
+      radial-gradient(circle at 20% 20%,rgba(25,118,184,.10),transparent 30%),
+      linear-gradient(135deg,#f7fbff,#eef6fd);
+}
+.admission-open-btn{padding:17px 42px;}
+.admission-form-box{border-radius:26px;}
+.admission-field input,.admission-field select,.admission-field textarea,
+.review-field input,.review-field select,.review-field textarea{
+    border:1px solid #d6e1eb;
+    box-shadow:inset 0 1px 2px rgba(18,60,105,.03);
+}
+
+/* REVIEWS */
+.review-section{
+    background:
+      radial-gradient(circle at 85% 10%,rgba(242,189,75,.10),transparent 24%),
+      linear-gradient(135deg,#f8fbff,#eef6ff);
+}
+.review-summary{
+    border-radius:24px;
+    background:linear-gradient(135deg,#fff,#f9fcff);
+}
+.review-average-number{
+    background:linear-gradient(135deg,#0b3f70,#1976b8);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+.review-stars-display,.review-card-stars{filter:drop-shadow(0 2px 5px rgba(245,179,1,.18));}
+.review-card{border-radius:18px;}
+.admin-review-link:hover{background:#f3f7fb;color:#123c69;}
+
+/* CONTACT + MAP */
+.contact-box{
+    max-width:760px;
+    background:linear-gradient(180deg,#fff,#fbfdff);
+    border:1px solid var(--premium-border);
+    border-radius:22px;
+    padding:28px 32px;
+    box-shadow:var(--premium-shadow);
+}
+.contact-box p{
+    padding:5px 0;
+    border-bottom:1px dashed rgba(18,60,105,.10);
+}
+.contact-box p:last-child{border-bottom:none;}
+.contact-action-btn{box-shadow:0 7px 18px rgba(18,60,105,.17);}
+.map-box{border-radius:22px;padding:14px;}
+.map-box iframe{border-radius:16px;}
+
+/* FOOTER */
+footer{
+    position:relative;
+    background:linear-gradient(135deg,#031b31,#06294f 60%,#0a3d69);
+    padding:34px 20px;
+    border-top:1px solid rgba(255,255,255,.08);
+}
+footer::before{
+    content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);
+    width:min(760px,75%);height:1px;background:linear-gradient(90deg,transparent,rgba(255,216,117,.65),transparent);
+}
+.footer-links a{padding:5px 2px;}
+
+/* DARK MODE PREMIUM */
+body.dark-mode{
+    background:#0e1720;
+}
+body.dark-mode .card,body.dark-mode .explore-card,body.dark-mode .media-card,body.dark-mode .staff-card,
+body.dark-mode .review-card,body.dark-mode .review-summary,body.dark-mode .review-form,body.dark-mode .admin-panel,
+body.dark-mode .about,body.dark-mode .contact-box,body.dark-mode .admission-form-box{
+    background:linear-gradient(180deg,#1d2b38,#182530) !important;
+    border-color:rgba(142,203,255,.12) !important;
+    box-shadow:0 16px 40px rgba(0,0,0,.22) !important;
+}
+body.dark-mode .contact-box p{border-bottom-color:rgba(255,255,255,.08);}
+body.dark-mode .notice-box{border-left-color:#f2bd4b;}
+
+/* RESPONSIVE PREMIUM */
+@media(max-width:900px){
+    .hero{min-height:560px;}
+    .hero-content{margin-top:150px;max-width:760px;}
+    .hero h2{font-size:40px;}
+}
+@media(max-width:768px){
+    .section{padding-top:58px;padding-bottom:58px;}
+    .hero{min-height:510px!important;padding:35px 18px;}
+    .hero-content{
+        margin-top:35px!important;
+        padding:22px 18px;
+        border-radius:20px;
+        backdrop-filter:blur(2px);
+    }
+    .hero h2{font-size:32px!important;}
+    .hero p{font-size:16px!important;}
+    .contact-box{padding:22px 18px;}
+    .about{padding:26px 22px;}
+}
+@media(max-width:480px){
+    .hero{min-height:470px!important;}
+    .hero h2{font-size:28px!important;}
+    .btn{padding:12px 23px;}
+    .section h2,.location-section h2{font-size:27px;}
+    .review-average-number{font-size:36px;}
+}
+
+
+
+/* =========================================================
+   MINIMAL REVIEW / RATING — VISUAL ONLY
+   Keeps all existing review functionality unchanged.
+========================================================= */
+.review-section{
+    padding:24px 5% !important;
+    background:linear-gradient(180deg,#f8fbff,#f4f8fc) !important;
+}
+.review-section h2{
+    font-size:21px !important;
+    margin-bottom:9px !important;
+    font-weight:750 !important;
+}
+.review-section .section-divider{
+    width:46px !important;
+    height:3px !important;
+    margin:-2px auto 10px !important;
+}
+.review-section > p{
+    max-width:540px !important;
+    margin:0 auto 12px !important;
+    font-size:12.5px !important;
+    line-height:1.55 !important;
+    color:#667085 !important;
+}
+.review-summary{
+    max-width:580px !important;
+    grid-template-columns:105px 1fr !important;
+    gap:14px !important;
+    padding:12px 14px !important;
+    margin:0 auto 12px !important;
+    border-radius:14px !important;
+    box-shadow:0 3px 10px rgba(18,60,105,.055) !important;
+}
+.review-average-number{
+    font-size:27px !important;
+}
+.review-stars-display{
+    font-size:16px !important;
+    letter-spacing:1px !important;
+    margin:4px 0 !important;
+}
+.review-count{
+    font-size:11px !important;
+}
+.review-summary h3{
+    font-size:14px !important;
+    margin-bottom:4px !important;
+}
+.review-summary p{
+    font-size:11.5px !important;
+    line-height:1.45 !important;
+}
+.review-form{
+    max-width:580px !important;
+    margin:0 auto 12px !important;
+    padding:14px !important;
+    border-radius:14px !important;
+    box-shadow:0 3px 10px rgba(18,60,105,.05) !important;
+}
+.review-form > h3{
+    font-size:15px !important;
+    margin-bottom:10px !important;
+}
+.review-form-grid{
+    gap:10px !important;
+}
+.review-field{
+    gap:4px !important;
+}
+.review-field label{
+    font-size:12px !important;
+}
+.review-field input,
+.review-field select,
+.review-field textarea{
+    padding:9px 10px !important;
+    border-radius:9px !important;
+    font-size:13px !important;
+}
+.review-field textarea{
+    min-height:64px !important;
+}
+.star-picker{
+    gap:3px !important;
+}
+.star-picker label{
+    font-size:23px !important;
+}
+.review-submit{
+    margin-top:11px !important;
+    padding:9px 18px !important;
+    border-radius:20px !important;
+    font-size:13px !important;
+    box-shadow:0 3px 9px rgba(18,60,105,.11) !important;
+}
+.review-message{
+    margin-top:8px !important;
+    font-size:12px !important;
+}
+.review-list{
+    max-width:620px !important;
+    gap:10px !important;
+}
+.review-card{
+    padding:11px 12px !important;
+    border-radius:11px !important;
+    box-shadow:0 2px 8px rgba(18,60,105,.045) !important;
+}
+.review-card-name{
+    font-size:13px !important;
+}
+.review-role,
+.review-date{
+    font-size:10.5px !important;
+}
+.review-card-stars{
+    font-size:14px !important;
+}
+.review-card-text{
+    margin-top:7px !important;
+    font-size:12px !important;
+    line-height:1.5 !important;
+}
+.admin-review-link{
+    margin-top:11px !important;
+    padding:6px 11px !important;
+    font-size:10.5px !important;
+    opacity:.72;
+}
+.admin-panel{
+    max-width:620px !important;
+    margin-top:13px !important;
+    padding:14px !important;
+    border-radius:13px !important;
+}
+body.dark-mode .review-section{
+    background:#151f29 !important;
+}
+@media(max-width:700px){
+    .review-section{padding:20px 4% !important;}
+    .review-summary{
+        grid-template-columns:90px 1fr !important;
+        text-align:left !important;
+        gap:10px !important;
+    }
+    .review-average{text-align:center !important;}
+    .review-form-grid{grid-template-columns:1fr !important;}
+    .review-list{grid-template-columns:1fr !important;}
+    .review-card-head{flex-direction:row !important;}
+}
+@media(max-width:430px){
+    .review-summary{grid-template-columns:1fr !important;text-align:center !important;}
+    .review-summary h3{margin-top:2px !important;}
+    .review-card-head{flex-direction:column !important;gap:4px !important;}
+}
+
 </style>
 
 </head>
 
 
 <body>
+
+<a class="skip-link" href="#mainContent">Skip to main content</a>
 
 
 <!-- =========================
@@ -1926,14 +3007,26 @@ body.dark-mode .popup .close-btn{
 
     </button>
 
+    <button
+        id="menuToggle"
+        class="menu-toggle"
+        type="button"
+        onclick="toggleMobileMenu()"
+        aria-label="Open navigation menu"
+        aria-controls="mainNav"
+        aria-expanded="false">
+        ☰
+    </button>
 
-    <nav>
+    <nav id="mainNav" aria-label="Main navigation">
 
         <a href="#">Home</a>
         <a href="#about">About</a>
         <a href="#programs">Programs</a>
         <a href="#media">Gallery</a>
         <a href="#notice">Notice</a>
+        <a href="#admission">Admission</a>
+        <a href="#reviews">Reviews</a>
         <a href="#contact">Contact</a>
 
     </nav>
@@ -1945,7 +3038,7 @@ body.dark-mode .popup .close-btn{
      HERO
 ========================= -->
 
-<section class="hero">
+<section class="hero" id="mainContent">
 
     <div class="hero-content">
 
@@ -2439,6 +3532,103 @@ body.dark-mode .popup .close-btn{
         class="photo-counter">
 
         1 / 1
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     STUDENT PORTFOLIO BUTTON
+========================================================= -->
+
+<div class="student-portfolio-container">
+
+    <button
+        class="student-portfolio-btn"
+        onclick="openPopup('studentPortfolioPopup')">
+
+        🎓 STUDENT PORTFOLIO
+
+    </button>
+
+</div>
+
+
+<!-- =========================================================
+     STUDENT PORTFOLIO POPUP
+========================================================= -->
+
+<div
+    id="studentPortfolioPopup"
+    class="popup">
+
+    <div class="popup-box">
+
+        <span
+            class="close-btn"
+            onclick="closePopup('studentPortfolioPopup')">
+
+            &times;
+
+        </span>
+
+        <h2 class="student-portfolio-title">
+            🎓 Student Portfolio
+        </h2>
+
+        <div
+            id="studentClassView"
+            class="student-grid">
+
+            <button class="student-class-btn"
+                onclick="showStudentRolls('Nursery')">
+                🧸 Nursery
+            </button>
+
+            <button class="student-class-btn"
+                onclick="showStudentRolls('LKG')">
+                🎒 LKG
+            </button>
+
+            <button class="student-class-btn"
+                onclick="showStudentRolls('UKG')">
+                🎓 UKG
+            </button>
+
+            <button class="student-class-btn"
+                onclick="showStudentRolls('Class 1')">
+                📚 Class 1
+            </button>
+
+            <button class="student-class-btn"
+                onclick="showStudentRolls('Class 2')">
+                📚 Class 2
+            </button>
+
+            <button class="student-class-btn"
+                onclick="showStudentRolls('Class 3')">
+                📚 Class 3
+            </button>
+
+            <button class="student-class-btn"
+                onclick="showStudentRolls('Class 4')">
+                📚 Class 4
+            </button>
+
+            <button class="student-class-btn"
+                onclick="showStudentRolls('Class 5')">
+                📚 Class 5
+            </button>
+
+        </div>
+
+        <div
+            id="studentRollView"
+            style="display:none;">
+
+        </div>
 
     </div>
 
@@ -3029,6 +4219,8 @@ body.dark-mode .popup .close-btn{
 </section>
 
 
+
+
 <!-- =========================
      CONTACT
 ========================= -->
@@ -3050,22 +4242,27 @@ body.dark-mode .popup .close-btn{
 
         <p>
             📞 <strong>Phone:</strong>
-            9864185122
+            <a class="contact-link" href="tel:+9779864185122">9864185122</a>
         </p>
 
         <p>
             📞 <strong>Phone:</strong>
-            9863983951
+            <a class="contact-link" href="tel:+9779863983951">9863983951</a>
         </p>
 
         <p>
             ✉️ <strong>Email:</strong>
-            staugustineacademicfoundation@gmail.com
+            <a class="contact-link" href="mailto:staugustineacademicfoundation@gmail.com">staugustineacademicfoundation@gmail.com</a>
         </p>
 
         <p>
             🌐 <strong>Website:</strong>
-            www.staugustine.edu.np
+            <a class="contact-link" href="https://www.staugustine.edu.np" target="_blank" rel="noopener noreferrer">www.staugustine.edu.np</a>
+        </p>
+
+        <p class="contact-actions">
+            <a class="contact-action-btn" href="https://wa.me/9779864185122" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+            <a class="contact-action-btn" href="mailto:staugustineacademicfoundation@gmail.com">✉️ Email School</a>
         </p>
 
     </div>
@@ -3086,6 +4283,7 @@ body.dark-mode .popup .close-btn{
     <div class="map-box">
 
         <iframe
+            title="Map showing St. Augustine Academic Foundation, Suryodaya-11, Ilam"
             src="https://www.google.com/maps?q=St.%20Augustine%20Academic%20Foundation%2C%20Suryodaya-11%2C%20Tinghare%2C%20Ilam%2C%20Nepal&output=embed"
             loading="lazy"
             allowfullscreen>
@@ -3321,6 +4519,133 @@ body.dark-mode .popup .close-btn{
      FOOTER
 ========================= -->
 
+
+<!-- =========================================================
+     ADMISSION FORM - NEW FEATURE ONLY
+========================================================= -->
+<section class="admission-section" id="admission">
+  <button class="admission-open-btn" onclick="openPopup('admissionPopup')">📝 ADMISSION FORM</button>
+</section>
+
+<div id="admissionPopup" class="popup">
+  <div class="popup-box admission-form-box">
+    <span class="close-btn" onclick="closePopup('admissionPopup')">&times;</span>
+    <h2 class="admission-form-title">📝 Student Admission Form</h2>
+    <p class="admission-form-subtitle">Please enter the student's details carefully before submitting.</p>
+    <form action="https://formsubmit.co/staugustineacademicfoundation@gmail.com" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="_subject" value="New Student Admission Application - St. Augustine Academic Foundation">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="true">
+      <div class="admission-form-grid">
+        <div class="admission-field"><label>Student's Full Name *</label><input type="text" name="Student Full Name" required></div>
+        <div class="admission-field"><label>Date of Birth *</label><input type="date" name="Date of Birth" required></div>
+        <div class="admission-field"><label>Gender *</label><select name="Gender" required><option value="">Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+        <div class="admission-field"><label>Applying for Class *</label><select name="Applying for Class" required><option value="">Select Class</option><option>Nursery</option><option>LKG</option><option>UKG</option><option>Class 1</option><option>Class 2</option><option>Class 3</option><option>Class 4</option><option>Class 5</option></select></div>
+        <div class="admission-field"><label>Father's Name *</label><input type="text" name="Father's Name" required></div>
+        <div class="admission-field"><label>Mother's Name *</label><input type="text" name="Mother's Name" required></div>
+        <div class="admission-field"><label>Guardian's Name</label><input type="text" name="Guardian's Name"></div>
+        <div class="admission-field"><label>Parent/Guardian Contact *</label><input type="tel" name="Parent Contact" required></div>
+        <div class="admission-field"><label>Email Address</label><input type="email" name="Parent Email"></div>
+        <div class="admission-field"><label>Blood Group</label><select name="Blood Group"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+        <div class="admission-field"><label>Previous School</label><input type="text" name="Previous School"></div>
+        <div class="admission-field"><label>Previous Class</label><input type="text" name="Previous Class"></div>
+        <div class="admission-field full"><label>Permanent Address *</label><input type="text" name="Permanent Address" required></div>
+        <div class="admission-field full"><label>Current Address</label><input type="text" name="Current Address"></div>
+        <div class="admission-field full"><label>Emergency Contact</label><input type="tel" name="Emergency Contact"></div>
+        <div class="admission-field full"><label>Additional Message / Remarks</label><textarea name="Additional Message"></textarea></div>
+      </div>
+      <button type="submit" class="admission-submit-btn">📩 SUBMIT ADMISSION APPLICATION</button>
+      <p class="admission-note">The submitted application will be sent to the school's admission email.</p>
+    </form>
+  </div>
+</div>
+
+<!-- =========================
+     SCHOOL REVIEWS & RATINGS
+========================= -->
+<section class="section review-section" id="reviews">
+    <h2>⭐ School Reviews & Feedback</h2>
+    <div class="section-divider"></div>
+    <p style="max-width:760px;margin:0 auto 25px;line-height:1.7;">
+        Share your experience with our school. Your rating and feedback help us improve our learning environment.
+    </p>
+
+    <div class="review-summary">
+        <div class="review-average">
+            <div id="reviewAverage" class="review-average-number">0.0</div>
+            <div id="reviewAverageStars" class="review-stars-display">☆☆☆☆☆</div>
+            <div id="reviewCount" class="review-count">No reviews yet</div>
+        </div>
+        <div>
+            <h3 style="color:#123c69;margin-bottom:12px;">Overall School Rating</h3>
+            <p style="line-height:1.7;color:#667085;">
+                Ratings are calculated from published reviews submitted by parents, students and visitors.
+            </p>
+        </div>
+    </div>
+
+    <div class="review-form">
+        <h3 style="color:#123c69;margin-bottom:18px;">Write a Review</h3>
+        <form id="reviewForm" autocomplete="on">
+            <input class="review-honeypot" id="reviewWebsite" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <div class="review-form-grid">
+                <div class="review-field">
+                    <label for="reviewName">Your Name</label>
+                    <input id="reviewName" maxlength="50" required placeholder="Enter your name">
+                </div>
+                <div class="review-field">
+                    <label for="reviewRole">You are</label>
+                    <select id="reviewRole" required>
+                        <option value="">Select one</option>
+                        <option>Parent</option>
+                        <option>Student</option>
+                        <option>Teacher</option>
+                        <option>Visitor</option>
+                        <option>Alumni</option>
+                    </select>
+                </div>
+                <div class="review-field full">
+                    <label>Your Rating</label>
+                    <div class="star-picker" aria-label="Select a rating from 1 to 5 stars">
+                        <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 stars">★</label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">★</label>
+                        <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">★</label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">★</label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">★</label>
+                    </div>
+                </div>
+                <div class="review-field full">
+                    <label for="reviewText">Your Feedback</label>
+                    <textarea id="reviewText" maxlength="500" required placeholder="Tell us about your experience..."></textarea>
+                </div>
+            </div>
+            <button id="reviewSubmit" class="review-submit" type="submit">⭐ Submit Review</button>
+            <p class="review-privacy-note">Reviews are checked by the school before they are published. Please do not include private student information.</p>
+            <div id="reviewMessage" class="review-message" role="status" aria-live="polite"></div>
+        </form>
+    </div>
+
+    <div id="reviewList" class="review-list">
+        <div class="review-empty">Loading reviews...</div>
+    </div>
+
+    <button class="admin-review-link" type="button" onclick="toggleAdminReview()">🔐 Admin Review</button>
+
+    <div id="adminReviewPanel" class="admin-panel">
+        <h3 style="color:#123c69;margin-bottom:15px;">Admin Review Panel</h3>
+        <div id="adminLoginBox" class="admin-login">
+            <div><label>Email</label><input id="adminEmail" type="email" placeholder="Admin email"></div>
+            <div><label>Password</label><input id="adminPassword" type="password" placeholder="Password"></div>
+            <button class="review-submit" type="button" onclick="adminLogin()">Login</button>
+        </div>
+        <div id="adminStatus" class="review-message"></div>
+        <div id="pendingReviews"></div>
+    </div>
+</section>
+
+
+
+
 <footer>
 
     © 2026
@@ -3358,6 +4683,165 @@ body.dark-mode .popup .close-btn{
 
 </footer>
 
+
+<!-- =====================================================
+     STUDENT PORTFOLIO PASSWORD POPUP
+===================================================== -->
+<div id="studentPasswordPopup" class="student-password-popup">
+    <div class="student-password-box">
+        <h2>🔐 Student Portfolio</h2>
+        <p>Please enter password</p>
+
+        <input
+            type="password"
+            id="studentPasswordInput"
+            placeholder="Enter Password"
+            autocomplete="off"
+            aria-label="Student portfolio password"
+        >
+
+        <div class="student-password-actions">
+            <button type="button" onclick="checkStudentPassword()">
+                🔓 OPEN
+            </button>
+            <button type="button" onclick="closeStudentPassword()">
+                CANCEL
+            </button>
+        </div>
+
+        <p id="studentPasswordError" class="student-password-error">
+            ❌ Incorrect Password!
+        </p>
+    </div>
+</div>
+
+
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, where, limit, getDocs, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { firebaseConfig, ADMIN_EMAIL } from "./firebase-config.js";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser = null;
+
+window.toggleAdminReview = function(){
+    const panel=document.getElementById('adminReviewPanel');
+    panel.style.display = panel.style.display==='block' ? 'none' : 'block';
+};
+
+function setReviewMessage(text, ok=false){
+    const el=document.getElementById('reviewMessage');
+    el.textContent=text; el.style.display='block'; el.style.color=ok?'#067647':'#b42318';
+}
+
+function stars(n){ return '★'.repeat(n)+'☆'.repeat(5-n); }
+
+function formatDate(ts){
+    if(!ts || !ts.toDate) return 'Recently';
+    return ts.toDate().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+}
+
+function renderReviews(rows){
+    const list=document.getElementById('reviewList');
+    if(!rows.length){ list.innerHTML='<div class="review-empty">No published reviews yet. Be the first to share your experience.</div>'; return; }
+    rows.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    const total=rows.reduce((sum,r)=>sum+Number(r.rating||0),0);
+    const avg=total/rows.length;
+    document.getElementById('reviewAverage').textContent=avg.toFixed(1);
+    document.getElementById('reviewAverageStars').textContent=stars(Math.round(avg));
+    document.getElementById('reviewCount').textContent=`${rows.length} review${rows.length===1?'':'s'}`;
+    list.innerHTML=rows.map(r=>`<article class="review-card"><div class="review-card-head"><div><div class="review-card-name">${escapeHtml(r.name)}</div><div class="review-role">${escapeHtml(r.role)}</div></div><div class="review-card-stars">${stars(Number(r.rating))}</div></div><div class="review-card-text">${escapeHtml(r.feedback)}</div><div class="review-date">${formatDate(r.createdAt)}</div></article>`).join('');
+}
+
+function escapeHtml(value){
+    return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
+async function loadReviews(){
+    try{
+        const q=query(collection(db,'schoolReviews'),where('approved','==',true),limit(100));
+        const snap=await getDocs(q);
+        renderReviews(snap.docs.map(d=>({id:d.id,...d.data()})));
+    }catch(err){
+        console.error(err);
+        document.getElementById('reviewList').innerHTML='<div class="review-empty">Reviews are temporarily unavailable. Please try again later.</div>';
+    }
+}
+
+async function ensureAnonymousUser(){
+    if(!auth.currentUser) await signInAnonymously(auth);
+    currentUser=auth.currentUser;
+}
+
+document.getElementById('reviewForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const btn=document.getElementById('reviewSubmit');
+    const rating=document.querySelector('input[name="rating"]:checked');
+    const name=document.getElementById('reviewName').value.trim();
+    const role=document.getElementById('reviewRole').value;
+    const feedback=document.getElementById('reviewText').value.trim();
+    const honeypot=document.getElementById('reviewWebsite')?.value.trim();
+    if(honeypot){ return; }
+    const lastSubmit=Number(localStorage.getItem('lastSchoolReviewSubmit')||0);
+    if(Date.now()-lastSubmit < 600000){
+        setReviewMessage('Please wait a few minutes before submitting another review.');
+        return;
+    }
+    if(!rating){setReviewMessage('Please select a star rating.');return;}
+    if(name.length<2 || feedback.length<10){setReviewMessage('Please enter your name and at least 10 characters of feedback.');return;}
+    btn.disabled=true; btn.textContent='Submitting...';
+    try{
+        await ensureAnonymousUser();
+        await addDoc(collection(db,'schoolReviews'),{name,role,rating:Number(rating.value),feedback,approved:false,authorUid:currentUser.uid,createdAt:serverTimestamp()});
+        e.target.reset();
+        localStorage.setItem('lastSchoolReviewSubmit',String(Date.now()));
+        setReviewMessage('Thank you! Your review was submitted and is waiting for school approval.',true);
+    }catch(err){ console.error(err); setReviewMessage('Could not submit the review. Please try again.'); }
+    finally{btn.disabled=false;btn.textContent='⭐ Submit Review';}
+});
+
+window.adminLogin=async function(){
+    const email=document.getElementById('adminEmail').value.trim();
+    const password=document.getElementById('adminPassword').value;
+    const status=document.getElementById('adminStatus');
+    if(email.toLowerCase()!==ADMIN_EMAIL.toLowerCase()){status.textContent='This email is not the configured school admin email.';status.style.display='block';status.style.color='#b42318';return;}
+    try{ await signInWithEmailAndPassword(auth,email,password); status.textContent='Admin login successful.';status.style.display='block';status.style.color='#067647'; await loadPending(); }
+    catch(err){ console.error(err); status.textContent='Admin login failed. Check your email and password.';status.style.display='block';status.style.color='#b42318'; }
+};
+
+async function loadPending(){
+    if(!auth.currentUser || auth.currentUser.email?.toLowerCase()!==ADMIN_EMAIL.toLowerCase()) return;
+    const box=document.getElementById('pendingReviews');
+    box.innerHTML='<p>Loading pending reviews...</p>';
+    try{
+        const q=query(collection(db,'schoolReviews'),where('approved','==',false),limit(100));
+        const snap=await getDocs(q);
+        if(snap.empty){box.innerHTML='<p style="color:#667085;margin-top:15px;">No pending reviews.</p>';return;}
+        box.innerHTML=snap.docs.map(d=>{const r=d.data();return `<div class="admin-pending-card"><strong>${escapeHtml(r.name)}</strong> · ${escapeHtml(r.role)} · <span style="color:#f5b301">${stars(Number(r.rating))}</span><p style="margin-top:8px;line-height:1.6">${escapeHtml(r.feedback)}</p><div class="admin-actions"><button class="admin-approve" onclick="approveReview('${d.id}')">Approve</button><button class="admin-delete" onclick="deleteReview('${d.id}')">Delete</button></div></div>`}).join('');
+    }catch(err){ console.error(err); box.innerHTML='<p>Unable to load pending reviews.</p>'; }
+}
+
+window.approveReview=async function(id){
+    if(!auth.currentUser || auth.currentUser.email?.toLowerCase()!==ADMIN_EMAIL.toLowerCase()) return;
+    await updateDoc(doc(db,'schoolReviews',id),{approved:true});
+    await loadPending(); await loadReviews();
+};
+
+window.deleteReview=async function(id){
+    if(!auth.currentUser || auth.currentUser.email?.toLowerCase()!==ADMIN_EMAIL.toLowerCase()) return;
+    await deleteDoc(doc(db,'schoolReviews',id));
+    await loadPending();
+};
+
+onAuthStateChanged(auth,user=>{currentUser=user;});
+
+loadReviews();
+</script>
 
 <script>
 
@@ -3629,6 +5113,218 @@ document.addEventListener(
     }
 );
 
+
+
+/* =====================================================
+   STUDENT PORTFOLIO
+===================================================== */
+
+function showStudentRolls(className){
+
+    document.getElementById("studentClassView").style.display = "none";
+
+    const rollView =
+        document.getElementById("studentRollView");
+
+    rollView.style.display = "block";
+
+    let html = `
+        <button
+            class="student-back-btn"
+            onclick="backToStudentClasses()">
+
+            ← Back to Classes
+
+        </button>
+
+        <h2 class="student-portfolio-title">
+            🎓 ${className} - Student Portfolio
+        </h2>
+
+        <div class="student-grid">
+    `;
+
+    // Each class has 26 student entries: Name A through Name Z.
+    const studentNames = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+    studentNames.forEach(function(nameLetter){
+
+        html += `
+            <button
+                class="student-roll-btn"
+                onclick="showStudentProfile('${className}', '${nameLetter}')">
+
+                👤 Name ${nameLetter}
+
+            </button>
+        `;
+
+    });
+
+    html += `</div>`;
+
+    rollView.innerHTML = html;
+}
+
+
+function backToStudentClasses(){
+
+    document.getElementById("studentRollView").style.display = "none";
+
+    document.getElementById("studentRollView").innerHTML = "";
+
+    document.getElementById("studentClassView").style.display = "grid";
+
+}
+
+
+let pendingStudentClass = "";
+let pendingStudentRoll = null;
+
+function showStudentProfile(className, rollNo){
+
+    pendingStudentClass = className;
+    pendingStudentRoll = rollNo;
+    openStudentPassword();
+}
+
+
+function renderStudentProfile(className, rollNo){
+
+    const rollView = document.getElementById("studentRollView");
+
+    rollView.style.display = "block";
+
+    rollView.innerHTML = `
+        <button
+            class="student-back-btn"
+            onclick="backToStudentClasses()">
+            ← Back to Classes
+        </button>
+
+        <h2 class="student-portfolio-title">
+            🎓 ${className} - Name ${rollNo}
+        </h2>
+
+        <div class="student-profile">
+            <div class="student-profile-icon">👤</div>
+
+            <h3>
+                ${className} - Name ${rollNo}
+            </h3>
+
+            <div class="student-profile-row">
+                <strong>Student Name:</strong>
+                Name ${rollNo}
+            </div>
+
+            <div class="student-profile-row">
+                <strong>Class:</strong>
+                ${className}
+            </div>
+
+            <div class="student-profile-row">
+                <strong>Date of Birth:</strong>
+                To be updated
+            </div>
+
+            <div class="student-profile-row">
+                <strong>Parent / Guardian:</strong>
+                To be updated
+            </div>
+
+            <div class="student-profile-row">
+                <strong>Academic Performance:</strong>
+                To be updated
+            </div>
+
+            <div class="student-profile-row">
+                <strong>Remarks:</strong>
+                To be updated
+            </div>
+        </div>
+    `;
+}
+
+
+/* =====================================================
+   STUDENT PORTFOLIO ACCESS GATE
+   IMPORTANT: This is a client-side gate, not a replacement for
+   Firebase Authentication / server-side authorization.
+===================================================== */
+const STUDENT_ACCESS_HASH = "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5";
+let studentAccessFailures = 0;
+let studentLockUntil = 0;
+
+async function sha256Hex(text){
+    const bytes = new TextEncoder().encode(text);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+function openStudentPassword(){
+    const popup = document.getElementById("studentPasswordPopup");
+    const input = document.getElementById("studentPasswordInput");
+    const error = document.getElementById("studentPasswordError");
+    if(!popup || !input || !error){
+        console.error("Student password popup elements are missing.");
+        return;
+    }
+    popup.style.display = "flex";
+    input.value = "";
+    error.style.display = "none";
+    document.body.style.overflow = "hidden";
+    setTimeout(()=>input.focus(),100);
+}
+
+async function checkStudentPassword(){
+    const input = document.getElementById("studentPasswordInput");
+    const error = document.getElementById("studentPasswordError");
+    const popup = document.getElementById("studentPasswordPopup");
+    if(!input || !error || !popup) return;
+
+    const now = Date.now();
+    if(now < studentLockUntil){
+        const seconds = Math.ceil((studentLockUntil-now)/1000);
+        error.textContent = `⏳ Too many attempts. Try again in ${seconds} seconds.`;
+        error.style.display = "block";
+        return;
+    }
+
+    const candidateHash = await sha256Hex(input.value.trim());
+    if(candidateHash !== STUDENT_ACCESS_HASH){
+        studentAccessFailures += 1;
+        if(studentAccessFailures >= 5){
+            studentLockUntil = Date.now() + 30000;
+            studentAccessFailures = 0;
+            error.textContent = "⏳ Too many incorrect attempts. Access is locked for 30 seconds.";
+        }else{
+            error.textContent = `❌ Incorrect password. ${5-studentAccessFailures} attempt(s) remaining before a short lock.`;
+        }
+        error.style.display = "block";
+        input.value = "";
+        input.focus();
+        return;
+    }
+
+    studentAccessFailures = 0;
+    error.style.display = "none";
+    popup.style.display = "none";
+    input.value = "";
+
+    if(pendingStudentClass && pendingStudentRoll !== null){
+        renderStudentProfile(pendingStudentClass, pendingStudentRoll);
+    }
+    const portfolioPopup = document.getElementById("studentPortfolioPopup");
+    if(portfolioPopup) portfolioPopup.style.display = "block";
+    document.body.style.overflow = "hidden";
+}
+
+function closeStudentPassword(){
+    const popup = document.getElementById("studentPasswordPopup");
+    if(popup) popup.style.display = "none";
+    document.body.style.overflow = "auto";
+}
 
 /* =====================================================
    MONTHLY REPORT
@@ -4318,6 +6014,24 @@ document.addEventListener(
 
 
 /* =====================================================
+   STUDENT PASSWORD ENTER KEY
+===================================================== */
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const input = document.getElementById("studentPasswordInput");
+
+    if(input){
+        input.addEventListener("keydown", function(event){
+            if(event.key === "Enter"){
+                checkStudentPassword();
+            }
+        });
+    }
+});
+
+
+/* =====================================================
    ESC KEY
 ===================================================== */
 
@@ -4419,6 +6133,57 @@ document.addEventListener(
     }
 );
 
+</script>
+
+
+<script>
+/* =====================================================
+   MOBILE NAVIGATION + ACCESSIBILITY HELPERS
+===================================================== */
+function toggleMobileMenu(){
+    const nav=document.getElementById('mainNav');
+    const btn=document.getElementById('menuToggle');
+    if(!nav || !btn) return;
+    const open=nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded',String(open));
+    btn.setAttribute('aria-label',open?'Close navigation menu':'Open navigation menu');
+    btn.textContent=open?'✕':'☰';
+}
+
+function closeMobileMenu(){
+    const nav=document.getElementById('mainNav');
+    const btn=document.getElementById('menuToggle');
+    if(nav) nav.classList.remove('open');
+    if(btn){btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-label','Open navigation menu');btn.textContent='☰';}
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('#mainNav a').forEach(a=>a.addEventListener('click',closeMobileMenu));
+    document.querySelectorAll('img').forEach(img=>{
+        if(!img.hasAttribute('loading')) img.setAttribute('loading','lazy');
+        if(!img.hasAttribute('decoding')) img.setAttribute('decoding','async');
+    });
+
+    const studentPasswordInput=document.getElementById('studentPasswordInput');
+    if(studentPasswordInput){
+        studentPasswordInput.addEventListener('keydown',e=>{
+            if(e.key==='Enter'){e.preventDefault();checkStudentPassword();}
+        });
+    }
+});
+
+document.addEventListener('keydown',e=>{
+    if(e.key!=='Escape') return;
+    closeMobileMenu();
+    document.querySelectorAll('.popup,.student-password-popup,.staff-details-page,.photo-lightbox').forEach(el=>{
+        if(getComputedStyle(el).display!=='none') el.style.display='none';
+    });
+    document.body.style.overflow='auto';
+});
+
+window.addEventListener('resize',()=>{
+    if(window.innerWidth>768) closeMobileMenu();
+});
 </script>
 
 </body>
