@@ -3300,6 +3300,30 @@ body.dark-mode .suggestion-feedback-field textarea{
 }
 </style>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style id="student-portfolio-admin-upload-styles">
+.student-admin-bar{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin:0 auto 22px}
+.student-admin-login-btn,.student-admin-logout-btn{border:0;border-radius:24px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer}
+.student-admin-login-btn{background:#123c69;color:#fff}.student-admin-logout-btn{background:#b42318;color:#fff}
+.student-admin-state{font-size:13px;color:#667085;font-weight:700}.student-admin-state.active{color:#087443}
+.student-main-photo-wrap{width:150px;height:150px;margin:0 auto 14px;border-radius:50%;overflow:hidden;border:4px solid #fff;box-shadow:0 5px 18px rgba(0,0,0,.16);background:#e8eef5;display:flex;align-items:center;justify-content:center}
+.student-main-photo{width:100%;height:100%;object-fit:cover;display:block}.student-main-photo-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:58px;color:#728197;background:#eef3f8}
+.student-profile-photo-admin{display:none;justify-content:center;margin:8px 0 16px}body.student-admin-mode .student-profile-photo-admin{display:flex}
+.student-month-label{position:absolute;left:7px;bottom:7px;z-index:3;background:rgba(0,0,0,.68);color:#fff;padding:4px 7px;border-radius:10px;font-size:11px;font-weight:700}
+.student-photo-upload-btn{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;border:0;border-radius:20px;padding:8px 11px;font-size:12px;font-weight:800;color:#fff;background:rgba(18,60,105,.94);cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+body.student-admin-mode .student-photo-upload-btn{display:block}
+.student-upload-progress{display:none;margin:12px auto 0;max-width:620px;padding:10px 13px;border-radius:10px;font-size:13px;font-weight:700}.student-upload-progress.show{display:block}
+.student-upload-progress.info{color:#175cd3;background:#eff8ff;border:1px solid #b2ddff}.student-upload-progress.success{color:#067647;background:#ecfdf3;border:1px solid #abefc6}.student-upload-progress.error{color:#b42318;background:#fef3f2;border:1px solid #fecdca}
+.student-admin-box{max-width:430px!important}.student-admin-form{display:grid;gap:14px}.student-admin-form label{display:block;text-align:left;color:#123c69;font-weight:700;margin-bottom:6px}
+.student-admin-form input{width:100%;padding:12px 13px;border:1px solid #ccd8e4;border-radius:10px;outline:none;font:inherit}.student-admin-form input:focus{border-color:#1976b8;box-shadow:0 0 0 3px rgba(25,118,184,.10)}
+.student-admin-submit{border:0;border-radius:12px;padding:13px 16px;background:linear-gradient(135deg,#123c69,#1976b8);color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+.student-admin-message{display:none;padding:10px 12px;border-radius:9px;font-size:13px;font-weight:700}.student-admin-message.show{display:block}.student-admin-message.error{color:#b42318;background:#fef3f2}.student-admin-message.success{color:#067647;background:#ecfdf3}
+body.dark-mode .student-admin-state{color:#c5d0db}body.dark-mode .student-admin-state.active{color:#6ce9a6}body.dark-mode .student-main-photo-wrap{border-color:#34485b;background:#1d2935}body.dark-mode .student-main-photo-placeholder{background:#1d2935;color:#a9b8c8}body.dark-mode .student-admin-form label{color:#8ecbff}body.dark-mode .student-admin-form input{background:#1d2935;color:#fff;border-color:#405467}
+@media(max-width:600px){.student-main-photo-wrap{width:125px;height:125px}.student-photo-upload-btn{font-size:11px;padding:7px 9px}.student-month-label{font-size:10px}}
+</style>
+
 </head>
 
 
@@ -3920,6 +3944,12 @@ body.dark-mode .suggestion-feedback-field textarea{
         <h2 class="student-portfolio-title">
             🎓 Student Portfolio
         </h2>
+
+        <div class="student-admin-bar">
+            <button id="studentAdminLoginButton" class="student-admin-login-btn" type="button" onclick="openStudentAdminLogin()">🔐 Admin Login</button>
+            <button id="studentAdminLogoutButton" class="student-admin-logout-btn" type="button" onclick="studentAdminLogout()" style="display:none;">Log Out</button>
+            <span id="studentAdminState" class="student-admin-state">View only</span>
+        </div>
 
         <div
             id="studentClassView"
@@ -5128,6 +5158,28 @@ body.dark-mode .suggestion-feedback-field textarea{
 <!-- =====================================================
      STUDENT PORTFOLIO PASSWORD POPUP
 ===================================================== -->
+
+<!-- STUDENT PORTFOLIO ADMIN LOGIN -->
+<div id="studentAdminPopup" class="student-password-popup">
+    <div class="student-password-box student-admin-box">
+        <h2>🔐 Portfolio Admin Login</h2>
+        <p>Only the school administrator can add or update student photos.</p>
+        <div class="student-admin-form">
+            <div>
+                <label for="studentAdminEmail">Admin Email</label>
+                <input id="studentAdminEmail" type="email" autocomplete="username" placeholder="Admin email">
+            </div>
+            <div>
+                <label for="studentAdminPassword">Admin Password</label>
+                <input id="studentAdminPassword" type="password" autocomplete="current-password" placeholder="Admin password">
+            </div>
+            <button class="student-admin-submit" type="button" onclick="studentAdminLogin()">LOGIN</button>
+            <div id="studentAdminMessage" class="student-admin-message"></div>
+            <button type="button" class="student-back-btn" onclick="closeStudentAdminLogin()" style="margin:0;">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <div id="studentPasswordPopup" class="student-password-popup">
     <div class="student-password-box">
         <h2>🔐 Student Portfolio</h2>
@@ -6780,6 +6832,296 @@ window.addEventListener('resize',()=>{
     });
 })();
 </script>
+
+
+<script id="student-portfolio-cloud-upload">
+/* =========================================================
+   STUDENT PORTFOLIO — ADMIN-ONLY SUPABASE PHOTO UPLOAD
+   Change ONLY these two placeholder values after Supabase setup.
+========================================================= */
+const STUDENT_STORAGE_CONFIG={
+    url:"https://yxecklijkcaxrfshpzna.supabase.co",
+    anonKey:"sb_publishable_7q0fv4SbCVs_AHARyWPvZQ_YvzCvbfI",
+    bucket:"student-reports"
+};
+
+let studentSupabase=null;
+let studentAdminSession=null;
+let studentUploadTarget=null;
+let activeStudentPortfolio=null;
+
+function studentStorageConfigured(){
+    return STUDENT_STORAGE_CONFIG.url &&
+           STUDENT_STORAGE_CONFIG.anonKey &&
+           !STUDENT_STORAGE_CONFIG.url.includes("PASTE_YOUR_") &&
+           !STUDENT_STORAGE_CONFIG.anonKey.includes("PASTE_YOUR_");
+}
+
+function initStudentSupabase(){
+    if(studentSupabase) return studentSupabase;
+    if(!studentStorageConfigured()) return null;
+    if(!window.supabase || !window.supabase.createClient) return null;
+    studentSupabase=window.supabase.createClient(
+        STUDENT_STORAGE_CONFIG.url,
+        STUDENT_STORAGE_CONFIG.anonKey,
+        {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+    );
+    return studentSupabase;
+}
+
+function setStudentAdminUI(isAdmin,email=""){
+    document.body.classList.toggle("student-admin-mode",!!isAdmin);
+    const login=document.getElementById("studentAdminLoginButton");
+    const logout=document.getElementById("studentAdminLogoutButton");
+    const state=document.getElementById("studentAdminState");
+    if(login) login.style.display=isAdmin?"none":"inline-block";
+    if(logout) logout.style.display=isAdmin?"inline-block":"none";
+    if(state){
+        state.classList.toggle("active",!!isAdmin);
+        state.textContent=isAdmin?`Admin mode${email?" — "+email:""}`:"View only";
+    }
+}
+
+function adminMessage(message,type="error"){
+    const el=document.getElementById("studentAdminMessage");
+    if(!el) return;
+    el.textContent=message;
+    el.className=`student-admin-message show ${type}`;
+}
+function clearAdminMessage(){
+    const el=document.getElementById("studentAdminMessage");
+    if(el){el.textContent="";el.className="student-admin-message";}
+}
+function openStudentAdminLogin(){
+    if(!studentStorageConfigured()){
+        alert("Photo storage is ready in the code but not connected yet. Add your Supabase Project URL and anon key first.");
+        return;
+    }
+    clearAdminMessage();
+    const p=document.getElementById("studentAdminPopup");
+    if(p) p.style.display="flex";
+    document.body.style.overflow="hidden";
+}
+function closeStudentAdminLogin(){
+    const p=document.getElementById("studentAdminPopup");
+    if(p) p.style.display="none";
+    document.body.style.overflow="hidden";
+}
+async function studentAdminLogin(){
+    const c=initStudentSupabase();
+    if(!c){adminMessage("Supabase is not configured yet.");return;}
+    const email=document.getElementById("studentAdminEmail")?.value.trim()||"";
+    const password=document.getElementById("studentAdminPassword")?.value||"";
+    if(!email||!password){adminMessage("Enter admin email and password.");return;}
+    adminMessage("Signing in...","success");
+    const {data,error}=await c.auth.signInWithPassword({email,password});
+    if(error||!data.session){adminMessage("Admin login failed. Check email/password.");return;}
+    studentAdminSession=data.session;
+    setStudentAdminUI(true,data.user?.email||email);
+    const pw=document.getElementById("studentAdminPassword"); if(pw) pw.value="";
+    closeStudentAdminLogin();
+    if(activeStudentPortfolio) renderStudentProfile(activeStudentPortfolio.className,activeStudentPortfolio.studentId);
+}
+async function studentAdminLogout(){
+    const c=initStudentSupabase();
+    if(c) await c.auth.signOut();
+    studentAdminSession=null;
+    setStudentAdminUI(false);
+    if(activeStudentPortfolio) renderStudentProfile(activeStudentPortfolio.className,activeStudentPortfolio.studentId);
+}
+
+function cloudPath(studentId,type,month=null){
+    return type==="profile"
+        ?`students/${studentId}/profile.jpg`
+        :`students/${studentId}/month-${month}.jpg`;
+}
+function cloudUrl(path){
+    const c=initStudentSupabase();
+    if(!c) return "";
+    return c.storage.from(STUDENT_STORAGE_CONFIG.bucket).getPublicUrl(path).data?.publicUrl||"";
+}
+function staticUrl(studentId,type,month=null){
+    return type==="profile"
+        ?`student-photos/${studentId}/profile.jpeg`
+        :`student-photos/${studentId}/${month}.jpeg`;
+}
+function photoCandidates(studentId,type,month=null){
+    const arr=[];
+    const cu=cloudUrl(cloudPath(studentId,type,month));
+    if(cu) arr.push(cu+"?v="+Date.now());
+    arr.push(staticUrl(studentId,type,month));
+    return arr;
+}
+function applyImageFallback(img,candidates,missing){
+    let i=0;
+    const next=()=>{
+        if(i>=candidates.length){
+            img.style.display="none";
+            if(missing) missing.style.display="flex";
+            return;
+        }
+        img.style.display="block";
+        if(missing) missing.style.display="none";
+        img.src=candidates[i++];
+    };
+    img.onerror=next;
+    next();
+}
+function bindPortfolioImages(student){
+    const ph=document.getElementById("studentProfilePhotoHost");
+    if(ph){
+        ph.innerHTML='<div class="student-main-photo-wrap"><img id="studentMainPhoto" class="student-main-photo" loading="lazy" decoding="async"><div id="studentMainPhotoMissing" class="student-main-photo-placeholder" style="display:none">👤</div></div>';
+        applyImageFallback(
+            document.getElementById("studentMainPhoto"),
+            photoCandidates(student.studentId,"profile"),
+            document.getElementById("studentMainPhotoMissing")
+        );
+    }
+    document.querySelectorAll("[data-student-month-photo]").forEach(img=>{
+        const month=Number(img.dataset.month);
+        const missing=img.parentElement?.querySelector(".student-photo-missing");
+        applyImageFallback(img,photoCandidates(student.studentId,"month",month),missing);
+    });
+}
+
+function renderStudentProfile(className,studentId){
+    const rollView=document.getElementById("studentRollView");
+    const student=getStudentRecord(className,studentId);
+    if(!student||!rollView) return;
+    activeStudentPortfolio={className,studentId};
+
+    const galleryHTML=Array.from({length:12},(_,i)=>{
+        const m=i+1;
+        return `<div class="student-photo-item">
+            <img data-student-month-photo data-month="${m}" alt="${student.name} Month ${m} progress photo" loading="lazy" decoding="async" onclick="openStudentPhotoGallery('${student.studentId}',${i})">
+            <div class="student-photo-missing" style="display:none;">Month ${m}<br>Photo not uploaded yet</div>
+            <span class="student-month-label">Month ${m}</span>
+            <button type="button" class="student-photo-upload-btn" onclick="event.stopPropagation();chooseStudentPortfolioPhoto('${student.studentId}','month',${m})">Add / Update</button>
+        </div>`;
+    }).join("");
+
+    rollView.style.display="block";
+    rollView.innerHTML=`
+        <button class="student-back-btn" onclick="showStudentRolls('${className}')">← Back to ${className}</button>
+        <h2 class="student-portfolio-title">🎓 ${student.name}</h2>
+        <div class="student-profile">
+            <div id="studentProfilePhotoHost"></div>
+            <div class="student-profile-photo-admin">
+                <button type="button" class="student-admin-login-btn" onclick="chooseStudentPortfolioPhoto('${student.studentId}','profile')">📷 Add / Update Student Photo</button>
+            </div>
+            <h3>${student.name}</h3>
+            <div class="student-profile-row"><strong>Student ID:</strong> ${student.studentId}</div>
+            <div class="student-profile-row"><strong>Student Name:</strong> ${student.name}</div>
+            <div class="student-profile-row"><strong>Class:</strong> ${student.className}</div>
+            <div class="student-profile-row"><strong>Date of Birth:</strong> To be updated</div>
+            <div class="student-profile-row"><strong>Parent / Guardian:</strong> To be updated</div>
+            <div class="student-profile-row"><strong>Academic Performance:</strong> To be updated</div>
+            <div class="student-profile-row"><strong>Remarks:</strong> To be updated</div>
+            <div class="student-photo-gallery">
+                <h4>📊 Monthly Progress Photos</h4>
+                <div class="student-photo-grid">${galleryHTML}</div>
+            </div>
+            <div id="studentUploadProgress" class="student-upload-progress" role="status" aria-live="polite"></div>
+        </div>`;
+    bindPortfolioImages(student);
+}
+
+function chooseStudentPortfolioPhoto(studentId,type,month=null){
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+    studentUploadTarget={studentId,type,month};
+    const input=document.getElementById("studentPortfolioPhotoInput");
+    if(!input) return;
+    input.value="";
+    input.click();
+}
+function uploadStatus(message,type="info"){
+    const el=document.getElementById("studentUploadProgress");
+    if(!el) return;
+    el.textContent=message;
+    el.className=`student-upload-progress show ${type}`;
+}
+async function compressStudentPhoto(file){
+    const bmp=await createImageBitmap(file);
+    const max=1600;
+    let w=bmp.width,h=bmp.height;
+    if(w>max||h>max){
+        const r=Math.min(max/w,max/h);
+        w=Math.round(w*r);h=Math.round(h*r);
+    }
+    const canvas=document.createElement("canvas");
+    canvas.width=w;canvas.height=h;
+    canvas.getContext("2d").drawImage(bmp,0,0,w,h);
+    if(bmp.close) bmp.close();
+    return await new Promise((resolve,reject)=>{
+        canvas.toBlob(b=>b?resolve(b):reject(new Error("Compression failed")),"image/jpeg",0.82);
+    });
+}
+async function handleStudentPortfolioPhotoSelected(event){
+    const file=event.target.files?.[0];
+    if(!file||!studentUploadTarget) return;
+    if(!studentAdminSession){uploadStatus("Admin session expired. Log in again.","error");return;}
+    if(!file.type.startsWith("image/")){uploadStatus("Choose an image file.","error");return;}
+    const c=initStudentSupabase();
+    if(!c){uploadStatus("Storage is not configured yet.","error");return;}
+    const target={...studentUploadTarget};
+    try{
+        uploadStatus("Preparing photo...","info");
+        const compressed=await compressStudentPhoto(file);
+        uploadStatus("Uploading photo...","info");
+        const path=cloudPath(target.studentId,target.type,target.month);
+        const {error}=await c.storage.from(STUDENT_STORAGE_CONFIG.bucket).upload(
+            path,compressed,{contentType:"image/jpeg",cacheControl:"3600",upsert:true}
+        );
+        if(error) throw error;
+        uploadStatus("✓ Photo uploaded successfully.","success");
+        if(activeStudentPortfolio?.studentId===target.studentId){
+            setTimeout(()=>renderStudentProfile(activeStudentPortfolio.className,activeStudentPortfolio.studentId),300);
+        }
+    }catch(err){
+        console.error(err);
+        uploadStatus("Upload failed. Check Supabase Storage policies/setup.","error");
+    }finally{
+        studentUploadTarget=null;
+        event.target.value="";
+    }
+}
+
+function openStudentPhotoGallery(studentId,startIndex){
+    currentPhotos=Array.from({length:12},(_,i)=>{
+        const m=i+1;
+        const cu=cloudUrl(cloudPath(studentId,"month",m));
+        return cu?cu+"?v="+Date.now():staticUrl(studentId,"month",m);
+    });
+    currentPhotoIndex=startIndex;
+    const lightbox=document.getElementById("photoLightbox");
+    if(!lightbox) return;
+    lightbox.style.display="flex";
+    document.body.style.overflow="hidden";
+    showCurrentPhoto();
+}
+
+async function restoreStudentAdminSession(){
+    const c=initStudentSupabase();
+    if(!c){setStudentAdminUI(false);return;}
+    const {data}=await c.auth.getSession();
+    studentAdminSession=data?.session||null;
+    setStudentAdminUI(!!studentAdminSession,studentAdminSession?.user?.email||"");
+    c.auth.onAuthStateChange((_event,session)=>{
+        studentAdminSession=session||null;
+        setStudentAdminUI(!!session,session?.user?.email||"");
+    });
+}
+document.addEventListener("DOMContentLoaded",()=>{
+    restoreStudentAdminSession();
+    ["studentAdminEmail","studentAdminPassword"].forEach(id=>{
+        document.getElementById(id)?.addEventListener("keydown",e=>{
+            if(e.key==="Enter"){e.preventDefault();studentAdminLogin();}
+        });
+    });
+});
+</script>
+
+<input id="studentPortfolioPhotoInput" type="file" accept="image/*" hidden onchange="handleStudentPortfolioPhotoSelected(event)">
 
 </body>
 
