@@ -5765,11 +5765,32 @@ function renderStudentProfile(className, studentId){
         </div>`;
 }
 
-function openStudentPhotoGallery(studentId,startIndex){
-    currentPhotos=Array.from({length:12},(_,i)=>`student-photos/${studentId}/${i+1}.jpeg`);
+async function openStudentPhotoGallery(studentId,startIndex){
+    const urls=await Promise.all(
+        Array.from({length:12},async(_,i)=>{
+            const m=i+1;
+            return await cloudSignedUrl(
+                cloudPath(studentId,"month",m),
+                900
+            );
+        })
+    );
+
+    currentPhotos=urls;
     currentPhotoIndex=startIndex;
+
+    if(!currentPhotos[currentPhotoIndex]){
+        const firstAvailable=currentPhotos.findIndex(Boolean);
+        if(firstAvailable===-1){
+            uploadStatus("No monthly photo has been uploaded yet.","info");
+            return;
+        }
+        currentPhotoIndex=firstAvailable;
+    }
+
     const lightbox=document.getElementById("photoLightbox");
     if(!lightbox) return;
+
     lightbox.style.display="flex";
     document.body.style.overflow="hidden";
     showCurrentPhoto();
@@ -6940,6 +6961,7 @@ window.addEventListener('resize',()=>{
    STUDENT PORTFOLIO — ADMIN-ONLY SUPABASE PHOTO UPLOAD
    Change ONLY these two placeholder values after Supabase setup.
 ========================================================= */
+/* PRIVATE BUCKET NOTE: authenticated users need SELECT policy on storage.objects for bucket_id='student-reports'. */
 const STUDENT_STORAGE_CONFIG={
     url:"https://yxecklijkcaxrfshpzna.supabase.co",
     anonKey:"sb_publishable_7q0fv4SbCVs_AHARyWPvZQ_YvzCvbfI",
@@ -6950,6 +6972,7 @@ let studentSupabase=null;
 let studentAdminSession=null;
 let studentUploadTarget=null;
 let activeStudentPortfolio=null;
+const studentSignedUrlCache=new Map();
 
 function studentStorageConfigured(){
     return STUDENT_STORAGE_CONFIG.url &&
@@ -7036,53 +7059,103 @@ function cloudPath(studentId,type,month=null){
         ?`students/${studentId}/profile.jpg`
         :`students/${studentId}/month-${month}.jpg`;
 }
-function cloudUrl(path){
+async function cloudSignedUrl(path,expiresIn=900){
     const c=initStudentSupabase();
     if(!c) return "";
-    return c.storage.from(STUDENT_STORAGE_CONFIG.bucket).getPublicUrl(path).data?.publicUrl||"";
+
+    const cacheKey=`${path}:${expiresIn}`;
+    const cached=studentSignedUrlCache.get(cacheKey);
+
+    if(cached && cached.expiresAt>Date.now()+30000){
+        return cached.url;
+    }
+
+    const {data,error}=await c.storage
+        .from(STUDENT_STORAGE_CONFIG.bucket)
+        .createSignedUrl(path,expiresIn);
+
+    if(error || !data || !data.signedUrl){
+        return "";
+    }
+
+    studentSignedUrlCache.set(cacheKey,{
+        url:data.signedUrl,
+        expiresAt:Date.now()+(expiresIn*1000)
+    });
+
+    return data.signedUrl;
 }
 function staticUrl(studentId,type,month=null){
     return type==="profile"
         ?`student-photos/${studentId}/profile.jpeg`
         :`student-photos/${studentId}/${month}.jpeg`;
 }
-function photoCandidates(studentId,type,month=null){
-    const arr=[];
-    const cu=cloudUrl(cloudPath(studentId,type,month));
-    if(cu) arr.push(cu+"?v="+Date.now());
-    arr.push(staticUrl(studentId,type,month));
-    return arr;
-}
-function applyImageFallback(img,candidates,missing){
-    let i=0;
-    const next=()=>{
-        if(i>=candidates.length){
+async function loadPrivateStudentPhoto(img,missing,studentId,type,month=null){
+    if(!img) return;
+
+    const path=cloudPath(studentId,type,month);
+    const signed=await cloudSignedUrl(path,900);
+
+    if(signed){
+        img.onerror=()=>{
             img.style.display="none";
             if(missing) missing.style.display="flex";
-            return;
-        }
-        img.style.display="block";
-        if(missing) missing.style.display="none";
-        img.src=candidates[i++];
-    };
-    img.onerror=next;
-    next();
+        };
+        img.onload=()=>{
+            img.style.display="block";
+            if(missing) missing.style.display="none";
+        };
+        img.src=signed;
+        return;
+    }
+
+    /* Optional legacy local fallback only if Supabase is not configured. */
+    if(!studentStorageConfigured()){
+        img.onerror=()=>{
+            img.style.display="none";
+            if(missing) missing.style.display="flex";
+        };
+        img.onload=()=>{
+            img.style.display="block";
+            if(missing) missing.style.display="none";
+        };
+        img.src=staticUrl(studentId,type,month);
+        return;
+    }
+
+    img.style.display="none";
+    if(missing) missing.style.display="flex";
 }
-function bindPortfolioImages(student){
+
+async function bindPortfolioImages(student){
     const ph=document.getElementById("studentProfilePhotoHost");
     if(ph){
         ph.innerHTML='<div class="student-main-photo-wrap"><img id="studentMainPhoto" class="student-main-photo" loading="lazy" decoding="async"><div id="studentMainPhotoMissing" class="student-main-photo-placeholder" style="display:none">👤</div></div>';
-        applyImageFallback(
+
+        await loadPrivateStudentPhoto(
             document.getElementById("studentMainPhoto"),
-            photoCandidates(student.studentId,"profile"),
-            document.getElementById("studentMainPhotoMissing")
+            document.getElementById("studentMainPhotoMissing"),
+            student.studentId,
+            "profile"
         );
     }
-    document.querySelectorAll("[data-student-month-photo]").forEach(img=>{
-        const month=Number(img.dataset.month);
-        const missing=img.parentElement?.querySelector(".student-photo-missing");
-        applyImageFallback(img,photoCandidates(student.studentId,"month",month),missing);
-    });
+
+    const monthImages=Array.from(document.querySelectorAll("[data-student-month-photo]"));
+
+    await Promise.all(
+        monthImages.map(async img=>{
+            const month=Number(img.dataset.month);
+            const missing=img.parentElement?.querySelector(".student-photo-missing");
+
+            await loadPrivateStudentPhoto(
+                img,
+                missing,
+                student.studentId,
+                "month",
+                month
+            );
+        })
+    );
 }
 
 function renderStudentProfile(className,studentId){
@@ -7124,66 +7197,220 @@ function renderStudentProfile(className,studentId){
             </div>
             <div id="studentUploadProgress" class="student-upload-progress" role="status" aria-live="polite"></div>
         </div>`;
-    bindPortfolioImages(student);
+    bindPortfolioImages(student).catch(err=>console.error('Student photo display error:',err));
 }
 
-function chooseStudentPortfolioPhoto(studentId,type,month=null){
-    if(!studentAdminSession){openStudentAdminLogin();return;}
-    studentUploadTarget={studentId,type,month};
-    const input=document.getElementById("studentPortfolioPhotoInput");
-    if(!input) return;
-    input.value="";
-    input.click();
+function ensureStudentUploadStatusBox(){
+    let el=document.getElementById("studentUploadProgress");
+
+    if(!el){
+        const profile=document.querySelector("#studentRollView .student-profile");
+        if(profile){
+            el=document.createElement("div");
+            el.id="studentUploadProgress";
+            el.className="student-upload-progress";
+            el.setAttribute("role","status");
+            el.setAttribute("aria-live","polite");
+            profile.appendChild(el);
+        }
+    }
+    return el;
 }
+
 function uploadStatus(message,type="info"){
-    const el=document.getElementById("studentUploadProgress");
+    const el=ensureStudentUploadStatusBox();
     if(!el) return;
     el.textContent=message;
     el.className=`student-upload-progress show ${type}`;
+    el.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
-async function compressStudentPhoto(file){
-    const bmp=await createImageBitmap(file);
-    const max=1600;
-    let w=bmp.width,h=bmp.height;
-    if(w>max||h>max){
-        const r=Math.min(max/w,max/h);
-        w=Math.round(w*r);h=Math.round(h*r);
+
+function chooseStudentPortfolioPhoto(studentId,type,month=null){
+    if(!studentAdminSession){
+        openStudentAdminLogin();
+        return;
     }
-    const canvas=document.createElement("canvas");
-    canvas.width=w;canvas.height=h;
-    canvas.getContext("2d").drawImage(bmp,0,0,w,h);
-    if(bmp.close) bmp.close();
-    return await new Promise((resolve,reject)=>{
-        canvas.toBlob(b=>b?resolve(b):reject(new Error("Compression failed")),"image/jpeg",0.82);
+
+    /*
+      Create a fresh file input every time.
+      This is more reliable than reusing one hidden input and guarantees
+      that selecting the same photo twice still triggers a change event.
+    */
+    const picker=document.createElement("input");
+    picker.type="file";
+    picker.accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/*";
+    picker.style.position="fixed";
+    picker.style.left="-9999px";
+    picker.style.opacity="0";
+    document.body.appendChild(picker);
+
+    picker.addEventListener("change",async()=>{
+        const file=picker.files && picker.files[0];
+
+        if(!file){
+            picker.remove();
+            return;
+        }
+
+        studentUploadTarget={studentId,type,month};
+
+        try{
+            await uploadStudentPortfolioFile(file,{studentId,type,month});
+        }finally{
+            studentUploadTarget=null;
+            picker.remove();
+        }
+    },{once:true});
+
+    picker.click();
+}
+
+function loadImageForCompression(file){
+    return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+
+        reader.onerror=()=>reject(new Error("Could not read the selected photo."));
+        reader.onload=()=>{
+            const img=new Image();
+            img.onload=()=>resolve(img);
+            img.onerror=()=>reject(new Error("This image format could not be opened in the browser."));
+            img.src=reader.result;
+        };
+
+        reader.readAsDataURL(file);
     });
 }
-async function handleStudentPortfolioPhotoSelected(event){
-    const file=event.target.files?.[0];
-    if(!file||!studentUploadTarget) return;
-    if(!studentAdminSession){uploadStatus("Admin session expired. Log in again.","error");return;}
-    if(!file.type.startsWith("image/")){uploadStatus("Choose an image file.","error");return;}
+
+async function compressStudentPhoto(file){
+    /*
+      Browser-compatible compressor.
+      Falls back to the original file if the browser cannot decode it.
+    */
+    try{
+        const img=await loadImageForCompression(file);
+        const max=1600;
+
+        let w=img.naturalWidth || img.width;
+        let h=img.naturalHeight || img.height;
+
+        if(!w || !h) throw new Error("Invalid image dimensions.");
+
+        if(w>max || h>max){
+            const r=Math.min(max/w,max/h);
+            w=Math.round(w*r);
+            h=Math.round(h*r);
+        }
+
+        const canvas=document.createElement("canvas");
+        canvas.width=w;
+        canvas.height=h;
+
+        const ctx=canvas.getContext("2d");
+        if(!ctx) throw new Error("Canvas is not available.");
+
+        ctx.drawImage(img,0,0,w,h);
+
+        const blob=await new Promise((resolve,reject)=>{
+            canvas.toBlob(
+                b=>b?resolve(b):reject(new Error("Photo compression failed.")),
+                "image/jpeg",
+                0.82
+            );
+        });
+
+        return blob;
+    }catch(error){
+        console.warn("Photo compression fallback:",error);
+        return file;
+    }
+}
+
+async function uploadStudentPortfolioFile(file,target){
+    if(!studentAdminSession){
+        uploadStatus("Admin session expired. Please log in again.","error");
+        return;
+    }
+
+    if(!file || !file.type || !file.type.startsWith("image/")){
+        uploadStatus("Please choose a valid image file.","error");
+        return;
+    }
+
     const c=initStudentSupabase();
-    if(!c){uploadStatus("Storage is not configured yet.","error");return;}
-    const target={...studentUploadTarget};
+
+    if(!c){
+        uploadStatus("Supabase Storage is not connected.","error");
+        return;
+    }
+
     try{
         uploadStatus("Preparing photo...","info");
-        const compressed=await compressStudentPhoto(file);
-        uploadStatus("Uploading photo...","info");
-        const path=cloudPath(target.studentId,target.type,target.month);
-        const {error}=await c.storage.from(STUDENT_STORAGE_CONFIG.bucket).upload(
-            path,compressed,{contentType:"image/jpeg",cacheControl:"3600",upsert:true}
-        );
-        if(error) throw error;
-        uploadStatus("✓ Photo uploaded successfully.","success");
-        if(activeStudentPortfolio?.studentId===target.studentId){
-            setTimeout(()=>renderStudentProfile(activeStudentPortfolio.className,activeStudentPortfolio.studentId),300);
+
+        const uploadBlob=await compressStudentPhoto(file);
+
+        /* Keep uploads small enough for the free storage workflow. */
+        if(uploadBlob.size > 5*1024*1024){
+            throw new Error("Photo is larger than 5 MB after processing.");
         }
+
+        const path=cloudPath(target.studentId,target.type,target.month);
+
+        uploadStatus("Uploading photo...","info");
+
+        const {data,error}=await c.storage
+            .from(STUDENT_STORAGE_CONFIG.bucket)
+            .upload(path,uploadBlob,{
+                contentType:"image/jpeg",
+                cacheControl:"3600",
+                upsert:true
+            });
+
+        if(error){
+            throw error;
+        }
+
+        console.log("Student photo uploaded:",data);
+
+        studentSignedUrlCache.clear();
+        uploadStatus("✓ Photo uploaded successfully.","success");
+
+        if(activeStudentPortfolio &&
+           activeStudentPortfolio.studentId===target.studentId){
+            setTimeout(()=>{
+                renderStudentProfile(
+                    activeStudentPortfolio.className,
+                    activeStudentPortfolio.studentId
+                );
+            },500);
+        }
+
     }catch(err){
-        console.error(err);
-        uploadStatus("Upload failed. Check Supabase Storage policies/setup.","error");
+        console.error("Student photo upload error:",err);
+
+        const msg =
+            err && err.message
+                ? err.message
+                : "Unknown upload error";
+
+        uploadStatus(`Upload failed: ${msg}`,"error");
+    }
+}
+
+/* Backward-compatible handler kept in case an older hidden input remains. */
+async function handleStudentPortfolioPhotoSelected(event){
+    const file=event && event.target && event.target.files
+        ? event.target.files[0]
+        : null;
+
+    if(!file || !studentUploadTarget) return;
+
+    const target={...studentUploadTarget};
+
+    try{
+        await uploadStudentPortfolioFile(file,target);
     }finally{
         studentUploadTarget=null;
-        event.target.value="";
+        if(event.target) event.target.value="";
     }
 }
 
@@ -7221,8 +7448,6 @@ document.addEventListener("DOMContentLoaded",()=>{
     });
 });
 </script>
-
-<input id="studentPortfolioPhotoInput" type="file" accept="image/*" hidden onchange="handleStudentPortfolioPhotoSelected(event)">
 
 </body>
 
