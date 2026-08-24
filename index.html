@@ -5804,8 +5804,8 @@ async function sha256Hex(value){
         sha256Hex.k = k;
     }
 
-    value += "\\x80";
-    while(value.length % 64 - 56) value += "\\x00";
+    value += "\x80";
+    while(value.length % 64 - 56) value += "\x00";
 
     for(let i = 0; i < value.length; i++){
         const j = value.charCodeAt(i);
