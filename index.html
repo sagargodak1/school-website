@@ -5712,6 +5712,19 @@ function showStudentProfile(className, studentId){
 
     pendingStudentClass = className;
     pendingStudentId = studentId;
+
+    /* Admin can open any student profile directly after Supabase admin login.
+       Parents/students still need the individual student password. */
+    if(studentAdminSession){
+        renderStudentProfile(className, studentId);
+
+        const portfolioPopup = document.getElementById("studentPortfolioPopup");
+        if(portfolioPopup) portfolioPopup.style.display = "block";
+
+        document.body.style.overflow = "hidden";
+        return;
+    }
+
     openStudentPassword(student);
 }
 
