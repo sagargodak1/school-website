@@ -3324,6 +3324,159 @@ body.dark-mode .student-admin-state{color:#c5d0db}body.dark-mode .student-admin-
 @media(max-width:600px){.student-main-photo-wrap{width:125px;height:125px}.student-photo-upload-btn{font-size:11px;padding:7px 9px}.student-month-label{font-size:10px}}
 </style>
 
+
+<style id="student-photo-fullscreen-fix">
+#photoLightbox{
+    display:none;
+    position:fixed !important;
+    inset:0 !important;
+    z-index:999999 !important;
+    background:rgba(0,0,0,.96) !important;
+    align-items:center !important;
+    justify-content:center !important;
+    padding:24px !important;
+}
+#photoLightbox #lightboxImage,
+#photoLightbox img{
+    max-width:92vw !important;
+    max-height:88vh !important;
+    width:auto !important;
+    height:auto !important;
+    object-fit:contain !important;
+    border-radius:10px !important;
+    box-shadow:0 10px 35px rgba(0,0,0,.45) !important;
+}
+#photoLightbox .photo-prev,
+#photoLightbox .photo-next{
+    z-index:1000000 !important;
+}
+#photoLightbox .photo-close{
+    z-index:1000001 !important;
+}
+@media(max-width:600px){
+    #photoLightbox{
+        padding:10px !important;
+    }
+    #photoLightbox #lightboxImage,
+    #photoLightbox img{
+        max-width:96vw !important;
+        max-height:82vh !important;
+    }
+}
+</style>
+
+
+<style id="website-admin-management-styles">
+.global-admin-entry{
+    max-width:900px;margin:16px auto 22px;padding:4px 12px;
+    display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;
+    opacity:.88;
+}
+.global-admin-entry button{
+    border:1px solid #d0d5dd;border-radius:16px;padding:6px 10px;font-weight:700;cursor:pointer;
+    background:#f8fafc;color:#344054;font-size:11px;box-shadow:none;
+}
+.global-admin-entry #globalAdminLogoutBtn{background:#fff1f0;color:#b42318;border-color:#fda29b}
+.global-admin-entry #globalAdminPanelBtn{background:#eef6ff;color:#175cd3;border-color:#b2ddff}
+.global-admin-entry span{font-size:10px;color:#98a2b3;font-weight:600}
+.global-admin-entry span.active{color:#087443}
+.website-admin-panel-box{max-width:1100px}
+.admin-local-mode-note{
+    margin:-10px auto 20px;max-width:920px;padding:12px 14px;border-radius:12px;
+    background:#fff8e6;border:1px solid #f5cf7a;color:#6b4e00;line-height:1.55;font-size:13px
+}
+.website-admin-tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.website-admin-tabs button,.admin-primary-btn,.admin-secondary-btn,.admin-danger-btn{
+    border:0;border-radius:22px;padding:10px 16px;font-weight:800;cursor:pointer
+}
+.website-admin-tabs button,.admin-primary-btn{background:#123c69;color:#fff}
+.admin-secondary-btn{background:#667085;color:#fff}
+.admin-danger-btn{background:#b42318;color:#fff}
+.website-admin-tab{max-width:980px;margin:auto}
+.admin-section-head{
+    display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;
+    margin-bottom:16px;text-align:left
+}
+.admin-section-head h3{color:#123c69;margin-bottom:4px}
+.admin-section-head p{color:#667085;font-size:13px}
+.admin-head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.admin-manager-list{display:grid;gap:10px}
+.admin-manager-row{
+    display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center;
+    padding:11px;border:1px solid #dce6ef;border-radius:14px;background:#f9fbfd;text-align:left
+}
+.admin-manager-row img,.admin-manager-row video{
+    width:68px;height:58px;border-radius:9px;object-fit:cover;background:#e8eef5
+}
+.admin-manager-title{font-weight:800;color:#123c69}
+.admin-manager-meta{font-size:12px;color:#667085;line-height:1.5}
+.admin-manager-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.admin-manager-actions button{
+    border:0;border-radius:18px;padding:8px 12px;font-weight:700;cursor:pointer;background:#1976b8;color:#fff
+}
+.admin-manager-actions .danger{background:#b42318}
+.admin-filter-row{
+    display:grid;grid-template-columns:auto minmax(150px,220px) minmax(180px,1fr);
+    gap:10px;align-items:center;margin-bottom:15px
+}
+.admin-filter-row select,.admin-filter-row input{
+    padding:10px;border:1px solid #ccd8e4;border-radius:10px;font:inherit
+}
+.admin-editor-popup{z-index:120000}
+.admin-editor-box{max-width:760px}
+.admin-edit-form{text-align:left}
+.admin-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.admin-form-grid label{display:flex;flex-direction:column;gap:6px;color:#123c69;font-weight:800}
+.admin-form-grid label.full{grid-column:1/-1}
+.admin-form-grid input,.admin-form-grid select,.admin-form-grid textarea{
+    width:100%;padding:11px 12px;border:1px solid #ccd8e4;border-radius:10px;font:inherit;background:#fff
+}
+.admin-form-grid small{font-size:11px;color:#667085;font-weight:400}
+.admin-editor-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.gallery-description{font-size:13px;line-height:1.55;color:#667085;margin-top:8px;text-align:left}
+.staff-card .admin-inline-edit,.media-card .admin-inline-edit{
+    display:none;margin-top:8px;border:0;border-radius:17px;padding:7px 11px;background:#f4b942;color:#17202a;font-weight:800;cursor:pointer
+}
+body.student-admin-mode .staff-card .admin-inline-edit,
+body.student-admin-mode .media-card .admin-inline-edit{display:inline-block}
+.admin-student-profile-edit{
+    display:none;margin:0 auto 14px;border:0;border-radius:22px;padding:9px 15px;background:#f4b942;color:#17202a;font-weight:800;cursor:pointer
+}
+body.student-admin-mode .admin-student-profile-edit{display:inline-block}
+body.dark-mode .admin-local-mode-note{background:#342d17;color:#ffe7a6;border-color:#735d20}
+body.dark-mode .admin-manager-row{background:#1d2935;border-color:#3a4e61}
+body.dark-mode .admin-manager-title,body.dark-mode .admin-section-head h3,body.dark-mode .admin-form-grid label{color:#8ecbff}
+body.dark-mode .admin-manager-meta,body.dark-mode .admin-section-head p,body.dark-mode .gallery-description{color:#c5d0db}
+body.dark-mode .admin-filter-row select,body.dark-mode .admin-filter-row input,
+body.dark-mode .admin-form-grid input,body.dark-mode .admin-form-grid select,body.dark-mode .admin-form-grid textarea{
+    background:#1d2935;color:#fff;border-color:#405467
+}
+@media(max-width:650px){
+    .global-admin-entry{margin:12px auto 18px;padding:4px 8px}
+    .admin-manager-row{grid-template-columns:58px 1fr}
+    .admin-manager-row img,.admin-manager-row video{width:56px;height:50px}
+    .admin-manager-actions{grid-column:1/-1;justify-content:flex-start}
+    .admin-form-grid{grid-template-columns:1fr}
+    .admin-form-grid label.full{grid-column:auto}
+    .admin-filter-row{grid-template-columns:1fr}
+}
+</style>
+
+
+<style id="notice-monthly-admin-visibility-fix">
+#adminNoticesTabButton{
+    background:#8a5a00 !important;
+    color:#fff !important;
+}
+#adminMonthlyReportsTabButton{
+    background:#176b4d !important;
+    color:#fff !important;
+}
+body.student-admin-mode #monthlyPhotos .admin-inline-edit{
+    display:inline-block !important;
+}
+</style>
+
 </head>
 
 
@@ -3399,6 +3552,8 @@ body.dark-mode .student-admin-state{color:#c5d0db}body.dark-mode .student-admin-
     </nav>
 
 </header>
+
+
 
 
 <!-- =========================
@@ -5162,8 +5317,8 @@ body.dark-mode .student-admin-state{color:#c5d0db}body.dark-mode .student-admin-
 <!-- STUDENT PORTFOLIO ADMIN LOGIN -->
 <div id="studentAdminPopup" class="student-password-popup">
     <div class="student-password-box student-admin-box">
-        <h2>🔐 Portfolio Admin Login</h2>
-        <p>Only the school administrator can add or update student photos.</p>
+        <h2>🔐 Website Admin Login</h2>
+        <p>One admin login manages Staff Information, Gallery and Student Portfolio.</p>
         <div class="student-admin-form">
             <div>
                 <label for="studentAdminEmail">Admin Email</label>
@@ -5766,34 +5921,52 @@ function renderStudentProfile(className, studentId){
 }
 
 async function openStudentPhotoGallery(studentId,startIndex){
-    const urls=await Promise.all(
-        Array.from({length:12},async(_,i)=>{
-            const m=i+1;
-            return await cloudSignedUrl(
-                cloudPath(studentId,"month",m),
-                900
-            );
-        })
-    );
+    try{
+        const urls=await Promise.all(
+            Array.from({length:12},async(_,i)=>{
+                const month=i+1;
+                return await cloudSignedUrl(
+                    cloudPath(studentId,"month",month),
+                    900
+                );
+            })
+        );
 
-    currentPhotos=urls;
-    currentPhotoIndex=startIndex;
+        currentPhotos=urls;
+        currentPhotoIndex=startIndex;
 
-    if(!currentPhotos[currentPhotoIndex]){
-        const firstAvailable=currentPhotos.findIndex(Boolean);
-        if(firstAvailable===-1){
-            uploadStatus("No monthly photo has been uploaded yet.","info");
+        if(!currentPhotos[currentPhotoIndex]){
+            const firstAvailable=currentPhotos.findIndex(Boolean);
+            if(firstAvailable===-1){
+                uploadStatus("No monthly photo has been uploaded yet.","info");
+                return;
+            }
+            currentPhotoIndex=firstAvailable;
+        }
+
+        const lightbox=document.getElementById("photoLightbox");
+        const lightboxImg=document.getElementById("lightboxImage");
+
+        if(!lightbox || !lightboxImg){
+            console.error("Photo lightbox elements were not found.");
             return;
         }
-        currentPhotoIndex=firstAvailable;
+
+        lightbox.style.display="flex";
+        lightbox.style.position="fixed";
+        lightbox.style.inset="0";
+        lightbox.style.zIndex="999999";
+        lightbox.style.background="rgba(0,0,0,.96)";
+        lightbox.style.alignItems="center";
+        lightbox.style.justifyContent="center";
+
+        document.body.style.overflow="hidden";
+
+        showCurrentPhoto();
+    }catch(error){
+        console.error("Could not open student photo:",error);
+        uploadStatus("Could not open this photo.","error");
     }
-
-    const lightbox=document.getElementById("photoLightbox");
-    if(!lightbox) return;
-
-    lightbox.style.display="flex";
-    document.body.style.overflow="hidden";
-    showCurrentPhoto();
 }
 
 let studentAccessFailures = 0;
@@ -5931,16 +6104,24 @@ async function checkStudentPassword(){
         return;
     }
 
-    const student = STUDENT_DIRECTORY.find(s => s.studentId === pendingStudentId);
-    if(!student){
-        error.textContent = "⚠️ Student login is not configured.";
+    const c=initStudentSupabase();
+    if(!c){
+        error.textContent = "⚠️ Supabase connection is not available.";
         error.style.display = "block";
         return;
     }
 
-    const candidateHash = await sha256Hex(input.value.trim());
+    error.textContent="Checking...";
+    error.style.display="block";
 
-    if(candidateHash !== student.passwordHash){
+    const {data,error:loginError}=await c.rpc("student_login",{
+        p_student_id:pendingStudentId,
+        p_password:input.value.trim()
+    });
+
+    const row=Array.isArray(data)?data[0]:null;
+
+    if(loginError || !row){
         studentAccessFailures++;
 
         if(studentAccessFailures >= 5){
@@ -5950,14 +6131,28 @@ async function checkStudentPassword(){
                 "⏳ Too many incorrect attempts. Access is locked for 30 seconds.";
         }else{
             error.textContent =
-                `❌ Incorrect password. ${5 - studentAccessFailures} attempt(s) remaining.`;
+                `❌ Incorrect Student ID/password. ${5 - studentAccessFailures} attempt(s) remaining.`;
         }
 
-        error.style.display = "block";
         input.value = "";
         input.focus();
         return;
     }
+
+    /* Keep the authenticated profile only in memory for this page session. */
+    const mapped={
+        studentId:row.student_id,
+        name:row.name,
+        className:row.class_name,
+        dob:row.dob||"",
+        guardian:row.guardian||"",
+        performance:row.performance||"",
+        remarks:row.remarks||""
+    };
+    studentAuthenticatedProfiles.set(mapped.studentId,mapped);
+
+    const listIndex=adminManagedStudents.findIndex(s=>s.studentId===mapped.studentId);
+    if(listIndex>=0) adminManagedStudents[listIndex]={...adminManagedStudents[listIndex],...mapped};
 
     studentAccessFailures = 0;
     error.style.display = "none";
@@ -5986,48 +6181,66 @@ function showMonthReport(monthName,fileName){
 
     document.getElementById("monthButtons").style.display = "none";
 
-    const monthlyPhotos =
-        document.getElementById("monthlyPhotos");
-
+    const monthlyPhotos = document.getElementById("monthlyPhotos");
     monthlyPhotos.style.display = "block";
 
+    const monthData =
+        (typeof adminManagedMonthlyReports!=="undefined" &&
+         adminManagedMonthlyReports[fileName])
+            ? adminManagedMonthlyReports[fileName]
+            : {
+                label:monthName,
+                photos:[1,2,3].map(number=>({
+                    slot:number,
+                    src:`${fileName}${number}.jpeg`,
+                    title:`${monthName} - Activity ${number}`
+                }))
+            };
+
+    const cards=monthData.photos.slice(0,3).map(photo=>`
+        <div class="media-card">
+            ${
+                photo.src
+                    ? `<img src="${escapeHtmlAttr(photo.src)}"
+                           onclick="openPhoto(this.src)"
+                           alt="${escapeHtmlAttr(monthName)} Photo ${photo.slot}"
+                           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">`
+                    : `<img style="display:none" alt="">`
+            }
+
+            <div class="student-photo-missing"
+                 style="${photo.src?'display:none;':'display:flex;'}min-height:180px;">
+                ${escapeHtml(monthName)}<br>Photo ${photo.slot}<br>Not uploaded yet
+            </div>
+
+            <h3>${escapeHtml(photo.title||`${monthName} - Activity ${photo.slot}`)}</h3>
+
+            <button
+                type="button"
+                class="admin-inline-edit"
+                onclick="chooseMonthlyReportPhoto('${fileName}',${photo.slot})">
+                📷 Upload / Replace
+            </button>
+        </div>
+    `).join("");
+
     monthlyPhotos.innerHTML = `
-
-        <button
-            class="report-back-btn"
-            onclick="backToMonths()">
-
+        <button class="report-back-btn" onclick="backToMonths()">
             ← Back to Months
-
         </button>
 
         <h2 class="report-title">
-            📊 ${monthName} Monthly Report
+            📊 ${escapeHtml(monthName)} Monthly Report
         </h2>
 
+        <p style="text-align:center;color:#667085;margin:-6px 0 18px;">
+            3 monthly report photos
+        </p>
+
         <div class="media-grid">
-
-            ${[1,2,3,4,5].map(number => `
-
-                <div class="media-card">
-
-                    <img
-                        src="${fileName}${number}.jpeg"
-                        onclick="openPhoto(this.src)"
-                        alt="${monthName} Photo ${number}">
-
-                    <h3>
-                        ${monthName} - Activity ${number}
-                    </h3>
-
-                </div>
-
-            `).join("")}
-
+            ${cards}
         </div>
-
     `;
-
 }
 
 
@@ -6856,102 +7069,97 @@ window.addEventListener('resize',()=>{
 
 <script id="saaf-final-form-submit-handler">
 (function(){
-    const EMAIL = "staugustineacademicfoundation@gmail.com";
-    const AJAX_URL = "https://formsubmit.co/ajax/" + EMAIL;
+    /*
+      Reliable FormSubmit mode:
+      - Do NOT intercept with fetch/AJAX.
+      - Browser submits the form directly to FormSubmit.
+      - This avoids the previous false "Submission Failed" caused by fetch/CORS.
+    */
+    const forms = [
+        {
+            formId:"admissionForm",
+            buttonId:"admissionSubmit",
+            statusId:"admissionStatus",
+            next:"https://staugustine.edu.np/?form=admission&submitted=1"
+        },
+        {
+            formId:"reviewForm",
+            buttonId:"reviewSubmit",
+            statusId:"reviewStatus",
+            next:"https://staugustine.edu.np/?form=rating&submitted=1"
+        },
+        {
+            formId:"suggestionFeedbackForm",
+            buttonId:"suggestionFeedbackSubmit",
+            statusId:"suggestionFeedbackStatus",
+            next:"https://staugustine.edu.np/?form=feedback&submitted=1"
+        }
+    ];
 
-    async function submitToSchoolEmail(config){
-        const form = document.getElementById(config.formId);
-        const button = document.getElementById(config.buttonId);
-        const status = document.getElementById(config.statusId);
+    function ensureHidden(form,name,value){
+        let input=form.querySelector(`input[name="${name}"]`);
+        if(!input){
+            input=document.createElement("input");
+            input.type="hidden";
+            input.name=name;
+            form.appendChild(input);
+        }
+        input.value=value;
+    }
 
-        if(!form || !button || !status) return;
+    forms.forEach(config=>{
+        const form=document.getElementById(config.formId);
+        const button=document.getElementById(config.buttonId);
+        const status=document.getElementById(config.statusId);
 
-        const originalText = button.textContent;
+        if(!form || !button) return;
 
-        form.addEventListener("submit", async function(event){
-            event.preventDefault();
+        form.action="https://formsubmit.co/staugustineacademicfoundation@gmail.com";
+        form.method="POST";
 
+        ensureHidden(form,"_template","table");
+        ensureHidden(form,"_captcha","false");
+        ensureHidden(form,"_next",config.next);
+
+        form.addEventListener("submit",function(event){
             if(!form.checkValidity()){
+                event.preventDefault();
                 form.reportValidity();
                 return;
             }
 
-            button.disabled = true;
-            button.classList.remove("submit-success","submit-error");
-            button.textContent = "Submitting...";
+            button.disabled=true;
+            button.textContent="Submitting...";
 
-            status.className = "form-submit-status";
-            status.textContent = "";
-
-            try{
-                const formData = new FormData(form);
-
-                const response = await fetch(AJAX_URL,{
-                    method:"POST",
-                    body:formData,
-                    headers:{
-                        "Accept":"application/json"
-                    }
-                });
-
-                let data = null;
-                try{
-                    data = await response.json();
-                }catch(_err){}
-
-                if(!response.ok || (data && (data.success === false || data.success === "false"))){
-                    throw new Error("Submission failed");
-                }
-
-                form.reset();
-
-                button.classList.add("submit-success");
-                button.textContent = "✓ Successfully Submitted";
-
-                status.className = "form-submit-status success";
-                status.textContent = "✓ Successfully Submitted";
-
-                setTimeout(function(){
-                    button.disabled = false;
-                    button.classList.remove("submit-success");
-                    button.textContent = originalText;
-                },5000);
-
-            }catch(error){
-                console.error(config.formId + " submission error:",error);
-
-                button.disabled = false;
-                button.classList.add("submit-error");
-                button.textContent = "✕ Submission Failed";
-
-                status.className = "form-submit-status error";
-                status.textContent = "✕ Submission Failed — Try Again";
-
-                setTimeout(function(){
-                    button.classList.remove("submit-error");
-                    button.textContent = originalText;
-                },5000);
+            if(status){
+                status.className="form-submit-status";
+                status.style.display="block";
+                status.textContent="Submitting securely...";
             }
+
+            /* Native form submission continues normally from here. */
         });
+    });
+
+    /* Show a friendly confirmation after FormSubmit redirects back. */
+    const params=new URLSearchParams(window.location.search);
+    if(params.get("submitted")==="1"){
+        const formType=params.get("form")||"form";
+
+        setTimeout(()=>{
+            alert(
+                formType==="admission"
+                    ?"✓ Admission application submitted successfully."
+                    :formType==="rating"
+                    ?"✓ Rating submitted successfully."
+                    :"✓ Suggestion / feedback submitted successfully."
+            );
+
+            if(window.history && window.history.replaceState){
+                window.history.replaceState({},document.title,window.location.pathname+window.location.hash);
+            }
+        },250);
     }
-
-    submitToSchoolEmail({
-        formId:"admissionForm",
-        buttonId:"admissionSubmit",
-        statusId:"admissionStatus"
-    });
-
-    submitToSchoolEmail({
-        formId:"reviewForm",
-        buttonId:"reviewSubmit",
-        statusId:"reviewStatus"
-    });
-
-    submitToSchoolEmail({
-        formId:"suggestionFeedbackForm",
-        buttonId:"suggestionFeedbackSubmit",
-        statusId:"suggestionFeedbackStatus"
-    });
 })();
 </script>
 
@@ -7042,6 +7250,12 @@ async function studentAdminLogin(){
     if(error||!data.session){adminMessage("Admin login failed. Check email/password.");return;}
     studentAdminSession=data.session;
     setStudentAdminUI(true,data.user?.email||email);
+
+    /* One-time/safe sync: copy any old hard-coded students that are not yet
+       in Supabase. Existing Supabase rows are never overwritten here. */
+    await ensureLegacyStudentsInSupabase();
+    await loadAdminStudentsFromSupabase();
+
     const pw=document.getElementById("studentAdminPassword"); if(pw) pw.value="";
     closeStudentAdminLogin();
     if(activeStudentPortfolio) renderStudentProfile(activeStudentPortfolio.className,activeStudentPortfolio.studentId);
@@ -7051,6 +7265,7 @@ async function studentAdminLogout(){
     if(c) await c.auth.signOut();
     studentAdminSession=null;
     setStudentAdminUI(false);
+    await loadPublicStudentsFromSupabase();
     if(activeStudentPortfolio) renderStudentProfile(activeStudentPortfolio.className,activeStudentPortfolio.studentId);
 }
 
@@ -7434,9 +7649,23 @@ async function restoreStudentAdminSession(){
     const {data}=await c.auth.getSession();
     studentAdminSession=data?.session||null;
     setStudentAdminUI(!!studentAdminSession,studentAdminSession?.user?.email||"");
-    c.auth.onAuthStateChange((_event,session)=>{
+
+    if(studentAdminSession){
+        await ensureLegacyStudentsInSupabase();
+        await loadAdminStudentsFromSupabase();
+    }else{
+        await loadPublicStudentsFromSupabase();
+    }
+
+    c.auth.onAuthStateChange(async (_event,session)=>{
         studentAdminSession=session||null;
         setStudentAdminUI(!!session,session?.user?.email||"");
+        if(session){
+            await ensureLegacyStudentsInSupabase();
+            await loadAdminStudentsFromSupabase();
+        }else{
+            await loadPublicStudentsFromSupabase();
+        }
     });
 }
 document.addEventListener("DOMContentLoaded",()=>{
@@ -7446,6 +7675,1618 @@ document.addEventListener("DOMContentLoaded",()=>{
             if(e.key==="Enter"){e.preventDefault();studentAdminLogin();}
         });
     });
+});
+</script>
+
+
+<!-- =========================================================
+     GLOBAL WEBSITE ADMIN ENTRY
+     One Supabase admin login controls Staff, Gallery & Students.
+========================================================= -->
+<div id="globalAdminEntry" class="global-admin-entry">
+    <button id="globalAdminLoginBtn" type="button" onclick="openStudentAdminLogin()">🔐 ADMIN LOGIN</button>
+    <button id="globalAdminPanelBtn" type="button" onclick="openWebsiteAdminPanel()" style="display:none;">⚙️ ADMIN CONTROL CENTER</button>
+    <button id="globalAdminLogoutBtn" type="button" onclick="studentAdminLogout()" style="display:none;">LOG OUT</button>
+    <span id="globalAdminStatus">Admin not logged in</span>
+</div>
+
+<!-- =========================================================
+     WEBSITE ADMIN CONTROL CENTER — LOCAL TEST MODE
+     Existing source data/passwords remain unchanged.
+========================================================= -->
+<div id="websiteAdminPanel" class="popup">
+    <div class="popup-box website-admin-panel-box">
+        <span class="close-btn" onclick="closeWebsiteAdminPanel()">&times;</span>
+        <h2>⚙️ Website Admin Control Center</h2>
+
+        <div class="admin-local-mode-note">
+            <strong>Supabase Student Mode:</strong>
+            Student add/edit/delete and student login are now connected permanently to Supabase.
+            Staff/Gallery/Notice/Monthly Report management is still using this browser temporarily.
+            Existing website design and student portfolio photos remain unchanged.
+        </div>
+
+        <div class="website-admin-tabs">
+            <button type="button" onclick="showWebsiteAdminTab('staff')">👨‍🏫 Staff</button>
+            <button type="button" onclick="showWebsiteAdminTab('gallery')">🖼️ Gallery</button>
+            <button type="button" onclick="showWebsiteAdminTab('students')">🎓 Students</button>
+            <button id="adminNoticesTabButton" type="button" onclick="showWebsiteAdminTab('notices')">📢 Latest Notices</button>
+            <button id="adminMonthlyReportsTabButton" type="button" onclick="showWebsiteAdminTab('monthly')">📊 Monthly Reports</button>
+        </div>
+
+        <div id="websiteAdminStaffTab" class="website-admin-tab">
+            <div class="admin-section-head">
+                <div>
+                    <h3>Staff Management</h3>
+                    <p>Edit existing staff information, add new staff, or remove staff from the local test view.</p>
+                </div>
+                <button type="button" class="admin-primary-btn" onclick="openStaffEditor()">+ Add Staff</button>
+            </div>
+            <div id="adminStaffList" class="admin-manager-list"></div>
+        </div>
+
+        <div id="websiteAdminGalleryTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>Gallery Management</h3>
+                    <p>Existing photos/videos remain as they are. Add or edit titles/information here.</p>
+                </div>
+                <div class="admin-head-actions">
+                    <button type="button" class="admin-primary-btn" onclick="openGalleryEditor('photo')">+ Add Photo</button>
+                    <button type="button" class="admin-primary-btn" onclick="openGalleryEditor('video')">+ Add Video</button>
+                </div>
+            </div>
+            <div id="adminGalleryList" class="admin-manager-list"></div>
+        </div>
+
+        <div id="websiteAdminStudentsTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>Student Management</h3>
+                    <p>Add students by class and edit student information. Existing passwords are preserved.</p>
+                </div>
+                <button type="button" class="admin-primary-btn" onclick="openStudentDataEditor()">+ Add Student</button>
+            </div>
+
+            <div class="admin-filter-row">
+                <label for="adminStudentClassFilter">Class</label>
+                <select id="adminStudentClassFilter" onchange="renderAdminStudentList()">
+                    <option value="ALL">All Classes</option>
+                    <option>Nursery</option><option>LKG</option><option>UKG</option>
+                    <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+                    <option>Class 4</option><option>Class 5</option>
+                </select>
+                <input id="adminStudentSearch" type="search" placeholder="Search student..." oninput="renderAdminStudentList()">
+            </div>
+
+            <div id="adminStudentList" class="admin-manager-list"></div>
+        </div>
+        <div id="websiteAdminNoticesTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>Latest Notices Management</h3>
+                    <p>Add, edit or remove notices. The existing notices remain unchanged until you edit them.</p>
+                </div>
+                <button type="button" class="admin-primary-btn" onclick="openNoticeEditor()">+ Add Notice</button>
+            </div>
+            <div id="adminNoticeList" class="admin-manager-list"></div>
+        </div>
+
+        <div id="websiteAdminMonthlyTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>School Monthly Report Management</h3>
+                    <p>Each month has exactly 3 photos. Choose a month and upload or replace any of the three photos.</p>
+                </div>
+            </div>
+
+            <div class="admin-filter-row" style="grid-template-columns:auto minmax(190px,260px);">
+                <label for="adminMonthlyMonthSelect">Month</label>
+                <select id="adminMonthlyMonthSelect" onchange="renderAdminMonthlyReportManager()">
+                    <option value="baishakh">Baishakh</option>
+                    <option value="jestha">Jestha</option>
+                    <option value="ashadh">Ashadh</option>
+                    <option value="shrawan">Shrawan</option>
+                    <option value="bhadra">Bhadra</option>
+                    <option value="ashwin">Ashwin</option>
+                    <option value="kartik">Kartik</option>
+                    <option value="mangsir">Mangsir</option>
+                    <option value="poush">Poush</option>
+                    <option value="magh">Magh</option>
+                    <option value="falgun">Falgun</option>
+                    <option value="chaitra">Chaitra</option>
+                </select>
+            </div>
+
+            <div id="adminMonthlyReportManager" class="admin-manager-list"></div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- STAFF EDITOR -->
+<div id="staffEditorPopup" class="popup admin-editor-popup">
+    <div class="popup-box admin-editor-box">
+        <span class="close-btn" onclick="closeAdminEditor('staffEditorPopup')">&times;</span>
+        <h2 id="staffEditorHeading">👨‍🏫 Edit Staff Information</h2>
+        <form id="staffEditorForm" class="admin-edit-form" onsubmit="saveStaffEdit(event)">
+            <input type="hidden" id="staffEditId">
+            <div class="admin-form-grid">
+                <label>Name<input id="staffEditName" required></label>
+                <label>Post / Designation<input id="staffEditDesignation" required></label>
+                <label>Phone<input id="staffEditPhone"></label>
+                <label>Experience<input id="staffEditExperience"></label>
+                <label>Subject<input id="staffEditSubject"></label>
+                <label>Photo file/path<input id="staffEditPhoto" placeholder="ceo.jpeg"></label>
+                <label class="full">Choose a new photo for local preview
+                    <input id="staffEditPhotoFile" type="file" accept="image/*">
+                </label>
+                <label class="full">About<textarea id="staffEditAbout" rows="7"></textarea></label>
+                <label class="full">Responsibilities<textarea id="staffEditResponsibility" rows="5"></textarea></label>
+            </div>
+            <div class="admin-editor-actions">
+                <button class="admin-primary-btn" type="submit">Save Changes</button>
+                <button type="button" class="admin-secondary-btn" onclick="closeAdminEditor('staffEditorPopup')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<!-- NOTICE EDITOR -->
+<div id="noticeEditorPopup" class="popup admin-editor-popup">
+    <div class="popup-box admin-editor-box">
+        <span class="close-btn" onclick="closeAdminEditor('noticeEditorPopup')">&times;</span>
+        <h2 id="noticeEditorHeading">📢 Notice</h2>
+        <form id="noticeEditorForm" class="admin-edit-form" onsubmit="saveNoticeEdit(event)">
+            <input type="hidden" id="noticeEditId">
+            <div class="admin-form-grid">
+                <label class="full">Notice text
+                    <textarea id="noticeEditText" rows="5" required placeholder="Write the latest school notice here..."></textarea>
+                </label>
+            </div>
+            <div class="admin-editor-actions">
+                <button class="admin-primary-btn" type="submit">Save Notice</button>
+                <button type="button" class="admin-secondary-btn" onclick="closeAdminEditor('noticeEditorPopup')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- GALLERY EDITOR -->
+<div id="galleryEditorPopup" class="popup admin-editor-popup">
+    <div class="popup-box admin-editor-box">
+        <span class="close-btn" onclick="closeAdminEditor('galleryEditorPopup')">&times;</span>
+        <h2 id="galleryEditorHeading">🖼️ Gallery Item</h2>
+        <form id="galleryEditorForm" class="admin-edit-form" onsubmit="saveGalleryEdit(event)">
+            <input type="hidden" id="galleryEditId">
+            <input type="hidden" id="galleryEditType">
+            <div class="admin-form-grid">
+                <label>Title / Name<input id="galleryEditTitle" required></label>
+                <label>File path / URL<input id="galleryEditSrc" placeholder="photo67.jpeg or video11.mp4"></label>
+                <label class="full">Choose photo/video for local preview
+                    <input id="galleryEditFile" type="file" accept="image/*,video/*">
+                </label>
+                <label class="full">Information / Description<textarea id="galleryEditDescription" rows="5"></textarea></label>
+            </div>
+            <div class="admin-editor-actions">
+                <button class="admin-primary-btn" type="submit">Save</button>
+                <button type="button" class="admin-secondary-btn" onclick="closeAdminEditor('galleryEditorPopup')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- STUDENT DATA EDITOR -->
+<div id="studentDataEditorPopup" class="popup admin-editor-popup">
+    <div class="popup-box admin-editor-box">
+        <span class="close-btn" onclick="closeAdminEditor('studentDataEditorPopup')">&times;</span>
+        <h2 id="studentEditorHeading">🎓 Student Information</h2>
+        <form id="studentDataEditorForm" class="admin-edit-form" onsubmit="saveStudentDataEdit(event)">
+            <input type="hidden" id="studentOriginalId">
+            <div class="admin-form-grid">
+                <label>Student ID<input id="studentEditId" required></label>
+                <label>Class
+                    <select id="studentEditClass" required>
+                        <option>Nursery</option><option>LKG</option><option>UKG</option>
+                        <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+                        <option>Class 4</option><option>Class 5</option>
+                    </select>
+                </label>
+                <label class="full">Student Name<input id="studentEditName" required></label>
+                <label>Date of Birth<input id="studentEditDob" type="date"></label>
+                <label>Parent / Guardian<input id="studentEditGuardian"></label>
+                <label class="full">Academic Performance<textarea id="studentEditPerformance" rows="4"></textarea></label>
+                <label class="full">Remarks<textarea id="studentEditRemarks" rows="4"></textarea></label>
+                <label class="full">
+                    Password
+                    <input id="studentEditPassword" type="password" autocomplete="new-password" placeholder="Existing student: leave blank to keep old password">
+                    <small>Existing passwords are never changed unless you enter a new password here. A new student needs a password.</small>
+                </label>
+            </div>
+            <div class="admin-editor-actions">
+                <button class="admin-primary-btn" type="submit">Save Student</button>
+                <button type="button" class="admin-secondary-btn" onclick="closeAdminEditor('studentDataEditorPopup')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script id="website-admin-management-local-test">
+/* =========================================================
+   WEBSITE ADMIN MANAGEMENT — LOCAL TEST MODE
+   ---------------------------------------------------------
+   One Supabase admin session is reused everywhere.
+   This test layer DOES NOT overwrite the original hard-coded
+   staff/gallery/student data or existing password hashes.
+========================================================= */
+
+const ADMIN_LOCAL_KEYS={
+    staff:"saaf_admin_staff_v1",
+    gallery:"saaf_admin_gallery_v1",
+    students:"saaf_admin_students_v1",
+    notices:"saaf_admin_notices_v1",
+    monthly:"saaf_admin_monthly_reports_v1"
+};
+
+let adminManagedStaff={};
+let adminManagedGallery=[];
+let adminManagedStudents=[];
+let adminManagedNotices=[];
+let adminManagedMonthlyReports={};
+const studentAuthenticatedProfiles=new Map();
+
+function deepClone(value){
+    return JSON.parse(JSON.stringify(value));
+}
+
+function readAdminLocal(key,fallback){
+    try{
+        const saved=localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : deepClone(fallback);
+    }catch(error){
+        console.warn("Admin local data read error:",error);
+        return deepClone(fallback);
+    }
+}
+
+function writeAdminLocal(key,value){
+    localStorage.setItem(key,JSON.stringify(value));
+}
+
+function initialGalleryFromPage(){
+    const items=[];
+
+    document.querySelectorAll("#photoPopup .media-card").forEach((card,index)=>{
+        const img=card.querySelector("img");
+        const title=card.querySelector("h3");
+        if(!img) return;
+        items.push({
+            id:`photo-${index+1}`,
+            type:"photo",
+            src:img.getAttribute("src")||"",
+            title:title ? title.textContent.trim() : `Photo ${index+1}`,
+            description:""
+        });
+    });
+
+    document.querySelectorAll("#videoPopup .media-card").forEach((card,index)=>{
+        const source=card.querySelector("video source");
+        const title=card.querySelector("h3");
+        if(!source) return;
+        items.push({
+            id:`video-${index+1}`,
+            type:"video",
+            src:source.getAttribute("src")||"",
+            title:title ? title.textContent.trim() : `Video ${index+1}`,
+            description:""
+        });
+    });
+
+    return items;
+}
+
+
+
+function initialMonthlyReports(){
+    const months=[
+        ["baishakh","Baishakh"],["jestha","Jestha"],["ashadh","Ashadh"],
+        ["shrawan","Shrawan"],["bhadra","Bhadra"],["ashwin","Ashwin"],
+        ["kartik","Kartik"],["mangsir","Mangsir"],["poush","Poush"],
+        ["magh","Magh"],["falgun","Falgun"],["chaitra","Chaitra"]
+    ];
+
+    const data={};
+
+    months.forEach(([key,label])=>{
+        data[key]={
+            label,
+            photos:[1,2,3].map(number=>({
+                slot:number,
+                src:`${key}${number}.jpeg`,
+                title:`${label} - Activity ${number}`
+            }))
+        };
+    });
+
+    return data;
+}
+
+function initialNoticesFromPage(){
+    return Array.from(document.querySelectorAll("#notice .notice-box"))
+        .map((box,index)=>({
+            id:`notice-${index+1}`,
+            text:box.textContent.trim()
+        }));
+}
+
+function initialStudentsFromCode(){
+    return STUDENT_DIRECTORY.map(student=>({
+        ...deepClone(student),
+        dob:student.dob||"",
+        guardian:student.guardian||"",
+        performance:student.performance||"",
+        remarks:student.remarks||""
+    }));
+}
+
+function initAdminManagedData(){
+    adminManagedStaff=readAdminLocal(ADMIN_LOCAL_KEYS.staff,staffDetails);
+    adminManagedGallery=readAdminLocal(ADMIN_LOCAL_KEYS.gallery,initialGalleryFromPage());
+
+    /* Students now use Supabase. Hard-coded students are only the instant
+       offline/fallback list until the public Supabase list finishes loading. */
+    adminManagedStudents=initialStudentsFromCode().map(({passwordHash,...student})=>student);
+
+    adminManagedNotices=readAdminLocal(ADMIN_LOCAL_KEYS.notices,initialNoticesFromPage());
+    adminManagedMonthlyReports=readAdminLocal(ADMIN_LOCAL_KEYS.monthly,initialMonthlyReports());
+
+    renderManagedStaffGrid();
+    renderManagedGallery();
+    renderManagedNotices();
+    renderManagedMonthlyReport();
+
+    getStudentsByClass=function(className){
+        return adminManagedStudents
+            .filter(student=>student.className===className)
+            .sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:"base"}));
+    };
+
+    getStudentRecord=function(className,studentId){
+        return studentAuthenticatedProfiles.get(studentId) ||
+            adminManagedStudents.find(
+                student=>student.className===className && student.studentId===studentId
+            ) || null;
+    };
+
+    /* Public visitors get only ID/name/class from the RPC; private profile
+       fields are returned only after a successful student_login call. */
+    loadPublicStudentsFromSupabase();
+}
+
+function mapSupabaseStudent(row){
+    return {
+        dbId:row.id,
+        studentId:row.student_id,
+        name:row.name,
+        className:row.class_name,
+        dob:row.dob||"",
+        guardian:row.guardian||"",
+        performance:row.performance||"",
+        remarks:row.remarks||""
+    };
+}
+
+async function loadPublicStudentsFromSupabase(){
+    const c=initStudentSupabase();
+    if(!c) return false;
+
+    const {data,error}=await c.rpc("list_students");
+    if(error){
+        console.warn("Could not load public student list from Supabase:",error.message||error);
+        return false;
+    }
+
+    if(Array.isArray(data)){
+        adminManagedStudents=data.map(row=>({
+            studentId:row.student_id,
+            name:row.name,
+            className:row.class_name,
+            dob:"",
+            guardian:"",
+            performance:"",
+            remarks:""
+        }));
+        return true;
+    }
+    return false;
+}
+
+async function loadAdminStudentsFromSupabase(){
+    const c=initStudentSupabase();
+    if(!c || !studentAdminSession) return false;
+
+    const {data,error}=await c
+        .from("students")
+        .select("id,student_id,name,class_name,dob,guardian,performance,remarks")
+        .order("class_name",{ascending:true})
+        .order("name",{ascending:true});
+
+    if(error){
+        console.error("Could not load students for admin:",error);
+        alert("Could not load students from Supabase: "+(error.message||"Unknown error"));
+        return false;
+    }
+
+    adminManagedStudents=(data||[]).map(mapSupabaseStudent);
+    renderAdminStudentList();
+    return true;
+}
+
+async function ensureLegacyStudentsInSupabase(){
+    const c=initStudentSupabase();
+    if(!c || !studentAdminSession || !Array.isArray(STUDENT_DIRECTORY) || !STUDENT_DIRECTORY.length) return;
+
+    const rows=STUDENT_DIRECTORY.map(student=>({
+        student_id:student.studentId,
+        name:student.name,
+        class_name:student.className,
+        dob:student.dob||null,
+        guardian:student.guardian||null,
+        performance:student.performance||null,
+        remarks:student.remarks||null,
+        password_hash:student.passwordHash||null
+    })).filter(row=>row.password_hash);
+
+    if(!rows.length) return;
+
+    const {error}=await c
+        .from("students")
+        .upsert(rows,{onConflict:"student_id",ignoreDuplicates:true});
+
+    if(error){
+        console.warn("Existing student migration was not completed:",error.message||error);
+    }
+}
+
+function updateGlobalAdminUI(isAdmin,email=""){
+    const login=document.getElementById("globalAdminLoginBtn");
+    const panel=document.getElementById("globalAdminPanelBtn");
+    const logout=document.getElementById("globalAdminLogoutBtn");
+    const status=document.getElementById("globalAdminStatus");
+
+    if(login) login.style.display=isAdmin?"none":"inline-block";
+    if(panel) panel.style.display=isAdmin?"inline-block":"none";
+    if(logout) logout.style.display=isAdmin?"inline-block":"none";
+
+    if(status){
+        status.classList.toggle("active",!!isAdmin);
+        status.textContent=isAdmin
+            ?`Admin logged in${email?" — "+email:""}`
+            :"Admin not logged in";
+    }
+}
+
+/* Extend the already-working Supabase admin UI globally. */
+const _websiteOriginalSetStudentAdminUI=setStudentAdminUI;
+setStudentAdminUI=function(isAdmin,email=""){
+    _websiteOriginalSetStudentAdminUI(isAdmin,email);
+    updateGlobalAdminUI(isAdmin,email);
+};
+
+function openWebsiteAdminPanel(){
+    if(!studentAdminSession){
+        openStudentAdminLogin();
+        return;
+    }
+    renderAdminStaffList();
+    renderAdminGalleryList();
+    renderAdminStudentList();
+    renderAdminNoticeList();
+    renderAdminMonthlyReportManager();
+    showWebsiteAdminTab("staff");
+    document.getElementById("websiteAdminPanel").style.display="block";
+    document.body.style.overflow="hidden";
+}
+
+function closeWebsiteAdminPanel(){
+    document.getElementById("websiteAdminPanel").style.display="none";
+    document.body.style.overflow="auto";
+}
+
+function showWebsiteAdminTab(tab){
+    ["staff","gallery","students","notices","monthly"].forEach(name=>{
+        const el=document.getElementById(
+            name==="staff"?"websiteAdminStaffTab":
+            name==="gallery"?"websiteAdminGalleryTab":
+            name==="students"?"websiteAdminStudentsTab":
+            name==="notices"?"websiteAdminNoticesTab":
+            "websiteAdminMonthlyTab"
+        );
+        if(el) el.style.display=name===tab?"block":"none";
+    });
+
+    if(tab==="staff") renderAdminStaffList();
+    if(tab==="gallery") renderAdminGalleryList();
+    if(tab==="students") renderAdminStudentList();
+    if(tab==="notices") renderAdminNoticeList();
+    if(tab==="monthly") renderAdminMonthlyReportManager();
+}
+
+function closeAdminEditor(id){
+    const el=document.getElementById(id);
+    if(el) el.style.display="none";
+    document.body.style.overflow="hidden";
+}
+
+function fileToCompressedDataUrl(file,maxDimension=900,quality=.78){
+    return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onerror=()=>reject(new Error("Could not read selected image."));
+        reader.onload=()=>{
+            const img=new Image();
+            img.onerror=()=>reject(new Error("Could not open selected image."));
+            img.onload=()=>{
+                let w=img.naturalWidth,h=img.naturalHeight;
+                if(w>maxDimension||h>maxDimension){
+                    const ratio=Math.min(maxDimension/w,maxDimension/h);
+                    w=Math.round(w*ratio);h=Math.round(h*ratio);
+                }
+                const canvas=document.createElement("canvas");
+                canvas.width=w;canvas.height=h;
+                canvas.getContext("2d").drawImage(img,0,0,w,h);
+                resolve(canvas.toDataURL("image/jpeg",quality));
+            };
+            img.src=reader.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+/* ======================== STAFF ======================== */
+
+function renderManagedStaffGrid(){
+    const grid=document.querySelector("#staffPopup .staff-grid");
+    if(!grid) return;
+
+    grid.innerHTML=Object.entries(adminManagedStaff).map(([id,staff])=>`
+        <div class="staff-card">
+            <img src="${escapeHtmlAttr(staff.photo||"")}" alt="${escapeHtmlAttr(staff.name||"Staff")}">
+            <h3>${escapeHtml(staff.name||"")}</h3>
+            <p class="designation">${escapeHtml(staff.designation||"")}</p>
+            ${staff.phone?`<p class="staff-phone">📞 ${escapeHtml(staff.phone)}</p>`:""}
+            <button class="more-details-btn" onclick="showStaffDetails('${id}')">More Details</button>
+            <button class="admin-inline-edit" onclick="openStaffEditor('${id}')">✏️ Edit</button>
+        </div>
+    `).join("");
+}
+
+function renderAdminStaffList(){
+    const host=document.getElementById("adminStaffList");
+    if(!host) return;
+    host.innerHTML=Object.entries(adminManagedStaff).map(([id,staff])=>`
+        <div class="admin-manager-row">
+            <img src="${escapeHtmlAttr(staff.photo||"")}" alt="">
+            <div>
+                <div class="admin-manager-title">${escapeHtml(staff.name||"")}</div>
+                <div class="admin-manager-meta">
+                    ${escapeHtml(staff.designation||"")}
+                    ${staff.phone?` • ${escapeHtml(staff.phone)}`:""}
+                    ${staff.experience?` • ${escapeHtml(staff.experience)}`:""}
+                </div>
+            </div>
+            <div class="admin-manager-actions">
+                <button onclick="openStaffEditor('${id}')">Edit</button>
+                <button class="danger" onclick="deleteStaffItem('${id}')">Delete</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function makeStaffIdFromName(name){
+    const base=String(name||"staff")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g,"-")
+        .replace(/^-+|-+$/g,"") || "staff";
+
+    let id=base;
+    let n=2;
+    while(adminManagedStaff[id]){
+        id=`${base}-${n++}`;
+    }
+    return id;
+}
+
+function openStaffEditor(id=""){
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const staff=id ? adminManagedStaff[id] : null;
+
+    document.getElementById("staffEditId").value=id;
+    document.getElementById("staffEditName").value=staff?.name||"";
+    document.getElementById("staffEditDesignation").value=staff?.designation||"";
+    document.getElementById("staffEditPhone").value=staff?.phone||"";
+    document.getElementById("staffEditExperience").value=staff?.experience||"";
+    document.getElementById("staffEditSubject").value=staff?.subject||"";
+    document.getElementById("staffEditPhoto").value=staff?.photo||"";
+    document.getElementById("staffEditAbout").value=staff?.about||"";
+    document.getElementById("staffEditResponsibility").value=staff?.responsibility||"";
+    document.getElementById("staffEditPhotoFile").value="";
+    document.getElementById("staffEditorHeading").textContent=
+        staff ? "👨‍🏫 Edit Staff Information" : "👨‍🏫 Add New Staff";
+
+    document.getElementById("staffEditorPopup").style.display="block";
+    document.body.style.overflow="hidden";
+}
+
+async function saveStaffEdit(event){
+    event.preventDefault();
+    if(!studentAdminSession) return;
+
+    let id=document.getElementById("staffEditId").value;
+    const isNew=!id;
+    const name=document.getElementById("staffEditName").value.trim();
+
+    if(!name){
+        alert("Please enter the staff name.");
+        return;
+    }
+
+    if(isNew){
+        id=makeStaffIdFromName(name);
+    }
+
+    const current=adminManagedStaff[id]||{};
+
+    let photo=document.getElementById("staffEditPhoto").value.trim();
+    const file=document.getElementById("staffEditPhotoFile").files[0];
+
+    if(file && file.type.startsWith("image/")){
+        try{
+            photo=await fileToCompressedDataUrl(file,600,.78);
+        }catch(error){
+            alert(error.message);
+            return;
+        }
+    }
+
+    adminManagedStaff[id]={
+        ...current,
+        name,
+        designation:document.getElementById("staffEditDesignation").value.trim(),
+        phone:document.getElementById("staffEditPhone").value.trim(),
+        experience:document.getElementById("staffEditExperience").value.trim(),
+        subject:document.getElementById("staffEditSubject").value.trim(),
+        photo,
+        about:document.getElementById("staffEditAbout").value.trim(),
+        responsibility:document.getElementById("staffEditResponsibility").value.trim()
+    };
+
+    try{
+        writeAdminLocal(ADMIN_LOCAL_KEYS.staff,adminManagedStaff);
+    }catch(error){
+        alert("Local browser storage is full. Use a smaller staff photo for this local test.");
+        return;
+    }
+
+    renderManagedStaffGrid();
+    renderAdminStaffList();
+    closeAdminEditor("staffEditorPopup");
+}
+
+function deleteStaffItem(id){
+    if(!studentAdminSession) return;
+
+    const staff=adminManagedStaff[id];
+    if(!staff) return;
+
+    if(!confirm(`Delete ${staff.name} from the local test staff list?`)) return;
+
+    delete adminManagedStaff[id];
+    writeAdminLocal(ADMIN_LOCAL_KEYS.staff,adminManagedStaff);
+    renderManagedStaffGrid();
+    renderAdminStaffList();
+}
+
+/* Override staff detail view to use editable managed data. */
+showStaffDetails=function(staffId){
+    const staff=adminManagedStaff[staffId];
+    if(!staff) return;
+
+    document.getElementById("staffDetailPhoto").src=staff.photo||"";
+    document.getElementById("staffDetailName").textContent=staff.name||"";
+    document.getElementById("staffDetailDesignation").textContent=staff.designation||"";
+
+    const info=document.getElementById("staffDetailPhone");
+    if(staff.subject && staff.designation==="Teacher"){
+        info.innerHTML="<strong>📚 Subject:</strong> "+escapeHtml(staff.subject);
+        info.style.display="block";
+    }else if(staff.phone){
+        info.innerHTML="<strong>📞 Contact:</strong> "+escapeHtml(staff.phone);
+        info.style.display="block";
+    }else{
+        info.innerHTML="";
+        info.style.display="none";
+    }
+
+    document.getElementById("staffDetailExperience").innerHTML=
+        "<strong>💼 Experience:</strong> "+escapeHtml(staff.experience||"");
+
+    document.getElementById("staffDetailAbout").innerHTML=
+        "<strong>👤 About:</strong><br>"+nl2br(staff.about||"");
+
+    document.getElementById("staffDetailResponsibility").innerHTML=
+        "<strong>📋 Responsibilities:</strong><br>"+nl2br(staff.responsibility||"");
+
+    const payrollLinks=document.getElementById("payrollLinks");
+    if(payrollLinks) payrollLinks.style.display=staffId==="payroll"?"flex":"none";
+
+    document.getElementById("staffDetailsPage").style.display="block";
+    document.body.style.overflow="hidden";
+};
+
+/* ======================== GALLERY ======================== */
+
+function renderManagedGallery(){
+    const photoGrid=document.querySelector("#photoPopup .media-grid");
+    const videoGrid=document.querySelector("#videoPopup .media-grid");
+
+    if(photoGrid){
+        photoGrid.innerHTML=adminManagedGallery
+            .filter(item=>item.type==="photo")
+            .map(item=>`
+                <div class="media-card">
+                    <img src="${escapeHtmlAttr(item.src||"")}" onclick="openPhoto(this.src)" alt="${escapeHtmlAttr(item.title||"Photo")}">
+                    <h3>${escapeHtml(item.title||"Photo")}</h3>
+                    ${item.description?`<p class="gallery-description">${escapeHtml(item.description)}</p>`:""}
+                    <button class="admin-inline-edit" onclick="openGalleryEditor('photo','${item.id}')">✏️ Edit</button>
+                </div>
+            `).join("");
+    }
+
+    if(videoGrid){
+        videoGrid.innerHTML=adminManagedGallery
+            .filter(item=>item.type==="video")
+            .map(item=>`
+                <div class="media-card">
+                    <video controls src="${escapeHtmlAttr(item.src||"")}"></video>
+                    <h3>${escapeHtml(item.title||"Video")}</h3>
+                    ${item.description?`<p class="gallery-description">${escapeHtml(item.description)}</p>`:""}
+                    <button class="admin-inline-edit" onclick="openGalleryEditor('video','${item.id}')">✏️ Edit</button>
+                </div>
+            `).join("");
+    }
+}
+
+function renderAdminGalleryList(){
+    const host=document.getElementById("adminGalleryList");
+    if(!host) return;
+
+    host.innerHTML=adminManagedGallery.map(item=>`
+        <div class="admin-manager-row">
+            ${
+                item.type==="photo"
+                    ?`<img src="${escapeHtmlAttr(item.src||"")}" alt="">`
+                    :`<video src="${escapeHtmlAttr(item.src||"")}" muted></video>`
+            }
+            <div>
+                <div class="admin-manager-title">${item.type==="photo"?"📷":"🎥"} ${escapeHtml(item.title||"")}</div>
+                <div class="admin-manager-meta">${escapeHtml(item.description||item.src||"")}</div>
+            </div>
+            <div class="admin-manager-actions">
+                <button onclick="openGalleryEditor('${item.type}','${item.id}')">Edit</button>
+                <button class="danger" onclick="deleteGalleryItem('${item.id}')">Delete</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function openGalleryEditor(type,id=""){
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const item=id ? adminManagedGallery.find(x=>x.id===id) : null;
+    document.getElementById("galleryEditId").value=id;
+    document.getElementById("galleryEditType").value=type;
+    document.getElementById("galleryEditTitle").value=item?.title||"";
+    document.getElementById("galleryEditSrc").value=item?.src||"";
+    document.getElementById("galleryEditDescription").value=item?.description||"";
+    document.getElementById("galleryEditFile").value="";
+    document.getElementById("galleryEditorHeading").textContent=
+        `${type==="photo"?"📷":"🎥"} ${id?"Edit":"Add"} ${type==="photo"?"Photo":"Video"}`;
+    document.getElementById("galleryEditorPopup").style.display="block";
+    document.body.style.overflow="hidden";
+}
+
+async function saveGalleryEdit(event){
+    event.preventDefault();
+    if(!studentAdminSession) return;
+
+    const id=document.getElementById("galleryEditId").value;
+    const type=document.getElementById("galleryEditType").value;
+    let src=document.getElementById("galleryEditSrc").value.trim();
+    const file=document.getElementById("galleryEditFile").files[0];
+
+    if(file){
+        if(type==="photo" && file.type.startsWith("image/")){
+            try{
+                src=await fileToCompressedDataUrl(file,1200,.76);
+            }catch(error){
+                alert(error.message);return;
+            }
+        }else if(type==="video" && file.type.startsWith("video/")){
+            /* Local test preview only. Object URL is intentionally temporary. */
+            src=URL.createObjectURL(file);
+        }else{
+            alert("Please choose the correct photo/video file type.");
+            return;
+        }
+    }
+
+    if(!src){
+        alert("Choose a file or enter a file path/URL.");
+        return;
+    }
+
+    const record={
+        id:id||`${type}-${Date.now()}`,
+        type,
+        src,
+        title:document.getElementById("galleryEditTitle").value.trim(),
+        description:document.getElementById("galleryEditDescription").value.trim()
+    };
+
+    if(id){
+        const index=adminManagedGallery.findIndex(x=>x.id===id);
+        if(index>=0) adminManagedGallery[index]=record;
+    }else{
+        /* New gallery items appear first; older items move toward the end. */
+        adminManagedGallery.unshift(record);
+    }
+
+    try{
+        /* Temporary blob video URLs are not persisted across browser restart. */
+        const persistent=adminManagedGallery.map(x=>{
+            if(x.type==="video" && String(x.src).startsWith("blob:")){
+                return {...x,src:""};
+            }
+            return x;
+        });
+        writeAdminLocal(ADMIN_LOCAL_KEYS.gallery,persistent);
+    }catch(error){
+        alert("Local browser storage is full. Use smaller images for this local test.");
+    }
+
+    renderManagedGallery();
+    renderAdminGalleryList();
+    closeAdminEditor("galleryEditorPopup");
+}
+
+function deleteGalleryItem(id){
+    if(!studentAdminSession) return;
+    if(!confirm("Remove this gallery item from the local test view?")) return;
+    adminManagedGallery=adminManagedGallery.filter(item=>item.id!==id);
+    writeAdminLocal(ADMIN_LOCAL_KEYS.gallery,adminManagedGallery);
+    renderManagedGallery();
+    renderAdminGalleryList();
+}
+
+
+
+/* ======================== SCHOOL MONTHLY REPORTS ======================== */
+
+function monthlyReportLabel(monthKey){
+    return adminManagedMonthlyReports[monthKey]?.label ||
+           (monthKey.charAt(0).toUpperCase()+monthKey.slice(1));
+}
+
+function renderManagedMonthlyReport(){
+    /* Public monthly report rendering is handled whenever a month is opened. */
+}
+
+function renderAdminMonthlyReportManager(){
+    const host=document.getElementById("adminMonthlyReportManager");
+    const select=document.getElementById("adminMonthlyMonthSelect");
+    if(!host || !select) return;
+
+    const monthKey=select.value;
+    const month=adminManagedMonthlyReports[monthKey];
+    if(!month) return;
+
+    host.innerHTML=month.photos.slice(0,3).map(photo=>`
+        <div class="admin-manager-row">
+            <img src="${escapeHtmlAttr(photo.src||"")}" alt="" onerror="this.style.opacity='.35'">
+            <div>
+                <div class="admin-manager-title">${escapeHtml(month.label)} — Photo ${photo.slot}</div>
+                <div class="admin-manager-meta">${escapeHtml(photo.title||"")}</div>
+            </div>
+            <div class="admin-manager-actions">
+                <button onclick="chooseMonthlyReportPhoto('${monthKey}',${photo.slot})">Upload / Replace</button>
+                <button class="danger" onclick="clearMonthlyReportPhoto('${monthKey}',${photo.slot})">Clear</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function chooseMonthlyReportPhoto(monthKey,slot){
+    if(!studentAdminSession){
+        openStudentAdminLogin();
+        return;
+    }
+
+    const picker=document.createElement("input");
+    picker.type="file";
+    picker.accept="image/*";
+    picker.style.position="fixed";
+    picker.style.left="-9999px";
+    document.body.appendChild(picker);
+
+    picker.addEventListener("change",async()=>{
+        const file=picker.files?.[0];
+
+        if(file){
+            try{
+                const dataUrl=await fileToCompressedDataUrl(file,1400,.78);
+                const month=adminManagedMonthlyReports[monthKey];
+                const item=month?.photos.find(p=>p.slot===slot);
+
+                if(item){
+                    item.src=dataUrl;
+                    writeAdminLocal(ADMIN_LOCAL_KEYS.monthly,adminManagedMonthlyReports);
+                    renderAdminMonthlyReportManager();
+
+                    const currentTitle=document.querySelector("#monthlyPhotos .report-title");
+                    if(currentTitle && currentTitle.textContent.includes(month.label)){
+                        showMonthReport(month.label,monthKey);
+                    }
+                }
+            }catch(error){
+                alert(error.message||"Could not prepare the photo.");
+            }
+        }
+
+        picker.remove();
+    },{once:true});
+
+    picker.click();
+}
+
+function clearMonthlyReportPhoto(monthKey,slot){
+    if(!studentAdminSession) return;
+
+    const month=adminManagedMonthlyReports[monthKey];
+    const item=month?.photos.find(p=>p.slot===slot);
+    if(!item) return;
+
+    if(!confirm(`Clear ${month.label} Photo ${slot} from the local test view?`)) return;
+
+    item.src="";
+    writeAdminLocal(ADMIN_LOCAL_KEYS.monthly,adminManagedMonthlyReports);
+    renderAdminMonthlyReportManager();
+
+    const currentTitle=document.querySelector("#monthlyPhotos .report-title");
+    if(currentTitle && currentTitle.textContent.includes(month.label)){
+        showMonthReport(month.label,monthKey);
+    }
+}
+
+
+/* ======================== NOTICES ======================== */
+
+function renderManagedNotices(){
+    const section=document.getElementById("notice");
+    if(!section) return;
+
+    section.querySelectorAll(".notice-box").forEach(box=>box.remove());
+
+    const divider=section.querySelector(".section-divider");
+    const anchor=divider || section.querySelector("h2");
+
+    adminManagedNotices.forEach(notice=>{
+        const box=document.createElement("div");
+        box.className="notice-box";
+        box.textContent=notice.text || "";
+        if(anchor && anchor.parentNode){
+            anchor.parentNode.appendChild(box);
+        }
+    });
+}
+
+function renderAdminNoticeList(){
+    const host=document.getElementById("adminNoticeList");
+    if(!host) return;
+
+    host.innerHTML=adminManagedNotices.map((notice,index)=>`
+        <div class="admin-manager-row">
+            <div style="width:58px;height:52px;border-radius:10px;background:#fff4d6;display:flex;align-items:center;justify-content:center;font-size:25px;">📢</div>
+            <div>
+                <div class="admin-manager-title">Notice ${index+1}</div>
+                <div class="admin-manager-meta">${escapeHtml(notice.text||"")}</div>
+            </div>
+            <div class="admin-manager-actions">
+                <button onclick="openNoticeEditor('${notice.id}')">Edit</button>
+                <button class="danger" onclick="deleteNoticeItem('${notice.id}')">Delete</button>
+            </div>
+        </div>
+    `).join("") || '<p style="text-align:center;color:#667085;padding:20px;">No notices yet.</p>';
+}
+
+function openNoticeEditor(id=""){
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const notice=id ? adminManagedNotices.find(n=>n.id===id) : null;
+
+    document.getElementById("noticeEditId").value=id;
+    document.getElementById("noticeEditText").value=notice?.text||"";
+    document.getElementById("noticeEditorHeading").textContent=
+        notice ? "📢 Edit Notice" : "📢 Add Notice";
+
+    document.getElementById("noticeEditorPopup").style.display="block";
+    document.body.style.overflow="hidden";
+}
+
+function saveNoticeEdit(event){
+    event.preventDefault();
+    if(!studentAdminSession) return;
+
+    const id=document.getElementById("noticeEditId").value;
+    const noticeText=document.getElementById("noticeEditText").value.trim();
+
+    if(!noticeText){
+        alert("Please write the notice.");
+        return;
+    }
+
+    if(id){
+        const index=adminManagedNotices.findIndex(n=>n.id===id);
+        if(index>=0){
+            adminManagedNotices[index]={
+                ...adminManagedNotices[index],
+                text:noticeText
+            };
+        }
+    }else{
+        adminManagedNotices.unshift({
+            id:`notice-${Date.now()}`,
+            text:noticeText
+        });
+    }
+
+    writeAdminLocal(ADMIN_LOCAL_KEYS.notices,adminManagedNotices);
+    renderManagedNotices();
+    renderAdminNoticeList();
+    closeAdminEditor("noticeEditorPopup");
+}
+
+function deleteNoticeItem(id){
+    if(!studentAdminSession) return;
+
+    const notice=adminManagedNotices.find(n=>n.id===id);
+    if(!notice) return;
+
+    if(!confirm("Delete this notice from the local test view?")) return;
+
+    adminManagedNotices=adminManagedNotices.filter(n=>n.id!==id);
+    writeAdminLocal(ADMIN_LOCAL_KEYS.notices,adminManagedNotices);
+    renderManagedNotices();
+    renderAdminNoticeList();
+}
+
+
+/* ======================== STUDENTS ======================== */
+
+function renderAdminStudentList(){
+    const host=document.getElementById("adminStudentList");
+    if(!host) return;
+
+    const classFilter=document.getElementById("adminStudentClassFilter")?.value||"ALL";
+    const q=(document.getElementById("adminStudentSearch")?.value||"").trim().toLowerCase();
+
+    const students=adminManagedStudents
+        .filter(s=>classFilter==="ALL"||s.className===classFilter)
+        .filter(s=>!q||s.name.toLowerCase().includes(q)||s.studentId.toLowerCase().includes(q))
+        .sort((a,b)=>a.className.localeCompare(b.className)||a.name.localeCompare(b.name));
+
+    host.innerHTML=students.map(student=>`
+        <div class="admin-manager-row">
+            <div style="width:58px;height:52px;border-radius:10px;background:#e8eef5;display:flex;align-items:center;justify-content:center;font-size:26px;">👤</div>
+            <div>
+                <div class="admin-manager-title">${escapeHtml(student.name)}</div>
+                <div class="admin-manager-meta">
+                    ${escapeHtml(student.className)} • ${escapeHtml(student.studentId)}
+                    ${student.dob?` • DOB ${escapeHtml(student.dob)}`:""}
+                </div>
+            </div>
+            <div class="admin-manager-actions">
+                <button onclick="openStudentDataEditor('${student.studentId}')">Edit</button>
+                <button class="danger" onclick="deleteStudentItem('${student.studentId}')">Delete</button>
+            </div>
+        </div>
+    `).join("") || '<p style="text-align:center;color:#667085;padding:20px;">No students found.</p>';
+}
+
+function openStudentDataEditor(studentId=""){
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const student=studentId
+        ?adminManagedStudents.find(s=>s.studentId===studentId)
+        :null;
+
+    document.getElementById("studentOriginalId").value=student?.studentId||"";
+    document.getElementById("studentEditId").value=student?.studentId||"";
+    document.getElementById("studentEditId").readOnly=!!student;
+    document.getElementById("studentEditClass").value=student?.className||"Nursery";
+    document.getElementById("studentEditName").value=student?.name||"";
+    document.getElementById("studentEditDob").value=student?.dob||"";
+    document.getElementById("studentEditGuardian").value=student?.guardian||"";
+    document.getElementById("studentEditPerformance").value=student?.performance||"";
+    document.getElementById("studentEditRemarks").value=student?.remarks||"";
+    document.getElementById("studentEditPassword").value="";
+    document.getElementById("studentEditorHeading").textContent=
+        student?"🎓 Edit Student":"🎓 Add New Student";
+
+    document.getElementById("studentDataEditorPopup").style.display="block";
+    document.body.style.overflow="hidden";
+}
+
+async function saveStudentDataEdit(event){
+    event.preventDefault();
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const c=initStudentSupabase();
+    if(!c){alert("Supabase is not connected.");return;}
+
+    const originalId=document.getElementById("studentOriginalId").value;
+    const studentId=document.getElementById("studentEditId").value.trim().toUpperCase();
+    const password=document.getElementById("studentEditPassword").value;
+    const existing=originalId
+        ?adminManagedStudents.find(s=>s.studentId===originalId)
+        :null;
+
+    if(!studentId){alert("Please enter Student ID.");return;}
+    if(!existing && !password.trim()){
+        alert("Please set a password for the new student.");
+        return;
+    }
+
+    const payload={
+        p_student_id:studentId,
+        p_name:document.getElementById("studentEditName").value.trim(),
+        p_class_name:document.getElementById("studentEditClass").value,
+        p_dob:document.getElementById("studentEditDob").value||null,
+        p_guardian:document.getElementById("studentEditGuardian").value.trim()||null,
+        p_performance:document.getElementById("studentEditPerformance").value.trim()||null,
+        p_remarks:document.getElementById("studentEditRemarks").value.trim()||null,
+        p_password:password.trim()||null
+    };
+
+    const {error}=await c.rpc("admin_save_student",payload);
+    if(error){
+        console.error("Student save error:",error);
+        alert("Student could not be saved: "+(error.message||"Unknown error"));
+        return;
+    }
+
+    await loadAdminStudentsFromSupabase();
+
+    const rollView=document.getElementById("studentRollView");
+    if(rollView && getComputedStyle(rollView).display!=="none"){
+        showStudentRolls(payload.p_class_name);
+    }
+
+    closeAdminEditor("studentDataEditorPopup");
+    alert(existing?"Student updated successfully.":"Student added successfully.");
+}
+
+async function deleteStudentItem(studentId){
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const student=adminManagedStudents.find(s=>s.studentId===studentId);
+    if(!student) return;
+
+    if(!confirm(`Delete ${student.name} (${student.studentId}) permanently from Supabase?`)) return;
+
+    const c=initStudentSupabase();
+    if(!c){alert("Supabase is not connected.");return;}
+
+    const {error}=await c.from("students").delete().eq("student_id",studentId);
+    if(error){
+        console.error("Student delete error:",error);
+        alert("Student could not be deleted: "+(error.message||"Unknown error"));
+        return;
+    }
+
+    studentAuthenticatedProfiles.delete(studentId);
+    await loadAdminStudentsFromSupabase();
+
+    const rollView=document.getElementById("studentRollView");
+    if(rollView && getComputedStyle(rollView).display!=="none"){
+        showStudentRolls(student.className);
+    }
+}
+
+function renderManagedStudentProfile(className,studentId){
+    const rollView=document.getElementById("studentRollView");
+    const student=getStudentRecord(className,studentId);
+    if(!student||!rollView) return;
+
+    activeStudentPortfolio={className,studentId};
+
+    const galleryHTML=Array.from({length:12},(_,i)=>{
+        const m=i+1;
+        return `<div class="student-photo-item">
+            <img data-student-month-photo data-month="${m}" alt="${escapeHtmlAttr(student.name)} Month ${m} progress photo" loading="lazy" decoding="async" onclick="openStudentPhotoGallery('${student.studentId}',${i})">
+            <div class="student-photo-missing" style="display:none;">Month ${m}<br>Photo not uploaded yet</div>
+            <span class="student-month-label">Month ${m}</span>
+            <button type="button" class="student-photo-upload-btn" onclick="event.stopPropagation();chooseStudentPortfolioPhoto('${student.studentId}','month',${m})">Add / Update</button>
+        </div>`;
+    }).join("");
+
+    rollView.style.display="block";
+    rollView.innerHTML=`
+        <button class="student-back-btn" onclick="showStudentRolls('${className}')">← Back to ${escapeHtml(className)}</button>
+        <h2 class="student-portfolio-title">🎓 ${escapeHtml(student.name)}</h2>
+        <div class="student-profile">
+            <div id="studentProfilePhotoHost"></div>
+
+            <div class="student-profile-photo-admin">
+                <button type="button" class="student-admin-login-btn" onclick="chooseStudentPortfolioPhoto('${student.studentId}','profile')">📷 Add / Update Student Photo</button>
+            </div>
+
+            <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+                <button class="admin-student-profile-edit" type="button" onclick="openStudentDataEditor('${student.studentId}')">✏️ Edit Student Information</button>
+                <button class="admin-student-profile-edit" type="button" style="background:#b42318;color:#fff;" onclick="deleteStudentItem('${student.studentId}')">🗑 Delete Student</button>
+            </div>
+
+            <h3>${escapeHtml(student.name)}</h3>
+            <div class="student-profile-row"><strong>Student ID:</strong> ${escapeHtml(student.studentId)}</div>
+            <div class="student-profile-row"><strong>Student Name:</strong> ${escapeHtml(student.name)}</div>
+            <div class="student-profile-row"><strong>Class:</strong> ${escapeHtml(student.className)}</div>
+            <div class="student-profile-row"><strong>Date of Birth:</strong> ${escapeHtml(student.dob||"To be updated")}</div>
+            <div class="student-profile-row"><strong>Parent / Guardian:</strong> ${escapeHtml(student.guardian||"To be updated")}</div>
+            <div class="student-profile-row"><strong>Academic Performance:</strong> ${escapeHtml(student.performance||"To be updated")}</div>
+            <div class="student-profile-row"><strong>Remarks:</strong> ${escapeHtml(student.remarks||"To be updated")}</div>
+
+            <div class="student-photo-gallery">
+                <h4>📊 Monthly Progress Photos</h4>
+                <div class="student-photo-grid">${galleryHTML}</div>
+            </div>
+            <div id="studentUploadProgress" class="student-upload-progress" role="status" aria-live="polite"></div>
+        </div>`;
+
+    bindPortfolioImages(student).catch(err=>console.error("Student photo display error:",err));
+}
+
+/* Keep the current password/admin logic, only replace the profile data rendering. */
+renderStudentProfile=renderManagedStudentProfile;
+
+/* ======================== SAFE HTML HELPERS ======================== */
+
+function escapeHtml(value){
+    return String(value??"")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+function escapeHtmlAttr(value){return escapeHtml(value);}
+function nl2br(value){return escapeHtml(value).replace(/\n/g,"<br>");}
+
+document.addEventListener("DOMContentLoaded",()=>{
+    initAdminManagedData();
+
+    /* Synchronize global admin buttons with any restored Supabase session. */
+    setTimeout(()=>{
+        updateGlobalAdminUI(
+            !!studentAdminSession,
+            studentAdminSession?.user?.email||""
+        );
+    },700);
+});
+</script>
+
+
+<script id="supabase-all-content-connection">
+/* =========================================================
+   FINAL SUPABASE CONNECTION
+   Students + Staff + Gallery + Notices + Monthly Reports
+   ========================================================= */
+
+function contentDb(){
+    return initStudentSupabase();
+}
+
+async function loadAllManagedContentFromSupabase(){
+    const db=contentDb();
+    if(!db) return;
+
+    try{
+        const [staffRes,galleryRes,noticeRes,monthlyRes]=await Promise.all([
+            db.from("staff").select("*").order("id",{ascending:true}),
+            db.from("gallery").select("*").order("id",{ascending:true}),
+            db.from("notices").select("*").order("id",{ascending:true}),
+            db.from("monthly_reports").select("*").order("slot",{ascending:true})
+        ]);
+
+        if(staffRes.error) throw staffRes.error;
+        if(galleryRes.error) throw galleryRes.error;
+        if(noticeRes.error) throw noticeRes.error;
+        if(monthlyRes.error) throw monthlyRes.error;
+
+        adminManagedStaff={};
+        (staffRes.data||[]).forEach(row=>{
+            const key=row.staff_key || `staff-${row.id}`;
+            adminManagedStaff[key]={
+                dbId:row.id,
+                staffKey:key,
+                name:row.name||"",
+                designation:row.designation||"",
+                phone:row.phone||"",
+                experience:row.experience||"",
+                subject:row.subject||"",
+                photo:row.photo_url||"",
+                about:row.about||"",
+                responsibility:row.responsibility||""
+            };
+        });
+
+        adminManagedGallery=(galleryRes.data||[]).map(row=>({
+            id:String(row.id),
+            dbId:row.id,
+            type:row.type||"photo",
+            src:row.file_url||"",
+            title:row.title||"",
+            description:row.description||""
+        }));
+
+        adminManagedNotices=(noticeRes.data||[]).map(row=>({
+            id:String(row.id),
+            dbId:row.id,
+            text:row.notice_text||""
+        }));
+
+        const monthLabels={
+            baishakh:"Baishakh",jestha:"Jestha",ashadh:"Ashadh",shrawan:"Shrawan",
+            bhadra:"Bhadra",ashwin:"Ashwin",kartik:"Kartik",mangsir:"Mangsir",
+            poush:"Poush",magh:"Magh",falgun:"Falgun",chaitra:"Chaitra"
+        };
+        adminManagedMonthlyReports={};
+        Object.entries(monthLabels).forEach(([key,label])=>{
+            adminManagedMonthlyReports[key]={label,photos:[]};
+        });
+        (monthlyRes.data||[]).forEach(row=>{
+            const key=String(row.month||"").toLowerCase();
+            if(!adminManagedMonthlyReports[key]){
+                adminManagedMonthlyReports[key]={
+                    label:key.charAt(0).toUpperCase()+key.slice(1),
+                    photos:[]
+                };
+            }
+            adminManagedMonthlyReports[key].photos.push({
+                dbId:row.id,
+                slot:Number(row.slot),
+                src:row.photo_url||"",
+                title:row.title||""
+            });
+        });
+        Object.values(adminManagedMonthlyReports).forEach(month=>{
+            for(let slot=1;slot<=3;slot++){
+                if(!month.photos.some(p=>p.slot===slot)){
+                    month.photos.push({slot,src:"",title:`${month.label} - Activity ${slot}`});
+                }
+            }
+            month.photos.sort((a,b)=>a.slot-b.slot);
+        });
+
+        renderManagedStaffGrid();
+        renderManagedGallery();
+        renderManagedNotices();
+        renderManagedMonthlyReport();
+        if(document.getElementById("websiteAdminStaffTab")?.style.display!=="none") renderAdminStaffList();
+        if(document.getElementById("websiteAdminGalleryTab")?.style.display!=="none") renderAdminGalleryList();
+        if(document.getElementById("websiteAdminNoticesTab")?.style.display!=="none") renderAdminNoticeList();
+        if(document.getElementById("websiteAdminMonthlyTab")?.style.display!=="none") renderAdminMonthlyReportManager();
+    }catch(error){
+        console.error("Supabase content load error:",error);
+    }
+}
+
+/* ---------- STAFF: Supabase save/delete ---------- */
+saveStaffEdit=async function(event){
+    event.preventDefault();
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const db=contentDb();
+    let key=document.getElementById("staffEditId").value;
+    const isNew=!key;
+    const name=document.getElementById("staffEditName").value.trim();
+    if(!name){alert("Please enter the staff name.");return;}
+    if(isNew) key=makeStaffIdFromName(name);
+
+    const current=adminManagedStaff[key]||{};
+    let photo=document.getElementById("staffEditPhoto").value.trim();
+    const file=document.getElementById("staffEditPhotoFile").files[0];
+    if(file && file.type.startsWith("image/")){
+        try{ photo=await fileToCompressedDataUrl(file,600,.78); }
+        catch(error){alert(error.message);return;}
+    }
+
+    const payload={
+        staff_key:key,
+        name,
+        designation:document.getElementById("staffEditDesignation").value.trim(),
+        phone:document.getElementById("staffEditPhone").value.trim(),
+        experience:document.getElementById("staffEditExperience").value.trim(),
+        subject:document.getElementById("staffEditSubject").value.trim(),
+        photo_url:photo,
+        about:document.getElementById("staffEditAbout").value.trim(),
+        responsibility:document.getElementById("staffEditResponsibility").value.trim()
+    };
+
+    const result=current.dbId
+        ? await db.from("staff").update(payload).eq("id",current.dbId).select().single()
+        : await db.from("staff").insert(payload).select().single();
+
+    if(result.error){alert("Staff save failed: "+result.error.message);return;}
+    closeAdminEditor("staffEditorPopup");
+    await loadAllManagedContentFromSupabase();
+};
+
+deleteStaffItem=async function(key){
+    if(!studentAdminSession) return;
+    const staff=adminManagedStaff[key];
+    if(!staff || !confirm(`Delete ${staff.name} from Staff?`)) return;
+    const db=contentDb();
+    const result=await db.from("staff").delete().eq("id",staff.dbId);
+    if(result.error){alert("Staff delete failed: "+result.error.message);return;}
+    await loadAllManagedContentFromSupabase();
+};
+
+/* ---------- GALLERY: Supabase save/delete ---------- */
+saveGalleryEdit=async function(event){
+    event.preventDefault();
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const db=contentDb();
+    const id=document.getElementById("galleryEditId").value;
+    const type=document.getElementById("galleryEditType").value;
+    let src=document.getElementById("galleryEditSrc").value.trim();
+    const file=document.getElementById("galleryEditFile").files[0];
+
+    if(file){
+        if(type==="photo" && file.type.startsWith("image/")){
+            try{src=await fileToCompressedDataUrl(file,1200,.76);}
+            catch(error){alert(error.message);return;}
+        }else if(type==="video"){
+            alert("For videos, enter the permanent video file path/URL in File Path / URL.");
+            return;
+        }
+    }
+    if(!src){alert("Choose a photo or enter a file path/URL.");return;}
+
+    const payload={
+        type,
+        title:document.getElementById("galleryEditTitle").value.trim(),
+        file_url:src,
+        description:document.getElementById("galleryEditDescription").value.trim()
+    };
+
+    const result=id
+        ? await db.from("gallery").update(payload).eq("id",Number(id)).select().single()
+        : await db.from("gallery").insert(payload).select().single();
+
+    if(result.error){alert("Gallery save failed: "+result.error.message);return;}
+    closeAdminEditor("galleryEditorPopup");
+    await loadAllManagedContentFromSupabase();
+};
+
+deleteGalleryItem=async function(id){
+    if(!studentAdminSession || !confirm("Delete this gallery item?")) return;
+    const db=contentDb();
+    const result=await db.from("gallery").delete().eq("id",Number(id));
+    if(result.error){alert("Gallery delete failed: "+result.error.message);return;}
+    await loadAllManagedContentFromSupabase();
+};
+
+/* ---------- NOTICES: Supabase save/delete ---------- */
+saveNoticeEdit=async function(event){
+    event.preventDefault();
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const db=contentDb();
+    const id=document.getElementById("noticeEditId").value;
+    const noticeText=document.getElementById("noticeEditText").value.trim();
+    if(!noticeText){alert("Please write the notice.");return;}
+
+    const result=id
+        ? await db.from("notices").update({notice_text:noticeText}).eq("id",Number(id)).select().single()
+        : await db.from("notices").insert({notice_text:noticeText}).select().single();
+
+    if(result.error){alert("Notice save failed: "+result.error.message);return;}
+    closeAdminEditor("noticeEditorPopup");
+    await loadAllManagedContentFromSupabase();
+};
+
+deleteNoticeItem=async function(id){
+    if(!studentAdminSession || !confirm("Delete this notice?")) return;
+    const db=contentDb();
+    const result=await db.from("notices").delete().eq("id",Number(id));
+    if(result.error){alert("Notice delete failed: "+result.error.message);return;}
+    await loadAllManagedContentFromSupabase();
+};
+
+/* ---------- MONTHLY REPORTS: Supabase save/clear ---------- */
+chooseMonthlyReportPhoto=function(monthKey,slot){
+    if(!studentAdminSession){openStudentAdminLogin();return;}
+
+    const picker=document.createElement("input");
+    picker.type="file";
+    picker.accept="image/*";
+    picker.style.position="fixed";
+    picker.style.left="-9999px";
+    document.body.appendChild(picker);
+
+    picker.addEventListener("change",async()=>{
+        const file=picker.files?.[0];
+        if(file){
+            try{
+                const dataUrl=await fileToCompressedDataUrl(file,1400,.78);
+                const month=adminManagedMonthlyReports[monthKey];
+                const item=month?.photos.find(p=>p.slot===slot);
+                const db=contentDb();
+                const payload={
+                    month:monthKey,
+                    slot,
+                    photo_url:dataUrl,
+                    title:item?.title || `${month?.label||monthKey} - Activity ${slot}`
+                };
+                const result=item?.dbId
+                    ? await db.from("monthly_reports").update(payload).eq("id",item.dbId)
+                    : await db.from("monthly_reports").insert(payload);
+                if(result.error){alert("Monthly report save failed: "+result.error.message);}
+                else{
+                    await loadAllManagedContentFromSupabase();
+                    renderAdminMonthlyReportManager();
+                    const currentTitle=document.querySelector("#monthlyPhotos .report-title");
+                    if(currentTitle && currentTitle.textContent.includes(month.label)){
+                        showMonthReport(month.label,monthKey);
+                    }
+                }
+            }catch(error){alert(error.message||"Could not prepare the photo.");}
+        }
+        picker.remove();
+    },{once:true});
+    picker.click();
+};
+
+clearMonthlyReportPhoto=async function(monthKey,slot){
+    if(!studentAdminSession) return;
+    const month=adminManagedMonthlyReports[monthKey];
+    const item=month?.photos.find(p=>p.slot===slot);
+    if(!item || !confirm(`Clear ${month.label} Photo ${slot}?`)) return;
+
+    const db=contentDb();
+    const result=item.dbId
+        ? await db.from("monthly_reports").update({photo_url:""}).eq("id",item.dbId)
+        : {error:null};
+
+    if(result.error){alert("Monthly report clear failed: "+result.error.message);return;}
+    await loadAllManagedContentFromSupabase();
+    renderAdminMonthlyReportManager();
+    const currentTitle=document.querySelector("#monthlyPhotos .report-title");
+    if(currentTitle && currentTitle.textContent.includes(month.label)){
+        showMonthReport(month.label,monthKey);
+    }
+};
+
+/* Reload online content after the original page initialization. */
+window.addEventListener("load",()=>{
+    setTimeout(loadAllManagedContentFromSupabase,250);
 });
 </script>
 
