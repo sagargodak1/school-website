@@ -3770,6 +3770,92 @@ body.dark-mode .staff-identity-card{background:#1d2935;border-color:#405467}
 }
 </style>
 
+
+<style id="staff-accounts-admin-css">
+.staff-account-list{
+    display:grid;
+    gap:12px;
+    margin-top:18px;
+}
+.staff-account-row{
+    display:grid;
+    grid-template-columns:minmax(180px,1fr) minmax(120px,.7fr) minmax(180px,1fr) auto;
+    gap:12px;
+    align-items:center;
+    padding:14px;
+    border:1px solid #dce6ef;
+    border-radius:14px;
+    background:#f9fbfd;
+}
+.staff-account-name{
+    font-weight:800;
+    color:#123c69;
+}
+.staff-account-id{
+    font-size:13px;
+    color:#667085;
+}
+.staff-account-row input{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #ccd8e5;
+    border-radius:9px;
+    font:inherit;
+    outline:none;
+}
+.staff-account-row input:focus{
+    border-color:#1976b8;
+    box-shadow:0 0 0 3px rgba(25,118,184,.10);
+}
+.staff-reset-btn{
+    border:0;
+    border-radius:20px;
+    padding:10px 15px;
+    background:#123c69;
+    color:#fff;
+    font-weight:800;
+    cursor:pointer;
+    white-space:nowrap;
+}
+.staff-reset-btn:hover{
+    background:#0b3157;
+}
+.staff-account-note{
+    margin-top:12px;
+    padding:12px 14px;
+    border-radius:12px;
+    background:#fff7e6;
+    border:1px solid #f0d79a;
+    color:#7a5600;
+    line-height:1.6;
+    font-size:14px;
+}
+body.dark-mode .staff-account-row{
+    background:#1d2935;
+    border-color:#405467;
+}
+body.dark-mode .staff-account-name{color:#8ecbff}
+body.dark-mode .staff-account-id{color:#cbd5e1}
+body.dark-mode .staff-account-row input{
+    background:#18232e;
+    color:#fff;
+    border-color:#405467;
+}
+@media(max-width:850px){
+    .staff-account-row{
+        grid-template-columns:1fr 1fr;
+    }
+    .staff-reset-btn{
+        width:100%;
+    }
+}
+@media(max-width:560px){
+    .staff-account-row{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+
 </head>
 
 
@@ -8021,6 +8107,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
         <div class="website-admin-tabs">
             <button type="button" onclick="showWebsiteAdminTab('staff')">👨‍🏫 Staff</button>
+            <button type="button" onclick="showWebsiteAdminTab('staffAccounts')">🔑 Staff Accounts</button>
             <button type="button" onclick="showWebsiteAdminTab('gallery')">🖼️ Gallery</button>
             <button type="button" onclick="showWebsiteAdminTab('students')">🎓 Students</button>
             <button id="adminNoticesTabButton" type="button" onclick="showWebsiteAdminTab('notices')">📢 Latest Notices</button>
@@ -8036,6 +8123,23 @@ document.addEventListener("DOMContentLoaded",()=>{
                 <button type="button" class="admin-primary-btn" onclick="openStaffEditor()">+ Add Staff</button>
             </div>
             <div id="adminStaffList" class="admin-manager-list"></div>
+        </div>
+
+
+        <div id="websiteAdminStaffAccountsTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>🔑 Staff Accounts</h3>
+                    <p>Reset a staff member's login password. The old password is never displayed.</p>
+                </div>
+            </div>
+
+            <div class="staff-account-note">
+                Password reset is connected securely to Supabase. Enter a new password with at least
+                8 characters and click Reset Password. The old password is never displayed.
+            </div>
+
+            <div id="adminStaffAccountList" class="staff-account-list"></div>
         </div>
 
         <div id="websiteAdminGalleryTab" class="website-admin-tab" style="display:none;">
@@ -8498,6 +8602,7 @@ function openWebsiteAdminPanel(){
         return;
     }
     renderAdminStaffList();
+    renderAdminStaffAccountList();
     renderAdminGalleryList();
     renderAdminStudentList();
     renderAdminNoticeList();
@@ -8513,9 +8618,10 @@ function closeWebsiteAdminPanel(){
 }
 
 function showWebsiteAdminTab(tab){
-    ["staff","gallery","students","notices","monthly"].forEach(name=>{
+    ["staff","staffAccounts","gallery","students","notices","monthly"].forEach(name=>{
         const el=document.getElementById(
             name==="staff"?"websiteAdminStaffTab":
+            name==="staffAccounts"?"websiteAdminStaffAccountsTab":
             name==="gallery"?"websiteAdminGalleryTab":
             name==="students"?"websiteAdminStudentsTab":
             name==="notices"?"websiteAdminNoticesTab":
@@ -8525,10 +8631,149 @@ function showWebsiteAdminTab(tab){
     });
 
     if(tab==="staff") renderAdminStaffList();
+    if(tab==="staffAccounts") renderAdminStaffAccountList();
     if(tab==="gallery") renderAdminGalleryList();
     if(tab==="students") renderAdminStudentList();
     if(tab==="notices") renderAdminNoticeList();
     if(tab==="monthly") renderAdminMonthlyReportManager();
+}
+
+
+/* =========================================================
+   ADMIN — STAFF ACCOUNTS UI
+   Secure reset backend will be connected to Supabase next.
+   ========================================================= */
+const ADMIN_RESETTABLE_STAFF_IDS=[
+    "suresh","sanjeev","joseph","ranjana",
+    "abhishek","sunyata","sushma","kritika","amisha","swastika",
+    "sanjaya","sujata","shekhar","padam","rufina","liza","kalpana","punita"
+];
+
+function renderAdminStaffAccountList(){
+    const host=document.getElementById("adminStaffAccountList");
+    if(!host) return;
+
+    const directory=(typeof STAFF_LOGIN_DIRECTORY!=="undefined" && STAFF_LOGIN_DIRECTORY)
+        ? STAFF_LOGIN_DIRECTORY
+        : {};
+
+    const rows=ADMIN_RESETTABLE_STAFF_IDS
+        .filter(id=>directory[id])
+        .map(id=>{
+            const staff=directory[id];
+            return `
+                <div class="staff-account-row">
+                    <div>
+                        <div class="staff-account-name">${escapeHtml(staff.name||id)}</div>
+                        <div class="staff-account-id">${escapeHtml(staff.designation||"Staff")}</div>
+                    </div>
+                    <div>
+                        <strong>Staff ID</strong><br>
+                        <span class="staff-account-id">${escapeHtml(id)}</span>
+                    </div>
+                    <div>
+                        <input id="staffResetPassword_${id}" type="password"
+                               autocomplete="new-password"
+                               placeholder="New password"
+                               aria-label="New password for ${escapeHtmlAttr(staff.name||id)}">
+                    </div>
+                    <button type="button" class="staff-reset-btn"
+                            onclick="requestStaffPasswordReset('${id}')">
+                        Reset Password
+                    </button>
+                </div>`;
+        }).join("");
+
+    host.innerHTML=rows || '<div class="review-empty">No staff login accounts found.</div>';
+}
+
+async function requestStaffPasswordReset(staffId){
+    if(!studentAdminSession || !studentAdminSession.access_token){
+        alert("Admin login is required.");
+        openStudentAdminLogin();
+        return;
+    }
+
+    const input=document.getElementById(`staffResetPassword_${staffId}`);
+    const newPassword=input?.value||"";
+
+    if(newPassword.length<8){
+        alert("Please enter a new password with at least 8 characters.");
+        input?.focus();
+        return;
+    }
+
+    const staff=(
+        typeof STAFF_LOGIN_DIRECTORY!=="undefined"
+        ? STAFF_LOGIN_DIRECTORY[staffId]
+        : null
+    );
+
+    const staffName=staff?.name||staffId;
+
+    if(!confirm(`Reset password for ${staffName}?`)){
+        return;
+    }
+
+    const button=input
+        ?.closest(".staff-account-row")
+        ?.querySelector(".staff-reset-btn");
+
+    const oldText=button?.textContent||"Reset Password";
+
+    try{
+        if(button){
+            button.disabled=true;
+            button.textContent="Resetting...";
+        }
+
+        const response=await fetch(
+            `${STUDENT_STORAGE_CONFIG.url}/functions/v1/reset-staff-password`,
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":`Bearer ${studentAdminSession.access_token}`,
+                    "apikey":STUDENT_STORAGE_CONFIG.anonKey
+                },
+                body:JSON.stringify({
+                    staffId,
+                    newPassword
+                })
+            }
+        );
+
+        let result={};
+        try{
+            result=await response.json();
+        }catch(_error){
+            result={};
+        }
+
+        if(!response.ok){
+            throw new Error(
+                result.error ||
+                result.message ||
+                `Password reset failed (${response.status}).`
+            );
+        }
+
+        if(input) input.value="";
+
+        alert(`✓ Password reset successfully for ${staffName}.`);
+    }catch(error){
+        console.error("Staff password reset error:",error);
+
+        alert(
+            "Password reset failed: " +
+            (error?.message || "Unknown error")
+        );
+    }finally{
+        if(button){
+            button.disabled=false;
+            button.textContent=oldText;
+        }
+    }
 }
 
 function closeAdminEditor(id){
