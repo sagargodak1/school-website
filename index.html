@@ -3154,6 +3154,36 @@ body.dark-mode .review-section{
     font-size:42px !important;
 }
 
+.rating-total-box{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    margin:0 auto 14px;
+    padding:8px 14px;
+    border:1px solid #e4e7ec;
+    border-radius:999px;
+    background:#f8fafc;
+    color:#475467;
+    font-size:14px;
+    font-weight:700;
+}
+
+.rating-total-box strong{
+    color:#123c69;
+    font-size:17px;
+}
+
+body.dark-mode .rating-total-box{
+    background:#1d2935;
+    border-color:#405467;
+    color:#d0d5dd;
+}
+
+body.dark-mode .rating-total-box strong{
+    color:#8ecbff;
+}
+
 /* Unified submit state */
 .form-submit-status{
     display:none;
@@ -5796,6 +5826,11 @@ body.dark-mode .admin-leave-card{background:#1d2935;border-color:#405467;color:#
     </p>
 
     <div class="review-form star-only-review">
+        <div class="rating-total-box" aria-live="polite">
+            <span>Total Stars Received:</span>
+            <strong id="ratingTotalStars">127</strong>
+        </div>
+
         <form
             id="reviewForm"
             action="https://formsubmit.co/staugustineacademicfoundation@gmail.com"
@@ -11042,6 +11077,121 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     },900);
 });
+</script>
+
+
+<script id="supabase-school-rating-js">
+/* =========================================================
+   SCHOOL RATING — SUPABASE TOTAL + FORMSUBMIT NOTIFICATION
+   - Saves the selected 1–5 stars through a protected RPC.
+   - Starts the public total at 127 and keeps increasing it.
+   - Continues the existing Gmail notification after saving.
+   ========================================================= */
+
+function formatPublicRatingTotal(value){
+    const total=Math.max(0,Number(value)||0);
+
+    if(total<1000) return String(Math.round(total));
+
+    if(total<1000000){
+        const thousands=total/1000;
+        const text=thousands>=10 || Number.isInteger(thousands)
+            ? String(Math.round(thousands))
+            : thousands.toFixed(1).replace(/\.0$/,"");
+        return `${text}K`;
+    }
+
+    const millions=total/1000000;
+    const text=millions>=10 || Number.isInteger(millions)
+        ? String(Math.round(millions))
+        : millions.toFixed(1).replace(/\.0$/,"");
+    return `${text}M`;
+}
+
+async function loadSchoolRatingTotal(){
+    const output=document.getElementById("ratingTotalStars");
+    if(!output) return;
+
+    try{
+        const db=initStudentSupabase();
+        if(!db) throw new Error("Supabase is not connected.");
+
+        const {data,error}=await db.rpc("get_school_rating_summary");
+        if(error) throw error;
+
+        const summary=Array.isArray(data)?data[0]:data;
+        output.textContent=formatPublicRatingTotal(summary?.total_stars??127);
+    }catch(error){
+        console.error("Rating total load error:",error);
+        output.textContent="127";
+    }
+}
+
+document.addEventListener("submit",async function(event){
+    const form=event.target;
+    if(!form || form.id!=="reviewForm") return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if(!form.checkValidity()){
+        form.reportValidity();
+        return;
+    }
+
+    const selected=form.querySelector('input[name="School Rating"]:checked');
+    const stars=Number.parseInt(selected?.value||"",10);
+    const button=document.getElementById("reviewSubmit");
+    const status=document.getElementById("reviewStatus");
+    const oldText=button?.textContent||"⭐ Submit Rating";
+
+    if(!Number.isInteger(stars) || stars<1 || stars>5){
+        alert("Please select a rating from 1 to 5 stars.");
+        return;
+    }
+
+    if(button){
+        button.disabled=true;
+        button.textContent="Saving rating...";
+    }
+
+    if(status){
+        status.className="form-submit-status";
+        status.style.display="block";
+        status.textContent="Saving your rating securely...";
+    }
+
+    try{
+        const db=initStudentSupabase();
+        if(!db) throw new Error("Supabase is not connected.");
+
+        const {error}=await db.rpc("submit_school_rating",{p_stars:stars});
+        if(error) throw error;
+
+        await loadSchoolRatingTotal();
+
+        if(button) button.textContent="Sending notification...";
+        if(status) status.textContent="Rating saved. Sending notification...";
+
+        /* Supabase is saved; now continue the existing Gmail submission. */
+        form.submit();
+    }catch(error){
+        console.error("Rating save error:",error);
+
+        if(status){
+            status.className="form-submit-status error";
+            status.style.display="block";
+            status.textContent="Rating could not be saved: "+(error?.message||"Unknown error");
+        }
+
+        if(button){
+            button.disabled=false;
+            button.textContent=oldText;
+        }
+    }
+},true);
+
+document.addEventListener("DOMContentLoaded",loadSchoolRatingTotal);
 </script>
 
 
