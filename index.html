@@ -3856,6 +3856,196 @@ body.dark-mode .staff-account-row input{
 }
 </style>
 
+
+<style id="leave-approval-workflow-css">
+/* =========================================================
+   LEAVE APPLICATION STATUS + PRINCIPAL APPROVAL
+   Existing website design preserved.
+   ========================================================= */
+.staff-leave-history{
+    margin-top:24px;
+    padding-top:20px;
+    border-top:1px solid #dce6ef;
+}
+.staff-leave-history h3{
+    color:#123c69;
+    margin-bottom:12px;
+    text-align:left;
+}
+.leave-history-list,
+.principal-leave-list{
+    display:grid;
+    gap:12px;
+}
+.leave-status-card,
+.principal-leave-card{
+    border:1px solid #dce6ef;
+    border-radius:14px;
+    background:#f9fbfd;
+    padding:15px;
+    text-align:left;
+    line-height:1.65;
+}
+.leave-status-head,
+.principal-leave-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    flex-wrap:wrap;
+}
+.leave-status-name{
+    color:#123c69;
+    font-weight:800;
+}
+.leave-status-badge{
+    display:inline-block;
+    border-radius:999px;
+    padding:5px 10px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+}
+.leave-status-badge.pending{
+    background:#fff7e6;
+    color:#8a5b00;
+    border:1px solid #f0d79a;
+}
+.leave-status-badge.approved{
+    background:#ecfdf3;
+    color:#067647;
+    border:1px solid #abefc6;
+}
+.leave-status-badge.rejected{
+    background:#fff1f0;
+    color:#b42318;
+    border:1px solid #fecdca;
+}
+.leave-status-meta{
+    margin-top:8px;
+    color:#475467;
+    font-size:14px;
+}
+.leave-status-reason{
+    margin-top:10px;
+    background:#fff;
+    border-radius:10px;
+    padding:10px 12px;
+    border:1px solid #e4e7ec;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+}
+.leave-history-empty,
+.principal-leave-empty{
+    padding:18px;
+    border:1px dashed #cbd5e1;
+    border-radius:12px;
+    color:#667085;
+    text-align:center;
+}
+.principal-leave-box{
+    width:min(96%,900px);
+    margin:20px auto;
+    background:#fff;
+    border-radius:20px;
+    padding:28px;
+    position:relative;
+    box-shadow:0 18px 55px rgba(0,0,0,.22);
+}
+.principal-leave-box h2{
+    color:#123c69;
+    text-align:center;
+    margin-bottom:7px;
+}
+.principal-leave-subtitle{
+    text-align:center;
+    color:#667085;
+    margin-bottom:22px;
+}
+.principal-leave-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:14px;
+}
+.principal-leave-actions button{
+    border:0;
+    border-radius:22px;
+    padding:9px 16px;
+    color:#fff;
+    font-weight:800;
+    cursor:pointer;
+}
+.principal-approve-btn{background:#12b76a}
+.principal-reject-btn{background:#f04438}
+.principal-leave-actions button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+.principal-refresh-btn{
+    display:block;
+    margin:0 auto 18px;
+    border:1px solid #ccd8e5;
+    background:#fff;
+    color:#123c69;
+    border-radius:22px;
+    padding:9px 16px;
+    font-weight:800;
+    cursor:pointer;
+}
+body.dark-mode .staff-leave-history{border-color:#405467}
+body.dark-mode .staff-leave-history h3,
+body.dark-mode .leave-status-name,
+body.dark-mode .principal-leave-box h2{color:#8ecbff}
+body.dark-mode .leave-status-card,
+body.dark-mode .principal-leave-card,
+body.dark-mode .principal-leave-box{
+    background:#22313f;
+    border-color:#405467;
+    color:#eee;
+}
+body.dark-mode .leave-status-meta{color:#cbd5e1}
+body.dark-mode .leave-status-reason{
+    background:#1d2935;
+    border-color:#405467;
+    color:#eee;
+}
+body.dark-mode .principal-refresh-btn{
+    background:#1d2935;
+    color:#8ecbff;
+    border-color:#405467;
+}
+@media(max-width:650px){
+    .principal-leave-box{padding:22px 15px}
+}
+</style>
+
+
+<style id="admin-leave-delete-css">
+.admin-leave-list{display:grid;gap:12px;margin-top:16px}
+.admin-leave-card{padding:15px;border:1px solid #dce6ef;border-radius:14px;background:#f9fbfd;line-height:1.6}
+.admin-leave-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.admin-leave-delete-btn{border:0;border-radius:20px;padding:9px 15px;background:#c62828;color:#fff;font-weight:800;cursor:pointer}
+.admin-leave-delete-btn:disabled{opacity:.55;cursor:not-allowed}
+body.dark-mode .admin-leave-card{background:#1d2935;border-color:#405467;color:#eee}
+</style>
+
+
+<style id="leave-success-professional-css">
+.leave-success-overlay{position:fixed;inset:0;background:rgba(10,25,47,.58);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:20px;z-index:999999;}
+.leave-success-overlay.show{display:flex;}
+.leave-success-card{width:min(92vw,500px);background:#fff;border-radius:22px;padding:34px 30px 28px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.24);animation:leaveSuccessIn .28s ease-out;}
+.leave-success-icon{width:76px;height:76px;border-radius:50%;margin:0 auto 18px;display:grid;place-items:center;background:#eaf8ef;color:#198754;font-size:40px;font-weight:800;border:5px solid #d6f1df;}
+.leave-success-card h2{margin:0;color:#102a43;font-size:25px;line-height:1.25;}
+.leave-success-status{display:inline-flex;align-items:center;gap:7px;margin:16px 0 14px;padding:7px 14px;border-radius:999px;background:#fff4d6;color:#8a5a00;font-size:13px;font-weight:800;letter-spacing:.3px;}
+.leave-success-card p{margin:0 auto;color:#5b6b7a;font-size:15px;line-height:1.7;max-width:410px;}
+.leave-success-note{margin-top:14px!important;padding:12px 14px;background:#f6f8fb;border-radius:12px;color:#536273!important;font-size:13px!important;}
+.leave-success-close{margin-top:22px;width:100%;border:0;border-radius:12px;background:#102a43;color:#fff;padding:13px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:.2s ease;}
+.leave-success-close:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(16,42,67,.18);}
+@keyframes leaveSuccessIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@media(max-width:520px){.leave-success-card{padding:28px 20px 22px;border-radius:18px}.leave-success-card h2{font-size:21px}.leave-success-icon{width:68px;height:68px;font-size:35px}}
+</style>
+
 </head>
 
 
@@ -7526,7 +7716,7 @@ window.addEventListener('resize',()=>{
 
     /* Show a friendly confirmation after FormSubmit redirects back. */
     const params=new URLSearchParams(window.location.search);
-    if(params.get("submitted")==="1"){
+    if(params.get("submitted")==="1" && params.get("form")!=="leave"){
         const formType=params.get("form")||"form";
 
         setTimeout(()=>{
@@ -8108,6 +8298,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         <div class="website-admin-tabs">
             <button type="button" onclick="showWebsiteAdminTab('staff')">👨‍🏫 Staff</button>
             <button type="button" onclick="showWebsiteAdminTab('staffAccounts')">🔑 Staff Accounts</button>
+            <button type="button" onclick="showWebsiteAdminTab('leaveApplications')">📋 Leave Applications</button>
             <button type="button" onclick="showWebsiteAdminTab('gallery')">🖼️ Gallery</button>
             <button type="button" onclick="showWebsiteAdminTab('students')">🎓 Students</button>
             <button id="adminNoticesTabButton" type="button" onclick="showWebsiteAdminTab('notices')">📢 Latest Notices</button>
@@ -8140,6 +8331,20 @@ document.addEventListener("DOMContentLoaded",()=>{
             </div>
 
             <div id="adminStaffAccountList" class="staff-account-list"></div>
+        </div>
+
+
+        <div id="websiteAdminLeaveApplicationsTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>📋 Leave Applications</h3>
+                    <p>View submitted staff leave applications and delete old records when no longer needed.</p>
+                </div>
+                <button type="button" class="admin-mini-btn" onclick="renderAdminLeaveApplications()">↻ Refresh</button>
+            </div>
+            <div id="adminLeaveApplicationList" class="admin-leave-list">
+                <div class="review-empty">Loading leave applications...</div>
+            </div>
         </div>
 
         <div id="websiteAdminGalleryTab" class="website-admin-tab" style="display:none;">
@@ -8618,10 +8823,11 @@ function closeWebsiteAdminPanel(){
 }
 
 function showWebsiteAdminTab(tab){
-    ["staff","staffAccounts","gallery","students","notices","monthly"].forEach(name=>{
+    ["staff","staffAccounts","leaveApplications","gallery","students","notices","monthly"].forEach(name=>{
         const el=document.getElementById(
             name==="staff"?"websiteAdminStaffTab":
             name==="staffAccounts"?"websiteAdminStaffAccountsTab":
+            name==="leaveApplications"?"websiteAdminLeaveApplicationsTab":
             name==="gallery"?"websiteAdminGalleryTab":
             name==="students"?"websiteAdminStudentsTab":
             name==="notices"?"websiteAdminNoticesTab":
@@ -8632,6 +8838,7 @@ function showWebsiteAdminTab(tab){
 
     if(tab==="staff") renderAdminStaffList();
     if(tab==="staffAccounts") renderAdminStaffAccountList();
+    if(tab==="leaveApplications") renderAdminLeaveApplications();
     if(tab==="gallery") renderAdminGalleryList();
     if(tab==="students") renderAdminStudentList();
     if(tab==="notices") renderAdminNoticeList();
@@ -8641,12 +8848,13 @@ function showWebsiteAdminTab(tab){
 
 /* =========================================================
    ADMIN — STAFF ACCOUNTS UI
-   Secure reset backend will be connected to Supabase next.
+   All current staff login accounts can be password-reset by Admin.
    ========================================================= */
 const ADMIN_RESETTABLE_STAFF_IDS=[
-    "suresh","sanjeev","joseph","ranjana",
+    "suresh","sanjeev","joseph","ranjana","sagar",
     "abhishek","sunyata","sushma","kritika","amisha","swastika",
-    "sanjaya","sujata","shekhar","padam","rufina","liza","kalpana","punita"
+    "sanjaya","sujata","shekhar","padam","rufina","liza","kalpana","punita",
+    "devi","lila","sabina","amit","bhupendra"
 ];
 
 function renderAdminStaffAccountList(){
@@ -8769,6 +8977,100 @@ async function requestStaffPasswordReset(staffId){
             (error?.message || "Unknown error")
         );
     }finally{
+        if(button){
+            button.disabled=false;
+            button.textContent=oldText;
+        }
+    }
+}
+
+
+async function renderAdminLeaveApplications(){
+    const host=document.getElementById("adminLeaveApplicationList");
+    if(!host) return;
+
+    if(!studentAdminSession?.access_token){
+        host.innerHTML='<div class="review-empty">Admin login is required.</div>';
+        return;
+    }
+
+    host.innerHTML='<div class="review-empty">Loading leave applications...</div>';
+
+    try{
+        const db=initStudentSupabase();
+        const {data,error}=await db
+            .from("leave_applications")
+            .select("*")
+            .order("created_at",{ascending:false});
+
+        if(error) throw error;
+
+        if(!data?.length){
+            host.innerHTML='<div class="review-empty">No leave applications found.</div>';
+            return;
+        }
+
+        host.innerHTML=data.map(row=>{
+            const status=String(row.status||"pending").toLowerCase();
+            return `
+                <div class="admin-leave-card">
+                    <div class="admin-leave-head">
+                        <div>
+                            <strong>${escapeHtml(row.staff_name||"Staff")}</strong>
+                            <div class="staff-account-id">Staff ID: ${escapeHtml(row.staff_id||"—")}</div>
+                        </div>
+                        <span class="leave-status-badge ${["approved","rejected"].includes(status)?status:"pending"}">${escapeHtml(status)}</span>
+                    </div>
+                    <div style="margin-top:9px">
+                        <strong>Submitted:</strong> ${escapeHtml(row.submitted_date_bs||"—")}<br>
+                        <strong>Leave:</strong> ${escapeHtml(row.leave_from_bs||"—")} to ${escapeHtml(row.leave_to_bs||"—")}<br>
+                        <strong>Type:</strong> ${escapeHtml(row.leave_type||"—")}<br>
+                        <strong>Reason:</strong> ${escapeHtml(row.reason||"—")}
+                    </div>
+                    <div style="margin-top:12px">
+                        <button type="button" class="admin-leave-delete-btn"
+                                onclick="adminDeleteLeaveApplication(${Number(row.id)},this)">
+                            🗑 Delete Application
+                        </button>
+                    </div>
+                </div>`;
+        }).join("");
+    }catch(error){
+        console.error("Admin leave list error:",error);
+        host.innerHTML=`<div class="review-empty">Could not load leave applications: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+async function adminDeleteLeaveApplication(id,button){
+    if(!studentAdminSession?.access_token){
+        alert("Admin login is required.");
+        return;
+    }
+
+    if(!confirm("Delete this leave application permanently?")){
+        return;
+    }
+
+    const oldText=button?.textContent||"Delete Application";
+    if(button){
+        button.disabled=true;
+        button.textContent="Deleting...";
+    }
+
+    try{
+        const db=initStudentSupabase();
+        const {error}=await db
+            .from("leave_applications")
+            .delete()
+            .eq("id",id);
+
+        if(error) throw error;
+
+        await renderAdminLeaveApplications();
+        alert("Leave application deleted successfully.");
+    }catch(error){
+        console.error("Admin leave delete error:",error);
+        alert("Could not delete leave application: "+(error?.message||"Unknown error"));
         if(button){
             button.disabled=false;
             button.textContent=oldText;
@@ -10067,6 +10369,29 @@ document.addEventListener("click",function(event){
 </div>
 
 
+
+<!-- =========================================================
+     PRINCIPAL — LEAVE REQUESTS ONLY
+========================================================= -->
+<div id="principalLeavePopup" class="popup">
+    <div class="principal-leave-box">
+        <span class="close-btn" onclick="closePrincipalLeaveRequests()">&times;</span>
+        <h2>📋 Leave Requests</h2>
+        <p class="principal-leave-subtitle">
+            Review staff leave applications and choose Approve or Reject.
+        </p>
+
+        <button type="button" class="principal-refresh-btn"
+                onclick="loadPrincipalLeaveRequests()">
+            ↻ Refresh Requests
+        </button>
+
+        <div id="principalLeaveRequestList" class="principal-leave-list">
+            <div class="principal-leave-empty">Loading leave requests...</div>
+        </div>
+    </div>
+</div>
+
 <script id="staff-login-leave-js">
 /* =========================================================
    SECURE STAFF LOGIN
@@ -10338,6 +10663,417 @@ document.addEventListener("DOMContentLoaded",()=>{
         });
     }
 });
+</script>
+
+
+<script id="leave-approval-workflow-js">
+/* =========================================================
+   COMPLETE LEAVE WORKFLOW
+   - Staff: submit to Supabase as pending + FormSubmit Gmail
+   - Staff: view own application status/history
+   - Principal (joseph): Leave Requests only, Approve / Reject
+   ========================================================= */
+
+const PRINCIPAL_STAFF_ID="joseph";
+
+function leaveStatusClass(status){
+    const s=String(status||"pending").toLowerCase();
+    return ["approved","rejected"].includes(s)?s:"pending";
+}
+
+function formatLeaveValue(value,fallback="—"){
+    return value===null || value===undefined || value==="" ? fallback : String(value);
+}
+
+/* Add the staff history area once. */
+function ensureStaffLeaveHistoryUI(){
+    const box=document.querySelector("#staffLeavePopup .staff-leave-box");
+    const form=document.getElementById("staffLeaveForm");
+    if(!box || !form || document.getElementById("staffLeaveHistory")) return;
+
+    const history=document.createElement("div");
+    history.id="staffLeaveHistory";
+    history.className="staff-leave-history";
+    history.innerHTML=`
+        <h3>My Leave Applications</h3>
+        <div id="staffLeaveHistoryList" class="leave-history-list">
+            <div class="leave-history-empty">No leave applications yet.</div>
+        </div>
+    `;
+    form.insertAdjacentElement("afterend",history);
+}
+
+async function loadOwnLeaveApplications(){
+    ensureStaffLeaveHistoryUI();
+    const host=document.getElementById("staffLeaveHistoryList");
+    if(!host || !loggedInStaff || !staffAuthSession) return;
+
+    if(loggedInStaff.username===PRINCIPAL_STAFF_ID){
+        host.innerHTML="";
+        return;
+    }
+
+    host.innerHTML='<div class="leave-history-empty">Loading...</div>';
+
+    const db=initStaffSupabase();
+    if(!db){
+        host.innerHTML='<div class="leave-history-empty">Could not connect to leave records.</div>';
+        return;
+    }
+
+    const {data,error}=await db
+        .from("leave_applications")
+        .select("*")
+        .order("created_at",{ascending:false});
+
+    if(error){
+        console.error("Own leave load error:",error);
+        host.innerHTML=`<div class="leave-history-empty">Could not load leave status: ${escapeHtml(error.message||"Unknown error")}</div>`;
+        return;
+    }
+
+    const rows=data||[];
+    if(!rows.length){
+        host.innerHTML='<div class="leave-history-empty">No leave applications yet.</div>';
+        return;
+    }
+
+    host.innerHTML=rows.map(row=>{
+        const status=leaveStatusClass(row.status);
+        return `
+            <div class="leave-status-card">
+                <div class="leave-status-head">
+                    <div class="leave-status-name">${escapeHtml(formatLeaveValue(row.leave_type,"Leave Application"))}</div>
+                    <span class="leave-status-badge ${status}">${escapeHtml(status)}</span>
+                </div>
+                <div class="leave-status-meta">
+                    <strong>Submitted:</strong> ${escapeHtml(formatLeaveValue(row.submitted_date_bs))}<br>
+                    <strong>Leave:</strong> ${escapeHtml(formatLeaveValue(row.leave_from_bs))}
+                    to ${escapeHtml(formatLeaveValue(row.leave_to_bs))}
+                </div>
+                <div class="leave-status-reason">
+                    <strong>Reason:</strong><br>${escapeHtml(formatLeaveValue(row.reason))}
+                </div>
+            </div>`;
+    }).join("");
+}
+
+function closePrincipalLeaveRequests(){
+    const popup=document.getElementById("principalLeavePopup");
+    if(popup) popup.style.display="none";
+    document.body.style.overflow="auto";
+}
+
+async function openPrincipalLeaveRequests(){
+    if(!loggedInStaff || loggedInStaff.username!==PRINCIPAL_STAFF_ID){
+        alert("Principal login is required.");
+        return;
+    }
+
+    const popup=document.getElementById("principalLeavePopup");
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+
+    await loadPrincipalLeaveRequests();
+}
+
+async function loadPrincipalLeaveRequests(){
+    const host=document.getElementById("principalLeaveRequestList");
+    if(!host) return;
+
+    if(!loggedInStaff || loggedInStaff.username!==PRINCIPAL_STAFF_ID || !staffAuthSession){
+        host.innerHTML='<div class="principal-leave-empty">Principal login is required.</div>';
+        return;
+    }
+
+    host.innerHTML='<div class="principal-leave-empty">Loading leave requests...</div>';
+
+    const db=initStaffSupabase();
+    if(!db){
+        host.innerHTML='<div class="principal-leave-empty">Could not connect to leave records.</div>';
+        return;
+    }
+
+    const {data,error}=await db
+        .from("leave_applications")
+        .select("*")
+        .order("created_at",{ascending:false});
+
+    if(error){
+        console.error("Principal leave load error:",error);
+        host.innerHTML=`<div class="principal-leave-empty">Could not load requests: ${escapeHtml(error.message||"Unknown error")}</div>`;
+        return;
+    }
+
+    const rows=data||[];
+    if(!rows.length){
+        host.innerHTML='<div class="principal-leave-empty">No leave applications have been submitted.</div>';
+        return;
+    }
+
+    host.innerHTML=rows.map(row=>{
+        const status=leaveStatusClass(row.status);
+        const pending=status==="pending";
+        return `
+            <div class="principal-leave-card">
+                <div class="principal-leave-head">
+                    <div>
+                        <div class="leave-status-name">${escapeHtml(formatLeaveValue(row.staff_name,"Staff"))}</div>
+                        <div class="leave-status-meta">
+                            <strong>Staff ID:</strong> ${escapeHtml(formatLeaveValue(row.staff_id))}<br>
+                            <strong>Designation:</strong> ${escapeHtml(formatLeaveValue(row.designation))}<br>
+                            <strong>Submitted Date (B.S.):</strong> ${escapeHtml(formatLeaveValue(row.submitted_date_bs))}<br>
+                            <strong>Leave From (B.S.):</strong> ${escapeHtml(formatLeaveValue(row.leave_from_bs))}<br>
+                            <strong>Leave To (B.S.):</strong> ${escapeHtml(formatLeaveValue(row.leave_to_bs))}<br>
+                            <strong>Leave Type:</strong> ${escapeHtml(formatLeaveValue(row.leave_type))}<br>
+                            <strong>Contact Number:</strong> ${escapeHtml(formatLeaveValue(row.contact_number))}
+                        </div>
+                    </div>
+                    <span class="leave-status-badge ${status}">${escapeHtml(status)}</span>
+                </div>
+
+                <div class="leave-status-reason">
+                    <strong>Reason for Leave:</strong><br>
+                    ${escapeHtml(formatLeaveValue(row.reason))}
+                </div>
+
+                ${row.remarks ? `
+                <div class="leave-status-reason">
+                    <strong>Additional Remarks:</strong><br>
+                    ${escapeHtml(formatLeaveValue(row.remarks))}
+                </div>` : ""}
+
+                ${pending ? `
+                <div class="principal-leave-actions">
+                    <button type="button" class="principal-approve-btn"
+                            onclick="principalSetLeaveStatus(${Number(row.id)},'approved',this)">
+                        ✓ APPROVE
+                    </button>
+                    <button type="button" class="principal-reject-btn"
+                            onclick="principalSetLeaveStatus(${Number(row.id)},'rejected',this)">
+                        ✕ REJECT
+                    </button>
+                </div>` : ""}
+            </div>`;
+    }).join("");
+}
+
+async function principalSetLeaveStatus(id,status,button){
+    if(!loggedInStaff || loggedInStaff.username!==PRINCIPAL_STAFF_ID || !staffAuthSession){
+        alert("Principal login is required.");
+        return;
+    }
+
+    if(!["approved","rejected"].includes(status)) return;
+
+    const action=status==="approved"?"APPROVE":"REJECT";
+    if(!confirm(`${action} this leave application?`)) return;
+
+    const card=button?.closest(".principal-leave-card");
+    const buttons=card?.querySelectorAll(".principal-leave-actions button")||[];
+    buttons.forEach(btn=>btn.disabled=true);
+
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db
+            .from("leave_applications")
+            .update({status})
+            .eq("id",id);
+
+        if(error) throw error;
+
+        await loadPrincipalLeaveRequests();
+    }catch(error){
+        console.error("Leave decision error:",error);
+        alert("Could not update leave status: "+(error?.message||"Unknown error"));
+        buttons.forEach(btn=>btn.disabled=false);
+    }
+}
+
+/* Principal gets Leave Requests only; normal staff get Leave Application. */
+const originalUpdateStaffLoginUI=updateStaffLoginUI;
+updateStaffLoginUI=function(){
+    originalUpdateStaffLoginUI();
+
+    const leave=document.getElementById("staffLeaveOpenBtn");
+    if(!leave) return;
+
+    if(loggedInStaff?.username===PRINCIPAL_STAFF_ID){
+        leave.textContent="📋 LEAVE REQUESTS";
+        leave.setAttribute("onclick","openPrincipalLeaveRequests()");
+    }else{
+        leave.textContent="📝 LEAVE APPLICATION";
+        leave.setAttribute("onclick","openStaffLeaveForm()");
+    }
+};
+
+const originalOpenStaffLeaveForm=openStaffLeaveForm;
+openStaffLeaveForm=function(){
+    if(loggedInStaff?.username===PRINCIPAL_STAFF_ID){
+        openPrincipalLeaveRequests();
+        return;
+    }
+
+    originalOpenStaffLeaveForm();
+    ensureStaffLeaveHistoryUI();
+    loadOwnLeaveApplications();
+};
+
+const originalStaffLogout=staffLogout;
+staffLogout=async function(){
+    closePrincipalLeaveRequests();
+    await originalStaffLogout();
+};
+
+/*
+ * Capture the Leave form submit BEFORE the older FormSubmit handler.
+ * First save a pending record in Supabase. If successful, continue the
+ * existing Gmail submission using the native form submit.
+ */
+document.addEventListener("submit",async function(event){
+    const form=event.target;
+    if(!form || form.id!=="staffLeaveForm") return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if(!loggedInStaff || !staffAuthSession?.user?.id){
+        alert("Your staff session has expired. Please log in again.");
+        openStaffLogin();
+        return;
+    }
+
+    if(loggedInStaff.username===PRINCIPAL_STAFF_ID){
+        alert("The Principal account is for reviewing leave requests only.");
+        openPrincipalLeaveRequests();
+        return;
+    }
+
+    if(!form.checkValidity()){
+        form.reportValidity();
+        return;
+    }
+
+    const submitted=document.getElementById("leaveSubmittedDate")?.value.trim()||"";
+    const from=document.getElementById("leaveFromDate")?.value.trim()||"";
+    const to=document.getElementById("leaveToDate")?.value.trim()||"";
+    const bsDatePattern=/^\d{4}-\d{2}-\d{2}$/;
+
+    if(!bsDatePattern.test(submitted) || !bsDatePattern.test(from) || !bsDatePattern.test(to)){
+        alert("Please enter all B.S. dates in YYYY-MM-DD format, for example 2083-05-10.");
+        return;
+    }
+
+    if(to<from){
+        alert("Leave To (B.S.) date cannot be earlier than Leave From (B.S.) date.");
+        return;
+    }
+
+    const btn=document.getElementById("staffLeaveSubmitBtn");
+    const oldText=btn?.textContent||"SUBMIT LEAVE APPLICATION";
+
+    if(btn){
+        btn.disabled=true;
+        btn.textContent="Saving application...";
+    }
+
+    try{
+        const payload={
+            user_id:staffAuthSession.user.id,
+            staff_id:loggedInStaff.username,
+            staff_name:loggedInStaff.name,
+            designation:loggedInStaff.designation||"",
+            submitted_date_bs:submitted,
+            leave_from_bs:from,
+            leave_to_bs:to,
+            leave_type:document.getElementById("leaveType")?.value||"",
+            contact_number:document.getElementById("leaveContact")?.value.trim()||null,
+            reason:document.getElementById("leaveReason")?.value.trim()||"",
+            remarks:document.getElementById("leaveRemarks")?.value.trim()||null,
+            status:"pending"
+        };
+
+        const db=initStaffSupabase();
+        const {error}=await db
+            .from("leave_applications")
+            .insert(payload);
+
+        if(error) throw error;
+
+        /* Keep the Gmail message complete and readable. */
+        document.getElementById("leaveStaffNameHidden").value=loggedInStaff.name;
+        document.getElementById("leaveDesignationHidden").value=loggedInStaff.designation||"";
+        document.getElementById("leaveStaffIdHidden").value=loggedInStaff.username;
+
+        let statusHidden=form.querySelector('input[name="Status"]');
+        if(!statusHidden){
+            statusHidden=document.createElement("input");
+            statusHidden.type="hidden";
+            statusHidden.name="Status";
+            form.appendChild(statusHidden);
+        }
+        statusHidden.value="Pending";
+
+        if(btn) btn.textContent="Sending notification...";
+
+        /*
+         * Native submission intentionally bypasses submit listeners:
+         * Supabase has already saved the application, and FormSubmit
+         * now sends the school Gmail notification.
+         */
+        form.submit();
+    }catch(error){
+        console.error("Leave application save error:",error);
+        alert("Leave application could not be saved: "+(error?.message||"Unknown error"));
+        if(btn){
+            btn.disabled=false;
+            btn.textContent=oldText;
+        }
+    }
+},true);
+
+document.addEventListener("DOMContentLoaded",()=>{
+    ensureStaffLeaveHistoryUI();
+
+    /* If a staff session was restored, refresh the role-specific UI shortly after auth restore. */
+    setTimeout(()=>{
+        updateStaffLoginUI();
+        if(loggedInStaff && loggedInStaff.username!==PRINCIPAL_STAFF_ID){
+            loadOwnLeaveApplications();
+        }
+    },900);
+});
+</script>
+
+
+<!-- Professional Leave Submission Success -->
+<div id="leaveSuccessPopup" class="leave-success-overlay" role="dialog" aria-modal="true" aria-labelledby="leaveSuccessTitle">
+  <div class="leave-success-card">
+    <div class="leave-success-icon">✓</div>
+    <h2 id="leaveSuccessTitle">Leave Application Submitted Successfully</h2>
+    <div class="leave-success-status">● STATUS: PENDING</div>
+    <p>Your leave application has been successfully recorded and forwarded to the Principal for review.</p>
+    <p class="leave-success-note">You can check the approval status anytime from your Staff Login.</p>
+    <button type="button" class="leave-success-close" onclick="closeLeaveSuccessPopup()">CLOSE</button>
+  </div>
+</div>
+<script id="leave-success-professional-js">
+function closeLeaveSuccessPopup(){
+  const popup=document.getElementById("leaveSuccessPopup");
+  if(popup) popup.classList.remove("show");
+  document.body.style.overflow="auto";
+}
+(function showLeaveSuccessAfterRedirect(){
+  const params=new URLSearchParams(window.location.search);
+  if(params.get("submitted")!=="1" || params.get("form")!=="leave") return;
+  window.addEventListener("DOMContentLoaded",function(){
+    const popup=document.getElementById("leaveSuccessPopup");
+    if(popup){popup.classList.add("show");document.body.style.overflow="hidden";}
+    if(window.history && window.history.replaceState){
+      window.history.replaceState({},document.title,window.location.pathname+window.location.hash);
+    }
+  });
+})();
 </script>
 
 </body>
