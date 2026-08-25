@@ -3486,6 +3486,290 @@ body.student-admin-mode #monthlyPhotos .admin-inline-edit{
 }
 </style>
 
+
+<style id="staff-login-leave-css">
+/* =========================================================
+   STAFF LOGIN + LEAVE APPLICATION
+   Added without changing the existing website layout.
+   ========================================================= */
+.staff-login-entry{
+    max-width:620px;
+    margin:10px auto 24px;
+    padding:4px 8px;
+    text-align:center;
+}
+.staff-login-entry button{
+    border:0;
+    border-radius:24px;
+    padding:11px 22px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    background:linear-gradient(135deg,#0f6b50,#15966f);
+    color:#fff;
+    box-shadow:0 5px 14px rgba(15,107,80,.18);
+}
+.staff-login-entry button:hover{transform:translateY(-2px)}
+.staff-login-status{
+    display:block;
+    margin-top:8px;
+    font-size:13px;
+    color:#667085;
+}
+.staff-login-box,.staff-leave-box{
+    width:min(94%,620px);
+    margin:20px auto;
+    background:#fff;
+    border-radius:20px;
+    padding:28px;
+    position:relative;
+    box-shadow:0 18px 55px rgba(0,0,0,.22);
+}
+.staff-login-box h2,.staff-leave-box h2{
+    color:#123c69;
+    text-align:center;
+    margin-bottom:8px;
+}
+.staff-login-subtitle,.staff-leave-subtitle{
+    text-align:center;
+    color:#667085;
+    margin-bottom:22px;
+    font-size:14px;
+}
+.staff-login-field,.staff-leave-field{
+    text-align:left;
+    margin-top:14px;
+}
+.staff-login-field label,.staff-leave-field label{
+    display:block;
+    margin-bottom:6px;
+    color:#123c69;
+    font-weight:700;
+}
+.staff-login-field input,.staff-leave-field input,
+.staff-leave-field select,.staff-leave-field textarea{
+    width:100%;
+    padding:12px 13px;
+    border:1px solid #ccd8e5;
+    border-radius:10px;
+    outline:none;
+    font:inherit;
+    background:#fff;
+}
+.staff-leave-field textarea{min-height:110px;resize:vertical}
+.staff-login-field input:focus,.staff-leave-field input:focus,
+.staff-leave-field select:focus,.staff-leave-field textarea:focus{
+    border-color:#1976b8;
+    box-shadow:0 0 0 3px rgba(25,118,184,.10);
+}
+.staff-login-submit,.staff-leave-submit{
+    width:100%;
+    margin-top:20px;
+    border:0;
+    border-radius:12px;
+    padding:13px;
+    background:linear-gradient(135deg,#123c69,#1976b8);
+    color:#fff;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+}
+.staff-login-message{
+    display:none;
+    margin-top:14px;
+    padding:10px 12px;
+    border-radius:9px;
+    font-weight:700;
+    font-size:14px;
+}
+.staff-login-message.show{display:block}
+.staff-login-message.error{background:#fff1f0;color:#b42318}
+.staff-login-message.success{background:#ecfdf3;color:#067647}
+.staff-identity-card{
+    background:#f5f9fd;
+    border:1px solid #dce6ef;
+    border-radius:12px;
+    padding:13px 15px;
+    margin:15px 0 6px;
+    text-align:left;
+    line-height:1.7;
+}
+.staff-leave-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+.staff-leave-field.full{grid-column:1/-1}
+.staff-logout-btn{
+    margin-top:12px;
+    border:1px solid #d0d5dd;
+    background:#fff;
+    color:#475467;
+    border-radius:20px;
+    padding:8px 14px;
+    cursor:pointer;
+    font-weight:700;
+}
+body.dark-mode .staff-login-box,
+body.dark-mode .staff-leave-box{background:#22313f;color:#eee}
+body.dark-mode .staff-login-box h2,
+body.dark-mode .staff-leave-box h2,
+body.dark-mode .staff-login-field label,
+body.dark-mode .staff-leave-field label{color:#8ecbff}
+body.dark-mode .staff-login-field input,
+body.dark-mode .staff-leave-field input,
+body.dark-mode .staff-leave-field select,
+body.dark-mode .staff-leave-field textarea{
+    background:#1d2935;color:#fff;border-color:#405467
+}
+body.dark-mode .staff-identity-card{background:#1d2935;border-color:#405467}
+@media(max-width:650px){
+    .staff-leave-grid{grid-template-columns:1fr}
+    .staff-leave-field.full{grid-column:auto}
+    .staff-login-box,.staff-leave-box{padding:22px 16px}
+}
+</style>
+
+
+<style id="admin-staff-login-layout-tweak">
+/* Admin first and more prominent; Staff second and smaller */
+#globalAdminEntry{
+    margin-bottom:8px !important;
+}
+#globalAdminLoginBtn{
+    padding:13px 28px !important;
+    font-size:16px !important;
+    border-radius:26px !important;
+    min-width:190px;
+}
+#staffLoginEntry{
+    margin-top:0 !important;
+    margin-bottom:22px !important;
+}
+#staffLoginOpenBtn{
+    padding:8px 16px !important;
+    font-size:12px !important;
+    border-radius:20px !important;
+    min-width:135px;
+}
+#staffLeaveOpenBtn,
+#staffLogoutBtn{
+    padding:8px 16px !important;
+    font-size:12px !important;
+    border-radius:20px !important;
+}
+#staffLoginStatus{
+    font-size:12px !important;
+}
+@media(max-width:650px){
+    #globalAdminLoginBtn{
+        padding:12px 22px !important;
+        font-size:15px !important;
+        min-width:170px;
+    }
+    #staffLoginOpenBtn{
+        padding:8px 14px !important;
+        font-size:12px !important;
+        min-width:125px;
+    }
+}
+</style>
+
+
+<style id="final-admin-staff-login-row">
+.login-access-row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin:18px auto 24px;
+    padding:0 12px;
+}
+
+.login-access-row #globalAdminEntry,
+.login-access-row #staffLoginEntry{
+    margin:0 !important;
+    padding:0 !important;
+    max-width:none !important;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.login-access-row #globalAdminStatus,
+.login-access-row #staffLoginStatus{
+    display:none !important;
+}
+
+/* Admin login: professional navy button */
+#globalAdminLoginBtn{
+    border:1px solid rgba(18,60,105,.15) !important;
+    background:linear-gradient(135deg,#123c69,#1976b8) !important;
+    color:#fff !important;
+    padding:12px 24px !important;
+    min-width:180px !important;
+    font-size:15px !important;
+    font-weight:800 !important;
+    letter-spacing:.25px;
+    border-radius:24px !important;
+    box-shadow:0 7px 18px rgba(18,60,105,.22) !important;
+}
+
+#globalAdminLoginBtn:hover{
+    transform:translateY(-2px) !important;
+    box-shadow:0 10px 24px rgba(18,60,105,.28) !important;
+    filter:brightness(1.03);
+}
+
+/* Staff login: smaller but matching */
+#staffLoginOpenBtn{
+    border:1px solid rgba(15,107,80,.14) !important;
+    background:linear-gradient(135deg,#117a5c,#15966f) !important;
+    color:#fff !important;
+    padding:10px 18px !important;
+    min-width:145px !important;
+    font-size:13px !important;
+    font-weight:800 !important;
+    letter-spacing:.2px;
+    border-radius:22px !important;
+    box-shadow:0 6px 16px rgba(15,107,80,.18) !important;
+}
+
+#staffLoginOpenBtn:hover{
+    transform:translateY(-2px) !important;
+    box-shadow:0 9px 22px rgba(15,107,80,.24) !important;
+    filter:brightness(1.03);
+}
+
+/* Logged-in action buttons keep same row */
+#globalAdminPanelBtn,
+#globalAdminLogoutBtn,
+#staffLeaveOpenBtn,
+#staffLogoutBtn{
+    margin:0 !important;
+}
+
+/* Mobile: keep neat and centered */
+@media(max-width:560px){
+    .login-access-row{
+        gap:9px;
+    }
+
+    #globalAdminLoginBtn{
+        min-width:160px !important;
+        padding:11px 18px !important;
+        font-size:14px !important;
+    }
+
+    #staffLoginOpenBtn{
+        min-width:125px !important;
+        padding:9px 14px !important;
+        font-size:12px !important;
+    }
+}
+</style>
+
 </head>
 
 
@@ -7692,6 +7976,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 
+<div class="login-access-row">
 <!-- =========================================================
      GLOBAL WEBSITE ADMIN ENTRY
      One Supabase admin login controls Staff, Gallery & Students.
@@ -7701,6 +7986,21 @@ document.addEventListener("DOMContentLoaded",()=>{
     <button id="globalAdminPanelBtn" type="button" onclick="openWebsiteAdminPanel()" style="display:none;">⚙️ ADMIN CONTROL CENTER</button>
     <button id="globalAdminLogoutBtn" type="button" onclick="studentAdminLogout()" style="display:none;">LOG OUT</button>
     <span id="globalAdminStatus">Admin not logged in</span>
+</div>
+
+<!-- =========================================================
+     STAFF LOGIN ENTRY
+     Placed directly below the existing Admin Login area.
+========================================================= -->
+<div id="staffLoginEntry" class="staff-login-entry">
+    <button id="staffLoginOpenBtn" type="button" onclick="openStaffLogin()">👨‍🏫 STAFF LOGIN</button>
+    <button id="staffLeaveOpenBtn" type="button" onclick="openStaffLeaveForm()" style="display:none;">📝 LEAVE APPLICATION</button>
+    <button id="staffLogoutBtn" type="button" onclick="staffLogout()" style="display:none;background:#667085;">LOG OUT</button>
+    <span id="staffLoginStatus" class="staff-login-status">Staff not logged in</span>
+</div>
+
+
+
 </div>
 
 <!-- =========================================================
@@ -9300,6 +9600,498 @@ clearMonthlyReportPhoto=async function(monthKey,slot){
 /* Reload online content after the original page initialization. */
 window.addEventListener("load",()=>{
     setTimeout(loadAllManagedContentFromSupabase,250);
+});
+</script>
+
+
+<script id="student-report-lightbox-and-single-video-fix">
+/* =========================================================
+   FIX 1: STUDENT MONTHLY REPORT — OPEN ONLY CLICKED PHOTO
+   FIX 2: ONLY ONE VIDEO CAN PLAY AT A TIME
+   Visual design/content unchanged.
+   ========================================================= */
+
+function restoreNormalPhotoLightboxControls(){
+    const prev=document.querySelector("#photoLightbox .photo-prev");
+    const next=document.querySelector("#photoLightbox .photo-next");
+    const counter=document.getElementById("photoCounter");
+    if(prev) prev.style.display="flex";
+    if(next) next.style.display="flex";
+    if(counter) counter.style.display="block";
+}
+
+if(typeof openPhoto==="function"){
+    const originalOpenPhoto=openPhoto;
+    openPhoto=function(src){
+        restoreNormalPhotoLightboxControls();
+        return originalOpenPhoto(src);
+    };
+}
+
+openStudentPhotoGallery=async function(studentId,startIndex){
+    try{
+        const month=Number(startIndex)+1;
+        const url=await cloudSignedUrl(
+            cloudPath(studentId,"month",month),
+            900
+        );
+
+        if(!url){
+            if(typeof uploadStatus==="function"){
+                uploadStatus(`Month ${month} photo has not been uploaded yet.`,"info");
+            }
+            return;
+        }
+
+        const lightbox=document.getElementById("photoLightbox");
+        const lightboxImg=document.getElementById("largePhoto");
+        const prev=document.querySelector("#photoLightbox .photo-prev");
+        const next=document.querySelector("#photoLightbox .photo-next");
+        const counter=document.getElementById("photoCounter");
+
+        if(!lightbox || !lightboxImg){
+            console.error("Student report lightbox elements were not found.");
+            return;
+        }
+
+        photoList=[url];
+        currentPhotoIndex=0;
+        lightboxImg.src=url;
+
+        if(prev) prev.style.display="none";
+        if(next) next.style.display="none";
+        if(counter){
+            counter.style.display="block";
+            counter.textContent=`Month ${month}`;
+        }
+
+        lightbox.style.display="flex";
+        document.body.style.overflow="hidden";
+    }catch(error){
+        console.error("Could not open student monthly report:",error);
+        if(typeof uploadStatus==="function"){
+            uploadStatus("Could not open this monthly report.","error");
+        }
+    }
+};
+
+document.addEventListener("play",function(event){
+    const playingVideo=event.target;
+    if(!playingVideo || playingVideo.tagName!=="VIDEO") return;
+
+    document.querySelectorAll("video").forEach(function(video){
+        if(video!==playingVideo && !video.paused){
+            video.pause();
+        }
+    });
+},true);
+
+document.addEventListener("click",function(event){
+    const closeButton=event.target.closest && event.target.closest(".close-btn");
+    if(!closeButton) return;
+
+    const popup=closeButton.closest(".popup");
+    if(!popup) return;
+
+    popup.querySelectorAll("video").forEach(function(video){
+        video.pause();
+    });
+});
+</script>
+
+
+<!-- =========================================================
+     STAFF LOGIN POPUP
+========================================================= -->
+<div id="staffLoginPopup" class="popup">
+    <div class="staff-login-box">
+        <span class="close-btn" onclick="closeStaffLogin()">&times;</span>
+        <h2>👨‍🏫 Staff Login</h2>
+        <p class="staff-login-subtitle">Use your Staff ID and password provided by the school.</p>
+
+        <div class="staff-login-field">
+            <label for="staffUsername">Staff ID</label>
+            <input id="staffUsername" type="text" autocomplete="username"
+                   placeholder="Example: abcdef">
+        </div>
+
+        <div class="staff-login-field">
+            <label for="staffPassword">Password</label>
+            <input id="staffPassword" type="password" autocomplete="current-password"
+                   placeholder="Enter your password">
+        </div>
+
+        <button class="staff-login-submit" type="button" onclick="staffLogin()">LOGIN</button>
+        <div id="staffLoginMessage" class="staff-login-message"></div>
+    </div>
+</div>
+
+<!-- =========================================================
+     STAFF LEAVE APPLICATION POPUP
+========================================================= -->
+<div id="staffLeavePopup" class="popup">
+    <div class="staff-leave-box">
+        <span class="close-btn" onclick="closeStaffLeaveForm()">&times;</span>
+        <h2>📝 Leave Application</h2>
+        <p class="staff-leave-subtitle">St. Augustine Academic Foundation</p>
+
+        <div class="staff-identity-card">
+            <strong>Staff Name:</strong> <span id="leaveStaffName">—</span><br>
+            <strong>Designation:</strong> <span id="leaveStaffDesignation">—</span>
+        </div>
+
+        <form id="staffLeaveForm"
+              action="https://formsubmit.co/staugustineacademicfoundation@gmail.com"
+              method="POST"
+              accept-charset="UTF-8">
+
+            <input type="hidden" name="_subject" id="leaveEmailSubject"
+                   value="New Staff Leave Application - St. Augustine Academic Foundation">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_next"
+                   value="https://www.staugustine.edu.np/?submitted=1&form=leave">
+            <input type="hidden" name="Staff Name" id="leaveStaffNameHidden">
+            <input type="hidden" name="Designation" id="leaveDesignationHidden">
+            <input type="hidden" name="Staff ID" id="leaveStaffIdHidden">
+
+            <div class="staff-leave-grid">
+                <div class="staff-leave-field full">
+                    <label for="leaveSubmittedDate">Application Submitted Date (B.S.)</label>
+                    <input id="leaveSubmittedDate" name="Application Submitted Date (B.S.)" type="text"
+                           inputmode="numeric" placeholder="2083-05-10"
+                           pattern="\d{4}-\d{2}-\d{2}"
+                           title="Please enter B.S. date in YYYY-MM-DD format, for example 2083-05-10"
+                           required>
+                </div>
+
+                <div class="staff-leave-field">
+                    <label for="leaveFromDate">Leave From (B.S.)</label>
+                    <input id="leaveFromDate" name="Leave From (B.S.)" type="text"
+                           inputmode="numeric" placeholder="2083-05-10"
+                           pattern="\d{4}-\d{2}-\d{2}"
+                           title="Please enter B.S. date in YYYY-MM-DD format, for example 2083-05-10"
+                           required>
+                </div>
+
+                <div class="staff-leave-field">
+                    <label for="leaveToDate">Leave To (B.S.)</label>
+                    <input id="leaveToDate" name="Leave To (B.S.)" type="text"
+                           inputmode="numeric" placeholder="2083-05-10"
+                           pattern="\d{4}-\d{2}-\d{2}"
+                           title="Please enter B.S. date in YYYY-MM-DD format, for example 2083-05-10"
+                           required>
+                </div>
+
+                <div class="staff-leave-field">
+                    <label for="leaveType">Leave Type</label>
+                    <select id="leaveType" name="Leave Type" required>
+                        <option value="">Select leave type</option>
+                        <option>Casual Leave</option>
+                        <option>Sick Leave</option>
+                        <option>Emergency Leave</option>
+                        <option>Personal Leave</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="staff-leave-field">
+                    <label for="leaveContact">Contact Number</label>
+                    <input id="leaveContact" name="Contact Number" type="tel"
+                           placeholder="Optional">
+                </div>
+
+                <div class="staff-leave-field full">
+                    <label for="leaveReason">Reason for Leave</label>
+                    <textarea id="leaveReason" name="Reason for Leave"
+                              placeholder="Please explain the reason for your leave." required></textarea>
+                </div>
+
+                <div class="staff-leave-field full">
+                    <label for="leaveRemarks">Additional Remarks</label>
+                    <textarea id="leaveRemarks" name="Additional Remarks"
+                              placeholder="Optional"></textarea>
+                </div>
+            </div>
+
+            <button id="staffLeaveSubmitBtn" class="staff-leave-submit" type="submit">
+                SUBMIT LEAVE APPLICATION
+            </button>
+        </form>
+    </div>
+</div>
+
+
+<script id="staff-login-leave-js">
+/* =========================================================
+   SECURE STAFF LOGIN
+   Visible login uses Staff ID + password.
+   Internally Supabase Auth uses an internal email alias.
+   IMPORTANT: passwords are NOT stored in this HTML.
+   ========================================================= */
+
+const STAFF_LOGIN_DIRECTORY={"suresh": {"name": "SURESH RAI", "designation": "Chief Executive Officer"}, "sanjeev": {"name": "SANJEEV RAI", "designation": "Managing Director"}, "joseph": {"name": "JOSEPH SHANKER", "designation": "Principal"}, "ranjana": {"name": "RANJANA RAI", "designation": "Vice Principal"}, "sagar": {"name": "SAGAR ADHIKARI", "designation": "Payroll Department"}, "abhishek": {"name": "ABHISHEK KALIKOTAY", "designation": "Teacher"}, "sunyata": {"name": "SUNYATA RAI", "designation": "Teacher"}, "sushma": {"name": "SUSHMA RAI", "designation": "Teacher"}, "kritika": {"name": "KRITIKA MAGAR", "designation": "Teacher"}, "amisha": {"name": "AMISHA RAI", "designation": "Teacher"}, "swastika": {"name": "SWASTIKA LIMBU", "designation": "Teacher"}, "sanjaya": {"name": "SANJAYA RAI", "designation": "Teacher"}, "sujata": {"name": "SUJATA RAI", "designation": "Teacher"}, "shekhar": {"name": "SHEKHAR KUMAR ACHARYA", "designation": "Teacher"}, "padam": {"name": "PADAM KARKI", "designation": "Teacher"}, "rufina": {"name": "RUFINA PRADHAN", "designation": "Teacher"}, "liza": {"name": "LIZA RAI", "designation": "Teacher"}, "kalpana": {"name": "KALPANA RAI", "designation": "Teacher"}, "punita": {"name": "PUNITA RAI", "designation": "Teacher"}, "devi": {"name": "DEVI MAYA TAMANG", "designation": "School Support Staff"}, "lila": {"name": "LILA RAI", "designation": "School Support Staff"}, "sabina": {"name": "SABINA LIMBU", "designation": "School Support Staff"}, "amit": {"name": "AMIT RAI", "designation": "Driver"}, "bhupendra": {"name": "BHUPENDRA RAI", "designation": "Driver"}};
+const STAFF_INTERNAL_DOMAIN="staff.staugustine.edu.np";
+
+let staffSupabase=null;
+let staffAuthSession=null;
+let loggedInStaff=null;
+
+function initStaffSupabase(){
+    if(staffSupabase) return staffSupabase;
+    if(!window.supabase || !window.supabase.createClient) return null;
+
+    staffSupabase=window.supabase.createClient(
+        STUDENT_STORAGE_CONFIG.url,
+        STUDENT_STORAGE_CONFIG.anonKey,
+        {
+            auth:{
+                persistSession:true,
+                autoRefreshToken:true,
+                detectSessionInUrl:false,
+                storageKey:"staugustine-staff-auth"
+            }
+        }
+    );
+    return staffSupabase;
+}
+
+function normalizeStaffId(value){
+    return String(value||"").trim().toLowerCase().replace(/\s+/g,"");
+}
+
+function staffInternalEmail(username){
+    return `${username}@${STAFF_INTERNAL_DOMAIN}`;
+}
+
+function showStaffMessage(message,type="error"){
+    const box=document.getElementById("staffLoginMessage");
+    if(!box) return;
+    box.textContent=message;
+    box.className=`staff-login-message show ${type}`;
+}
+
+function clearStaffMessage(){
+    const box=document.getElementById("staffLoginMessage");
+    if(box){
+        box.textContent="";
+        box.className="staff-login-message";
+    }
+}
+
+function updateStaffLoginUI(){
+    const login=document.getElementById("staffLoginOpenBtn");
+    const leave=document.getElementById("staffLeaveOpenBtn");
+    const logout=document.getElementById("staffLogoutBtn");
+    const status=document.getElementById("staffLoginStatus");
+
+    const active=!!loggedInStaff;
+    if(login) login.style.display=active?"none":"inline-block";
+    if(leave) leave.style.display=active?"inline-block":"none";
+    if(logout) logout.style.display=active?"inline-block":"none";
+
+    if(status){
+        status.textContent=active
+            ? `Logged in: ${loggedInStaff.name}`
+            : "Staff not logged in";
+    }
+}
+
+function openStaffLogin(){
+    clearStaffMessage();
+    const popup=document.getElementById("staffLoginPopup");
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+}
+
+function closeStaffLogin(){
+    const popup=document.getElementById("staffLoginPopup");
+    if(popup) popup.style.display="none";
+    document.body.style.overflow="auto";
+}
+
+async function staffLogin(){
+    const username=normalizeStaffId(document.getElementById("staffUsername")?.value);
+    const password=document.getElementById("staffPassword")?.value||"";
+
+    if(!username || !password){
+        showStaffMessage("Enter your Staff ID and password.");
+        return;
+    }
+
+    const staff=STAFF_LOGIN_DIRECTORY[username];
+    if(!staff){
+        showStaffMessage("Staff ID not recognized.");
+        return;
+    }
+
+    const client=initStaffSupabase();
+    if(!client){
+        showStaffMessage("Staff login service is not available.");
+        return;
+    }
+
+    showStaffMessage("Signing in...","success");
+
+    const {data,error}=await client.auth.signInWithPassword({
+        email:staffInternalEmail(username),
+        password
+    });
+
+    if(error || !data?.session){
+        showStaffMessage("Login failed. Check Staff ID and password.");
+        return;
+    }
+
+    const sessionUsername=normalizeStaffId((data.user?.email||"").split("@")[0]);
+    if(sessionUsername!==username || !STAFF_LOGIN_DIRECTORY[sessionUsername]){
+        await client.auth.signOut();
+        showStaffMessage("This account is not authorized for staff access.");
+        return;
+    }
+
+    staffAuthSession=data.session;
+    loggedInStaff={
+        username:sessionUsername,
+        ...STAFF_LOGIN_DIRECTORY[sessionUsername]
+    };
+
+    const passwordBox=document.getElementById("staffPassword");
+    if(passwordBox) passwordBox.value="";
+
+    updateStaffLoginUI();
+    closeStaffLogin();
+    openStaffLeaveForm();
+}
+
+async function staffLogout(){
+    const client=initStaffSupabase();
+    if(client) await client.auth.signOut();
+    staffAuthSession=null;
+    loggedInStaff=null;
+    updateStaffLoginUI();
+    closeStaffLeaveForm();
+}
+
+function openStaffLeaveForm(){
+    if(!loggedInStaff){
+        openStaffLogin();
+        return;
+    }
+
+    const name=document.getElementById("leaveStaffName");
+    const designation=document.getElementById("leaveStaffDesignation");
+    const hiddenName=document.getElementById("leaveStaffNameHidden");
+    const hiddenDesignation=document.getElementById("leaveDesignationHidden");
+    const hiddenId=document.getElementById("leaveStaffIdHidden");
+    const subject=document.getElementById("leaveEmailSubject");
+
+    if(name) name.textContent=loggedInStaff.name;
+    if(designation) designation.textContent=loggedInStaff.designation;
+    if(hiddenName) hiddenName.value=loggedInStaff.name;
+    if(hiddenDesignation) hiddenDesignation.value=loggedInStaff.designation;
+    if(hiddenId) hiddenId.value=loggedInStaff.username;
+    if(subject) subject.value=`Leave Application - ${loggedInStaff.name}`;
+
+    const popup=document.getElementById("staffLeavePopup");
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+}
+
+function closeStaffLeaveForm(){
+    const popup=document.getElementById("staffLeavePopup");
+    if(popup) popup.style.display="none";
+    document.body.style.overflow="auto";
+}
+
+async function restoreStaffSession(){
+    const client=initStaffSupabase();
+    if(!client) return;
+
+    const {data}=await client.auth.getSession();
+    const session=data?.session||null;
+
+    if(session?.user?.email){
+        const username=normalizeStaffId(session.user.email.split("@")[0]);
+        if(STAFF_LOGIN_DIRECTORY[username]){
+            staffAuthSession=session;
+            loggedInStaff={
+                username,
+                ...STAFF_LOGIN_DIRECTORY[username]
+            };
+        }
+    }
+
+    updateStaffLoginUI();
+
+    client.auth.onAuthStateChange((_event,session)=>{
+        if(session?.user?.email){
+            const username=normalizeStaffId(session.user.email.split("@")[0]);
+            if(STAFF_LOGIN_DIRECTORY[username]){
+                staffAuthSession=session;
+                loggedInStaff={
+                    username,
+                    ...STAFF_LOGIN_DIRECTORY[username]
+                };
+            }
+        }else{
+            staffAuthSession=null;
+            loggedInStaff=null;
+        }
+        updateStaffLoginUI();
+    });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+    restoreStaffSession();
+
+    ["staffUsername","staffPassword"].forEach(id=>{
+        document.getElementById(id)?.addEventListener("keydown",event=>{
+            if(event.key==="Enter"){
+                event.preventDefault();
+                staffLogin();
+            }
+        });
+    });
+
+    const leaveForm=document.getElementById("staffLeaveForm");
+    if(leaveForm){
+        leaveForm.addEventListener("submit",event=>{
+            if(!loggedInStaff || !staffAuthSession){
+                event.preventDefault();
+                alert("Your staff session has expired. Please log in again.");
+                openStaffLogin();
+                return;
+            }
+
+            const submitted=document.getElementById("leaveSubmittedDate")?.value.trim();
+            const from=document.getElementById("leaveFromDate")?.value.trim();
+            const to=document.getElementById("leaveToDate")?.value.trim();
+            const bsDatePattern=/^\d{4}-\d{2}-\d{2}$/;
+
+            if(!bsDatePattern.test(submitted) || !bsDatePattern.test(from) || !bsDatePattern.test(to)){
+                event.preventDefault();
+                alert("Please enter all B.S. dates in YYYY-MM-DD format, for example 2083-05-10.");
+                return;
+            }
+
+            if(to<from){
+                event.preventDefault();
+                alert("Leave To (B.S.) date cannot be earlier than Leave From (B.S.) date.");
+                return;
+            }
+
+            document.getElementById("leaveStaffNameHidden").value=loggedInStaff.name;
+            document.getElementById("leaveDesignationHidden").value=loggedInStaff.designation;
+            document.getElementById("leaveStaffIdHidden").value=loggedInStaff.username;
+
+            const btn=document.getElementById("staffLeaveSubmitBtn");
+            if(btn){
+                btn.disabled=true;
+                btn.textContent="Submitting...";
+            }
+        });
+    }
 });
 </script>
 
