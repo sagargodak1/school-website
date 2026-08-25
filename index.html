@@ -8848,13 +8848,12 @@ function showWebsiteAdminTab(tab){
 
 /* =========================================================
    ADMIN — STAFF ACCOUNTS UI
-   All current staff login accounts can be password-reset by Admin.
+   Secure reset backend will be connected to Supabase next.
    ========================================================= */
 const ADMIN_RESETTABLE_STAFF_IDS=[
-    "suresh","sanjeev","joseph","ranjana","sagar",
+    "suresh","sanjeev","joseph","ranjana",
     "abhishek","sunyata","sushma","kritika","amisha","swastika",
-    "sanjaya","sujata","shekhar","padam","rufina","liza","kalpana","punita",
-    "devi","lila","sabina","amit","bhupendra"
+    "sanjaya","sujata","shekhar","padam","rufina","liza","kalpana","punita"
 ];
 
 function renderAdminStaffAccountList(){
@@ -10306,7 +10305,7 @@ document.addEventListener("click",function(event){
                 <div class="staff-leave-field full">
                     <label for="leaveSubmittedDate">Application Submitted Date (B.S.)</label>
                     <input id="leaveSubmittedDate" name="Application Submitted Date (B.S.)" type="text"
-                           inputmode="numeric" placeholder="2083-05-10"
+                           inputmode="text" maxlength="10" autocomplete="off" placeholder="2083-05-10"
                            pattern="\d{4}-\d{2}-\d{2}"
                            title="Please enter B.S. date in YYYY-MM-DD format, for example 2083-05-10"
                            required>
@@ -10315,7 +10314,7 @@ document.addEventListener("click",function(event){
                 <div class="staff-leave-field">
                     <label for="leaveFromDate">Leave From (B.S.)</label>
                     <input id="leaveFromDate" name="Leave From (B.S.)" type="text"
-                           inputmode="numeric" placeholder="2083-05-10"
+                           inputmode="text" maxlength="10" autocomplete="off" placeholder="2083-05-10"
                            pattern="\d{4}-\d{2}-\d{2}"
                            title="Please enter B.S. date in YYYY-MM-DD format, for example 2083-05-10"
                            required>
@@ -10324,7 +10323,7 @@ document.addEventListener("click",function(event){
                 <div class="staff-leave-field">
                     <label for="leaveToDate">Leave To (B.S.)</label>
                     <input id="leaveToDate" name="Leave To (B.S.)" type="text"
-                           inputmode="numeric" placeholder="2083-05-10"
+                           inputmode="text" maxlength="10" autocomplete="off" placeholder="2083-05-10"
                            pattern="\d{4}-\d{2}-\d{2}"
                            title="Please enter B.S. date in YYYY-MM-DD format, for example 2083-05-10"
                            required>
