@@ -11291,7 +11291,7 @@ document.addEventListener("click",function(event){
 
         <div class="staff-dashboard-hero">
             <div class="staff-dashboard-brand">
-                <img class="staff-dashboard-logo" src="logo.jpeg" alt="St. Augustine logo">
+                <img id="staffDashboardProfilePhoto" class="staff-dashboard-logo" src="logo.jpeg" alt="Staff profile photo">
                 <div>
                     <p class="staff-dashboard-kicker">St. Augustine Digital Staff Hub</p>
                     <h2 id="staffDashboardGreeting">Welcome</h2>
@@ -12788,6 +12788,62 @@ function clearStaffAnnouncementMessage(){
     box.className="staff-announcement-message";
 }
 
+function getLoggedInStaffPhoto(){
+    const fallbackPhoto="logo.jpeg";
+    if(!loggedInStaff) return fallbackPhoto;
+
+    const username=normalizeStaffId(loggedInStaff.username);
+    const staffKeyAliases={
+        suresh:"ceo",
+        sanjeev:"md",
+        joseph:"principal",
+        ranjana:"viceprincipal",
+        sagar:"payroll"
+    };
+    const possibleKeys=[username,staffKeyAliases[username]].filter(Boolean);
+    const managedSource=(typeof adminManagedStaff==="object" && adminManagedStaff)
+        ? adminManagedStaff
+        : {};
+    const staticSource=(typeof staffDetails==="object" && staffDetails)
+        ? staffDetails
+        : {};
+
+    for(const source of [managedSource,staticSource]){
+        for(const key of possibleKeys){
+            const staff=source[key];
+            const photo=staff?.photo || staff?.photo_url;
+            if(photo) return photo;
+        }
+    }
+
+    const loginName=String(loggedInStaff.name||"").trim().toLowerCase();
+    for(const source of [managedSource,staticSource]){
+        const matched=Object.values(source).find(staff=>
+            String(staff?.name||"").trim().toLowerCase()===loginName
+        );
+        const photo=matched?.photo || matched?.photo_url;
+        if(photo) return photo;
+    }
+
+    return fallbackPhoto;
+}
+
+function updateStaffDashboardProfilePhoto(){
+    const photo=document.getElementById("staffDashboardProfilePhoto");
+    if(!photo) return;
+
+    const fallbackPhoto="logo.jpeg";
+    photo.onerror=function(){
+        this.onerror=null;
+        this.src=fallbackPhoto;
+        this.alt="St. Augustine logo";
+    };
+    photo.src=getLoggedInStaffPhoto();
+    photo.alt=loggedInStaff?.name
+        ? `${loggedInStaff.name} profile photo`
+        : "Staff profile photo";
+}
+
 async function openStaffDashboard(){
     if(!loggedInStaff || !staffAuthSession){
         openStaffLogin();
@@ -12804,6 +12860,8 @@ async function openStaffDashboard(){
             ? "📋 Review Leave Requests"
             : "📝 Leave Application";
     }
+
+    updateStaffDashboardProfilePhoto();
 
     clearStaffAnnouncementMessage();
     if(popup) popup.style.display="block";
