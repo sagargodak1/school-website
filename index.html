@@ -4165,7 +4165,7 @@ body.dark-mode .approved-leave-date{color:#75d7a6}
     box-shadow:0 9px 22px rgba(91,33,182,.27) !important;
 }
 .upcoming-plan-box{
-    width:min(95%,820px);
+    width:min(96%,1120px);
     max-height:88vh;
     overflow:auto;
     margin:20px auto;
@@ -4196,9 +4196,10 @@ body.dark-mode .approved-leave-date{color:#75d7a6}
 }
 .upcoming-plan-form-grid{
     display:grid;
-    grid-template-columns:160px minmax(0,1fr) minmax(190px,.8fr);
+    grid-template-columns:repeat(2,minmax(0,1fr));
     gap:12px;
 }
+.upcoming-plan-field.full{grid-column:1/-1}
 .upcoming-plan-field label{
     display:block;
     margin-bottom:6px;
@@ -4206,7 +4207,8 @@ body.dark-mode .approved-leave-date{color:#75d7a6}
     font-size:13px;
     font-weight:800;
 }
-.upcoming-plan-field input{
+.upcoming-plan-field input,
+.upcoming-plan-field textarea{
     width:100%;
     padding:11px 12px;
     border:1px solid #ccd8e5;
@@ -4215,7 +4217,12 @@ body.dark-mode .approved-leave-date{color:#75d7a6}
     font:inherit;
     background:#fff;
 }
-.upcoming-plan-field input:focus{
+.upcoming-plan-field textarea{
+    min-height:84px;
+    resize:vertical;
+}
+.upcoming-plan-field input:focus,
+.upcoming-plan-field textarea:focus{
     border-color:#7c3aed;
     box-shadow:0 0 0 3px rgba(124,58,237,.10);
 }
@@ -4245,8 +4252,8 @@ body.dark-mode .approved-leave-date{color:#75d7a6}
 .upcoming-plan-table-head,
 .upcoming-plan-row{
     display:grid;
-    grid-template-columns:145px minmax(0,1fr) minmax(170px,.7fr);
-    gap:16px;
+    grid-template-columns:125px 145px minmax(160px,1fr) minmax(145px,.75fr) minmax(170px,1fr);
+    gap:13px;
     align-items:center;
 }
 .upcoming-plan-table-head{
@@ -4265,8 +4272,10 @@ body.dark-mode .approved-leave-date{color:#75d7a6}
     background:#f8fbfd;
 }
 .upcoming-plan-date{color:#5b21b6;font-weight:800;white-space:nowrap}
+.upcoming-plan-information-date{color:#9a3412;font-weight:800;white-space:nowrap}
 .upcoming-plan-name{color:#123c69;font-weight:800;overflow-wrap:anywhere}
 .upcoming-plan-incharge{color:#176b4d;font-weight:750;overflow-wrap:anywhere}
+.upcoming-plan-remarks{color:#475467;overflow-wrap:anywhere;white-space:pre-wrap}
 .upcoming-plan-empty{
     padding:22px;
     border:1px dashed #cbd5e1;
@@ -4287,7 +4296,8 @@ body.dark-mode .principal-plan-form-wrap{
 }
 body.dark-mode .principal-plan-form-wrap h3,
 body.dark-mode .upcoming-plan-date{color:#c4b5fd}
-body.dark-mode .upcoming-plan-field input{
+body.dark-mode .upcoming-plan-field input,
+body.dark-mode .upcoming-plan-field textarea{
     background:#18232e;
     color:#fff;
     border-color:#405467;
@@ -4298,8 +4308,11 @@ body.dark-mode .upcoming-plan-row{
     border-color:#405467;
 }
 body.dark-mode .upcoming-plan-incharge{color:#75d7a6}
-@media(max-width:700px){
+body.dark-mode .upcoming-plan-information-date{color:#fdba74}
+body.dark-mode .upcoming-plan-remarks{color:#d0d5dd}
+@media(max-width:900px){
     .upcoming-plan-form-grid{grid-template-columns:1fr}
+    .upcoming-plan-field.full{grid-column:auto}
     .upcoming-plan-table-head{display:none}
     .upcoming-plan-row{grid-template-columns:1fr;gap:7px}
     .upcoming-plan-row span::before{
@@ -4310,9 +4323,11 @@ body.dark-mode .upcoming-plan-incharge{color:#75d7a6}
         font-weight:800;
         letter-spacing:.35px;
     }
-    .upcoming-plan-date::before{content:"DATE"}
+    .upcoming-plan-date::before{content:"PLAN DATE"}
+    .upcoming-plan-information-date::before{content:"INFORMATION DATE"}
     .upcoming-plan-name::before{content:"PLAN NAME"}
     .upcoming-plan-incharge::before{content:"INCHARGE"}
+    .upcoming-plan-remarks::before{content:"REMARKS"}
 }
 @media(max-width:560px){
     .upcoming-plan-box{padding:24px 15px}
@@ -9415,7 +9430,7 @@ async function renderAdminUpcomingPlans(){
         const db=initStudentSupabase();
         const {data,error}=await db
             .from("upcoming_plans")
-            .select("id,plan_date_bs,plan_name,incharge_name,created_at")
+            .select("id,plan_date_bs,information_date_bs,plan_name,incharge_name,remarks,created_at")
             .order("plan_date_bs",{ascending:true})
             .order("created_at",{ascending:false});
 
@@ -9431,7 +9446,8 @@ async function renderAdminUpcomingPlans(){
                 <div class="admin-leave-head">
                     <div>
                         <strong>${escapeHtml(row.plan_name||"Plan")}</strong>
-                        <div class="staff-account-id">Date (B.S.): ${escapeHtml(row.plan_date_bs||"—")}</div>
+                        <div class="staff-account-id">Plan Date (B.S.): ${escapeHtml(row.plan_date_bs||"—")}</div>
+                        <div class="staff-account-id">Information Date (B.S.): ${escapeHtml(row.information_date_bs||"—")}</div>
                     </div>
                     <button type="button" class="admin-leave-delete-btn"
                             onclick="adminDeleteUpcomingPlan(${Number(row.id)},this)">
@@ -9440,6 +9456,9 @@ async function renderAdminUpcomingPlans(){
                 </div>
                 <div style="margin-top:9px">
                     <strong>Incharge:</strong> ${escapeHtml(row.incharge_name||"—")}
+                </div>
+                <div style="margin-top:9px;white-space:pre-wrap;overflow-wrap:anywhere">
+                    <strong>Remarks:</strong> ${escapeHtml(row.remarks||"—")}
                 </div>
             </div>
         `).join("");
@@ -10838,6 +10857,14 @@ document.addEventListener("click",function(event){
                                required>
                     </div>
                     <div class="upcoming-plan-field">
+                        <label for="upcomingPlanInformationDate">Information Date (B.S.)</label>
+                        <input id="upcomingPlanInformationDate" type="text" inputmode="text"
+                               maxlength="10" autocomplete="off" placeholder="2083-05-01"
+                               pattern="\d{4}-\d{2}-\d{2}"
+                               title="Enter the information date in B.S. YYYY-MM-DD format"
+                               required>
+                    </div>
+                    <div class="upcoming-plan-field">
                         <label for="upcomingPlanName">Plan Name</label>
                         <input id="upcomingPlanName" type="text" maxlength="160"
                                placeholder="Enter plan name" required>
@@ -10846,6 +10873,11 @@ document.addEventListener("click",function(event){
                         <label for="upcomingPlanIncharge">Incharge Name</label>
                         <input id="upcomingPlanIncharge" type="text" maxlength="120"
                                placeholder="Enter incharge name" required>
+                    </div>
+                    <div class="upcoming-plan-field full">
+                        <label for="upcomingPlanRemarks">Remarks (Optional)</label>
+                        <textarea id="upcomingPlanRemarks" maxlength="500"
+                                  placeholder="Write additional information if needed"></textarea>
                     </div>
                 </div>
                 <button id="upcomingPlanSubmitBtn" class="upcoming-plan-submit" type="submit">
@@ -10856,9 +10888,11 @@ document.addEventListener("click",function(event){
         </div>
 
         <div class="upcoming-plan-table-head" aria-hidden="true">
-            <span>Date</span>
+            <span>Plan Date</span>
+            <span>Information Date</span>
             <span>Plan Name</span>
             <span>Incharge</span>
+            <span>Remarks</span>
         </div>
         <div id="upcomingPlanList" class="upcoming-plan-list">
             <div class="upcoming-plan-empty">Loading upcoming plans...</div>
@@ -11595,7 +11629,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 <script id="upcoming-plan-js">
 /* =========================================================
    UPCOMING PLAN
-   - Principal (joseph): publish Date + Plan Name + Incharge
+   - Principal (joseph): publish Plan Date + Information Date + Plan Name + Incharge + optional Remarks
    - Every logged-in staff member: read
    - Website Admin: read and delete from Admin Control Center
    ========================================================= */
@@ -11658,7 +11692,7 @@ async function loadUpcomingPlans(){
 
     const {data,error}=await db
         .from("upcoming_plans")
-        .select("plan_date_bs,plan_name,incharge_name,created_at")
+        .select("plan_date_bs,information_date_bs,plan_name,incharge_name,remarks,created_at")
         .order("plan_date_bs",{ascending:true})
         .order("created_at",{ascending:false});
 
@@ -11677,8 +11711,10 @@ async function loadUpcomingPlans(){
     host.innerHTML=rows.map(row=>`
         <div class="upcoming-plan-row">
             <span class="upcoming-plan-date">${escapeHtml(formatLeaveValue(row.plan_date_bs))}</span>
+            <span class="upcoming-plan-information-date">${escapeHtml(formatLeaveValue(row.information_date_bs))}</span>
             <span class="upcoming-plan-name">${escapeHtml(formatLeaveValue(row.plan_name,"Plan"))}</span>
             <span class="upcoming-plan-incharge">${escapeHtml(formatLeaveValue(row.incharge_name))}</span>
+            <span class="upcoming-plan-remarks">${escapeHtml(formatLeaveValue(row.remarks))}</span>
         </div>
     `).join("");
 }
@@ -11698,11 +11734,18 @@ async function submitUpcomingPlan(event){
     }
 
     const planDate=document.getElementById("upcomingPlanDate")?.value.trim()||"";
+    const informationDate=document.getElementById("upcomingPlanInformationDate")?.value.trim()||"";
     const planName=document.getElementById("upcomingPlanName")?.value.trim()||"";
     const inchargeName=document.getElementById("upcomingPlanIncharge")?.value.trim()||"";
+    const remarks=document.getElementById("upcomingPlanRemarks")?.value.trim()||"";
 
     if(!/^\d{4}-\d{2}-\d{2}$/.test(planDate)){
-        showUpcomingPlanMessage("Enter the B.S. date in YYYY-MM-DD format.");
+        showUpcomingPlanMessage("Enter the Plan Date (B.S.) in YYYY-MM-DD format.");
+        return;
+    }
+
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(informationDate)){
+        showUpcomingPlanMessage("Enter the Information Date (B.S.) in YYYY-MM-DD format.");
         return;
     }
 
@@ -11725,8 +11768,10 @@ async function submitUpcomingPlan(event){
             .from("upcoming_plans")
             .insert({
                 plan_date_bs:planDate,
+                information_date_bs:informationDate,
                 plan_name:planName,
                 incharge_name:inchargeName,
+                remarks:remarks||null,
                 created_by:staffAuthSession.user.id
             });
 
