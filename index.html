@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Official website of St. Augustine Academic Foundation, Suryodaya-11, Tinghare, Ilam, Nepal.">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://yxecklijkcaxrfshpzna.supabase.co wss://yxecklijkcaxrfshpzna.supabase.co; frame-src https://www.google.com; form-action 'self' https://formsubmit.co; object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://yxecklijkcaxrfshpzna.supabase.co wss://yxecklijkcaxrfshpzna.supabase.co; frame-src https://www.google.com https://formsubmit.co https://staugustine.edu.np https://www.staugustine.edu.np; form-action 'self' https://formsubmit.co; object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
 
 <title>St. Augustine Academic Foundation</title>
 
@@ -11509,6 +11509,7 @@ document.addEventListener("click",function(event){
         <form id="staffLeaveForm"
               action="https://formsubmit.co/staugustineacademicfoundation@gmail.com"
               method="POST"
+              target="staffLeaveMailFrame"
               accept-charset="UTF-8">
 
             <input type="hidden" name="_subject" id="leaveEmailSubject"
@@ -11584,6 +11585,8 @@ document.addEventListener("click",function(event){
                 SUBMIT LEAVE APPLICATION
             </button>
         </form>
+        <iframe id="staffLeaveMailFrame" name="staffLeaveMailFrame"
+                title="Leave application email notification" hidden></iframe>
     </div>
 </div>
 
@@ -12398,11 +12401,21 @@ document.addEventListener("submit",async function(event){
         if(btn) btn.textContent="Sending notification...";
 
         /*
-         * Native submission intentionally bypasses submit listeners:
-         * Supabase has already saved the application, and FormSubmit
-         * now sends the school Gmail notification.
+         * Native submission intentionally bypasses submit listeners.
+         * The form targets a hidden frame, so Gmail notification continues
+         * without navigating staff away from the website.
          */
         form.submit();
+
+        /* Supabase has confirmed the application, so acknowledge it now. */
+        form.reset();
+        if(btn){
+            btn.disabled=false;
+            btn.textContent=oldText;
+        }
+        closeStaffLeaveForm();
+        await loadOwnLeaveApplications();
+        openLeaveSuccessPopup();
     }catch(error){
         console.error("Leave application save error:",error);
         alert("Leave application could not be saved: "+(error?.message||"Unknown error"));
@@ -13557,12 +13570,15 @@ function closeLeaveSuccessPopup(){
   if(popup) popup.classList.remove("show");
   document.body.style.overflow="auto";
 }
+function openLeaveSuccessPopup(){
+  const popup=document.getElementById("leaveSuccessPopup");
+  if(popup){popup.classList.add("show");document.body.style.overflow="hidden";}
+}
 (function showLeaveSuccessAfterRedirect(){
   const params=new URLSearchParams(window.location.search);
   if(params.get("submitted")!=="1" || params.get("form")!=="leave") return;
   window.addEventListener("DOMContentLoaded",function(){
-    const popup=document.getElementById("leaveSuccessPopup");
-    if(popup){popup.classList.add("show");document.body.style.overflow="hidden";}
+    openLeaveSuccessPopup();
     if(window.history && window.history.replaceState){
       window.history.replaceState({},document.title,window.location.pathname+window.location.hash);
     }
