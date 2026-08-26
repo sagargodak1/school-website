@@ -3808,6 +3808,76 @@ body.dark-mode .staff-identity-card{background:#1d2935;border-color:#405467}
 </style>
 
 
+<style id="final-access-footer-css">
+/* Secure access sits above the final school footer. */
+.site-access-section{
+    position:relative;
+    margin:34px 0 0;
+    padding:24px 16px 19px;
+    text-align:center;
+    background:linear-gradient(180deg,#f7fafc,#eef4f8);
+    border-top:1px solid rgba(18,60,105,.10);
+}
+.site-access-section::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:0;
+    width:min(580px,72%);
+    height:3px;
+    transform:translateX(-50%);
+    border-radius:0 0 999px 999px;
+    background:linear-gradient(90deg,transparent,#d6a73a,transparent);
+}
+.site-access-label{
+    margin:0 0 10px;
+    color:#667085;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+}
+.site-access-section .login-access-row{
+    margin:0 auto !important;
+}
+.contact-facebook-btn{
+    gap:8px;
+    background:linear-gradient(135deg,#1877f2,#0f5fc4) !important;
+}
+.contact-facebook-btn:hover{
+    color:#fff !important;
+    transform:translateY(-2px);
+    box-shadow:0 10px 23px rgba(24,119,242,.28);
+}
+.contact-facebook-icon{
+    width:22px;
+    height:22px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    background:#fff;
+    color:#1877f2;
+    font-family:Arial,sans-serif;
+    font-size:16px;
+    font-weight:900;
+    line-height:1;
+}
+.footer-school-info{color:#fff;line-height:1.75}
+.footer-school-info strong{color:#ffd166;font-weight:900}
+.footer-link-divider{color:rgba(255,255,255,.42);font-weight:400}
+body.dark-mode .site-access-section{
+    background:linear-gradient(180deg,#17232e,#111c25);
+    border-top-color:#405467;
+}
+body.dark-mode .site-access-label{color:#cbd5e1}
+@media(max-width:560px){
+    .site-access-section{margin-top:22px;padding:21px 10px 17px}
+    .site-access-section .login-access-row{gap:9px}
+    .footer-links{gap:10px}
+}
+</style>
+
+
 <style id="staff-accounts-admin-css">
 .staff-account-list{
     display:grid;
@@ -4335,6 +4405,655 @@ body.dark-mode .upcoming-plan-remarks{color:#d0d5dd}
 @media(max-width:560px){
     .upcoming-plan-box{padding:24px 15px}
     .principal-plan-form-wrap{padding:15px}
+}
+</style>
+
+
+<style id="smart-staff-dashboard-css">
+/* =========================================================
+   ST. AUGUSTINE SMART STAFF DASHBOARD
+   One professional hub for announcements, leave and plans.
+   ========================================================= */
+#staffDashboardOpenBtn{
+    border:1px solid rgba(122,23,52,.18) !important;
+    background:linear-gradient(135deg,#6f1732,#9d3152) !important;
+    color:#fff !important;
+    padding:10px 19px !important;
+    min-width:175px !important;
+    font-size:13px !important;
+    font-weight:800 !important;
+    letter-spacing:.2px;
+    border-radius:22px !important;
+    box-shadow:0 7px 18px rgba(111,23,50,.22) !important;
+}
+#staffDashboardOpenBtn:hover{
+    transform:translateY(-2px) !important;
+    box-shadow:0 10px 24px rgba(111,23,50,.29) !important;
+}
+.staff-dashboard-box{
+    width:min(96%,1120px);
+    max-height:92vh;
+    overflow:auto;
+    margin:4vh auto;
+    background:#f5f7fb;
+    border-radius:24px;
+    position:relative;
+    box-shadow:0 28px 85px rgba(9,20,38,.34);
+}
+.staff-dashboard-close{
+    top:13px;
+    right:17px;
+    z-index:4;
+    width:38px;
+    height:38px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    line-height:1;
+}
+.staff-dashboard-hero{
+    position:relative;
+    overflow:hidden;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:24px;
+    align-items:center;
+    padding:31px 70px 31px 31px;
+    color:#fff;
+    background:
+        radial-gradient(circle at 88% 12%,rgba(232,189,99,.32),transparent 31%),
+        linear-gradient(135deg,#3f0b1d 0%,#781b39 54%,#a83b5c 100%);
+}
+.staff-dashboard-hero::after{
+    content:"";
+    position:absolute;
+    width:210px;
+    height:210px;
+    right:-90px;
+    bottom:-130px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:50%;
+}
+.staff-dashboard-brand{
+    display:flex;
+    align-items:center;
+    gap:17px;
+    min-width:0;
+}
+.staff-dashboard-logo{
+    width:66px;
+    height:66px;
+    flex:0 0 auto;
+    border-radius:50%;
+    object-fit:cover;
+    background:#fff;
+    border:3px solid rgba(232,189,99,.9);
+    box-shadow:0 7px 22px rgba(0,0,0,.2);
+}
+.staff-dashboard-kicker{
+    margin:0 0 5px;
+    color:#f5d98f;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+}
+.staff-dashboard-hero h2{
+    margin:0;
+    color:#fff;
+    text-align:left;
+    font-size:clamp(21px,3vw,31px);
+    line-height:1.2;
+}
+.staff-dashboard-role{
+    margin:6px 0 0;
+    color:rgba(255,255,255,.82);
+    font-size:13px;
+    font-weight:700;
+}
+.staff-dashboard-clock{
+    position:relative;
+    z-index:1;
+    min-width:185px;
+    padding:14px 18px;
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:16px;
+    background:rgba(255,255,255,.1);
+    backdrop-filter:blur(8px);
+    text-align:right;
+}
+.staff-dashboard-time{
+    display:block;
+    color:#fff;
+    font-size:24px;
+    font-weight:900;
+    letter-spacing:.4px;
+}
+.staff-dashboard-date{
+    display:block;
+    margin-top:3px;
+    color:#f7dfaa;
+    font-size:12px;
+    font-weight:700;
+}
+.staff-dashboard-content{padding:24px}
+.staff-dashboard-stats{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:13px;
+    margin-bottom:18px;
+}
+.staff-dashboard-stat{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:15px;
+    background:#fff;
+    border:1px solid #e4e9f0;
+    border-radius:16px;
+    box-shadow:0 5px 16px rgba(20,40,70,.05);
+}
+.staff-dashboard-stat-icon{
+    width:42px;
+    height:42px;
+    flex:0 0 auto;
+    display:grid;
+    place-items:center;
+    border-radius:13px;
+    font-size:19px;
+}
+.staff-dashboard-stat.notice .staff-dashboard-stat-icon{background:#fff2f5}
+.staff-dashboard-stat.leave .staff-dashboard-stat-icon{background:#eaf8f1}
+.staff-dashboard-stat.plan .staff-dashboard-stat-icon{background:#f2edff}
+.staff-dashboard-stat strong{
+    display:block;
+    color:#102a43;
+    font-size:20px;
+    line-height:1;
+}
+.staff-dashboard-stat span:last-child{
+    display:block;
+    margin-top:5px;
+    color:#667085;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.35px;
+    text-transform:uppercase;
+}
+.staff-dashboard-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1.18fr) minmax(310px,.82fr);
+    gap:18px;
+    align-items:start;
+}
+.staff-dashboard-card{
+    overflow:hidden;
+    background:#fff;
+    border:1px solid #e1e7ef;
+    border-radius:18px;
+    box-shadow:0 7px 22px rgba(18,42,67,.06);
+}
+.staff-dashboard-card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:16px 18px;
+    border-bottom:1px solid #edf0f4;
+}
+.staff-dashboard-card-head h3{
+    margin:0;
+    color:#123c69;
+    font-size:16px;
+}
+.staff-dashboard-live-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#ecfdf3;
+    color:#067647;
+    font-size:10px;
+    font-weight:900;
+    letter-spacing:.5px;
+}
+.staff-dashboard-live-badge::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#12b76a;
+    box-shadow:0 0 0 4px rgba(18,183,106,.13);
+}
+.staff-dashboard-card-body{padding:16px 18px}
+.staff-dashboard-notice-list{display:grid;gap:11px}
+.staff-dashboard-notice{
+    position:relative;
+    padding:15px 15px 14px 18px;
+    border:1px solid #eadfe3;
+    border-left:5px solid #8c2948;
+    border-radius:13px;
+    background:linear-gradient(135deg,#fff,#fff9fb);
+}
+.staff-dashboard-notice.urgent{border-left-color:#d92d20;background:#fff8f7}
+.staff-dashboard-notice.important{border-left-color:#f79009;background:#fffaf0}
+.staff-dashboard-notice-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+}
+.staff-dashboard-notice-title{
+    color:#3f0b1d;
+    font-weight:900;
+    overflow-wrap:anywhere;
+}
+.staff-dashboard-priority{
+    flex:0 0 auto;
+    padding:4px 8px;
+    border-radius:999px;
+    background:#f6e8ed;
+    color:#7a1734;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.4px;
+    text-transform:uppercase;
+}
+.staff-dashboard-notice.urgent .staff-dashboard-priority{background:#fee4e2;color:#b42318}
+.staff-dashboard-notice.important .staff-dashboard-priority{background:#fef0c7;color:#93370d}
+.staff-dashboard-new{
+    margin-left:5px;
+    color:#d92d20;
+    font-size:9px;
+    font-weight:900;
+}
+.staff-dashboard-notice-message{
+    margin-top:8px;
+    color:#475467;
+    font-size:14px;
+    line-height:1.65;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+}
+.staff-dashboard-event-details{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:8px;
+    margin-top:12px;
+}
+.staff-dashboard-event-detail{
+    min-width:0;
+    padding:9px 10px;
+    border:1px solid rgba(122,23,52,.11);
+    border-radius:10px;
+    background:rgba(255,255,255,.76);
+}
+.staff-dashboard-event-label{
+    display:block;
+    color:#8b5c6a;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.45px;
+    text-transform:uppercase;
+}
+.staff-dashboard-event-value{
+    display:block;
+    margin-top:3px;
+    color:#3f0b1d;
+    font-size:12px;
+    font-weight:850;
+    overflow-wrap:anywhere;
+}
+.staff-announcement-acknowledgement{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:12px;
+    padding:10px 11px;
+    border:1px solid #dbe7ef;
+    border-radius:11px;
+    background:#f7fafc;
+}
+.staff-announcement-ack-note{
+    color:#475467;
+    font-size:11px;
+    font-weight:750;
+}
+.staff-announcement-ack-actions{display:flex;gap:7px;flex-wrap:wrap}
+.staff-announcement-ack-btn{
+    border:0;
+    border-radius:999px;
+    padding:8px 12px;
+    color:#fff;
+    font-size:11px;
+    font-weight:900;
+    cursor:pointer;
+}
+.staff-announcement-ack-btn.read{background:#176b4d}
+.staff-announcement-ack-btn.yes-sir{background:#123c69}
+.staff-announcement-ack-btn:disabled{opacity:.55;cursor:not-allowed}
+.staff-announcement-ack-done{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 10px;
+    border-radius:999px;
+    background:#ecfdf3;
+    color:#067647;
+    font-size:11px;
+    font-weight:900;
+}
+.staff-announcement-principal-status{
+    width:100%;
+    border:1px solid #d8e2eb;
+    border-radius:10px;
+    padding:9px 11px;
+    background:#fff;
+    color:#123c69;
+    font-size:11px;
+    font-weight:900;
+    cursor:pointer;
+}
+.staff-announcement-principal-status strong{color:#7a1734}
+.announcement-read-status-box{
+    width:min(94%,820px);
+    max-height:88vh;
+    overflow:auto;
+    margin:6vh auto;
+    padding:26px;
+    position:relative;
+    background:#fff;
+    border-radius:20px;
+    box-shadow:0 24px 75px rgba(9,20,38,.34);
+}
+.announcement-read-status-box h2{
+    margin:0 42px 5px 0;
+    color:#123c69;
+}
+.announcement-read-status-subtitle{
+    margin:0 42px 19px 0;
+    color:#667085;
+    font-size:13px;
+    overflow-wrap:anywhere;
+}
+.announcement-read-summary{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin-bottom:13px;
+}
+.announcement-read-summary>div{
+    padding:13px;
+    border:1px solid #dce5ed;
+    border-radius:13px;
+    background:#f7fafc;
+    text-align:center;
+}
+.announcement-read-summary strong{display:block;color:#123c69;font-size:23px}
+.announcement-read-summary span{display:block;margin-top:3px;color:#667085;font-size:10px;font-weight:900;text-transform:uppercase}
+.announcement-read-summary .read{background:#ecfdf3;border-color:#abefc6}
+.announcement-read-summary .read strong{color:#067647}
+.announcement-read-summary .unread{background:#fff7e6;border-color:#f0d79a}
+.announcement-read-summary .unread strong{color:#9a6700}
+.announcement-read-legend{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin:0 0 13px;
+    color:#667085;
+    font-size:10px;
+    font-weight:850;
+}
+.announcement-read-status-list{display:grid;gap:9px}
+.announcement-read-status-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:center;
+    padding:12px 13px;
+    border:1px solid #e0e6ed;
+    border-radius:12px;
+    background:#fafcfe;
+}
+.announcement-read-staff-name{color:#123c69;font-size:13px;font-weight:900;overflow-wrap:anywhere}
+.announcement-read-staff-role{margin-top:2px;color:#667085;font-size:10px;font-weight:700}
+.announcement-read-result{text-align:right}
+.announcement-read-badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:999px;
+    font-size:10px;
+    font-weight:900;
+}
+.announcement-read-badge.read{background:#ecfdf3;color:#067647}
+.announcement-read-badge.yes_sir{background:#eaf2fb;color:#123c69}
+.announcement-read-badge.unread{background:#fff7e6;color:#9a6700}
+.announcement-read-time{display:block;margin-top:3px;color:#7b8794;font-size:9px}
+.staff-dashboard-notice-meta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:10px;
+    color:#7b8794;
+    font-size:11px;
+    font-weight:700;
+}
+.staff-dashboard-notice-delete{
+    border:0;
+    background:transparent;
+    color:#b42318;
+    font:inherit;
+    font-weight:900;
+    cursor:pointer;
+}
+.staff-dashboard-empty{
+    padding:21px 14px;
+    border:1px dashed #cbd5e1;
+    border-radius:12px;
+    color:#667085;
+    text-align:center;
+    font-size:13px;
+}
+.staff-dashboard-side{display:grid;gap:18px}
+.staff-dashboard-preview-list{display:grid;gap:9px}
+.staff-dashboard-preview{
+    padding:11px 12px;
+    border:1px solid #e5eaf0;
+    border-radius:11px;
+    background:#f9fbfd;
+}
+.staff-dashboard-preview strong{
+    display:block;
+    color:#123c69;
+    font-size:13px;
+    overflow-wrap:anywhere;
+}
+.staff-dashboard-preview span{
+    display:block;
+    margin-top:4px;
+    color:#667085;
+    font-size:11px;
+    line-height:1.45;
+}
+.staff-dashboard-view-all{
+    width:100%;
+    margin-top:11px;
+    border:1px solid #d6dee8;
+    border-radius:10px;
+    padding:9px 12px;
+    background:#fff;
+    color:#123c69;
+    font-weight:800;
+    cursor:pointer;
+}
+.staff-dashboard-quick-actions{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:11px;
+    margin-top:18px;
+}
+.staff-dashboard-action{
+    min-height:64px;
+    border:0;
+    border-radius:14px;
+    padding:10px 8px;
+    color:#fff;
+    font-weight:850;
+    cursor:pointer;
+    transition:.2s ease;
+}
+.staff-dashboard-action:hover{transform:translateY(-2px);filter:brightness(1.04)}
+.staff-dashboard-action.leave{background:linear-gradient(135deg,#176b4d,#249269)}
+.staff-dashboard-action.approved{background:linear-gradient(135deg,#123c69,#1976b8)}
+.staff-dashboard-action.plan{background:linear-gradient(135deg,#5b21b6,#7c3aed)}
+.staff-announcement-form{
+    display:none;
+    margin:0 18px 17px;
+    padding:15px;
+    border:1px solid #ead7de;
+    border-radius:14px;
+    background:#fff8fa;
+}
+.staff-announcement-form.show{display:block}
+.staff-announcement-form-title{
+    margin:0 0 11px;
+    color:#7a1734;
+    font-size:14px;
+    font-weight:900;
+}
+.staff-announcement-form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+}
+.staff-announcement-field.full{grid-column:1/-1}
+.staff-announcement-field label{
+    display:block;
+    margin:0 0 5px;
+    color:#475467;
+    font-size:11px;
+    font-weight:850;
+}
+.staff-announcement-field input,
+.staff-announcement-field select,
+.staff-announcement-field textarea{
+    width:100%;
+    padding:10px 11px;
+    border:1px solid #d6dee8;
+    border-radius:9px;
+    background:#fff;
+    font:inherit;
+    outline:none;
+}
+.staff-announcement-field textarea{min-height:82px;resize:vertical}
+.staff-announcement-field input:focus,
+.staff-announcement-field select:focus,
+.staff-announcement-field textarea:focus{
+    border-color:#9d3152;
+    box-shadow:0 0 0 3px rgba(157,49,82,.1);
+}
+.staff-announcement-submit{
+    width:100%;
+    margin-top:10px;
+    border:0;
+    border-radius:10px;
+    padding:11px;
+    background:linear-gradient(135deg,#6f1732,#9d3152);
+    color:#fff;
+    font-weight:900;
+    cursor:pointer;
+}
+.staff-announcement-message{
+    display:none;
+    margin-top:9px;
+    padding:9px 10px;
+    border-radius:9px;
+    font-size:12px;
+    font-weight:800;
+}
+.staff-announcement-message.show{display:block}
+.staff-announcement-message.success{background:#ecfdf3;color:#067647}
+.staff-announcement-message.error{background:#fff1f0;color:#b42318}
+.staff-dashboard-toast{
+    position:sticky;
+    z-index:5;
+    top:12px;
+    width:max-content;
+    max-width:calc(100% - 32px);
+    margin:-2px auto 10px;
+    padding:9px 14px;
+    border-radius:999px;
+    background:#102a43;
+    color:#fff;
+    font-size:12px;
+    font-weight:800;
+    box-shadow:0 7px 20px rgba(16,42,67,.22);
+    opacity:0;
+    transform:translateY(-8px);
+    pointer-events:none;
+    transition:.22s ease;
+}
+.staff-dashboard-toast.show{opacity:1;transform:none}
+body.dark-mode .staff-dashboard-box{background:#17232e;color:#eee}
+body.dark-mode .staff-dashboard-card,
+body.dark-mode .staff-dashboard-stat{background:#22313f;border-color:#405467}
+body.dark-mode .staff-dashboard-card-head{border-color:#405467}
+body.dark-mode .staff-dashboard-card-head h3,
+body.dark-mode .staff-dashboard-stat strong,
+body.dark-mode .staff-dashboard-preview strong{color:#8ecbff}
+body.dark-mode .staff-dashboard-stat span:last-child,
+body.dark-mode .staff-dashboard-notice-message,
+body.dark-mode .staff-dashboard-preview span{color:#cbd5e1}
+body.dark-mode .staff-dashboard-notice,
+body.dark-mode .staff-dashboard-preview{background:#1d2935;border-color:#405467}
+body.dark-mode .staff-dashboard-notice-title{color:#f8bfd0}
+body.dark-mode .staff-dashboard-event-detail{background:#17232e;border-color:#55404a}
+body.dark-mode .staff-dashboard-event-label{color:#d1a9b5}
+body.dark-mode .staff-dashboard-event-value{color:#f8dce5}
+body.dark-mode .staff-announcement-acknowledgement,
+body.dark-mode .announcement-read-status-box,
+body.dark-mode .announcement-read-status-row{background:#1d2935;border-color:#405467;color:#eee}
+body.dark-mode .staff-announcement-ack-note,
+body.dark-mode .announcement-read-status-subtitle,
+body.dark-mode .announcement-read-staff-role{color:#cbd5e1}
+body.dark-mode .staff-announcement-principal-status{background:#17232e;color:#8ecbff;border-color:#405467}
+body.dark-mode .announcement-read-status-box h2,
+body.dark-mode .announcement-read-staff-name,
+body.dark-mode .announcement-read-summary strong{color:#8ecbff}
+body.dark-mode .announcement-read-summary>div{background:#17232e;border-color:#405467}
+body.dark-mode .staff-announcement-form{background:#1d2935;border-color:#5d3a48}
+body.dark-mode .staff-announcement-field input,
+body.dark-mode .staff-announcement-field select,
+body.dark-mode .staff-announcement-field textarea{background:#17232e;color:#fff;border-color:#405467}
+@media(max-width:820px){
+    .staff-dashboard-grid{grid-template-columns:1fr}
+    .staff-dashboard-hero{grid-template-columns:1fr;padding:26px 56px 24px 22px}
+    .staff-dashboard-clock{text-align:left;min-width:0}
+    .staff-dashboard-event-details{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+    .staff-dashboard-box{width:100%;min-height:100%;max-height:none;margin:0;border-radius:0}
+    .staff-dashboard-content{padding:15px}
+    .staff-dashboard-logo{width:54px;height:54px}
+    .staff-dashboard-brand{align-items:flex-start;gap:12px}
+    .staff-dashboard-stats{grid-template-columns:1fr}
+    .staff-dashboard-stat{padding:12px 14px}
+    .staff-dashboard-quick-actions{grid-template-columns:1fr}
+    .staff-dashboard-action{min-height:52px}
+    .staff-announcement-form-grid{grid-template-columns:1fr}
+    .staff-announcement-field.full{grid-column:auto}
+    .staff-dashboard-event-details{grid-template-columns:1fr}
+    .announcement-read-status-box{width:100%;min-height:100%;max-height:none;margin:0;border-radius:0;padding:22px 15px}
+    .announcement-read-summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .announcement-read-summary strong{font-size:19px}
+    .announcement-read-status-row{grid-template-columns:1fr;gap:7px}
+    .announcement-read-result{text-align:left}
 }
 </style>
 
@@ -5684,6 +6403,12 @@ body.dark-mode .admin-leave-card{background:#1d2935;border-color:#405467;color:#
         <p class="contact-actions">
             <a class="contact-action-btn" href="https://wa.me/9779864185122" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
             <a class="contact-action-btn" href="mailto:staugustineacademicfoundation@gmail.com">✉️ Email School</a>
+            <a class="contact-action-btn contact-facebook-btn"
+               href="https://www.facebook.com/profile.php?id=100069316805157"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Visit the official St. Augustine Academic Foundation Facebook page">
+                <span class="contact-facebook-icon">f</span> Official Facebook
+            </a>
         </p>
 
     </div>
@@ -6168,43 +6893,49 @@ body.dark-mode .admin-leave-card{background:#1d2935;border-color:#405467;color:#
 
 
 
+<!-- =========================================================
+     SECURE SCHOOL ACCESS — PLACED DIRECTLY ABOVE THE FOOTER
+========================================================= -->
+<section class="site-access-section" aria-label="Secure school access">
+    <p class="site-access-label">Secure School Access</p>
+
+    <div class="login-access-row">
+        <div id="globalAdminEntry" class="global-admin-entry">
+            <button id="globalAdminLoginBtn" type="button" onclick="openStudentAdminLogin()">🔐 ADMIN LOGIN</button>
+            <button id="globalAdminPanelBtn" type="button" onclick="openWebsiteAdminPanel()" style="display:none;">⚙️ ADMIN CONTROL CENTER</button>
+            <button id="globalAdminLogoutBtn" type="button" onclick="studentAdminLogout()" style="display:none;">LOG OUT</button>
+            <span id="globalAdminStatus">Admin not logged in</span>
+        </div>
+
+        <div id="staffLoginEntry" class="staff-login-entry">
+            <button id="staffLoginOpenBtn" type="button" onclick="openStaffLogin()">👨‍🏫 STAFF LOGIN</button>
+            <button id="staffDashboardOpenBtn" type="button" onclick="openStaffDashboard()" style="display:none;">✦ SMART STAFF DASHBOARD</button>
+            <button id="staffLeaveOpenBtn" type="button" onclick="openStaffLeaveForm()" style="display:none;">📝 LEAVE APPLICATION</button>
+            <button id="staffApprovedLeaveOpenBtn" type="button" onclick="openApprovedStaffLeaves()" style="display:none;">✓ APPROVED LEAVE</button>
+            <button id="staffUpcomingPlanOpenBtn" type="button" onclick="openUpcomingPlans()" style="display:none;">📅 UPCOMING PLAN</button>
+            <button id="staffLogoutBtn" type="button" onclick="staffLogout()" style="display:none;background:#667085;">LOG OUT</button>
+            <span id="staffLoginStatus" class="staff-login-status">Staff not logged in</span>
+        </div>
+    </div>
+</section>
 
 
 <footer>
-
-    © 2026
-
-    <span>
-        St. Augustine Academic Foundation
-    </span>
-
-    <br>
-
-    Suryodaya - 11, Ilam, Nepal
-
-    <br>
-
-    All Rights Reserved
-
-
-    <div class="footer-links">
-
-        <a
-            onclick="openPopup('termsPopup')">
-
-            Terms of Service
-
-        </a>
-
-        <a
-            onclick="openPopup('privacyPopup')">
-
-            Privacy Policy
-
-        </a>
-
+    <div class="footer-school-info">
+        © 2026 <strong>St. Augustine Academic Foundation</strong><br>
+        Suryodaya - 11, Ilam, Nepal<br>
+        All Rights Reserved
     </div>
 
+    <div class="footer-links">
+        <a href="#termsPopup" onclick="event.preventDefault();openPopup('termsPopup')">
+            Terms of Service
+        </a>
+        <span class="footer-link-divider" aria-hidden="true">•</span>
+        <a href="#privacyPopup" onclick="event.preventDefault();openPopup('privacyPopup')">
+            Privacy Policy
+        </a>
+    </div>
 </footer>
 
 
@@ -8489,35 +9220,6 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 
-<div class="login-access-row">
-<!-- =========================================================
-     GLOBAL WEBSITE ADMIN ENTRY
-     One Supabase admin login controls Staff, Gallery & Students.
-========================================================= -->
-<div id="globalAdminEntry" class="global-admin-entry">
-    <button id="globalAdminLoginBtn" type="button" onclick="openStudentAdminLogin()">🔐 ADMIN LOGIN</button>
-    <button id="globalAdminPanelBtn" type="button" onclick="openWebsiteAdminPanel()" style="display:none;">⚙️ ADMIN CONTROL CENTER</button>
-    <button id="globalAdminLogoutBtn" type="button" onclick="studentAdminLogout()" style="display:none;">LOG OUT</button>
-    <span id="globalAdminStatus">Admin not logged in</span>
-</div>
-
-<!-- =========================================================
-     STAFF LOGIN ENTRY
-     Placed directly below the existing Admin Login area.
-========================================================= -->
-<div id="staffLoginEntry" class="staff-login-entry">
-    <button id="staffLoginOpenBtn" type="button" onclick="openStaffLogin()">👨‍🏫 STAFF LOGIN</button>
-    <button id="staffLeaveOpenBtn" type="button" onclick="openStaffLeaveForm()" style="display:none;">📝 LEAVE APPLICATION</button>
-    <button id="staffApprovedLeaveOpenBtn" type="button" onclick="openApprovedStaffLeaves()" style="display:none;">✓ APPROVED LEAVE</button>
-    <button id="staffUpcomingPlanOpenBtn" type="button" onclick="openUpcomingPlans()" style="display:none;">📅 UPCOMING PLAN</button>
-    <button id="staffLogoutBtn" type="button" onclick="staffLogout()" style="display:none;background:#667085;">LOG OUT</button>
-    <span id="staffLoginStatus" class="staff-login-status">Staff not logged in</span>
-</div>
-
-
-
-</div>
-
 <!-- =========================================================
      WEBSITE ADMIN CONTROL CENTER
      Public directory data remains as an offline fallback.
@@ -8537,6 +9239,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             <button type="button" onclick="showWebsiteAdminTab('staff')">👨‍🏫 Staff</button>
             <button type="button" onclick="showWebsiteAdminTab('staffAccounts')">🔑 Staff Accounts</button>
             <button type="button" onclick="showWebsiteAdminTab('leaveApplications')">📋 Leave Applications</button>
+            <button type="button" onclick="showWebsiteAdminTab('staffAnnouncements')">🔔 Staff Announcements</button>
             <button type="button" onclick="showWebsiteAdminTab('upcomingPlans')">📅 Upcoming Plans</button>
             <button type="button" onclick="showWebsiteAdminTab('gallery')">🖼️ Gallery</button>
             <button type="button" onclick="showWebsiteAdminTab('students')">🎓 Students</button>
@@ -8596,6 +9299,19 @@ document.addEventListener("DOMContentLoaded",()=>{
             </div>
             <div id="adminUpcomingPlanList" class="admin-leave-list">
                 <div class="review-empty">Loading upcoming plans...</div>
+            </div>
+        </div>
+
+        <div id="websiteAdminStaffAnnouncementsTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>🔔 Staff Announcements</h3>
+                    <p>Read announcements published by the Principal and delete old records when no longer needed.</p>
+                </div>
+                <button type="button" class="admin-mini-btn" onclick="renderAdminStaffAnnouncements()">↻ Refresh</button>
+            </div>
+            <div id="adminStaffAnnouncementList" class="admin-leave-list">
+                <div class="review-empty">Loading staff announcements...</div>
             </div>
         </div>
 
@@ -9048,11 +9764,12 @@ function closeWebsiteAdminPanel(){
 }
 
 function showWebsiteAdminTab(tab){
-    ["staff","staffAccounts","leaveApplications","upcomingPlans","gallery","students","notices","monthly"].forEach(name=>{
+    ["staff","staffAccounts","leaveApplications","staffAnnouncements","upcomingPlans","gallery","students","notices","monthly"].forEach(name=>{
         const el=document.getElementById(
             name==="staff"?"websiteAdminStaffTab":
             name==="staffAccounts"?"websiteAdminStaffAccountsTab":
             name==="leaveApplications"?"websiteAdminLeaveApplicationsTab":
+            name==="staffAnnouncements"?"websiteAdminStaffAnnouncementsTab":
             name==="upcomingPlans"?"websiteAdminUpcomingPlansTab":
             name==="gallery"?"websiteAdminGalleryTab":
             name==="students"?"websiteAdminStudentsTab":
@@ -9065,6 +9782,7 @@ function showWebsiteAdminTab(tab){
     if(tab==="staff") renderAdminStaffList();
     if(tab==="staffAccounts") renderAdminStaffAccountList();
     if(tab==="leaveApplications") renderAdminLeaveApplications();
+    if(tab==="staffAnnouncements") renderAdminStaffAnnouncements();
     if(tab==="upcomingPlans") renderAdminUpcomingPlans();
     if(tab==="gallery") renderAdminGalleryList();
     if(tab==="students") renderAdminStudentList();
@@ -10565,6 +11283,188 @@ document.addEventListener("click",function(event){
 
 
 <!-- =========================================================
+     SMART STAFF DASHBOARD — ALL LOGGED-IN STAFF
+========================================================= -->
+<div id="staffDashboardPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="staffDashboardGreeting">
+    <div class="staff-dashboard-box">
+        <span class="close-btn staff-dashboard-close" onclick="closeStaffDashboard()" aria-label="Close dashboard">&times;</span>
+
+        <div class="staff-dashboard-hero">
+            <div class="staff-dashboard-brand">
+                <img class="staff-dashboard-logo" src="logo.jpeg" alt="St. Augustine logo">
+                <div>
+                    <p class="staff-dashboard-kicker">St. Augustine Digital Staff Hub</p>
+                    <h2 id="staffDashboardGreeting">Welcome</h2>
+                    <p id="staffDashboardRole" class="staff-dashboard-role">Staff Member</p>
+                </div>
+            </div>
+            <div class="staff-dashboard-clock" aria-live="polite">
+                <span id="staffDashboardTime" class="staff-dashboard-time">--:--</span>
+                <span id="staffDashboardDate" class="staff-dashboard-date">Loading date...</span>
+            </div>
+        </div>
+
+        <div class="staff-dashboard-content">
+            <div id="staffDashboardToast" class="staff-dashboard-toast" role="status"></div>
+
+            <div class="staff-dashboard-stats" aria-label="Staff dashboard summary">
+                <div class="staff-dashboard-stat notice">
+                    <span class="staff-dashboard-stat-icon">🔔</span>
+                    <div><strong id="staffDashboardNoticeCount">0</strong><span>Staff Notices</span></div>
+                </div>
+                <div class="staff-dashboard-stat leave">
+                    <span class="staff-dashboard-stat-icon">✓</span>
+                    <div><strong id="staffDashboardLeaveCount">0</strong><span>Approved Leaves</span></div>
+                </div>
+                <div class="staff-dashboard-stat plan">
+                    <span class="staff-dashboard-stat-icon">📅</span>
+                    <div><strong id="staffDashboardPlanCount">0</strong><span>Upcoming Plans</span></div>
+                </div>
+            </div>
+
+            <div class="staff-dashboard-grid">
+                <section class="staff-dashboard-card">
+                    <div class="staff-dashboard-card-head">
+                        <h3>🔔 Principal's Important Announcements</h3>
+                        <span class="staff-dashboard-live-badge">LIVE</span>
+                    </div>
+
+                    <form id="staffAnnouncementForm" class="staff-announcement-form" onsubmit="submitStaffAnnouncement(event)">
+                        <p class="staff-announcement-form-title">Publish a Staff Announcement</p>
+                        <div class="staff-announcement-form-grid">
+                            <div class="staff-announcement-field">
+                                <label for="staffAnnouncementTitle">Announcement Title</label>
+                                <input id="staffAnnouncementTitle" type="text" maxlength="140"
+                                       placeholder="Example: Important Staff Meeting" required>
+                            </div>
+                            <div class="staff-announcement-field">
+                                <label for="staffAnnouncementPriority">Priority</label>
+                                <select id="staffAnnouncementPriority">
+                                    <option value="normal">Normal</option>
+                                    <option value="important">Important</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <div class="staff-announcement-field">
+                                <label for="staffAnnouncementEventDate">Meeting/Event Date (B.S.) — Optional</label>
+                                <input id="staffAnnouncementEventDate" type="text" inputmode="text"
+                                       maxlength="10" autocomplete="off" placeholder="2083-05-12"
+                                       pattern="\d{4}-\d{2}-\d{2}"
+                                       title="Enter the B.S. date in YYYY-MM-DD format">
+                            </div>
+                            <div class="staff-announcement-field">
+                                <label for="staffAnnouncementEventDay">Day / बार — Optional</label>
+                                <select id="staffAnnouncementEventDay">
+                                    <option value="">Select day</option>
+                                    <option value="Sunday / आइतबार">Sunday / आइतबार</option>
+                                    <option value="Monday / सोमबार">Monday / सोमबार</option>
+                                    <option value="Tuesday / मंगलबार">Tuesday / मंगलबार</option>
+                                    <option value="Wednesday / बुधबार">Wednesday / बुधबार</option>
+                                    <option value="Thursday / बिहीबार">Thursday / बिहीबार</option>
+                                    <option value="Friday / शुक्रबार">Friday / शुक्रबार</option>
+                                    <option value="Saturday / शनिबार">Saturday / शनिबार</option>
+                                </select>
+                            </div>
+                            <div class="staff-announcement-field">
+                                <label for="staffAnnouncementEventTime">Meeting Time — Optional</label>
+                                <input id="staffAnnouncementEventTime" type="time">
+                            </div>
+                            <div class="staff-announcement-field">
+                                <label for="staffAnnouncementVenue">Meeting Place / Venue — Optional</label>
+                                <input id="staffAnnouncementVenue" type="text" maxlength="160"
+                                       placeholder="Example: School Hall">
+                            </div>
+                            <div class="staff-announcement-field full">
+                                <label for="staffAnnouncementMessage">Message</label>
+                                <textarea id="staffAnnouncementMessage" maxlength="800"
+                                          placeholder="Write the information all staff should see..." required></textarea>
+                            </div>
+                            <div class="staff-announcement-field full">
+                                <label for="staffAnnouncementRemarks">Remarks — Optional</label>
+                                <textarea id="staffAnnouncementRemarks" maxlength="500"
+                                          placeholder="Write any additional instruction or remarks..."></textarea>
+                            </div>
+                        </div>
+                        <button id="staffAnnouncementSubmitBtn" class="staff-announcement-submit" type="submit">
+                            PUBLISH ANNOUNCEMENT
+                        </button>
+                        <div id="staffAnnouncementMessageBox" class="staff-announcement-message"></div>
+                    </form>
+
+                    <div class="staff-dashboard-card-body">
+                        <div id="staffDashboardAnnouncementList" class="staff-dashboard-notice-list">
+                            <div class="staff-dashboard-empty">Loading staff announcements...</div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="staff-dashboard-side">
+                    <section class="staff-dashboard-card">
+                        <div class="staff-dashboard-card-head"><h3>✓ Approved Staff Leave</h3></div>
+                        <div class="staff-dashboard-card-body">
+                            <div id="staffDashboardLeavePreview" class="staff-dashboard-preview-list">
+                                <div class="staff-dashboard-empty">Loading approved leave...</div>
+                            </div>
+                            <button type="button" class="staff-dashboard-view-all" onclick="openDashboardFeature('approved')">
+                                View All Approved Leave
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="staff-dashboard-card">
+                        <div class="staff-dashboard-card-head"><h3>📅 Upcoming Plans</h3></div>
+                        <div class="staff-dashboard-card-body">
+                            <div id="staffDashboardPlanPreview" class="staff-dashboard-preview-list">
+                                <div class="staff-dashboard-empty">Loading upcoming plans...</div>
+                            </div>
+                            <button type="button" class="staff-dashboard-view-all" onclick="openDashboardFeature('plans')">
+                                View All Upcoming Plans
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="staff-dashboard-quick-actions">
+                <button id="staffDashboardLeaveAction" type="button" class="staff-dashboard-action leave"
+                        onclick="openDashboardFeature('leave')">📝 Leave Application</button>
+                <button type="button" class="staff-dashboard-action approved"
+                        onclick="openDashboardFeature('approved')">✓ Approved Leave</button>
+                <button type="button" class="staff-dashboard-action plan"
+                        onclick="openDashboardFeature('plans')">📅 Upcoming Plan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Principal-only acknowledgement report for Important/Urgent announcements -->
+<div id="announcementReadStatusPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="announcementReadStatusTitle">
+    <div class="announcement-read-status-box">
+        <span class="close-btn" onclick="closeAnnouncementReadStatus()" aria-label="Close read status">&times;</span>
+        <h2 id="announcementReadStatusTitle">Announcement Read Status</h2>
+        <p id="announcementReadStatusSubtitle" class="announcement-read-status-subtitle"></p>
+
+        <div class="announcement-read-summary">
+            <div><strong id="announcementReadTotal">0</strong><span>Total Staff</span></div>
+            <div class="read"><strong id="announcementReadCount">0</strong><span>Responded</span></div>
+            <div class="unread"><strong id="announcementUnreadCount">0</strong><span>Not Read</span></div>
+        </div>
+
+        <div class="announcement-read-legend">
+            <span>✓ READ</span>
+            <span>✓ YES SIR</span>
+            <span>○ NOT READ</span>
+        </div>
+
+        <div id="announcementReadStatusList" class="announcement-read-status-list">
+            <div class="staff-dashboard-empty">Loading staff response status...</div>
+        </div>
+    </div>
+</div>
+
+
+<!-- =========================================================
      STAFF LOGIN POPUP
 ========================================================= -->
 <div id="staffLoginPopup" class="popup">
@@ -10933,7 +11833,7 @@ async function staffLogin(){
 
     updateStaffLoginUI();
     closeStaffLogin();
-    openStaffLeaveForm();
+    openStaffDashboard();
 }
 
 async function staffLogout(){
@@ -11705,6 +12605,765 @@ staffLogout=async function(){
     closeUpcomingPlans();
     await upcomingOriginalStaffLogout();
 };
+</script>
+
+
+<script id="smart-staff-dashboard-js">
+/* =========================================================
+   ST. AUGUSTINE SMART STAFF DASHBOARD
+   - Opens immediately after a successful staff login
+   - Principal publishes live announcements
+   - All authenticated staff read announcements, approved leave and plans
+   - Website Admin can read and delete old announcements
+   ========================================================= */
+
+let staffDashboardClockTimer=null;
+let staffDashboardRealtimeChannel=null;
+let staffDashboardToastTimer=null;
+let staffAnnouncementAcknowledgementCache=new Map();
+let staffAnnouncementRecordCache=new Map();
+let staffAnnouncementReadStatusId=null;
+
+function staffDashboardIsPrincipal(){
+    return !!loggedInStaff && loggedInStaff.username===PRINCIPAL_STAFF_ID;
+}
+
+function staffDashboardFormatPublished(value){
+    if(!value) return "Just now";
+    const date=new Date(value);
+    if(Number.isNaN(date.getTime())) return String(value);
+    return new Intl.DateTimeFormat("en-GB",{
+        day:"2-digit",month:"short",year:"numeric",
+        hour:"2-digit",minute:"2-digit",hour12:true,
+        timeZone:"Asia/Kathmandu"
+    }).format(date);
+}
+
+function staffDashboardFormatMeetingTime(value){
+    if(!value) return "";
+    const parts=String(value).split(":");
+    const hour=Number(parts[0]);
+    const minute=Number(parts[1]||0);
+    if(!Number.isInteger(hour) || hour<0 || hour>23 || !Number.isInteger(minute)) return String(value);
+    const period=hour>=12?"PM":"AM";
+    const displayHour=hour%12||12;
+    return `${displayHour}:${String(minute).padStart(2,"0")} ${period}`;
+}
+
+function staffDashboardRequiredStaff(){
+    return Object.entries(STAFF_LOGIN_DIRECTORY)
+        .filter(([staffId])=>staffId!==PRINCIPAL_STAFF_ID)
+        .map(([staffId,staff])=>({staffId,...staff}));
+}
+
+function staffDashboardEventDetailsHtml(row){
+    const items=[];
+    if(row.event_date_bs) items.push(["📅 Date (B.S.)",row.event_date_bs]);
+    if(row.event_day) items.push(["🗓 Day / बार",row.event_day]);
+    if(row.event_time) items.push(["🕘 Time",staffDashboardFormatMeetingTime(row.event_time)]);
+    if(row.venue) items.push(["📍 Meeting Place",row.venue]);
+    if(!items.length) return "";
+
+    return `<div class="staff-dashboard-event-details">
+        ${items.map(([label,value])=>`
+            <div class="staff-dashboard-event-detail">
+                <span class="staff-dashboard-event-label">${escapeHtml(label)}</span>
+                <span class="staff-dashboard-event-value">${escapeHtml(value)}</span>
+            </div>`).join("")}
+    </div>`;
+}
+
+function staffDashboardAcknowledgementHtml(row,acknowledgements){
+    const priority=String(row.priority||"normal").toLowerCase();
+    if(!["important","urgent"].includes(priority)) return "";
+
+    if(staffDashboardIsPrincipal()){
+        const required=staffDashboardRequiredStaff();
+        const respondedIds=new Set((acknowledgements||[]).map(item=>normalizeStaffId(item.staff_id)));
+        const responded=required.filter(item=>respondedIds.has(item.staffId)).length;
+        return `
+            <div class="staff-announcement-acknowledgement">
+                <span class="staff-announcement-ack-note">
+                    <strong>${responded} of ${required.length}</strong> staff responded
+                </span>
+                <button type="button" class="staff-announcement-principal-status"
+                        onclick="openAnnouncementReadStatus(${Number(row.id)})">
+                    VIEW WHO READ / NOT READ
+                </button>
+            </div>`;
+    }
+
+    const own=(acknowledgements||[]).find(item=>normalizeStaffId(item.staff_id)===loggedInStaff?.username);
+    if(own){
+        const label=own.response==="yes_sir"?"YES SIR":"READ";
+        return `
+            <div class="staff-announcement-acknowledgement">
+                <span class="staff-announcement-ack-done">✓ Acknowledged: ${label}</span>
+                <span class="staff-announcement-ack-note">${escapeHtml(staffDashboardFormatPublished(own.acknowledged_at))}</span>
+            </div>`;
+    }
+
+    return `
+        <div class="staff-announcement-acknowledgement">
+            <span class="staff-announcement-ack-note">Please confirm that you have read this announcement.</span>
+            <div class="staff-announcement-ack-actions">
+                <button type="button" class="staff-announcement-ack-btn read"
+                        onclick="acknowledgeStaffAnnouncement(${Number(row.id)},'read',this)">✓ READ</button>
+                <button type="button" class="staff-announcement-ack-btn yes-sir"
+                        onclick="acknowledgeStaffAnnouncement(${Number(row.id)},'yes_sir',this)">YES SIR</button>
+            </div>
+        </div>`;
+}
+
+function staffDashboardGreeting(){
+    const hour=Number(new Intl.DateTimeFormat("en-GB",{
+        hour:"2-digit",hour12:false,timeZone:"Asia/Kathmandu"
+    }).format(new Date()).replace(/^24$/,"0"));
+
+    if(hour<12) return "Good Morning";
+    if(hour<17) return "Good Afternoon";
+    return "Good Evening";
+}
+
+function updateStaffDashboardClock(){
+    const now=new Date();
+    const time=document.getElementById("staffDashboardTime");
+    const date=document.getElementById("staffDashboardDate");
+    const greeting=document.getElementById("staffDashboardGreeting");
+    const role=document.getElementById("staffDashboardRole");
+
+    if(time){
+        time.textContent=new Intl.DateTimeFormat("en-US",{
+            hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true,
+            timeZone:"Asia/Kathmandu"
+        }).format(now);
+    }
+    if(date){
+        date.textContent=new Intl.DateTimeFormat("en-GB",{
+            weekday:"long",day:"2-digit",month:"long",year:"numeric",
+            timeZone:"Asia/Kathmandu"
+        }).format(now);
+    }
+    if(greeting){
+        greeting.textContent=`${staffDashboardGreeting()}, ${loggedInStaff?.name||"Staff"}`;
+    }
+    if(role){
+        role.textContent=`${loggedInStaff?.designation||"Staff Member"} • Smart Staff Dashboard`;
+    }
+}
+
+function startStaffDashboardClock(){
+    if(staffDashboardClockTimer) clearInterval(staffDashboardClockTimer);
+    updateStaffDashboardClock();
+    staffDashboardClockTimer=setInterval(updateStaffDashboardClock,1000);
+}
+
+function stopStaffDashboardClock(){
+    if(staffDashboardClockTimer){
+        clearInterval(staffDashboardClockTimer);
+        staffDashboardClockTimer=null;
+    }
+}
+
+function showStaffDashboardToast(message){
+    const toast=document.getElementById("staffDashboardToast");
+    if(!toast) return;
+    toast.textContent=message;
+    toast.classList.add("show");
+    if(staffDashboardToastTimer) clearTimeout(staffDashboardToastTimer);
+    staffDashboardToastTimer=setTimeout(()=>toast.classList.remove("show"),3200);
+}
+
+function showStaffAnnouncementMessage(message,type="error"){
+    const box=document.getElementById("staffAnnouncementMessageBox");
+    if(!box) return;
+    box.textContent=message;
+    box.className=`staff-announcement-message show ${type}`;
+}
+
+function clearStaffAnnouncementMessage(){
+    const box=document.getElementById("staffAnnouncementMessageBox");
+    if(!box) return;
+    box.textContent="";
+    box.className="staff-announcement-message";
+}
+
+async function openStaffDashboard(){
+    if(!loggedInStaff || !staffAuthSession){
+        openStaffLogin();
+        return;
+    }
+
+    const popup=document.getElementById("staffDashboardPopup");
+    const form=document.getElementById("staffAnnouncementForm");
+    const leaveAction=document.getElementById("staffDashboardLeaveAction");
+
+    if(form) form.classList.toggle("show",staffDashboardIsPrincipal());
+    if(leaveAction){
+        leaveAction.textContent=staffDashboardIsPrincipal()
+            ? "📋 Review Leave Requests"
+            : "📝 Leave Application";
+    }
+
+    clearStaffAnnouncementMessage();
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+    startStaffDashboardClock();
+    subscribeStaffDashboardRealtime();
+    await refreshStaffDashboard(false);
+}
+
+function closeStaffDashboard(){
+    const popup=document.getElementById("staffDashboardPopup");
+    const readStatus=document.getElementById("announcementReadStatusPopup");
+    if(popup) popup.style.display="none";
+    if(readStatus) readStatus.style.display="none";
+    staffAnnouncementReadStatusId=null;
+    document.body.style.overflow="auto";
+    stopStaffDashboardClock();
+}
+
+function openDashboardFeature(feature){
+    closeStaffDashboard();
+    if(feature==="approved"){
+        openApprovedStaffLeaves();
+        return;
+    }
+    if(feature==="plans"){
+        openUpcomingPlans();
+        return;
+    }
+    if(feature==="leave"){
+        if(staffDashboardIsPrincipal()) openPrincipalLeaveRequests();
+        else openStaffLeaveForm();
+    }
+}
+
+async function refreshStaffDashboard(showConfirmation=true){
+    if(!loggedInStaff || !staffAuthSession) return;
+    await Promise.all([
+        loadStaffDashboardAnnouncements(),
+        loadStaffDashboardLeaves(),
+        loadStaffDashboardPlans()
+    ]);
+    if(showConfirmation) showStaffDashboardToast("Dashboard updated successfully.");
+}
+
+async function loadStaffDashboardAnnouncements(){
+    const host=document.getElementById("staffDashboardAnnouncementList");
+    const counter=document.getElementById("staffDashboardNoticeCount");
+    if(!host) return;
+
+    host.innerHTML='<div class="staff-dashboard-empty">Loading staff announcements...</div>';
+
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {data,error,count}=await db
+            .from("staff_announcements")
+            .select("id,title,message,remarks,priority,event_date_bs,event_day,event_time,venue,published_at,created_at",{count:"exact"})
+            .order("published_at",{ascending:false})
+            .limit(6);
+
+        if(error) throw error;
+        if(counter) counter.textContent=String(count??data?.length??0);
+
+        if(!data?.length){
+            staffAnnouncementAcknowledgementCache=new Map();
+            staffAnnouncementRecordCache=new Map();
+            host.innerHTML='<div class="staff-dashboard-empty">No important announcements have been published.</div>';
+            return;
+        }
+
+        staffAnnouncementRecordCache=new Map(data.map(row=>[String(row.id),row]));
+        const acknowledgementIds=data
+            .filter(row=>["important","urgent"].includes(String(row.priority||"").toLowerCase()))
+            .map(row=>Number(row.id));
+        let acknowledgementRows=[];
+
+        if(acknowledgementIds.length){
+            const {data:ackData,error:ackError}=await db
+                .from("staff_announcement_acknowledgements")
+                .select("announcement_id,staff_id,staff_name,response,acknowledged_at")
+                .in("announcement_id",acknowledgementIds);
+
+            if(ackError){
+                console.error("Announcement acknowledgement load error:",ackError);
+            }else{
+                acknowledgementRows=ackData||[];
+            }
+        }
+
+        staffAnnouncementAcknowledgementCache=new Map();
+        acknowledgementRows.forEach(item=>{
+            const key=String(item.announcement_id);
+            if(!staffAnnouncementAcknowledgementCache.has(key)){
+                staffAnnouncementAcknowledgementCache.set(key,[]);
+            }
+            staffAnnouncementAcknowledgementCache.get(key).push(item);
+        });
+
+        const now=Date.now();
+        host.innerHTML=data.map(row=>{
+            const priority=["urgent","important"].includes(String(row.priority||"").toLowerCase())
+                ? String(row.priority).toLowerCase()
+                : "normal";
+            const published=row.published_at||row.created_at;
+            const publishedTime=new Date(published||0).getTime();
+            const isNew=Number.isFinite(publishedTime) && now-publishedTime<48*60*60*1000;
+            const acknowledgements=staffAnnouncementAcknowledgementCache.get(String(row.id))||[];
+            return `
+                <article class="staff-dashboard-notice ${priority}">
+                    <div class="staff-dashboard-notice-top">
+                        <div class="staff-dashboard-notice-title">
+                            ${escapeHtml(row.title||"Staff Announcement")}
+                            ${isNew?'<span class="staff-dashboard-new">NEW</span>':""}
+                        </div>
+                        <span class="staff-dashboard-priority">${escapeHtml(priority)}</span>
+                    </div>
+                    <div class="staff-dashboard-notice-message">${escapeHtml(row.message||"")}</div>
+                    ${staffDashboardEventDetailsHtml(row)}
+                    ${row.remarks?`
+                        <div class="staff-dashboard-notice-message">
+                            <strong>Remarks:</strong> ${escapeHtml(row.remarks)}
+                        </div>`:""}
+                    ${staffDashboardAcknowledgementHtml(row,acknowledgements)}
+                    <div class="staff-dashboard-notice-meta">
+                        <span>Principal • ${escapeHtml(staffDashboardFormatPublished(published))}</span>
+                        ${staffDashboardIsPrincipal()?`
+                            <button type="button" class="staff-dashboard-notice-delete"
+                                    onclick="deleteStaffAnnouncement(${Number(row.id)},this)">Delete</button>`:""}
+                    </div>
+                </article>`;
+        }).join("");
+    }catch(error){
+        console.error("Staff dashboard announcement load error:",error);
+        if(counter) counter.textContent="0";
+        staffAnnouncementAcknowledgementCache=new Map();
+        staffAnnouncementRecordCache=new Map();
+        host.innerHTML='<div class="staff-dashboard-empty">No important announcements have been published.</div>';
+    }
+}
+
+async function loadStaffDashboardLeaves(){
+    const host=document.getElementById("staffDashboardLeavePreview");
+    const counter=document.getElementById("staffDashboardLeaveCount");
+    if(!host) return;
+
+    host.innerHTML='<div class="staff-dashboard-empty">Loading approved leave...</div>';
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {data,error,count}=await db
+            .from("leave_applications")
+            .select("staff_name,leave_from_bs,leave_to_bs",{count:"exact"})
+            .eq("status","approved")
+            .order("leave_from_bs",{ascending:true})
+            .limit(3);
+
+        if(error) throw error;
+        if(counter) counter.textContent=String(count??data?.length??0);
+        if(!data?.length){
+            host.innerHTML='<div class="staff-dashboard-empty">No approved leave found.</div>';
+            return;
+        }
+
+        host.innerHTML=data.map(row=>`
+            <div class="staff-dashboard-preview">
+                <strong>${escapeHtml(formatLeaveValue(row.staff_name,"Staff"))}</strong>
+                <span>Leave: ${escapeHtml(formatApprovedLeaveDate(row))}</span>
+            </div>`).join("");
+    }catch(error){
+        console.error("Staff dashboard leave load error:",error);
+        if(counter) counter.textContent="0";
+        host.innerHTML='<div class="staff-dashboard-empty">Approved leave could not be loaded.</div>';
+    }
+}
+
+async function loadStaffDashboardPlans(){
+    const host=document.getElementById("staffDashboardPlanPreview");
+    const counter=document.getElementById("staffDashboardPlanCount");
+    if(!host) return;
+
+    host.innerHTML='<div class="staff-dashboard-empty">Loading upcoming plans...</div>';
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {data,error,count}=await db
+            .from("upcoming_plans")
+            .select("plan_date_bs,plan_name,incharge_name",{count:"exact"})
+            .order("plan_date_bs",{ascending:true})
+            .limit(3);
+
+        if(error) throw error;
+        if(counter) counter.textContent=String(count??data?.length??0);
+        if(!data?.length){
+            host.innerHTML='<div class="staff-dashboard-empty">No upcoming plans found.</div>';
+            return;
+        }
+
+        host.innerHTML=data.map(row=>`
+            <div class="staff-dashboard-preview">
+                <strong>${escapeHtml(formatLeaveValue(row.plan_name,"Plan"))}</strong>
+                <span>${escapeHtml(formatLeaveValue(row.plan_date_bs))} • Incharge: ${escapeHtml(formatLeaveValue(row.incharge_name))}</span>
+            </div>`).join("");
+    }catch(error){
+        console.error("Staff dashboard plan load error:",error);
+        if(counter) counter.textContent="0";
+        host.innerHTML='<div class="staff-dashboard-empty">Upcoming plans could not be loaded.</div>';
+    }
+}
+
+async function submitStaffAnnouncement(event){
+    event.preventDefault();
+
+    if(!staffDashboardIsPrincipal() || !staffAuthSession?.user?.id){
+        showStaffAnnouncementMessage("Principal login is required.");
+        return;
+    }
+
+    const form=document.getElementById("staffAnnouncementForm");
+    if(!form?.checkValidity()){
+        form?.reportValidity();
+        return;
+    }
+
+    const title=document.getElementById("staffAnnouncementTitle")?.value.trim()||"";
+    const message=document.getElementById("staffAnnouncementMessage")?.value.trim()||"";
+    const remarks=document.getElementById("staffAnnouncementRemarks")?.value.trim()||"";
+    const priority=document.getElementById("staffAnnouncementPriority")?.value||"normal";
+    const eventDate=document.getElementById("staffAnnouncementEventDate")?.value.trim()||"";
+    const eventDay=document.getElementById("staffAnnouncementEventDay")?.value||"";
+    const eventTime=document.getElementById("staffAnnouncementEventTime")?.value||"";
+    const venue=document.getElementById("staffAnnouncementVenue")?.value.trim()||"";
+    const button=document.getElementById("staffAnnouncementSubmitBtn");
+    const oldText=button?.textContent||"PUBLISH ANNOUNCEMENT";
+
+    if(!title || !message){
+        showStaffAnnouncementMessage("Enter the announcement title and message.");
+        return;
+    }
+
+    if(eventDate && !/^\d{4}-\d{2}-\d{2}$/.test(eventDate)){
+        showStaffAnnouncementMessage("Enter the Meeting/Event Date (B.S.) in YYYY-MM-DD format.");
+        return;
+    }
+
+    if(button){
+        button.disabled=true;
+        button.textContent="Publishing...";
+    }
+
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db
+            .from("staff_announcements")
+            .insert({
+                title,
+                message,
+                remarks:remarks||null,
+                priority:["normal","important","urgent"].includes(priority)?priority:"normal",
+                event_date_bs:eventDate||null,
+                event_day:eventDay||null,
+                event_time:eventTime||null,
+                venue:venue||null,
+                created_by:staffAuthSession.user.id
+            });
+
+        if(error) throw error;
+        form.reset();
+        showStaffAnnouncementMessage("Announcement published successfully.","success");
+        showStaffDashboardToast("New announcement is now live for all staff.");
+        await loadStaffDashboardAnnouncements();
+    }catch(error){
+        console.error("Staff announcement publish error:",error);
+        showStaffAnnouncementMessage("Could not publish announcement: "+(error?.message||"Unknown error"));
+    }finally{
+        if(button){
+            button.disabled=false;
+            button.textContent=oldText;
+        }
+    }
+}
+
+async function acknowledgeStaffAnnouncement(announcementId,response,button){
+    if(!loggedInStaff || !staffAuthSession?.user?.id || staffDashboardIsPrincipal()){
+        alert("A valid staff login is required.");
+        return;
+    }
+
+    const announcement=staffAnnouncementRecordCache.get(String(announcementId));
+    const priority=String(announcement?.priority||"").toLowerCase();
+    if(!["important","urgent"].includes(priority)){
+        alert("Acknowledgement is available only for Important or Urgent announcements.");
+        return;
+    }
+
+    const safeResponse=response==="yes_sir"?"yes_sir":"read";
+    const actionBox=button?.closest(".staff-announcement-ack-actions");
+    const buttons=actionBox?.querySelectorAll("button")||[];
+    buttons.forEach(item=>item.disabled=true);
+
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db
+            .from("staff_announcement_acknowledgements")
+            .upsert({
+                announcement_id:Number(announcementId),
+                user_id:staffAuthSession.user.id,
+                staff_id:loggedInStaff.username,
+                staff_name:loggedInStaff.name,
+                response:safeResponse,
+                acknowledged_at:new Date().toISOString()
+            },{onConflict:"announcement_id,staff_id"});
+
+        if(error) throw error;
+        await loadStaffDashboardAnnouncements();
+        showStaffDashboardToast(safeResponse==="yes_sir"
+            ? "Your YES SIR response was recorded."
+            : "Your READ response was recorded.");
+    }catch(error){
+        console.error("Announcement acknowledgement error:",error);
+        alert("Your response could not be saved: "+(error?.message||"Unknown error"));
+        buttons.forEach(item=>item.disabled=false);
+    }
+}
+
+function openAnnouncementReadStatus(announcementId){
+    if(!staffDashboardIsPrincipal()){
+        alert("Principal login is required.");
+        return;
+    }
+
+    const announcement=staffAnnouncementRecordCache.get(String(announcementId));
+    if(!announcement){
+        alert("Announcement information could not be found. Please refresh the dashboard.");
+        return;
+    }
+
+    staffAnnouncementReadStatusId=Number(announcementId);
+
+    const required=staffDashboardRequiredStaff();
+    const acknowledgements=staffAnnouncementAcknowledgementCache.get(String(announcementId))||[];
+    const responseByStaffId=new Map(
+        acknowledgements.map(item=>[normalizeStaffId(item.staff_id),item])
+    );
+    const responded=required.filter(item=>responseByStaffId.has(item.staffId)).length;
+
+    const title=document.getElementById("announcementReadStatusTitle");
+    const subtitle=document.getElementById("announcementReadStatusSubtitle");
+    const total=document.getElementById("announcementReadTotal");
+    const read=document.getElementById("announcementReadCount");
+    const unread=document.getElementById("announcementUnreadCount");
+    const host=document.getElementById("announcementReadStatusList");
+
+    if(title) title.textContent="Announcement Read Status";
+    if(subtitle) subtitle.textContent=announcement.title||"Important Announcement";
+    if(total) total.textContent=String(required.length);
+    if(read) read.textContent=String(responded);
+    if(unread) unread.textContent=String(Math.max(0,required.length-responded));
+
+    if(host){
+        host.innerHTML=required.map(staff=>{
+            const acknowledgement=responseByStaffId.get(staff.staffId);
+            const response=acknowledgement?.response==="yes_sir"
+                ? "yes_sir"
+                : acknowledgement?"read":"unread";
+            const label=response==="yes_sir"?"✓ YES SIR":response==="read"?"✓ READ":"○ NOT READ";
+            return `
+                <div class="announcement-read-status-row">
+                    <div>
+                        <div class="announcement-read-staff-name">${escapeHtml(staff.name||staff.staffId)}</div>
+                        <div class="announcement-read-staff-role">${escapeHtml(staff.designation||"Staff")}</div>
+                    </div>
+                    <div class="announcement-read-result">
+                        <span class="announcement-read-badge ${response}">${label}</span>
+                        ${acknowledgement?`
+                            <span class="announcement-read-time">${escapeHtml(staffDashboardFormatPublished(acknowledgement.acknowledged_at))}</span>`:""}
+                    </div>
+                </div>`;
+        }).join("");
+    }
+
+    const popup=document.getElementById("announcementReadStatusPopup");
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+}
+
+function closeAnnouncementReadStatus(){
+    const popup=document.getElementById("announcementReadStatusPopup");
+    if(popup) popup.style.display="none";
+    staffAnnouncementReadStatusId=null;
+    const dashboard=document.getElementById("staffDashboardPopup");
+    document.body.style.overflow=dashboard?.style.display==="block"?"hidden":"auto";
+}
+
+async function deleteStaffAnnouncement(id,button){
+    if(!staffDashboardIsPrincipal() || !staffAuthSession){
+        alert("Principal login is required.");
+        return;
+    }
+    if(!confirm("Delete this staff announcement permanently?")) return;
+
+    const oldText=button?.textContent||"Delete";
+    if(button){button.disabled=true;button.textContent="Deleting...";}
+
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db.from("staff_announcements").delete().eq("id",id);
+        if(error) throw error;
+        await loadStaffDashboardAnnouncements();
+        showStaffDashboardToast("Announcement deleted.");
+    }catch(error){
+        console.error("Staff announcement delete error:",error);
+        alert("Could not delete announcement: "+(error?.message||"Unknown error"));
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+function subscribeStaffDashboardRealtime(){
+    const db=initStaffSupabase();
+    if(!db || !staffAuthSession?.user?.id) return;
+
+    if(staffDashboardRealtimeChannel){
+        db.removeChannel(staffDashboardRealtimeChannel);
+        staffDashboardRealtimeChannel=null;
+    }
+
+    staffDashboardRealtimeChannel=db
+        .channel(`staff-dashboard-${staffAuthSession.user.id}`)
+        .on("postgres_changes",{
+            event:"*",schema:"public",table:"staff_announcements"
+        },()=>{
+            loadStaffDashboardAnnouncements();
+            const popup=document.getElementById("staffDashboardPopup");
+            if(popup?.style.display==="block"){
+                showStaffDashboardToast("Staff announcement updated live.");
+            }
+        })
+        .on("postgres_changes",{
+            event:"*",schema:"public",table:"staff_announcement_acknowledgements"
+        },()=>{
+            loadStaffDashboardAnnouncements().then(()=>{
+                if(staffAnnouncementReadStatusId && staffDashboardIsPrincipal()){
+                    openAnnouncementReadStatus(staffAnnouncementReadStatusId);
+                }
+            });
+            const popup=document.getElementById("staffDashboardPopup");
+            if(popup?.style.display==="block" && staffDashboardIsPrincipal()){
+                showStaffDashboardToast("A staff response was received live.");
+            }
+        })
+        .subscribe();
+}
+
+function unsubscribeStaffDashboardRealtime(){
+    const db=initStaffSupabase();
+    if(db && staffDashboardRealtimeChannel) db.removeChannel(staffDashboardRealtimeChannel);
+    staffDashboardRealtimeChannel=null;
+}
+
+/* The launch view shows one clean Dashboard button; detailed actions live inside it. */
+const dashboardOriginalUpdateStaffLoginUI=updateStaffLoginUI;
+updateStaffLoginUI=function(){
+    dashboardOriginalUpdateStaffLoginUI();
+    const dashboard=document.getElementById("staffDashboardOpenBtn");
+    const leave=document.getElementById("staffLeaveOpenBtn");
+    const approved=document.getElementById("staffApprovedLeaveOpenBtn");
+    const upcoming=document.getElementById("staffUpcomingPlanOpenBtn");
+    const active=!!loggedInStaff;
+
+    if(dashboard) dashboard.style.display=active?"inline-block":"none";
+    if(leave) leave.style.display="none";
+    if(approved) approved.style.display="none";
+    if(upcoming) upcoming.style.display="none";
+};
+
+const dashboardOriginalStaffLogout=staffLogout;
+staffLogout=async function(){
+    closeStaffDashboard();
+    unsubscribeStaffDashboardRealtime();
+    await dashboardOriginalStaffLogout();
+};
+
+/* Website Admin: read and delete announcements without changing Principal publishing rights. */
+async function renderAdminStaffAnnouncements(){
+    const host=document.getElementById("adminStaffAnnouncementList");
+    if(!host) return;
+    if(!studentAdminSession?.access_token){
+        host.innerHTML='<div class="review-empty">Admin login is required.</div>';
+        return;
+    }
+
+    host.innerHTML='<div class="review-empty">Loading staff announcements...</div>';
+    try{
+        const db=initStudentSupabase();
+        const {data,error}=await db
+            .from("staff_announcements")
+            .select("id,title,message,remarks,priority,event_date_bs,event_day,event_time,venue,published_at,created_at")
+            .order("published_at",{ascending:false});
+
+        if(error) throw error;
+        if(!data?.length){
+            host.innerHTML='<div class="review-empty">No staff announcements found.</div>';
+            return;
+        }
+
+        host.innerHTML=data.map(row=>`
+            <div class="admin-leave-card">
+                <div class="admin-leave-head">
+                    <div>
+                        <strong>${escapeHtml(row.title||"Staff Announcement")}</strong>
+                        <div class="staff-account-id">
+                            ${escapeHtml(String(row.priority||"normal").toUpperCase())} •
+                            ${escapeHtml(staffDashboardFormatPublished(row.published_at||row.created_at))}
+                        </div>
+                    </div>
+                    <button type="button" class="admin-leave-delete-btn"
+                            onclick="adminDeleteStaffAnnouncement(${Number(row.id)},this)">
+                        🗑 Delete Announcement
+                    </button>
+                </div>
+                <div style="margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere">
+                    ${escapeHtml(row.message||"—")}
+                </div>
+                ${staffDashboardEventDetailsHtml(row)}
+                ${row.remarks?`
+                    <div style="margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere">
+                        <strong>Remarks:</strong> ${escapeHtml(row.remarks)}
+                    </div>`:""}
+            </div>`).join("");
+    }catch(error){
+        console.error("Admin staff announcement list error:",error);
+        host.innerHTML=`<div class="review-empty">Could not load staff announcements: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+async function adminDeleteStaffAnnouncement(id,button){
+    if(!studentAdminSession?.access_token){
+        alert("Admin login is required.");
+        return;
+    }
+    if(!confirm("Delete this staff announcement permanently?")) return;
+
+    const oldText=button?.textContent||"Delete Announcement";
+    if(button){button.disabled=true;button.textContent="Deleting...";}
+
+    try{
+        const db=initStudentSupabase();
+        const {error}=await db.from("staff_announcements").delete().eq("id",id);
+        if(error) throw error;
+        await renderAdminStaffAnnouncements();
+        alert("Staff announcement deleted successfully.");
+    }catch(error){
+        console.error("Admin staff announcement delete error:",error);
+        alert("Could not delete staff announcement: "+(error?.message||"Unknown error"));
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
 </script>
 
 
