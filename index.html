@@ -4541,7 +4541,7 @@ body.dark-mode .upcoming-plan-remarks{color:#d0d5dd}
 .staff-dashboard-content{padding:24px}
 .staff-dashboard-stats{
     display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(4,minmax(0,1fr));
     gap:13px;
     margin-bottom:18px;
 }
@@ -4567,6 +4567,7 @@ body.dark-mode .upcoming-plan-remarks{color:#d0d5dd}
 .staff-dashboard-stat.notice .staff-dashboard-stat-icon{background:#fff2f5}
 .staff-dashboard-stat.leave .staff-dashboard-stat-icon{background:#eaf8f1}
 .staff-dashboard-stat.plan .staff-dashboard-stat-icon{background:#f2edff}
+.staff-dashboard-stat.idea .staff-dashboard-stat-icon{background:#fff7db}
 .staff-dashboard-stat strong{
     display:block;
     color:#102a43;
@@ -4894,7 +4895,7 @@ body.dark-mode .upcoming-plan-remarks{color:#d0d5dd}
 }
 .staff-dashboard-quick-actions{
     display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(4,minmax(0,1fr));
     gap:11px;
     margin-top:18px;
 }
@@ -4912,6 +4913,7 @@ body.dark-mode .upcoming-plan-remarks{color:#d0d5dd}
 .staff-dashboard-action.leave{background:linear-gradient(135deg,#176b4d,#249269)}
 .staff-dashboard-action.approved{background:linear-gradient(135deg,#123c69,#1976b8)}
 .staff-dashboard-action.plan{background:linear-gradient(135deg,#5b21b6,#7c3aed)}
+.staff-dashboard-action.idea{background:linear-gradient(135deg,#9a6700,#d39b17)}
 .staff-announcement-form{
     display:none;
     margin:0 18px 17px;
@@ -5033,6 +5035,8 @@ body.dark-mode .staff-announcement-field select,
 body.dark-mode .staff-announcement-field textarea{background:#17232e;color:#fff;border-color:#405467}
 @media(max-width:820px){
     .staff-dashboard-grid{grid-template-columns:1fr}
+    .staff-dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .staff-dashboard-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
     .staff-dashboard-hero{grid-template-columns:1fr;padding:26px 56px 24px 22px}
     .staff-dashboard-clock{text-align:left;min-width:0}
     .staff-dashboard-event-details{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -5054,6 +5058,112 @@ body.dark-mode .staff-announcement-field textarea{background:#17232e;color:#fff;
     .announcement-read-summary strong{font-size:19px}
     .announcement-read-status-row{grid-template-columns:1fr;gap:7px}
     .announcement-read-result{text-align:left}
+}
+</style>
+
+
+<style id="staff-idea-hub-css">
+/* =========================================================
+   STAFF IDEA HUB — all authenticated staff can share ideas.
+   A colleague can offer support once with I CAN HELP.
+   ========================================================= */
+.staff-idea-box{
+    width:min(96%,1040px);
+    max-height:90vh;
+    overflow:auto;
+    margin:5vh auto;
+    padding:28px;
+    position:relative;
+    background:#f7f8fb;
+    border-radius:22px;
+    box-shadow:0 24px 75px rgba(9,20,38,.34);
+}
+.staff-idea-box h2{margin:0 42px 5px 0;color:#123c69}
+.staff-idea-subtitle{margin:0 42px 20px 0;color:#667085;font-size:14px;line-height:1.6}
+.staff-idea-form{
+    margin-bottom:22px;
+    padding:18px;
+    border:1px solid #eadb9f;
+    border-radius:16px;
+    background:#fffdf5;
+}
+.staff-idea-form-title{margin:0 0 13px;color:#805b00;font-size:15px;font-weight:900}
+.staff-idea-identity{
+    margin-bottom:13px;
+    padding:10px 12px;
+    border:1px solid #eee2b7;
+    border-radius:11px;
+    background:#fff;
+    color:#475467;
+    font-size:12px;
+    line-height:1.6;
+}
+.staff-idea-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.staff-idea-field.full{grid-column:1/-1}
+.staff-idea-field label{display:block;margin-bottom:6px;color:#123c69;font-size:12px;font-weight:850}
+.staff-idea-field input,.staff-idea-field textarea{
+    width:100%;padding:11px 12px;border:1px solid #d6dee8;border-radius:10px;
+    background:#fff;font:inherit;outline:none
+}
+.staff-idea-field textarea{min-height:90px;resize:vertical}
+.staff-idea-field input:focus,.staff-idea-field textarea:focus{
+    border-color:#c38a0a;box-shadow:0 0 0 3px rgba(195,138,10,.11)
+}
+.staff-idea-submit{
+    width:100%;margin-top:13px;padding:12px;border:0;border-radius:11px;
+    background:linear-gradient(135deg,#926300,#d09a18);color:#fff;font-weight:900;cursor:pointer
+}
+.staff-idea-submit:disabled,.staff-idea-help-btn:disabled{opacity:.58;cursor:not-allowed}
+.staff-idea-message{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12px;font-weight:850}
+.staff-idea-message.show{display:block}
+.staff-idea-message.success{background:#ecfdf3;color:#067647}
+.staff-idea-message.error{background:#fff1f0;color:#b42318}
+.staff-idea-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
+.staff-idea-toolbar h3{margin:0;color:#123c69}
+.staff-idea-refresh{
+    border:1px solid #d6dee8;border-radius:999px;padding:8px 13px;background:#fff;
+    color:#123c69;font-size:12px;font-weight:850;cursor:pointer
+}
+.staff-idea-list{display:grid;gap:13px}
+.staff-idea-card{padding:17px;border:1px solid #e4e7ec;border-left:5px solid #d09a18;border-radius:15px;background:#fff}
+.staff-idea-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.staff-idea-title{color:#123c69;font-size:16px;font-weight:900;overflow-wrap:anywhere}
+.staff-idea-meta{margin-top:4px;color:#667085;font-size:11px;font-weight:700}
+.staff-idea-status{display:inline-block;padding:5px 10px;border-radius:999px;font-size:10px;font-weight:900;text-transform:uppercase}
+.staff-idea-status.new{background:#fff7e6;color:#8a5b00}
+.staff-idea-status.under_discussion{background:#eef4ff;color:#3538cd}
+.staff-idea-status.approved{background:#ecfdf3;color:#067647}
+.staff-idea-status.completed{background:#eaf2fb;color:#123c69}
+.staff-idea-section{margin-top:11px;padding:11px 12px;border-radius:11px;background:#f8fafc;color:#475467;font-size:13px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.staff-idea-section strong{display:block;margin-bottom:3px;color:#123c69}
+.staff-idea-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:13px}
+.staff-idea-helpers{min-width:0;color:#667085;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.staff-idea-helpers strong{color:#176b4d}
+.staff-idea-help-btn{
+    border:0;border-radius:999px;padding:9px 15px;background:linear-gradient(135deg,#176b4d,#249269);
+    color:#fff;font-size:12px;font-weight:900;cursor:pointer
+}
+.staff-idea-help-btn.done{background:#e8f7ef;color:#067647;border:1px solid #abefc6}
+.staff-idea-own-note{padding:7px 10px;border-radius:999px;background:#f2f4f7;color:#667085;font-size:10px;font-weight:850}
+.staff-idea-principal-controls{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #edf0f4}
+.staff-idea-principal-controls label{color:#7a1734;font-size:11px;font-weight:900}
+.staff-idea-principal-controls select{padding:8px 10px;border:1px solid #d6dee8;border-radius:9px;background:#fff;font:inherit;font-size:12px;font-weight:800}
+.staff-idea-empty{padding:22px;border:1px dashed #cbd5e1;border-radius:12px;color:#667085;text-align:center;font-size:13px}
+body.dark-mode .staff-idea-box{background:#17232e;color:#eee}
+body.dark-mode .staff-idea-form,body.dark-mode .staff-idea-card{background:#22313f;border-color:#4d4b3f}
+body.dark-mode .staff-idea-box h2,body.dark-mode .staff-idea-toolbar h3,body.dark-mode .staff-idea-title,
+body.dark-mode .staff-idea-field label,body.dark-mode .staff-idea-section strong{color:#8ecbff}
+body.dark-mode .staff-idea-subtitle,body.dark-mode .staff-idea-meta,body.dark-mode .staff-idea-helpers{color:#cbd5e1}
+body.dark-mode .staff-idea-identity,body.dark-mode .staff-idea-section{background:#1d2935;border-color:#405467;color:#e5e7eb}
+body.dark-mode .staff-idea-field input,body.dark-mode .staff-idea-field textarea,
+body.dark-mode .staff-idea-principal-controls select{background:#17232e;color:#fff;border-color:#405467}
+body.dark-mode .staff-idea-refresh{background:#1d2935;color:#8ecbff;border-color:#405467}
+@media(max-width:620px){
+    .staff-idea-box{width:100%;min-height:100%;max-height:none;margin:0;border-radius:0;padding:22px 15px}
+    .staff-idea-form{padding:14px}
+    .staff-idea-form-grid{grid-template-columns:1fr}
+    .staff-idea-field.full{grid-column:auto}
+    .staff-idea-footer{align-items:flex-start}
 }
 </style>
 
@@ -5759,6 +5869,12 @@ body.dark-mode .admin-leave-card{background:#1d2935;border-color:#405467;color:#
                 onclick="showStudentRolls('Class 5')">
                 📚 Class 5
             </button>
+
+            <button class="student-class-btn" onclick="showStudentRolls('Class 6')">📘 Class 6</button>
+            <button class="student-class-btn" onclick="showStudentRolls('Class 7')">📘 Class 7</button>
+            <button class="student-class-btn" onclick="showStudentRolls('Class 8')">📘 Class 8</button>
+            <button class="student-class-btn" onclick="showStudentRolls('Class 9')">📘 Class 9</button>
+            <button class="student-class-btn" onclick="showStudentRolls('Class 10')">📘 Class 10</button>
 
         </div>
 
@@ -9240,7 +9356,9 @@ document.addEventListener("DOMContentLoaded",()=>{
             <button type="button" onclick="showWebsiteAdminTab('staffAccounts')">🔑 Staff Accounts</button>
             <button type="button" onclick="showWebsiteAdminTab('leaveApplications')">📋 Leave Applications</button>
             <button type="button" onclick="showWebsiteAdminTab('staffAnnouncements')">🔔 Staff Announcements</button>
-            <button type="button" onclick="showWebsiteAdminTab('upcomingPlans')">📅 Upcoming Plans</button>
+                <button type="button" onclick="showWebsiteAdminTab('staffIdeas')">💡 Staff Ideas</button>
+                <button type="button" onclick="showWebsiteAdminTab('marks')">📘 Marks Entry</button>
+                <button type="button" onclick="showWebsiteAdminTab('upcomingPlans')">📅 Upcoming Plans</button>
             <button type="button" onclick="showWebsiteAdminTab('gallery')">🖼️ Gallery</button>
             <button type="button" onclick="showWebsiteAdminTab('students')">🎓 Students</button>
             <button id="adminNoticesTabButton" type="button" onclick="showWebsiteAdminTab('notices')">📢 Latest Notices</button>
@@ -9312,6 +9430,94 @@ document.addEventListener("DOMContentLoaded",()=>{
             </div>
             <div id="adminStaffAnnouncementList" class="admin-leave-list">
                 <div class="review-empty">Loading staff announcements...</div>
+            </div>
+        </div>
+
+        <div id="websiteAdminStaffIdeasTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>💡 Staff Ideas</h3>
+                    <p>Read ideas shared by staff and delete old records when no longer needed.</p>
+                </div>
+                <button type="button" class="admin-mini-btn" onclick="renderAdminStaffIdeas()">↻ Refresh</button>
+            </div>
+            <div id="adminStaffIdeaList" class="admin-leave-list">
+                <div class="review-empty">Loading staff ideas...</div>
+            </div>
+        </div>
+
+        <div id="websiteAdminMarksTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>📘 Marks Entry Management</h3>
+                    <p>Teacher Assignment and View Marks are kept in two separate areas.</p>
+                </div>
+                <button type="button" class="admin-mini-btn" onclick="renderAdminMarks()">↻ Refresh</button>
+            </div>
+
+            <div class="marks-admin-mode-buttons">
+                <button id="marksAdminAssignmentModeBtn" type="button" class="marks-primary" onclick="showAdminMarksMode('assignment')">👩‍🏫 TEACHER ASSIGNMENT</button>
+                <button id="marksAdminViewModeBtn" type="button" class="marks-secondary" onclick="showAdminMarksMode('view')">📊 VIEW MARKS</button>
+            </div>
+
+            <div id="marksAdminAssignmentMode">
+                <section class="marks-admin-section">
+                    <h4>Class Teacher Assignments</h4>
+                    <form id="marksAdminAssignmentForm" class="marks-admin-assignment-form" onsubmit="saveMarksTeacherAssignment(event)">
+                        <label>Class<select id="marksAdminAssignmentClass" required></select></label>
+                        <label>Teacher / Staff ID<select id="marksAdminAssignmentStaff" required></select></label>
+                        <button type="submit" class="admin-primary-btn">SAVE ASSIGNMENT</button>
+                    </form>
+                    <div id="marksAdminAssignmentList" class="marks-admin-assignment-list">
+                        <div class="review-empty">Loading assignments...</div>
+                    </div>
+                </section>
+
+                <section class="marks-admin-section">
+                    <h4>Class 6–10 Student Roster — Admin</h4>
+                    <p class="marks-entry-subtitle">Admin may add, edit or delete. Assigned Teachers may add students only.</p>
+                    <form id="marksAdminUpperStudentForm" class="marks-admin-student-form" onsubmit="saveAdminUpperStudent(event)">
+                        <input id="marksAdminUpperOriginalId" type="hidden">
+                        <label>Class<select id="marksAdminUpperClass" required></select></label>
+                        <label>Student ID / Roll No.<input id="marksAdminUpperStudentId" maxlength="24" placeholder="Example: G6001" required></label>
+                        <label>Student Name<input id="marksAdminUpperStudentName" maxlength="140" required></label>
+                        <button id="marksAdminUpperSaveBtn" type="submit" class="marks-primary">ADD STUDENT</button>
+                        <button id="marksAdminUpperCancelBtn" type="button" class="marks-secondary" onclick="resetAdminUpperStudentForm()" style="display:none;">CANCEL EDIT</button>
+                    </form>
+                    <div class="marks-admin-project-head" style="margin-top:14px;">
+                        <strong>Roster List</strong>
+                        <select id="marksAdminUpperRosterClass" onchange="renderAdminUpperStudentList()"></select>
+                    </div>
+                    <div id="marksAdminUpperStudentList" class="marks-admin-assignment-list">
+                        <div class="review-empty">Loading Class 6–10 students...</div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="marksAdminViewMode" style="display:none;">
+                <section class="marks-admin-section">
+                    <h4>Who Submitted Marks?</h4>
+                    <p class="marks-entry-subtitle">Teacher, Staff ID, Class, Project/Exam and submission time are shown immediately.</p>
+                    <div id="marksAdminProjectList" class="marks-admin-project-list">
+                        <div class="review-empty">Loading submissions...</div>
+                    </div>
+                </section>
+
+                <section class="marks-admin-section">
+                    <div class="marks-admin-project-head">
+                        <div>
+                            <h4>View One Class at a Time</h4>
+                            <p class="marks-entry-subtitle">All submitted Project/Exam Marks for the selected Class appear together.</p>
+                        </div>
+                        <div class="marks-admin-filters">
+                            <select id="marksAdminClassFilter" onchange="loadAdminMarksClass(this.value)"></select>
+                            <button type="button" class="marks-secondary" onclick="exportAdminSelectedClass()">EXPORT SELECTED CLASS</button>
+                        </div>
+                    </div>
+                    <div id="marksAdminProjectDetail" class="marks-admin-detail">
+                        <div class="review-empty">Select a Class to view Marks.</div>
+                    </div>
+                </section>
             </div>
         </div>
 
@@ -9764,12 +9970,14 @@ function closeWebsiteAdminPanel(){
 }
 
 function showWebsiteAdminTab(tab){
-    ["staff","staffAccounts","leaveApplications","staffAnnouncements","upcomingPlans","gallery","students","notices","monthly"].forEach(name=>{
+    ["staff","staffAccounts","leaveApplications","staffAnnouncements","staffIdeas","marks","upcomingPlans","gallery","students","notices","monthly"].forEach(name=>{
         const el=document.getElementById(
             name==="staff"?"websiteAdminStaffTab":
             name==="staffAccounts"?"websiteAdminStaffAccountsTab":
             name==="leaveApplications"?"websiteAdminLeaveApplicationsTab":
             name==="staffAnnouncements"?"websiteAdminStaffAnnouncementsTab":
+            name==="staffIdeas"?"websiteAdminStaffIdeasTab":
+            name==="marks"?"websiteAdminMarksTab":
             name==="upcomingPlans"?"websiteAdminUpcomingPlansTab":
             name==="gallery"?"websiteAdminGalleryTab":
             name==="students"?"websiteAdminStudentsTab":
@@ -9783,6 +9991,8 @@ function showWebsiteAdminTab(tab){
     if(tab==="staffAccounts") renderAdminStaffAccountList();
     if(tab==="leaveApplications") renderAdminLeaveApplications();
     if(tab==="staffAnnouncements") renderAdminStaffAnnouncements();
+    if(tab==="staffIdeas") renderAdminStaffIdeas();
+    if(tab==="marks") renderAdminMarks();
     if(tab==="upcomingPlans") renderAdminUpcomingPlans();
     if(tab==="gallery") renderAdminGalleryList();
     if(tab==="students") renderAdminStudentList();
@@ -11320,6 +11530,10 @@ document.addEventListener("click",function(event){
                     <span class="staff-dashboard-stat-icon">📅</span>
                     <div><strong id="staffDashboardPlanCount">0</strong><span>Upcoming Plans</span></div>
                 </div>
+                <div class="staff-dashboard-stat idea">
+                    <span class="staff-dashboard-stat-icon">💡</span>
+                    <div><strong id="staffDashboardIdeaCount">0</strong><span>Staff Ideas</span></div>
+                </div>
             </div>
 
             <div class="staff-dashboard-grid">
@@ -11422,6 +11636,30 @@ document.addEventListener("click",function(event){
                             </button>
                         </div>
                     </section>
+
+                    <section class="staff-dashboard-card">
+                        <div class="staff-dashboard-card-head"><h3>💡 Latest Staff Ideas</h3></div>
+                        <div class="staff-dashboard-card-body">
+                            <div id="staffDashboardIdeaPreview" class="staff-dashboard-preview-list">
+                                <div class="staff-dashboard-empty">Loading staff ideas...</div>
+                            </div>
+                            <button type="button" class="staff-dashboard-view-all" onclick="openDashboardFeature('ideas')">
+                                Open Staff Idea Hub
+                            </button>
+                        </div>
+                    </section>
+
+                    <section id="principalMarksNotificationCard" class="staff-dashboard-card" style="display:none;">
+                        <div class="staff-dashboard-card-head"><h3>📘 Submitted Marks</h3></div>
+                        <div class="staff-dashboard-card-body">
+                            <div id="principalMarksNotificationList" class="staff-dashboard-preview-list">
+                                <div class="staff-dashboard-empty">Loading Marks submissions...</div>
+                            </div>
+                            <button type="button" class="staff-dashboard-view-all" onclick="openPrincipalMarksView()">
+                                View Class Marks — Read Only
+                            </button>
+                        </div>
+                    </section>
                 </div>
             </div>
 
@@ -11432,6 +11670,10 @@ document.addEventListener("click",function(event){
                         onclick="openDashboardFeature('approved')">✓ Approved Leave</button>
                 <button type="button" class="staff-dashboard-action plan"
                         onclick="openDashboardFeature('plans')">📅 Upcoming Plan</button>
+                <button type="button" class="staff-dashboard-action idea"
+                        onclick="openDashboardFeature('ideas')">💡 Staff Idea Hub</button>
+                <button type="button" class="staff-dashboard-action marks"
+                        onclick="openMarksEntryHub()">📘 Marks Entry</button>
             </div>
         </div>
     </div>
@@ -11693,6 +11935,61 @@ document.addEventListener("click",function(event){
         </div>
         <div id="upcomingPlanList" class="upcoming-plan-list">
             <div class="upcoming-plan-empty">Loading upcoming plans...</div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     STAFF IDEA HUB — ALL LOGGED-IN STAFF
+========================================================= -->
+<div id="staffIdeaHubPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="staffIdeaHubTitle">
+    <div class="staff-idea-box">
+        <span class="close-btn" onclick="closeStaffIdeaHub()" aria-label="Close Staff Idea Hub">&times;</span>
+        <h2 id="staffIdeaHubTitle">💡 Staff Idea Hub</h2>
+        <p class="staff-idea-subtitle">
+            Share a useful idea or project with the school team. Every logged-in staff member can read it and offer support.
+        </p>
+
+        <form id="staffIdeaForm" class="staff-idea-form" onsubmit="submitStaffIdea(event)">
+            <p class="staff-idea-form-title">Share a New Idea</p>
+            <div class="staff-idea-identity">
+                <strong>Shared by:</strong> <span id="staffIdeaAuthorName">—</span><br>
+                <strong>Designation:</strong> <span id="staffIdeaAuthorDesignation">—</span>
+            </div>
+
+            <div class="staff-idea-form-grid">
+                <div class="staff-idea-field full">
+                    <label for="staffIdeaTitle">Idea / Project Title</label>
+                    <input id="staffIdeaTitle" type="text" maxlength="140"
+                           placeholder="Example: School Reading Club" required>
+                </div>
+                <div class="staff-idea-field full">
+                    <label for="staffIdeaDescription">Idea / Project Description</label>
+                    <textarea id="staffIdeaDescription" maxlength="1200"
+                              placeholder="Explain your idea clearly. You may write in English or Nepali." required></textarea>
+                </div>
+                <div class="staff-idea-field">
+                    <label for="staffIdeaSchoolUse">How Can We Use This Idea?</label>
+                    <textarea id="staffIdeaSchoolUse" maxlength="800"
+                              placeholder="Explain how this can help the school." required></textarea>
+                </div>
+                <div class="staff-idea-field">
+                    <label for="staffIdeaSupportNeeded">Support Needed — Optional</label>
+                    <textarea id="staffIdeaSupportNeeded" maxlength="600"
+                              placeholder="What kind of help do you need from other staff?"></textarea>
+                </div>
+            </div>
+
+            <button id="staffIdeaSubmitBtn" class="staff-idea-submit" type="submit">SHARE IDEA</button>
+            <div id="staffIdeaMessage" class="staff-idea-message" role="status"></div>
+        </form>
+
+        <div class="staff-idea-toolbar">
+            <h3>Ideas Shared by Staff</h3>
+            <button type="button" class="staff-idea-refresh" onclick="loadStaffIdeas()">↻ Refresh</button>
+        </div>
+        <div id="staffIdeaList" class="staff-idea-list">
+            <div class="staff-idea-empty">Loading staff ideas...</div>
         </div>
     </div>
 </div>
@@ -12904,6 +13201,10 @@ function openDashboardFeature(feature){
         openUpcomingPlans();
         return;
     }
+    if(feature==="ideas"){
+        openStaffIdeaHub();
+        return;
+    }
     if(feature==="leave"){
         if(staffDashboardIsPrincipal()) openPrincipalLeaveRequests();
         else openStaffLeaveForm();
@@ -12915,7 +13216,8 @@ async function refreshStaffDashboard(showConfirmation=true){
     await Promise.all([
         loadStaffDashboardAnnouncements(),
         loadStaffDashboardLeaves(),
-        loadStaffDashboardPlans()
+        loadStaffDashboardPlans(),
+        loadStaffDashboardIdeas()
     ]);
     if(showConfirmation) showStaffDashboardToast("Dashboard updated successfully.");
 }
@@ -13085,6 +13387,41 @@ async function loadStaffDashboardPlans(){
         console.error("Staff dashboard plan load error:",error);
         if(counter) counter.textContent="0";
         host.innerHTML='<div class="staff-dashboard-empty">Upcoming plans could not be loaded.</div>';
+    }
+}
+
+async function loadStaffDashboardIdeas(){
+    const host=document.getElementById("staffDashboardIdeaPreview");
+    const counter=document.getElementById("staffDashboardIdeaCount");
+    if(!host) return;
+
+    host.innerHTML='<div class="staff-dashboard-empty">Loading staff ideas...</div>';
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {data,error,count}=await db
+            .from("staff_ideas")
+            .select("title,staff_name,status,created_at",{count:"exact"})
+            .order("created_at",{ascending:false})
+            .limit(3);
+
+        if(error) throw error;
+        if(counter) counter.textContent=String(count??data?.length??0);
+        if(!data?.length){
+            host.innerHTML='<div class="staff-dashboard-empty">No staff ideas have been shared yet.</div>';
+            return;
+        }
+
+        host.innerHTML=data.map(row=>`
+            <div class="staff-dashboard-preview">
+                <strong>${escapeHtml(row.title||"Staff Idea")}</strong>
+                <span>${escapeHtml(row.staff_name||"Staff")} • ${escapeHtml(staffIdeaStatusLabel(row.status))}</span>
+            </div>`).join("");
+    }catch(error){
+        console.error("Staff dashboard idea load error:",error);
+        if(counter) counter.textContent="0";
+        host.innerHTML='<div class="staff-dashboard-empty">Staff ideas could not be loaded.</div>';
     }
 }
 
@@ -13328,6 +13665,30 @@ function subscribeStaffDashboardRealtime(){
                 showStaffDashboardToast("A staff response was received live.");
             }
         })
+        .on("postgres_changes",{
+            event:"*",schema:"public",table:"staff_ideas"
+        },()=>{
+            loadStaffDashboardIdeas();
+            const hub=document.getElementById("staffIdeaHubPopup");
+            if(hub?.style.display==="block") loadStaffIdeas();
+        })
+        .on("postgres_changes",{
+            event:"*",schema:"public",table:"staff_idea_helpers"
+        },()=>{
+            loadStaffDashboardIdeas();
+            const hub=document.getElementById("staffIdeaHubPopup");
+            if(hub?.style.display==="block") loadStaffIdeas();
+        })
+        .on("postgres_changes",{
+            event:"*",schema:"public",table:"marks_projects"
+        },()=>{
+            if(!staffDashboardIsPrincipal()) return;
+            loadPrincipalMarksNotifications();
+            const popup=document.getElementById("staffDashboardPopup");
+            if(popup?.style.display==="block"){
+                showStaffDashboardToast("Marks submission information was updated live.");
+            }
+        })
         .subscribe();
 }
 
@@ -13435,6 +13796,385 @@ async function adminDeleteStaffAnnouncement(id,button){
         if(button){button.disabled=false;button.textContent=oldText;}
     }
 }
+</script>
+
+
+<script id="staff-idea-hub-js">
+/* =========================================================
+   STAFF IDEA HUB
+   - Every authenticated staff member can share and read ideas
+   - A colleague can select I CAN HELP once per idea
+   - Principal manages idea status
+   - Website Admin can read and delete ideas
+   ========================================================= */
+
+function staffIdeaStatusClass(value){
+    const status=String(value||"new").toLowerCase();
+    return ["under_discussion","approved","completed"].includes(status)?status:"new";
+}
+
+function staffIdeaStatusLabel(value){
+    const status=staffIdeaStatusClass(value);
+    return status==="under_discussion"
+        ? "Under Discussion"
+        : status.charAt(0).toUpperCase()+status.slice(1);
+}
+
+function showStaffIdeaMessage(message,type="error"){
+    const box=document.getElementById("staffIdeaMessage");
+    if(!box) return;
+    box.textContent=message;
+    box.className=`staff-idea-message show ${type}`;
+}
+
+function clearStaffIdeaMessage(){
+    const box=document.getElementById("staffIdeaMessage");
+    if(!box) return;
+    box.textContent="";
+    box.className="staff-idea-message";
+}
+
+async function openStaffIdeaHub(){
+    if(!loggedInStaff || !staffAuthSession?.user?.id){
+        openStaffLogin();
+        return;
+    }
+
+    const author=document.getElementById("staffIdeaAuthorName");
+    const designation=document.getElementById("staffIdeaAuthorDesignation");
+    if(author) author.textContent=loggedInStaff.name||"Staff";
+    if(designation) designation.textContent=loggedInStaff.designation||"Staff Member";
+
+    clearStaffIdeaMessage();
+    const popup=document.getElementById("staffIdeaHubPopup");
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+    await loadStaffIdeas();
+}
+
+function closeStaffIdeaHub(){
+    const popup=document.getElementById("staffIdeaHubPopup");
+    if(popup) popup.style.display="none";
+    document.body.style.overflow="auto";
+}
+
+async function submitStaffIdea(event){
+    event.preventDefault();
+
+    if(!loggedInStaff || !staffAuthSession?.user?.id){
+        showStaffIdeaMessage("Your staff session has expired. Please log in again.");
+        return;
+    }
+
+    const form=document.getElementById("staffIdeaForm");
+    if(!form?.checkValidity()){
+        form?.reportValidity();
+        return;
+    }
+
+    const title=document.getElementById("staffIdeaTitle")?.value.trim()||"";
+    const description=document.getElementById("staffIdeaDescription")?.value.trim()||"";
+    const schoolUse=document.getElementById("staffIdeaSchoolUse")?.value.trim()||"";
+    const supportNeeded=document.getElementById("staffIdeaSupportNeeded")?.value.trim()||"";
+    const button=document.getElementById("staffIdeaSubmitBtn");
+    const oldText=button?.textContent||"SHARE IDEA";
+
+    if(!title || !description || !schoolUse){
+        showStaffIdeaMessage("Enter the idea title, description and how the school can use it.");
+        return;
+    }
+
+    if(button){button.disabled=true;button.textContent="Sharing...";}
+    clearStaffIdeaMessage();
+
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {error}=await db.from("staff_ideas").insert({
+            created_by:staffAuthSession.user.id,
+            staff_id:loggedInStaff.username,
+            staff_name:loggedInStaff.name,
+            designation:loggedInStaff.designation,
+            title,
+            description,
+            school_use:schoolUse,
+            support_needed:supportNeeded||null,
+            status:"new"
+        });
+
+        if(error) throw error;
+        form.reset();
+        showStaffIdeaMessage("Your idea was shared successfully.","success");
+        await Promise.all([loadStaffIdeas(),loadStaffDashboardIdeas()]);
+    }catch(error){
+        console.error("Staff idea submit error:",error);
+        showStaffIdeaMessage("Could not share the idea: "+(error?.message||"Unknown error"));
+    }finally{
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+async function loadStaffIdeas(){
+    const host=document.getElementById("staffIdeaList");
+    if(!host) return;
+
+    if(!loggedInStaff || !staffAuthSession?.user?.id){
+        host.innerHTML='<div class="staff-idea-empty">Staff login is required.</div>';
+        return;
+    }
+
+    host.innerHTML='<div class="staff-idea-empty">Loading staff ideas...</div>';
+
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {data:ideas,error}=await db
+            .from("staff_ideas")
+            .select("id,staff_id,staff_name,designation,title,description,school_use,support_needed,status,created_at,updated_at")
+            .order("created_at",{ascending:false});
+
+        if(error) throw error;
+        if(!ideas?.length){
+            host.innerHTML='<div class="staff-idea-empty">No ideas have been shared yet. Be the first to share one.</div>';
+            return;
+        }
+
+        const ideaIds=ideas.map(row=>Number(row.id)).filter(Number.isFinite);
+        let helpers=[];
+        if(ideaIds.length){
+            const {data:helperData,error:helperError}=await db
+                .from("staff_idea_helpers")
+                .select("idea_id,user_id,staff_id,staff_name,created_at")
+                .in("idea_id",ideaIds)
+                .order("created_at",{ascending:true});
+            if(helperError) throw helperError;
+            helpers=helperData||[];
+        }
+
+        const helpersByIdea=new Map();
+        helpers.forEach(item=>{
+            const key=String(item.idea_id);
+            if(!helpersByIdea.has(key)) helpersByIdea.set(key,[]);
+            helpersByIdea.get(key).push(item);
+        });
+
+        host.innerHTML=ideas.map(row=>{
+            const status=staffIdeaStatusClass(row.status);
+            const ideaHelpers=helpersByIdea.get(String(row.id))||[];
+            const isOwnIdea=normalizeStaffId(row.staff_id)===loggedInStaff.username;
+            const alreadyHelping=ideaHelpers.some(item=>
+                String(item.user_id||"")===String(staffAuthSession.user.id) ||
+                normalizeStaffId(item.staff_id)===loggedInStaff.username
+            );
+            const helperNames=ideaHelpers.map(item=>item.staff_name||item.staff_id||"Staff");
+            const helperText=helperNames.length
+                ? `<strong>Ready to help (${helperNames.length}):</strong> ${helperNames.map(name=>escapeHtml(name)).join(", ")}`
+                : "No staff member has offered help yet.";
+
+            return `
+                <article class="staff-idea-card">
+                    <div class="staff-idea-card-head">
+                        <div>
+                            <div class="staff-idea-title">${escapeHtml(row.title||"Staff Idea")}</div>
+                            <div class="staff-idea-meta">
+                                ${escapeHtml(row.staff_name||"Staff")} • ${escapeHtml(row.designation||"Staff Member")} •
+                                ${escapeHtml(staffDashboardFormatPublished(row.created_at))}
+                            </div>
+                        </div>
+                        <span class="staff-idea-status ${status}">${escapeHtml(staffIdeaStatusLabel(status))}</span>
+                    </div>
+
+                    <div class="staff-idea-section">
+                        <strong>Idea / Project Description</strong>${escapeHtml(row.description||"—")}
+                    </div>
+                    <div class="staff-idea-section">
+                        <strong>How Can We Use This Idea?</strong>${escapeHtml(row.school_use||"—")}
+                    </div>
+                    ${row.support_needed?`
+                        <div class="staff-idea-section">
+                            <strong>Support Needed</strong>${escapeHtml(row.support_needed)}
+                        </div>`:""}
+
+                    <div class="staff-idea-footer">
+                        <div class="staff-idea-helpers">${helperText}</div>
+                        ${isOwnIdea
+                            ? '<span class="staff-idea-own-note">Shared by you</span>'
+                            : `<button type="button" class="staff-idea-help-btn ${alreadyHelping?"done":""}"
+                                       onclick="supportStaffIdea(${Number(row.id)},this)" ${alreadyHelping?"disabled":""}>
+                                   ${alreadyHelping?"✓ YOU CAN HELP":"I CAN HELP"}
+                               </button>`}
+                    </div>
+
+                    ${staffDashboardIsPrincipal()?`
+                        <div class="staff-idea-principal-controls">
+                            <label for="staffIdeaStatus_${Number(row.id)}">Principal Status</label>
+                            <select id="staffIdeaStatus_${Number(row.id)}"
+                                    onchange="principalSetStaffIdeaStatus(${Number(row.id)},this.value,this)">
+                                <option value="new" ${status==="new"?"selected":""}>New</option>
+                                <option value="under_discussion" ${status==="under_discussion"?"selected":""}>Under Discussion</option>
+                                <option value="approved" ${status==="approved"?"selected":""}>Approved</option>
+                                <option value="completed" ${status==="completed"?"selected":""}>Completed</option>
+                            </select>
+                        </div>`:""}
+                </article>`;
+        }).join("");
+    }catch(error){
+        console.error("Staff idea load error:",error);
+        host.innerHTML=`<div class="staff-idea-empty">Could not load staff ideas: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+async function supportStaffIdea(ideaId,button){
+    if(!loggedInStaff || !staffAuthSession?.user?.id){
+        alert("A valid staff login is required.");
+        return;
+    }
+
+    const oldText=button?.textContent||"I CAN HELP";
+    if(button){button.disabled=true;button.textContent="Saving...";}
+
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {error}=await db.from("staff_idea_helpers").insert({
+            idea_id:Number(ideaId),
+            user_id:staffAuthSession.user.id,
+            staff_id:loggedInStaff.username,
+            staff_name:loggedInStaff.name
+        });
+
+        if(error && error.code!=="23505") throw error;
+        await Promise.all([loadStaffIdeas(),loadStaffDashboardIdeas()]);
+        showStaffIdeaMessage("Your offer to help was recorded.","success");
+    }catch(error){
+        console.error("Staff idea help error:",error);
+        alert("Could not save your offer to help: "+(error?.message||"Unknown error"));
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+async function principalSetStaffIdeaStatus(ideaId,status,select){
+    if(!staffDashboardIsPrincipal() || !staffAuthSession?.user?.id){
+        alert("Principal login is required.");
+        await loadStaffIdeas();
+        return;
+    }
+
+    const safeStatus=staffIdeaStatusClass(status);
+    if(select) select.disabled=true;
+
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {error}=await db
+            .from("staff_ideas")
+            .update({status:safeStatus})
+            .eq("id",Number(ideaId));
+
+        if(error) throw error;
+        await Promise.all([loadStaffIdeas(),loadStaffDashboardIdeas()]);
+        showStaffIdeaMessage(`Idea status changed to ${staffIdeaStatusLabel(safeStatus)}.`,"success");
+    }catch(error){
+        console.error("Staff idea status error:",error);
+        alert("Could not update idea status: "+(error?.message||"Unknown error"));
+        await loadStaffIdeas();
+    }finally{
+        if(select) select.disabled=false;
+    }
+}
+
+async function renderAdminStaffIdeas(){
+    const host=document.getElementById("adminStaffIdeaList");
+    if(!host) return;
+    if(!studentAdminSession?.access_token){
+        host.innerHTML='<div class="review-empty">Admin login is required.</div>';
+        return;
+    }
+
+    host.innerHTML='<div class="review-empty">Loading staff ideas...</div>';
+    try{
+        const db=initStudentSupabase();
+        const {data,error}=await db
+            .from("staff_ideas")
+            .select("id,staff_id,staff_name,designation,title,description,school_use,support_needed,status,created_at")
+            .order("created_at",{ascending:false});
+
+        if(error) throw error;
+        if(!data?.length){
+            host.innerHTML='<div class="review-empty">No staff ideas found.</div>';
+            return;
+        }
+
+        host.innerHTML=data.map(row=>{
+            const status=staffIdeaStatusClass(row.status);
+            return `
+                <div class="admin-leave-card">
+                    <div class="admin-leave-head">
+                        <div>
+                            <strong>${escapeHtml(row.title||"Staff Idea")}</strong>
+                            <div class="staff-account-id">
+                                ${escapeHtml(row.staff_name||"Staff")} • ${escapeHtml(row.designation||"Staff Member")} •
+                                ${escapeHtml(staffDashboardFormatPublished(row.created_at))}
+                            </div>
+                        </div>
+                        <span class="staff-idea-status ${status}">${escapeHtml(staffIdeaStatusLabel(status))}</span>
+                    </div>
+                    <div style="margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere">
+                        <strong>Idea:</strong> ${escapeHtml(row.description||"—")}
+                    </div>
+                    <div style="margin-top:9px;white-space:pre-wrap;overflow-wrap:anywhere">
+                        <strong>School Use:</strong> ${escapeHtml(row.school_use||"—")}
+                    </div>
+                    ${row.support_needed?`
+                        <div style="margin-top:9px;white-space:pre-wrap;overflow-wrap:anywhere">
+                            <strong>Support Needed:</strong> ${escapeHtml(row.support_needed)}
+                        </div>`:""}
+                    <div style="margin-top:12px">
+                        <button type="button" class="admin-leave-delete-btn"
+                                onclick="adminDeleteStaffIdea(${Number(row.id)},this)">
+                            🗑 Delete Idea
+                        </button>
+                    </div>
+                </div>`;
+        }).join("");
+    }catch(error){
+        console.error("Admin staff idea list error:",error);
+        host.innerHTML=`<div class="review-empty">Could not load staff ideas: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+async function adminDeleteStaffIdea(ideaId,button){
+    if(!studentAdminSession?.access_token){
+        alert("Admin login is required.");
+        return;
+    }
+    if(!confirm("Delete this staff idea permanently?")) return;
+
+    const oldText=button?.textContent||"Delete Idea";
+    if(button){button.disabled=true;button.textContent="Deleting...";}
+
+    try{
+        const db=initStudentSupabase();
+        const {error}=await db.from("staff_ideas").delete().eq("id",Number(ideaId));
+        if(error) throw error;
+        await renderAdminStaffIdeas();
+        alert("Staff idea deleted successfully.");
+    }catch(error){
+        console.error("Admin staff idea delete error:",error);
+        alert("Could not delete staff idea: "+(error?.message||"Unknown error"));
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+const staffIdeaOriginalStaffLogout=staffLogout;
+staffLogout=async function(){
+    closeStaffIdeaHub();
+    await staffIdeaOriginalStaffLogout();
+};
 </script>
 
 
@@ -13584,6 +14324,1568 @@ function openLeaveSuccessPopup(){
     }
   });
 })();
+</script>
+
+
+<!-- =========================================================
+     SECURE MARKS ENTRY — TEACHER + WEBSITE ADMIN
+========================================================= -->
+<style id="secure-marks-entry-styles">
+.staff-dashboard-action.marks{background:linear-gradient(135deg,#175cd3,#0ba5ec)}
+@media(min-width:821px){.staff-dashboard-quick-actions{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.marks-entry-box{position:relative;width:min(96%,1380px);max-height:94vh;overflow:auto;margin:3vh auto;background:#f8fafc;border-radius:22px;padding:24px;box-shadow:0 24px 70px rgba(16,24,40,.28)}
+.marks-entry-title{margin:0 44px 5px 0;color:#123c69}.marks-entry-subtitle{margin:0 44px 18px 0;color:#667085;font-size:13px;line-height:1.6}
+.marks-identity-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:12px 14px;border:1px solid #b2ddff;border-radius:13px;background:#eff8ff;color:#175cd3;font-size:13px;font-weight:800}
+.marks-create-project,.marks-component-manager,.marks-project-panel,.marks-admin-section{margin-top:15px;padding:16px;border:1px solid #dce6ef;border-radius:16px;background:#fff}
+.marks-create-project h3,.marks-component-manager h3,.marks-project-panel h3,.marks-admin-section h4{margin:0 0 12px;color:#123c69}
+.marks-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end}
+.marks-field{display:flex;flex-direction:column;gap:6px;color:#123c69;font-size:12px;font-weight:850}.marks-field input,.marks-field select{width:100%;padding:11px 12px;border:1px solid #ccd8e5;border-radius:10px;background:#fff;font:inherit;color:#101828;outline:none}.marks-field input:focus,.marks-field select:focus{border-color:#1976b8;box-shadow:0 0 0 3px rgba(25,118,184,.11)}
+.marks-primary,.marks-secondary,.marks-danger,.marks-submit,.marks-small-btn{border:0;border-radius:10px;padding:11px 14px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}.marks-primary{background:#123c69;color:#fff}.marks-secondary{background:#eef4ff;color:#175cd3;border:1px solid #b2ccff}.marks-danger{background:#fff1f0;color:#b42318;border:1px solid #fda29b}.marks-submit{background:#067647;color:#fff}.marks-primary:disabled,.marks-secondary:disabled,.marks-danger:disabled,.marks-submit:disabled{opacity:.55;cursor:not-allowed}
+.marks-project-picker{display:grid;grid-template-columns:auto minmax(220px,1fr) auto;gap:10px;align-items:center}.marks-project-picker label{color:#123c69;font-size:12px;font-weight:900}.marks-project-picker select{padding:11px 12px;border:1px solid #ccd8e5;border-radius:10px;background:#fff;font:inherit}
+.marks-project-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-bottom:12px}.marks-summary-item{padding:10px 11px;border-radius:11px;background:#f2f4f7;color:#475467;font-size:11px;line-height:1.45}.marks-summary-item strong{display:block;color:#123c69;font-size:12px;overflow-wrap:anywhere}
+.marks-status{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:950;text-transform:uppercase}.marks-status.draft{background:#fff7e6;color:#8a5b00}.marks-status.submitted{background:#ecfdf3;color:#067647}.marks-status.returned{background:#fff1f0;color:#b42318}
+.marks-return-note{margin:10px 0;padding:11px 12px;border-left:4px solid #f04438;border-radius:9px;background:#fff1f0;color:#912018;font-size:12px;white-space:pre-wrap}
+.marks-component-form{display:grid;grid-template-columns:1.2fr 1fr .7fr auto;gap:10px;align-items:end}.marks-component-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.marks-component-chip{display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid #d0d5dd;border-radius:11px;background:#f8fafc;color:#344054;font-size:11px;font-weight:800}.marks-component-chip button{border:0;background:transparent;color:#175cd3;font-weight:900;cursor:pointer}.marks-component-chip button.delete{color:#b42318}
+.marks-auto-note{margin:11px 0 0;padding:9px 11px;border-radius:9px;background:#ecfdf3;color:#067647;font-size:11px;font-weight:800}
+.marks-table-wrap{margin-top:14px;overflow:auto;border:1px solid #d0d5dd;border-radius:13px;background:#fff}.marks-table{width:100%;min-width:820px;border-collapse:separate;border-spacing:0}.marks-table th,.marks-table td{padding:9px 8px;border-right:1px solid #e4e7ec;border-bottom:1px solid #e4e7ec;text-align:center;vertical-align:middle}.marks-table th{position:sticky;top:0;z-index:3;background:#123c69;color:#fff;font-size:11px;white-space:nowrap}.marks-table th small{display:block;margin-top:3px;color:#cfe8ff;font-size:9px}.marks-table td{background:#fff;color:#344054;font-size:11px}.marks-table td.student-name{text-align:left;min-width:170px;font-weight:800}.marks-table tr:last-child td{border-bottom:0}
+.marks-cell{display:grid;gap:5px;justify-items:center;min-width:94px}.marks-cell input[type=number]{width:84px;padding:8px 6px;border:1px solid #ccd8e5;border-radius:8px;text-align:center;font:inherit}.marks-cell label{display:flex;align-items:center;gap:4px;color:#b42318;font-size:9px;font-weight:900}.marks-cell input:disabled{background:#f2f4f7;color:#98a2b3}
+.marks-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:14px}.marks-empty{padding:24px;border:1px dashed #b8c3d0;border-radius:12px;color:#667085;text-align:center;font-size:13px}.marks-inline-message{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12px;font-weight:850}.marks-inline-message.show{display:block}.marks-inline-message.success{background:#ecfdf3;color:#067647}.marks-inline-message.error{background:#fff1f0;color:#b42318}
+.marks-admin-section{margin-top:16px}.marks-admin-assignment-form{display:grid;grid-template-columns:1fr 1.4fr auto;gap:10px;align-items:end}.marks-admin-assignment-form label{display:flex;flex-direction:column;gap:6px;color:#123c69;font-size:11px;font-weight:850}.marks-admin-assignment-form select,.marks-admin-filters select{padding:10px 11px;border:1px solid #ccd8e5;border-radius:9px;background:#fff;font:inherit}.marks-admin-assignment-list{display:grid;gap:8px;margin-top:12px}.marks-assignment-row{display:grid;grid-template-columns:1fr 1.5fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid #e4e7ec;border-radius:10px;background:#f8fafc;font-size:12px}.marks-assignment-row strong{color:#123c69}.marks-admin-project-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.marks-admin-filters{display:flex;gap:8px;flex-wrap:wrap}.marks-admin-project-list{display:grid;gap:11px;margin-top:12px}.marks-admin-card{padding:14px;border:1px solid #e4e7ec;border-left:5px solid #175cd3;border-radius:13px;background:#fff}.marks-admin-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}.marks-admin-card-title{color:#123c69;font-weight:900}.marks-admin-card-meta{margin-top:4px;color:#667085;font-size:11px;line-height:1.55}.marks-admin-card-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.marks-admin-card-actions button{padding:8px 10px}.marks-admin-detail{scroll-margin-top:18px}.marks-admin-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.marks-admin-mode-buttons{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.marks-admin-student-form{display:grid;grid-template-columns:.7fr 1fr 1.5fr auto auto;gap:10px;align-items:end}.marks-admin-student-form label{display:flex;flex-direction:column;gap:6px;color:#123c69;font-size:11px;font-weight:850}.marks-admin-student-form input,.marks-admin-student-form select{width:100%;padding:10px 11px;border:1px solid #ccd8e5;border-radius:9px;background:#fff;font:inherit}.marks-roster-row{display:grid;grid-template-columns:.65fr 1fr 1.6fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid #e4e7ec;border-radius:10px;background:#f8fafc;font-size:12px}.marks-roster-row strong{color:#123c69}.marks-roster-actions{display:flex;gap:6px;flex-wrap:wrap}.marks-class-project{margin-top:16px;padding:14px;border:1px solid #d0d5dd;border-radius:14px;background:#fff}.marks-class-project:first-child{margin-top:0}.marks-class-project h4{margin:0;color:#123c69}.marks-principal-box{position:relative;width:min(96%,1380px);max-height:94vh;overflow:auto;margin:3vh auto;background:#f8fafc;border-radius:22px;padding:24px;box-shadow:0 24px 70px rgba(16,24,40,.28)}.marks-principal-toolbar{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:16px 0}.marks-principal-toolbar label{min-width:220px}.upper-student-public-row{cursor:default!important}
+body.dark-mode .marks-entry-box{background:#17232e;color:#eee}body.dark-mode .marks-create-project,body.dark-mode .marks-component-manager,body.dark-mode .marks-project-panel,body.dark-mode .marks-admin-section,body.dark-mode .marks-table td,body.dark-mode .marks-admin-card{background:#22313f;border-color:#405467;color:#e5e7eb}body.dark-mode .marks-entry-title,body.dark-mode .marks-create-project h3,body.dark-mode .marks-component-manager h3,body.dark-mode .marks-project-panel h3,body.dark-mode .marks-admin-section h4,body.dark-mode .marks-field,body.dark-mode .marks-summary-item strong,body.dark-mode .marks-assignment-row strong,body.dark-mode .marks-admin-card-title{color:#8ecbff}body.dark-mode .marks-entry-subtitle,body.dark-mode .marks-admin-card-meta{color:#cbd5e1}body.dark-mode .marks-field input,body.dark-mode .marks-field select,body.dark-mode .marks-project-picker select,body.dark-mode .marks-cell input[type=number],body.dark-mode .marks-admin-assignment-form select,body.dark-mode .marks-admin-filters select{background:#17232e;color:#fff;border-color:#405467}body.dark-mode .marks-summary-item,body.dark-mode .marks-component-chip,body.dark-mode .marks-assignment-row{background:#1d2935;border-color:#405467;color:#d0d5dd}
+@media(max-width:850px){.marks-entry-box,.marks-principal-box{width:100%;min-height:100%;max-height:none;margin:0;border-radius:0;padding:20px 13px}.marks-form-grid,.marks-component-form,.marks-admin-assignment-form,.marks-admin-student-form{grid-template-columns:1fr}.marks-project-picker{grid-template-columns:1fr}.marks-project-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.marks-assignment-row,.marks-roster-row{grid-template-columns:1fr}.marks-admin-filters{width:100%}.marks-admin-filters select{flex:1}.marks-actions{justify-content:stretch}.marks-actions button{flex:1}}
+</style>
+
+<div id="marksEntryPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="marksEntryTitle">
+    <div class="marks-entry-box">
+        <span class="close-btn" onclick="closeMarksEntryHub()" aria-label="Close Marks Entry">&times;</span>
+        <h2 id="marksEntryTitle" class="marks-entry-title">📘 Teacher Marks Entry</h2>
+        <p class="marks-entry-subtitle">Add your own Subjects and Theory/Practical components, enter Marks, save a Draft, and Submit only to Admin.</p>
+
+        <div id="marksTeacherIdentity" class="marks-identity-bar">Checking class assignment...</div>
+        <div id="marksTeacherNoAssignment" class="marks-empty" style="display:none;">No class is assigned to this Staff ID. Please contact the website Admin.</div>
+
+        <div id="marksTeacherWorkspace" style="display:none;">
+            <section id="marksTeacherUpperStudentSection" class="marks-create-project" style="display:none;">
+                <h3>Class 6–10 Student Roster</h3>
+                <p class="marks-entry-subtitle">Add a student only to your assigned Class. Admin may edit or delete the record later.</p>
+                <form id="marksTeacherUpperStudentForm" class="marks-admin-student-form" onsubmit="addTeacherUpperStudent(event)">
+                    <label class="marks-field">Assigned Class
+                        <select id="marksTeacherUpperClass" required></select>
+                    </label>
+                    <label class="marks-field">Student ID / Roll No.
+                        <input id="marksTeacherUpperStudentId" maxlength="24" placeholder="Example: G6001" required>
+                    </label>
+                    <label class="marks-field">Student Name
+                        <input id="marksTeacherUpperStudentName" maxlength="140" required>
+                    </label>
+                    <button id="marksTeacherUpperAddBtn" type="submit" class="marks-primary">ADD STUDENT</button>
+                </form>
+                <div id="marksTeacherUpperStudentList" class="marks-admin-assignment-list"></div>
+            </section>
+
+            <section class="marks-create-project">
+                <h3>Create a New Marks Project</h3>
+                <form id="marksProjectForm" class="marks-form-grid" onsubmit="createMarksProject(event)">
+                    <label class="marks-field">Assigned Class
+                        <select id="marksProjectClass" required></select>
+                    </label>
+                    <label class="marks-field">Project / Exam Name
+                        <input id="marksProjectName" maxlength="140" placeholder="Example: First Terminal Examination" required>
+                    </label>
+                    <label class="marks-field">Academic Session
+                        <input id="marksProjectSession" maxlength="60" placeholder="Example: 2083" required>
+                    </label>
+                    <button id="marksCreateProjectBtn" type="submit" class="marks-primary">CREATE PROJECT</button>
+                </form>
+            </section>
+
+            <section class="marks-project-panel">
+                <div class="marks-project-picker">
+                    <label for="marksTeacherProjectSelect">Open Marks Project</label>
+                    <select id="marksTeacherProjectSelect" onchange="loadMarksTeacherProject(this.value)"></select>
+                    <button type="button" class="marks-secondary" onclick="loadMarksTeacherProjects()">↻ REFRESH</button>
+                </div>
+                <div id="marksTeacherProjectEmpty" class="marks-empty" style="display:none;margin-top:12px;">Create your first Marks Project above.</div>
+                <div id="marksTeacherProjectDetail" style="display:none;">
+                    <div id="marksTeacherProjectSummary" class="marks-project-summary"></div>
+                    <div id="marksTeacherReturnNote" class="marks-return-note" style="display:none;"></div>
+
+                    <div id="marksComponentManager" class="marks-component-manager">
+                        <h3>Add Subject / Component</h3>
+                        <form id="marksComponentForm" class="marks-component-form" onsubmit="addMarksComponent(event)">
+                            <label class="marks-field">Subject Name
+                                <input id="marksSubjectName" maxlength="100" placeholder="Example: English" required>
+                            </label>
+                            <label class="marks-field">Component
+                                <input id="marksComponentName" list="marksComponentSuggestions" maxlength="80"
+                                       placeholder="Choose or type your own" required>
+                                <datalist id="marksComponentSuggestions">
+                                    <option value="Theory"></option>
+                                    <option value="Practical"></option>
+                                    <option value="Participation"></option>
+                                    <option value="Project Work"></option>
+                                    <option value="Terminal Examination"></option>
+                                </datalist>
+                            </label>
+                            <label class="marks-field">Full Marks
+                                <input id="marksFullMarks" type="number" min="0.01" max="1200" step="0.01" placeholder="100" required>
+                            </label>
+                            <button type="submit" class="marks-primary">+ ADD</button>
+                        </form>
+                        <p class="marks-auto-note">✓ Full Marks is entered only once here and automatically applies to every student in the class.</p>
+                        <div id="marksComponentList" class="marks-component-list"></div>
+                    </div>
+
+                    <div id="marksTeacherTableHost"></div>
+                    <div id="marksTeacherMessage" class="marks-inline-message" role="status"></div>
+                    <div id="marksTeacherActions" class="marks-actions">
+                        <button type="button" class="marks-secondary" onclick="saveMarksDraft()">SAVE DRAFT</button>
+                        <button type="button" class="marks-submit" onclick="submitMarksProject()">SUBMIT TO ADMIN</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<div id="principalMarksViewPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="principalMarksViewTitle">
+    <div class="marks-principal-box">
+        <span class="close-btn" onclick="closePrincipalMarksView()" aria-label="Close Principal Marks View">&times;</span>
+        <h2 id="principalMarksViewTitle" class="marks-entry-title">📘 Submitted Class Marks — Principal Read Only</h2>
+        <p class="marks-entry-subtitle">Choose one Class. All submitted Projects and Examinations for that Class appear together. Editing, returning, deleting and exporting are disabled.</p>
+        <div class="marks-principal-toolbar">
+            <label class="marks-field">Select Class
+                <select id="principalMarksClassSelect" onchange="loadPrincipalMarksClass(this.value)"></select>
+            </label>
+            <span class="marks-status submitted">READ ONLY</span>
+        </div>
+        <div id="principalMarksClassDetail"><div class="marks-empty">Select a Class to view submitted Marks.</div></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script id="secure-marks-entry-js">
+/* =========================================================
+   SECURE MARKS ENTRY SYSTEM
+   - Class access comes from Supabase assignments, never from the browser alone.
+   - Full Marks lives on each component and applies to every student.
+   - No Grade or GPA calculation.
+========================================================= */
+const MARKS_CLASS_ORDER=[
+    "Nursery","LKG","UKG","Class 1","Class 2","Class 3","Class 4","Class 5",
+    "Class 6","Class 7","Class 8","Class 9","Class 10"
+];
+
+let marksTeacherAssignments=[];
+let marksTeacherProjects=[];
+let marksActiveProject=null;
+let marksActiveComponents=[];
+let marksActiveEntries=[];
+let marksActiveStudents=[];
+let marksAdminAssignments=[];
+let marksAdminProjects=[];
+let marksAdminActiveData=null;
+
+function marksStatusLabel(status){
+    return status==="submitted"?"Submitted to Admin":status==="returned"?"Returned for Correction":"Draft";
+}
+function marksStatusHtml(status){
+    const safe=["draft","submitted","returned"].includes(status)?status:"draft";
+    return `<span class="marks-status ${safe}">${escapeHtml(marksStatusLabel(safe))}</span>`;
+}
+function marksNumber(value){
+    if(value===null || value===undefined || value==="") return "";
+    const number=Number(value);
+    if(!Number.isFinite(number)) return "";
+    return Number.isInteger(number)?String(number):String(Number(number.toFixed(2)));
+}
+function marksProjectEditable(project=marksActiveProject){
+    return !!project && ["draft","returned"].includes(project.status);
+}
+function marksFormatDate(value){
+    if(!value) return "—";
+    if(typeof staffDashboardFormatPublished==="function") return staffDashboardFormatPublished(value);
+    return new Date(value).toLocaleString();
+}
+function marksShowTeacherMessage(message,type="error"){
+    const box=document.getElementById("marksTeacherMessage");
+    if(!box) return;
+    box.textContent=message;
+    box.className=`marks-inline-message show ${type}`;
+}
+function marksClearTeacherMessage(){
+    const box=document.getElementById("marksTeacherMessage");
+    if(box){box.textContent="";box.className="marks-inline-message";}
+}
+function marksSortedStudents(rows){
+    return [...(rows||[])].sort((a,b)=>
+        String(a.studentId||a.student_id||"").localeCompare(
+            String(b.studentId||b.student_id||""),undefined,{numeric:true,sensitivity:"base"}
+        )
+    );
+}
+async function marksFetchStudents(db,className){
+    try{
+        const {data,error}=await db.rpc("list_students");
+        if(error) throw error;
+        return marksSortedStudents((data||[])
+            .filter(row=>row.class_name===className)
+            .map(row=>({studentId:row.student_id,name:row.name,className:row.class_name})));
+    }catch(error){
+        console.warn("Marks student list RPC fallback:",error?.message||error);
+        const fallback=typeof getStudentsByClass==="function"?getStudentsByClass(className):[];
+        return marksSortedStudents(fallback.map(row=>({
+            studentId:row.studentId||row.student_id,
+            name:row.name,
+            className:row.className||row.class_name
+        })));
+    }
+}
+
+async function openMarksEntryHub(){
+    if(!loggedInStaff || !staffAuthSession?.user?.id){
+        openStaffLogin();
+        return;
+    }
+    closeStaffDashboard();
+    marksClearTeacherMessage();
+    const popup=document.getElementById("marksEntryPopup");
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+    await loadMarksTeacherAssignments();
+}
+function closeMarksEntryHub(){
+    const popup=document.getElementById("marksEntryPopup");
+    if(popup) popup.style.display="none";
+    document.body.style.overflow="auto";
+}
+
+async function loadMarksTeacherAssignments(){
+    const identity=document.getElementById("marksTeacherIdentity");
+    const none=document.getElementById("marksTeacherNoAssignment");
+    const workspace=document.getElementById("marksTeacherWorkspace");
+    if(identity) identity.textContent=`${loggedInStaff?.name||"Staff"} • Checking assigned class...`;
+
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Supabase connection is unavailable.");
+        const {data,error}=await db
+            .from("marks_teacher_assignments")
+            .select("class_name,staff_id,staff_name")
+            .eq("staff_id",loggedInStaff.username)
+            .order("class_name",{ascending:true});
+        if(error) throw error;
+
+        marksTeacherAssignments=data||[];
+        if(identity){
+            const classText=marksTeacherAssignments.map(row=>row.class_name).join(", ")||"No class assigned";
+            identity.innerHTML=`<span>👩‍🏫 ${escapeHtml(loggedInStaff.name)}</span><span>Assigned Class: ${escapeHtml(classText)}</span>`;
+        }
+        if(!marksTeacherAssignments.length){
+            if(none) none.style.display="block";
+            if(workspace) workspace.style.display="none";
+            return;
+        }
+
+        if(none) none.style.display="none";
+        if(workspace) workspace.style.display="block";
+        const classSelect=document.getElementById("marksProjectClass");
+        if(classSelect){
+            classSelect.innerHTML=marksTeacherAssignments.map(row=>
+                `<option value="${escapeHtml(row.class_name)}">${escapeHtml(row.class_name)}</option>`
+            ).join("");
+        }
+        await loadMarksTeacherProjects();
+    }catch(error){
+        console.error("Marks assignment load error:",error);
+        if(identity) identity.textContent="Marks Entry could not be opened.";
+        if(none){
+            none.style.display="block";
+            none.textContent="Marks Entry database is not ready. Run the supplied Marks SQL in Supabase first.";
+        }
+        if(workspace) workspace.style.display="none";
+    }
+}
+
+async function createMarksProject(event){
+    event.preventDefault();
+    if(!loggedInStaff || !staffAuthSession?.user?.id) return;
+
+    const className=document.getElementById("marksProjectClass")?.value||"";
+    const projectName=document.getElementById("marksProjectName")?.value.trim()||"";
+    const session=document.getElementById("marksProjectSession")?.value.trim()||"";
+    const button=document.getElementById("marksCreateProjectBtn");
+    if(!className||!projectName||!session) return;
+
+    const oldText=button?.textContent||"CREATE PROJECT";
+    if(button){button.disabled=true;button.textContent="CREATING...";}
+    try{
+        const db=initStaffSupabase();
+        const {data,error}=await db.from("marks_projects").insert({
+            created_by:staffAuthSession.user.id,
+            staff_id:loggedInStaff.username,
+            staff_name:loggedInStaff.name,
+            class_name:className,
+            project_name:projectName,
+            academic_session:session,
+            status:"draft"
+        }).select("id,created_by,staff_id,staff_name,class_name,project_name,academic_session,status,admin_note,submitted_at,created_at,updated_at").single();
+        if(error) throw error;
+
+        document.getElementById("marksProjectForm")?.reset();
+        marksShowTeacherMessage("Marks Project created. Add Subjects and Components below.","success");
+        await loadMarksTeacherProjects(data.id);
+    }catch(error){
+        console.error("Create Marks Project error:",error);
+        marksShowTeacherMessage("Could not create the Marks Project: "+(error?.message||"Unknown error"));
+    }finally{
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+async function loadMarksTeacherProjects(preferredId=null){
+    const select=document.getElementById("marksTeacherProjectSelect");
+    const empty=document.getElementById("marksTeacherProjectEmpty");
+    const detail=document.getElementById("marksTeacherProjectDetail");
+    try{
+        const db=initStaffSupabase();
+        const {data,error}=await db.from("marks_projects")
+            .select("id,created_by,staff_id,staff_name,class_name,project_name,academic_session,status,admin_note,submitted_at,created_at,updated_at")
+            .order("created_at",{ascending:false});
+        if(error) throw error;
+        marksTeacherProjects=data||[];
+
+        if(!marksTeacherProjects.length){
+            if(select) select.innerHTML='<option value="">No Marks Projects</option>';
+            if(empty) empty.style.display="block";
+            if(detail) detail.style.display="none";
+            marksActiveProject=null;
+            return;
+        }
+
+        if(empty) empty.style.display="none";
+        if(select){
+            select.innerHTML=marksTeacherProjects.map(row=>
+                `<option value="${Number(row.id)}">${escapeHtml(row.class_name)} — ${escapeHtml(row.project_name)} [${escapeHtml(marksStatusLabel(row.status))}]</option>`
+            ).join("");
+        }
+        const activeId=Number(preferredId||select?.value||marksTeacherProjects[0].id);
+        if(select) select.value=String(activeId);
+        await loadMarksTeacherProject(activeId);
+    }catch(error){
+        console.error("Teacher Marks Projects load error:",error);
+        marksShowTeacherMessage("Could not load Marks Projects: "+(error?.message||"Unknown error"));
+    }
+}
+
+async function loadMarksTeacherProject(projectId){
+    const id=Number(projectId);
+    if(!id) return;
+    marksClearTeacherMessage();
+    try{
+        const db=initStaffSupabase();
+        const project=marksTeacherProjects.find(row=>Number(row.id)===id);
+        if(!project) throw new Error("Marks Project was not found.");
+
+        const [componentResult,entryResult,students]=await Promise.all([
+            db.from("marks_components").select("id,project_id,subject_name,component_name,full_marks,display_order,created_at,updated_at").eq("project_id",id).order("display_order").order("id"),
+            db.from("marks_entries").select("id,project_id,component_id,student_id,student_name,obtained_marks,is_absent,updated_at").eq("project_id",id),
+            marksFetchStudents(db,project.class_name)
+        ]);
+        if(componentResult.error) throw componentResult.error;
+        if(entryResult.error) throw entryResult.error;
+
+        marksActiveProject=project;
+        marksActiveComponents=componentResult.data||[];
+        marksActiveEntries=entryResult.data||[];
+        marksActiveStudents=students||[];
+        renderMarksTeacherProject();
+    }catch(error){
+        console.error("Teacher Marks Project detail error:",error);
+        marksShowTeacherMessage("Could not open this Marks Project: "+(error?.message||"Unknown error"));
+    }
+}
+
+function renderMarksTeacherProject(){
+    const detail=document.getElementById("marksTeacherProjectDetail");
+    if(!detail||!marksActiveProject) return;
+    detail.style.display="block";
+
+    const project=marksActiveProject;
+    const summary=document.getElementById("marksTeacherProjectSummary");
+    if(summary){
+        summary.innerHTML=`
+            <div class="marks-summary-item">Project<strong>${escapeHtml(project.project_name)}</strong></div>
+            <div class="marks-summary-item">Class<strong>${escapeHtml(project.class_name)}</strong></div>
+            <div class="marks-summary-item">Session<strong>${escapeHtml(project.academic_session)}</strong></div>
+            <div class="marks-summary-item">Students<strong>${marksActiveStudents.length}</strong></div>
+            <div class="marks-summary-item">Status<strong>${marksStatusHtml(project.status)}</strong></div>`;
+    }
+
+    const note=document.getElementById("marksTeacherReturnNote");
+    if(note){
+        note.style.display=project.status==="returned"?"block":"none";
+        note.innerHTML=project.status==="returned"
+            ?`<strong>Admin returned this project for correction.</strong><br>${escapeHtml(project.admin_note||"Please check the Marks and submit again.")}`:"";
+    }
+
+    const editable=marksProjectEditable(project);
+    const manager=document.getElementById("marksComponentManager");
+    const actions=document.getElementById("marksTeacherActions");
+    if(manager) manager.style.display=editable?"block":"none";
+    if(actions) actions.style.display=editable?"flex":"none";
+    renderMarksComponentList();
+    renderMarksTeacherTable();
+}
+
+function renderMarksComponentList(){
+    const host=document.getElementById("marksComponentList");
+    if(!host) return;
+    if(!marksActiveComponents.length){
+        host.innerHTML='<span style="color:#667085;font-size:11px;">No Subjects added yet.</span>';
+        return;
+    }
+    const editable=marksProjectEditable();
+    host.innerHTML=marksActiveComponents.map(row=>`
+        <div class="marks-component-chip">
+            <span>${escapeHtml(row.subject_name)} — ${escapeHtml(row.component_name)} • Full ${escapeHtml(marksNumber(row.full_marks))}</span>
+            ${editable?`<button type="button" onclick="editMarksComponentFullMarks(${Number(row.id)})">EDIT</button>
+            <button type="button" class="delete" onclick="deleteMarksComponent(${Number(row.id)})">DELETE</button>`:""}
+        </div>`).join("");
+}
+
+async function addMarksComponent(event){
+    event.preventDefault();
+    if(!marksProjectEditable()) return;
+    const subject=document.getElementById("marksSubjectName")?.value.trim()||"";
+    const component=document.getElementById("marksComponentName")?.value.trim()||"";
+    const fullMarks=Number(document.getElementById("marksFullMarks")?.value);
+    if(!subject||!component||!Number.isFinite(fullMarks)||fullMarks<=0||fullMarks>1200){
+        marksShowTeacherMessage("Enter a Subject, Component and Full Marks from 0.01 to 1200.");
+        return;
+    }
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db.from("marks_components").insert({
+            project_id:Number(marksActiveProject.id),
+            subject_name:subject,
+            component_name:component,
+            full_marks:fullMarks,
+            display_order:marksActiveComponents.length
+        });
+        if(error) throw error;
+        document.getElementById("marksComponentForm")?.reset();
+        marksShowTeacherMessage(`${subject} — ${component} added. Full Marks ${marksNumber(fullMarks)} applies to every student.`,"success");
+        await loadMarksTeacherProject(marksActiveProject.id);
+    }catch(error){
+        console.error("Add Marks component error:",error);
+        const duplicate=error?.code==="23505"?"This Subject and Component already exists.":(error?.message||"Unknown error");
+        marksShowTeacherMessage("Could not add the Subject/Component: "+duplicate);
+    }
+}
+
+async function editMarksComponentFullMarks(componentId){
+    if(!marksProjectEditable()) return;
+    const row=marksActiveComponents.find(item=>Number(item.id)===Number(componentId));
+    if(!row) return;
+    const input=prompt(`New Full Marks for ${row.subject_name} — ${row.component_name}:`,marksNumber(row.full_marks));
+    if(input===null) return;
+    const fullMarks=Number(input);
+    if(!Number.isFinite(fullMarks)||fullMarks<=0||fullMarks>1200){
+        alert("Full Marks must be from 0.01 to 1200.");
+        return;
+    }
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db.from("marks_components").update({full_marks:fullMarks}).eq("id",Number(componentId));
+        if(error) throw error;
+        await loadMarksTeacherProject(marksActiveProject.id);
+        marksShowTeacherMessage("Full Marks updated for every student.","success");
+    }catch(error){
+        alert("Full Marks could not be updated: "+(error?.message||"Unknown error"));
+    }
+}
+
+async function deleteMarksComponent(componentId){
+    if(!marksProjectEditable()) return;
+    const row=marksActiveComponents.find(item=>Number(item.id)===Number(componentId));
+    if(!row) return;
+    if(!confirm(`Delete ${row.subject_name} — ${row.component_name}? Its entered Marks will also be deleted.`)) return;
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db.from("marks_components").delete().eq("id",Number(componentId));
+        if(error) throw error;
+        await loadMarksTeacherProject(marksActiveProject.id);
+        marksShowTeacherMessage("Subject/Component deleted.","success");
+    }catch(error){
+        alert("Subject/Component could not be deleted: "+(error?.message||"Unknown error"));
+    }
+}
+
+function renderMarksTeacherTable(){
+    const host=document.getElementById("marksTeacherTableHost");
+    if(!host) return;
+    if(!marksActiveStudents.length){
+        host.innerHTML='<div class="marks-empty" style="margin-top:14px;">No students were found in this assigned class.</div>';
+        return;
+    }
+    if(!marksActiveComponents.length){
+        host.innerHTML='<div class="marks-empty" style="margin-top:14px;">Add a Subject and Component to open the Marks table.</div>';
+        return;
+    }
+
+    const editable=marksProjectEditable();
+    const entryMap=new Map(marksActiveEntries.map(row=>[`${row.component_id}|${row.student_id}`,row]));
+    const headers=marksActiveComponents.map(row=>`
+        <th>${escapeHtml(row.subject_name)}<small>${escapeHtml(row.component_name)} • Full ${escapeHtml(marksNumber(row.full_marks))}</small></th>`).join("");
+    const rows=marksActiveStudents.map((student,index)=>{
+        const cells=marksActiveComponents.map(component=>{
+            const entry=entryMap.get(`${component.id}|${student.studentId}`)||null;
+            const absent=!!entry?.is_absent;
+            const value=absent?"":marksNumber(entry?.obtained_marks);
+            return `<td>
+                <div class="marks-cell" data-component-id="${Number(component.id)}" data-student-id="${escapeHtml(student.studentId)}" data-student-name="${escapeHtml(student.name)}" data-full-marks="${escapeHtml(marksNumber(component.full_marks))}">
+                    <input class="marks-obtained" type="number" min="0" max="${escapeHtml(marksNumber(component.full_marks))}" step="0.01"
+                           value="${escapeHtml(value)}" ${editable&&!absent?"":"disabled"} aria-label="${escapeHtml(student.name)} ${escapeHtml(component.subject_name)} ${escapeHtml(component.component_name)} Marks">
+                    <label><input class="marks-absent" type="checkbox" ${absent?"checked":""} ${editable?"":"disabled"} onchange="marksToggleAbsent(this)"> AB</label>
+                </div>
+            </td>`;
+        }).join("");
+        return `<tr><td>${index+1}</td><td>${escapeHtml(student.studentId)}</td><td class="student-name">${escapeHtml(student.name)}</td>${cells}</tr>`;
+    }).join("");
+
+    host.innerHTML=`
+        <div class="marks-table-wrap">
+            <table class="marks-table">
+                <thead><tr><th>Roll No.</th><th>Student ID</th><th>Student Name</th>${headers}</tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>`;
+}
+
+function marksToggleAbsent(checkbox){
+    const cell=checkbox.closest(".marks-cell");
+    const input=cell?.querySelector(".marks-obtained");
+    if(!input) return;
+    input.disabled=checkbox.checked;
+    if(checkbox.checked) input.value="";
+    else input.focus();
+}
+
+function collectMarksEntries(requireComplete=false){
+    const cells=[...document.querySelectorAll("#marksTeacherTableHost .marks-cell")];
+    if(!cells.length) throw new Error("Add at least one Subject/Component first.");
+    return cells.map(cell=>{
+        const input=cell.querySelector(".marks-obtained");
+        const absent=!!cell.querySelector(".marks-absent")?.checked;
+        const raw=input?.value.trim()||"";
+        const fullMarks=Number(cell.dataset.fullMarks);
+        if(requireComplete && !absent && raw===""){
+            throw new Error(`Enter Marks or AB for ${cell.dataset.studentName}.`);
+        }
+        const obtained=raw===""?null:Number(raw);
+        if(!absent && obtained!==null && (!Number.isFinite(obtained)||obtained<0||obtained>fullMarks)){
+            throw new Error(`${cell.dataset.studentName}: Marks must be between 0 and ${marksNumber(fullMarks)}.`);
+        }
+        return {
+            project_id:Number(marksActiveProject.id),
+            component_id:Number(cell.dataset.componentId),
+            student_id:cell.dataset.studentId,
+            student_name:cell.dataset.studentName,
+            obtained_marks:absent?null:obtained,
+            is_absent:absent
+        };
+    });
+}
+
+async function saveMarksDraft(options={}){
+    const {silent=false,requireComplete=false}=options;
+    if(!marksProjectEditable()) return false;
+    try{
+        const rows=collectMarksEntries(requireComplete);
+        const db=initStaffSupabase();
+        const {error}=await db.from("marks_entries").upsert(rows,{onConflict:"component_id,student_id"});
+        if(error) throw error;
+        if(!silent) marksShowTeacherMessage("Draft saved successfully. You can continue editing later.","success");
+        const {data}=await db.from("marks_entries")
+            .select("id,project_id,component_id,student_id,student_name,obtained_marks,is_absent,updated_at")
+            .eq("project_id",Number(marksActiveProject.id));
+        if(data) marksActiveEntries=data;
+        return true;
+    }catch(error){
+        console.error("Save Marks draft error:",error);
+        marksShowTeacherMessage(error?.message||"Marks Draft could not be saved.");
+        return false;
+    }
+}
+
+async function submitMarksProject(){
+    if(!marksProjectEditable()) return;
+    const saved=await saveMarksDraft({silent:true,requireComplete:true});
+    if(!saved) return;
+    if(!confirm("Submit this complete Marks Project to Admin? It will be locked until Admin returns it for correction.")) return;
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db.from("marks_projects")
+            .update({status:"submitted",submitted_at:new Date().toISOString()})
+            .eq("id",Number(marksActiveProject.id));
+        if(error) throw error;
+        await loadMarksTeacherProjects(marksActiveProject.id);
+        marksShowTeacherMessage("Marks submitted successfully to Admin.","success");
+    }catch(error){
+        console.error("Submit Marks Project error:",error);
+        marksShowTeacherMessage("Project could not be submitted: "+(error?.message||"Unknown error"));
+    }
+}
+
+function marksPopulateClassSelect(select,includeAll=false){
+    if(!select) return;
+    select.innerHTML=(includeAll?'<option value="ALL">All Classes</option>':"")+MARKS_CLASS_ORDER.map(name=>
+        `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
+    ).join("");
+}
+function marksPopulateAdminStaffSelect(){
+    const select=document.getElementById("marksAdminAssignmentStaff");
+    if(!select||typeof STAFF_LOGIN_DIRECTORY!=="object") return;
+    const teachers=Object.entries(STAFF_LOGIN_DIRECTORY)
+        .filter(([,staff])=>/teacher/i.test(staff.designation||""))
+        .sort((a,b)=>a[1].name.localeCompare(b[1].name));
+    select.innerHTML=teachers.map(([staffId,staff])=>
+        `<option value="${escapeHtml(staffId)}">${escapeHtml(staff.name)} — ${escapeHtml(staffId)}</option>`
+    ).join("");
+}
+
+async function renderAdminMarks(){
+    if(!studentAdminSession?.access_token){
+        openStudentAdminLogin();
+        return;
+    }
+    marksPopulateClassSelect(document.getElementById("marksAdminAssignmentClass"));
+    marksPopulateClassSelect(document.getElementById("marksAdminClassFilter"),true);
+    marksPopulateAdminStaffSelect();
+    await Promise.all([loadAdminMarksAssignments(),loadAdminMarksProjects()]);
+}
+
+async function loadAdminMarksAssignments(){
+    const host=document.getElementById("marksAdminAssignmentList");
+    if(host) host.innerHTML='<div class="review-empty">Loading assignments...</div>';
+    try{
+        const db=initStudentSupabase();
+        const {data,error}=await db.from("marks_teacher_assignments")
+            .select("class_name,staff_id,staff_name,updated_at")
+            .order("class_name");
+        if(error) throw error;
+        marksAdminAssignments=data||[];
+        renderAdminMarksAssignmentList();
+    }catch(error){
+        if(host) host.innerHTML=`<div class="review-empty">Could not load assignments: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+function renderAdminMarksAssignmentList(){
+    const host=document.getElementById("marksAdminAssignmentList");
+    if(!host) return;
+    if(!marksAdminAssignments.length){
+        host.innerHTML='<div class="review-empty">No class teachers assigned.</div>';
+        return;
+    }
+    const classIndex=name=>MARKS_CLASS_ORDER.indexOf(name);
+    host.innerHTML=[...marksAdminAssignments].sort((a,b)=>classIndex(a.class_name)-classIndex(b.class_name)).map(row=>`
+        <div class="marks-assignment-row">
+            <strong>${escapeHtml(row.class_name)}</strong>
+            <span>${escapeHtml(row.staff_name)} • Staff ID: ${escapeHtml(row.staff_id)}</span>
+            <button type="button" class="marks-danger" onclick="deleteMarksTeacherAssignment('${escapeHtml(row.class_name)}',this)">DELETE</button>
+        </div>`).join("");
+}
+
+async function saveMarksTeacherAssignment(event){
+    event.preventDefault();
+    if(!studentAdminSession?.access_token) return;
+    const className=document.getElementById("marksAdminAssignmentClass")?.value||"";
+    const staffId=document.getElementById("marksAdminAssignmentStaff")?.value||"";
+    const staff=STAFF_LOGIN_DIRECTORY[staffId];
+    if(!className||!staff) return;
+    try{
+        const db=initStudentSupabase();
+        const {error}=await db.from("marks_teacher_assignments").upsert({
+            class_name:className,
+            staff_id:staffId,
+            staff_name:staff.name
+        },{onConflict:"class_name"});
+        if(error) throw error;
+        await loadAdminMarksAssignments();
+        alert(`${staff.name} assigned to ${className}.`);
+    }catch(error){
+        alert("Assignment could not be saved: "+(error?.message||"Unknown error"));
+    }
+}
+
+async function deleteMarksTeacherAssignment(className,button=null){
+    if(!studentAdminSession?.access_token) return;
+    const oldText=button?.textContent||"DELETE";
+    let deletedProjects=0;
+    try{
+        const db=initStudentSupabase();
+        const related=await db.from("marks_projects")
+            .select("id,project_name,status")
+            .eq("class_name",className)
+            .order("created_at",{ascending:false});
+        if(related.error) throw related.error;
+
+        const projects=related.data||[];
+        const warning=projects.length
+            ?`Remove the class teacher assignment for ${className}?\n\nWARNING: ${projects.length} related Marks Project${projects.length===1?"":"s"}, including all Subjects, Components and student Marks, will also be permanently deleted. Export anything you need before continuing.`
+            :`Remove the class teacher assignment for ${className}?`;
+        if(!confirm(warning)) return;
+
+        if(button){button.disabled=true;button.textContent="DELETING...";}
+
+        for(const project of projects){
+            const result=await marksDeleteProjectTree(db,project.id);
+            if(!result.alreadyDeleted) deletedProjects++;
+        }
+
+        const assignmentDelete=await db.from("marks_teacher_assignments")
+            .delete()
+            .eq("class_name",className)
+            .select("class_name")
+            .maybeSingle();
+        if(assignmentDelete.error) throw assignmentDelete.error;
+
+        if(!assignmentDelete.data){
+            const check=await db.from("marks_teacher_assignments")
+                .select("class_name")
+                .eq("class_name",className)
+                .maybeSingle();
+            if(check.error) throw check.error;
+            if(check.data) throw new Error("Assignment could not be removed. Check the Admin DELETE policy for marks_teacher_assignments.");
+        }
+
+        if(marksAdminActiveData?.project?.class_name===className){
+            marksAdminActiveData=null;
+            const detail=document.getElementById("marksAdminProjectDetail");
+            if(detail) detail.style.display="none";
+        }
+        marksFinalAdminClassData=null;
+        await Promise.all([loadAdminMarksAssignments(),loadAdminMarksProjects()]);
+        alert(projects.length
+            ?`Assignment and ${projects.length} related Marks Project${projects.length===1?"":"s"} deleted successfully.`
+            :"Assignment deleted successfully.");
+    }catch(error){
+        await Promise.all([loadAdminMarksAssignments(),loadAdminMarksProjects()]).catch(()=>{});
+        const partial=deletedProjects
+            ?`\n\n${deletedProjects} related Marks Project${deletedProjects===1?" was":"s were"} deleted before the error. The lists have been refreshed.`
+            :"";
+        alert("Assignment could not be deleted: "+(error?.message||"Unknown error")+partial);
+    }finally{
+        if(button?.isConnected){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+async function loadAdminMarksProjects(){
+    const host=document.getElementById("marksAdminProjectList");
+    if(host) host.innerHTML='<div class="review-empty">Loading Marks Projects...</div>';
+    try{
+        const db=initStudentSupabase();
+        const {data,error}=await db.from("marks_projects")
+            .select("id,created_by,staff_id,staff_name,class_name,project_name,academic_session,status,admin_note,submitted_at,created_at,updated_at")
+            .order("created_at",{ascending:false});
+        if(error) throw error;
+        marksAdminProjects=data||[];
+        renderAdminMarksProjectList();
+    }catch(error){
+        if(host) host.innerHTML=`<div class="review-empty">Could not load Marks Projects: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+function renderAdminMarksProjectList(){
+    const host=document.getElementById("marksAdminProjectList");
+    if(!host) return;
+    const classFilter=document.getElementById("marksAdminClassFilter")?.value||"ALL";
+    const statusFilter=document.getElementById("marksAdminStatusFilter")?.value||"ALL";
+    const rows=marksAdminProjects.filter(row=>(classFilter==="ALL"||row.class_name===classFilter)&&(statusFilter==="ALL"||row.status===statusFilter));
+    if(!rows.length){
+        host.innerHTML='<div class="review-empty">No Marks Projects match this filter.</div>';
+        return;
+    }
+    host.innerHTML=rows.map(row=>`
+        <article class="marks-admin-card">
+            <div class="marks-admin-card-head">
+                <div>
+                    <div class="marks-admin-card-title">${escapeHtml(row.project_name)}</div>
+                    <div class="marks-admin-card-meta">
+                        ${escapeHtml(row.class_name)} • ${escapeHtml(row.academic_session)} •
+                        ${escapeHtml(row.staff_name)} (${escapeHtml(row.staff_id)})<br>
+                        Created: ${escapeHtml(marksFormatDate(row.created_at))}${row.submitted_at?` • Submitted: ${escapeHtml(marksFormatDate(row.submitted_at))}`:""}
+                    </div>
+                </div>
+                ${marksStatusHtml(row.status)}
+            </div>
+            <div class="marks-admin-card-actions">
+                <button type="button" class="marks-primary" onclick="viewAdminMarksProject(${Number(row.id)})">VIEW MARKS</button>
+                <button type="button" class="marks-secondary" onclick="exportAdminMarksProject(${Number(row.id)})">EXPORT EXCEL</button>
+                ${row.status==="submitted"?`<button type="button" class="marks-secondary" onclick="adminReturnMarksProject(${Number(row.id)})">RETURN FOR CORRECTION</button>`:""}
+                <button type="button" class="marks-danger" onclick="adminDeleteMarksProject('${escapeHtml(String(row.id))}',this)">DELETE PROJECT</button>
+            </div>
+        </article>`).join("");
+}
+
+async function getAdminMarksProjectData(projectId){
+    const id=Number(projectId);
+    const db=initStudentSupabase();
+    let project=marksAdminProjects.find(row=>Number(row.id)===id)||null;
+    if(!project){
+        const result=await db.from("marks_projects")
+            .select("id,created_by,staff_id,staff_name,class_name,project_name,academic_session,status,admin_note,submitted_at,created_at,updated_at")
+            .eq("id",id).single();
+        if(result.error) throw result.error;
+        project=result.data;
+    }
+    const [componentResult,entryResult,students]=await Promise.all([
+        db.from("marks_components").select("id,project_id,subject_name,component_name,full_marks,display_order").eq("project_id",id).order("display_order").order("id"),
+        db.from("marks_entries").select("project_id,component_id,student_id,student_name,obtained_marks,is_absent").eq("project_id",id),
+        marksFetchStudents(db,project.class_name)
+    ]);
+    if(componentResult.error) throw componentResult.error;
+    if(entryResult.error) throw entryResult.error;
+    return {project,components:componentResult.data||[],entries:entryResult.data||[],students:students||[]};
+}
+
+async function viewAdminMarksProject(projectId){
+    const host=document.getElementById("marksAdminProjectDetail");
+    if(host){host.style.display="block";host.innerHTML='<div class="review-empty">Loading Marks...</div>';}
+    try{
+        marksAdminActiveData=await getAdminMarksProjectData(projectId);
+        renderAdminMarksProjectDetail();
+        host?.scrollIntoView({behavior:"smooth",block:"start"});
+    }catch(error){
+        if(host) host.innerHTML=`<div class="review-empty">Could not open Marks: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+function renderAdminMarksProjectDetail(){
+    const host=document.getElementById("marksAdminProjectDetail");
+    if(!host||!marksAdminActiveData) return;
+    const {project,components,entries,students}=marksAdminActiveData;
+    const entryMap=new Map(entries.map(row=>[`${row.component_id}|${row.student_id}`,row]));
+    const headers=components.map(row=>`<th>${escapeHtml(row.subject_name)}<small>${escapeHtml(row.component_name)} • Full ${escapeHtml(marksNumber(row.full_marks))}</small></th>`).join("");
+    const body=students.map((student,index)=>{
+        const cells=components.map(component=>{
+            const entry=entryMap.get(`${component.id}|${student.studentId}`);
+            const value=entry?.is_absent?"AB":marksNumber(entry?.obtained_marks)||"—";
+            return `<td>${escapeHtml(value)}</td>`;
+        }).join("");
+        return `<tr><td>${index+1}</td><td>${escapeHtml(student.studentId)}</td><td class="student-name">${escapeHtml(student.name)}</td>${cells}</tr>`;
+    }).join("");
+    host.innerHTML=`
+        <div class="marks-admin-detail-head">
+            <div><h4>${escapeHtml(project.project_name)}</h4><div class="marks-admin-card-meta">${escapeHtml(project.class_name)} • ${escapeHtml(project.academic_session)} • ${escapeHtml(project.staff_name)}</div></div>
+            <div class="marks-admin-card-actions">
+                <button type="button" class="marks-secondary" onclick="exportAdminMarksProject(${Number(project.id)})">EXPORT EXCEL</button>
+                <button type="button" class="marks-danger" onclick="document.getElementById('marksAdminProjectDetail').style.display='none'">CLOSE</button>
+            </div>
+        </div>
+        ${project.admin_note?`<div class="marks-return-note"><strong>Admin Note:</strong><br>${escapeHtml(project.admin_note)}</div>`:""}
+        ${components.length&&students.length?`<div class="marks-table-wrap"><table class="marks-table"><thead><tr><th>Roll No.</th><th>Student ID</th><th>Student Name</th>${headers}</tr></thead><tbody>${body}</tbody></table></div>`:'<div class="marks-empty">No Marks have been entered in this project yet.</div>'}`;
+}
+
+async function adminReturnMarksProject(projectId){
+    if(!studentAdminSession?.access_token) return;
+    const note=prompt("Write the correction note for the teacher:","Please check the entered Marks and submit again.");
+    if(note===null) return;
+    try{
+        const db=initStudentSupabase();
+        const {error}=await db.from("marks_projects").update({status:"returned",admin_note:note.trim()||null}).eq("id",Number(projectId));
+        if(error) throw error;
+        await loadAdminMarksProjects();
+        if(Number(marksAdminActiveData?.project?.id)===Number(projectId)) await viewAdminMarksProject(projectId);
+        alert("Marks Project returned to the teacher for correction.");
+    }catch(error){
+        alert("Project could not be returned: "+(error?.message||"Unknown error"));
+    }
+}
+
+function marksSameProjectId(left,right){
+    return String(left??"")===String(right??"");
+}
+
+async function marksDeleteProjectTree(db,projectId){
+    const id=String(projectId??"").trim();
+    if(!id) throw new Error("Invalid Marks Project ID.");
+
+    /*
+       Delete children while their parent project still exists. This avoids
+       the child-record security trigger losing sight of the project during
+       an automatic ON DELETE CASCADE operation.
+    */
+    const existing=await db.from("marks_projects")
+        .select("id")
+        .eq("id",id)
+        .maybeSingle();
+    if(existing.error) throw existing.error;
+    if(!existing.data) return {alreadyDeleted:true};
+
+    const entryDelete=await db.from("marks_entries")
+        .delete()
+        .eq("project_id",id);
+    if(entryDelete.error) throw entryDelete.error;
+
+    const componentDelete=await db.from("marks_components")
+        .delete()
+        .eq("project_id",id);
+    if(componentDelete.error) throw componentDelete.error;
+
+    const projectDelete=await db.from("marks_projects")
+        .delete()
+        .eq("id",id)
+        .select("id")
+        .maybeSingle();
+    if(projectDelete.error) throw projectDelete.error;
+
+    if(!projectDelete.data){
+        const check=await db.from("marks_projects")
+            .select("id")
+            .eq("id",id)
+            .maybeSingle();
+        if(check.error) throw check.error;
+        if(check.data) throw new Error("Marks Project could not be removed. Check the Admin DELETE policy for marks_projects.");
+    }
+    return {alreadyDeleted:false};
+}
+
+async function adminDeleteMarksProject(projectId,button=null){
+    if(!studentAdminSession?.access_token) return;
+    const project=marksAdminProjects.find(row=>marksSameProjectId(row.id,projectId));
+    const name=project?.project_name||"this Marks Project";
+    if(!confirm(`Permanently delete ${name}?\n\nAll Subjects, Components and student Marks inside it will be deleted. Export Excel first if you need a copy.`)) return;
+    const oldText=button?.textContent||"DELETE PROJECT";
+    if(button){button.disabled=true;button.textContent="DELETING...";}
+    try{
+        const db=initStudentSupabase();
+        const result=await marksDeleteProjectTree(db,projectId);
+        if(marksSameProjectId(marksAdminActiveData?.project?.id,projectId)){
+            marksAdminActiveData=null;
+            const detail=document.getElementById("marksAdminProjectDetail");
+            if(detail) detail.style.display="none";
+        }
+        await loadAdminMarksProjects();
+        alert(result.alreadyDeleted
+            ?"This Marks Project was already deleted. The list has been refreshed."
+            :"Marks Project and all related Marks deleted successfully.");
+    }catch(error){
+        alert("Marks Project could not be deleted: "+(error?.message||"Unknown error"));
+    }finally{
+        if(button?.isConnected){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+function marksSafeFileName(value){
+    return String(value||"marks").trim().replace(/[^a-zA-Z0-9_-]+/g,"_").replace(/^_+|_+$/g,"")||"marks";
+}
+async function exportAdminMarksProject(projectId){
+    try{
+        if(!window.XLSX) throw new Error("Excel export library is still loading. Try again in a moment.");
+        const data=Number(marksAdminActiveData?.project?.id)===Number(projectId)
+            ?marksAdminActiveData
+            :await getAdminMarksProjectData(projectId);
+        const {project,components,entries,students}=data;
+        const entryMap=new Map(entries.map(row=>[`${row.component_id}|${row.student_id}`,row]));
+        const rows=[
+            ["ST. AUGUSTINE ACADEMIC FOUNDATION"],
+            ["Marks Project",project.project_name],
+            ["Academic Session",project.academic_session],
+            ["Class",project.class_name],
+            ["Teacher",project.staff_name],
+            ["Status",marksStatusLabel(project.status)],
+            [],
+            ["Roll No.","Student ID","Student Name",...components.map(row=>`${row.subject_name} - ${row.component_name}`)],
+            ["FULL MARKS","","",...components.map(row=>Number(row.full_marks))]
+        ];
+        students.forEach((student,index)=>{
+            rows.push([
+                index+1,
+                student.studentId,
+                student.name,
+                ...components.map(component=>{
+                    const entry=entryMap.get(`${component.id}|${student.studentId}`);
+                    if(entry?.is_absent) return "AB";
+                    if(entry?.obtained_marks===null||entry?.obtained_marks===undefined) return "";
+                    return Number(entry.obtained_marks);
+                })
+            ]);
+        });
+
+        const sheet=XLSX.utils.aoa_to_sheet(rows);
+        sheet["!cols"]=[{wch:10},{wch:15},{wch:28},...components.map(()=>({wch:20}))];
+        sheet["!merges"]=[{s:{r:0,c:0},e:{r:0,c:Math.max(2,components.length+2)}}];
+        if(students.length) sheet["!autofilter"]={ref:`A8:${XLSX.utils.encode_col(components.length+2)}${rows.length}`};
+        const book=XLSX.utils.book_new();
+        const sheetName=String(project.class_name||"Marks").slice(0,31);
+        XLSX.utils.book_append_sheet(book,sheet,sheetName);
+        const filename=`${marksSafeFileName(project.class_name)}_${marksSafeFileName(project.project_name)}_${marksSafeFileName(project.academic_session)}.xlsx`;
+        XLSX.writeFile(book,filename,{compression:true});
+    }catch(error){
+        console.error("Marks Excel export error:",error);
+        alert("Excel could not be exported: "+(error?.message||"Unknown error"));
+    }
+}
+
+const marksOriginalStaffLogout=staffLogout;
+staffLogout=async function(){
+    closeMarksEntryHub();
+    marksTeacherAssignments=[];
+    marksTeacherProjects=[];
+    marksActiveProject=null;
+    await marksOriginalStaffLogout();
+};
+</script>
+
+<script id="marks-final-workflow-js">
+/* Final class-wise workflow: upper roster, consolidated Admin view and Principal read-only view. */
+const MARKS_UPPER_CLASSES_FINAL=["Class 6","Class 7","Class 8","Class 9","Class 10"];
+let marksFinalAdminUpperStudents=[];
+let marksFinalAdminClassData=null;
+let marksFinalPrincipalClassData=null;
+
+const marksFinalOriginalFetchStudents=marksFetchStudents;
+marksFetchStudents=async function(db,className){
+    try{
+        const [standardResult,upperResult]=await Promise.all([
+            db.rpc("list_students"),
+            db.rpc("list_upper_class_students")
+        ]);
+        const standardRows=standardResult.error?[]:(standardResult.data||[]);
+        const upperRows=upperResult.error?[]:(upperResult.data||[]);
+        if(standardResult.error && upperResult.error) throw standardResult.error;
+        const combined=[...standardRows,...upperRows]
+            .filter(row=>row.class_name===className)
+            .map(row=>({studentId:row.student_id,name:row.name,className:row.class_name}));
+        const unique=[...new Map(combined.map(row=>[row.studentId,row])).values()];
+        return marksSortedStudents(unique);
+    }catch(error){
+        return marksFinalOriginalFetchStudents(db,className);
+    }
+};
+
+function marksFinalPopulateUpperSelect(select){
+    if(!select) return;
+    const current=select.value;
+    select.innerHTML=MARKS_UPPER_CLASSES_FINAL.map(name=>
+        `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
+    ).join("");
+    if(MARKS_UPPER_CLASSES_FINAL.includes(current)) select.value=current;
+}
+
+const marksFinalOriginalLoadTeacherAssignments=loadMarksTeacherAssignments;
+loadMarksTeacherAssignments=async function(){
+    await marksFinalOriginalLoadTeacherAssignments();
+    const assignedUpper=marksTeacherAssignments
+        .map(row=>row.class_name)
+        .filter(name=>MARKS_UPPER_CLASSES_FINAL.includes(name));
+    const section=document.getElementById("marksTeacherUpperStudentSection");
+    const select=document.getElementById("marksTeacherUpperClass");
+    if(section) section.style.display=assignedUpper.length?"block":"none";
+    if(!assignedUpper.length) return;
+    if(select){
+        const current=select.value;
+        select.innerHTML=assignedUpper.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
+        if(assignedUpper.includes(current)) select.value=current;
+        select.onchange=()=>loadTeacherUpperStudents();
+    }
+    await loadTeacherUpperStudents();
+};
+
+async function loadTeacherUpperStudents(){
+    const host=document.getElementById("marksTeacherUpperStudentList");
+    const className=document.getElementById("marksTeacherUpperClass")?.value||"";
+    if(!host||!className) return;
+    host.innerHTML='<div class="review-empty">Loading student roster...</div>';
+    try{
+        const db=initStaffSupabase();
+        const {data,error}=await db.from("marks_upper_students")
+            .select("student_id,name,class_name,created_by_staff_id,created_by_name,created_at")
+            .eq("class_name",className)
+            .order("student_id");
+        if(error) throw error;
+        if(!data?.length){
+            host.innerHTML='<div class="review-empty">No students added to this Class yet.</div>';
+            return;
+        }
+        host.innerHTML=data.map((row,index)=>`
+            <div class="marks-roster-row">
+                <span>${index+1}</span>
+                <strong>${escapeHtml(row.student_id)}</strong>
+                <span>${escapeHtml(row.name)}</span>
+                <small>Added by ${escapeHtml(row.created_by_name||row.created_by_staff_id||"Staff")}</small>
+            </div>`).join("");
+    }catch(error){
+        host.innerHTML=`<div class="review-empty">Could not load students: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+async function addTeacherUpperStudent(event){
+    event.preventDefault();
+    const className=document.getElementById("marksTeacherUpperClass")?.value||"";
+    const studentId=String(document.getElementById("marksTeacherUpperStudentId")?.value||"").trim().toUpperCase();
+    const name=String(document.getElementById("marksTeacherUpperStudentName")?.value||"").trim().toUpperCase();
+    const button=document.getElementById("marksTeacherUpperAddBtn");
+    if(!MARKS_UPPER_CLASSES_FINAL.includes(className)||!marksTeacherAssignments.some(row=>row.class_name===className)) return;
+    if(!/^[A-Z0-9-]{2,24}$/.test(studentId)){
+        alert("Student ID may contain only letters, numbers and hyphens (2–24 characters).");
+        return;
+    }
+    if(!name){alert("Enter the student's name.");return;}
+    const oldText=button?.textContent||"ADD STUDENT";
+    if(button){button.disabled=true;button.textContent="ADDING...";}
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db.from("marks_upper_students").insert({student_id:studentId,name,class_name:className});
+        if(error) throw error;
+        document.getElementById("marksTeacherUpperStudentId").value="";
+        document.getElementById("marksTeacherUpperStudentName").value="";
+        await loadTeacherUpperStudents();
+        if(marksActiveProject?.class_name===className) await loadMarksTeacherProject(marksActiveProject.id);
+        marksShowTeacherMessage(`${name} added to ${className}.`,"success");
+    }catch(error){
+        alert("Student could not be added: "+(error?.message||"Unknown error"));
+    }finally{
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+function showAdminMarksMode(mode){
+    const assignment=mode!=="view";
+    const assignmentHost=document.getElementById("marksAdminAssignmentMode");
+    const viewHost=document.getElementById("marksAdminViewMode");
+    const assignmentBtn=document.getElementById("marksAdminAssignmentModeBtn");
+    const viewBtn=document.getElementById("marksAdminViewModeBtn");
+    if(assignmentHost) assignmentHost.style.display=assignment?"block":"none";
+    if(viewHost) viewHost.style.display=assignment?"none":"block";
+    if(assignmentBtn) assignmentBtn.className=assignment?"marks-primary":"marks-secondary";
+    if(viewBtn) viewBtn.className=assignment?"marks-secondary":"marks-primary";
+    if(!assignment){
+        loadAdminMarksProjects();
+        const className=document.getElementById("marksAdminClassFilter")?.value||MARKS_CLASS_ORDER[0];
+        loadAdminMarksClass(className);
+    }
+}
+
+renderAdminMarks=async function(){
+    if(!studentAdminSession?.access_token){openStudentAdminLogin();return;}
+    const selectedClass=document.getElementById("marksAdminClassFilter")?.value;
+    marksPopulateClassSelect(document.getElementById("marksAdminAssignmentClass"));
+    marksPopulateClassSelect(document.getElementById("marksAdminClassFilter"));
+    if(selectedClass&&MARKS_CLASS_ORDER.includes(selectedClass)) document.getElementById("marksAdminClassFilter").value=selectedClass;
+    marksFinalPopulateUpperSelect(document.getElementById("marksAdminUpperClass"));
+    marksFinalPopulateUpperSelect(document.getElementById("marksAdminUpperRosterClass"));
+    marksPopulateAdminStaffSelect();
+    showAdminMarksMode("assignment");
+    await Promise.all([loadAdminMarksAssignments(),loadAdminUpperStudents(),loadAdminMarksProjects()]);
+};
+
+async function loadAdminUpperStudents(){
+    const host=document.getElementById("marksAdminUpperStudentList");
+    if(host) host.innerHTML='<div class="review-empty">Loading Class 6–10 students...</div>';
+    try{
+        const db=initStudentSupabase();
+        const {data,error}=await db.from("marks_upper_students")
+            .select("student_id,name,class_name,created_by_staff_id,created_by_name,created_at,updated_at")
+            .order("class_name").order("student_id");
+        if(error) throw error;
+        marksFinalAdminUpperStudents=data||[];
+        renderAdminUpperStudentList();
+    }catch(error){
+        if(host) host.innerHTML=`<div class="review-empty">Could not load students: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+function renderAdminUpperStudentList(){
+    const host=document.getElementById("marksAdminUpperStudentList");
+    const className=document.getElementById("marksAdminUpperRosterClass")?.value||MARKS_UPPER_CLASSES_FINAL[0];
+    if(!host) return;
+    const rows=marksFinalAdminUpperStudents.filter(row=>row.class_name===className);
+    if(!rows.length){host.innerHTML='<div class="review-empty">No students added to this Class yet.</div>';return;}
+    host.innerHTML=rows.map((row,index)=>`
+        <div class="marks-roster-row">
+            <span>${index+1}</span>
+            <strong>${escapeHtml(row.student_id)}</strong>
+            <span>${escapeHtml(row.name)}<br><small>Added by ${escapeHtml(row.created_by_name||row.created_by_staff_id||"Admin")}</small></span>
+            <div class="marks-roster-actions">
+                <button type="button" class="marks-secondary" onclick="editAdminUpperStudent('${escapeHtml(row.student_id)}')">EDIT</button>
+                <button type="button" class="marks-danger" onclick="deleteAdminUpperStudent('${escapeHtml(row.student_id)}')">DELETE</button>
+            </div>
+        </div>`).join("");
+}
+
+function resetAdminUpperStudentForm(){
+    const form=document.getElementById("marksAdminUpperStudentForm");
+    const original=document.getElementById("marksAdminUpperOriginalId");
+    const save=document.getElementById("marksAdminUpperSaveBtn");
+    const cancel=document.getElementById("marksAdminUpperCancelBtn");
+    const className=document.getElementById("marksAdminUpperClass")?.value;
+    form?.reset();
+    if(className) document.getElementById("marksAdminUpperClass").value=className;
+    if(original) original.value="";
+    if(save) save.textContent="ADD STUDENT";
+    if(cancel) cancel.style.display="none";
+}
+
+function editAdminUpperStudent(studentId){
+    const row=marksFinalAdminUpperStudents.find(item=>item.student_id===studentId);
+    if(!row) return;
+    document.getElementById("marksAdminUpperOriginalId").value=row.student_id;
+    document.getElementById("marksAdminUpperClass").value=row.class_name;
+    document.getElementById("marksAdminUpperStudentId").value=row.student_id;
+    document.getElementById("marksAdminUpperStudentName").value=row.name;
+    document.getElementById("marksAdminUpperSaveBtn").textContent="SAVE CHANGES";
+    document.getElementById("marksAdminUpperCancelBtn").style.display="inline-block";
+    document.getElementById("marksAdminUpperStudentId").focus();
+}
+
+async function saveAdminUpperStudent(event){
+    event.preventDefault();
+    if(!studentAdminSession?.access_token) return;
+    const original=document.getElementById("marksAdminUpperOriginalId")?.value||"";
+    const className=document.getElementById("marksAdminUpperClass")?.value||"";
+    const studentId=String(document.getElementById("marksAdminUpperStudentId")?.value||"").trim().toUpperCase();
+    const name=String(document.getElementById("marksAdminUpperStudentName")?.value||"").trim().toUpperCase();
+    if(!/^[A-Z0-9-]{2,24}$/.test(studentId)){alert("Use 2–24 letters, numbers or hyphens for Student ID.");return;}
+    if(!name) return;
+    try{
+        const db=initStudentSupabase();
+        const query=original
+            ?db.from("marks_upper_students").update({student_id:studentId,name,class_name:className}).eq("student_id",original)
+            :db.from("marks_upper_students").insert({student_id:studentId,name,class_name:className});
+        const {error}=await query;
+        if(error) throw error;
+        document.getElementById("marksAdminUpperRosterClass").value=className;
+        resetAdminUpperStudentForm();
+        await loadAdminUpperStudents();
+        alert(original?"Student updated successfully.":"Student added successfully.");
+    }catch(error){
+        alert("Student could not be saved: "+(error?.message||"Unknown error"));
+    }
+}
+
+async function deleteAdminUpperStudent(studentId){
+    const row=marksFinalAdminUpperStudents.find(item=>item.student_id===studentId);
+    if(!row||!confirm(`Delete ${row.name} from ${row.class_name}?\n\nIf Marks exist, delete the related Marks Project first.`)) return;
+    try{
+        const db=initStudentSupabase();
+        const {error}=await db.from("marks_upper_students").delete().eq("student_id",studentId);
+        if(error) throw error;
+        await loadAdminUpperStudents();
+        alert("Student deleted successfully.");
+    }catch(error){
+        alert("Student could not be deleted: "+(error?.message||"Unknown error"));
+    }
+}
+
+renderAdminMarksProjectList=function(){
+    const host=document.getElementById("marksAdminProjectList");
+    if(!host) return;
+    const rows=marksAdminProjects
+        .filter(row=>row.status==="submitted")
+        .sort((a,b)=>new Date(b.submitted_at||0)-new Date(a.submitted_at||0));
+    if(!rows.length){host.innerHTML='<div class="review-empty">No teacher has submitted Marks yet.</div>';return;}
+    host.innerHTML=rows.map(row=>`
+        <article class="marks-admin-card">
+            <div class="marks-admin-card-head">
+                <div>
+                    <div class="marks-admin-card-title">${escapeHtml(row.staff_name)} — ${escapeHtml(row.class_name)}</div>
+                    <div class="marks-admin-card-meta">
+                        Staff ID: ${escapeHtml(row.staff_id)} • ${escapeHtml(row.project_name)} • Session ${escapeHtml(row.academic_session)}<br>
+                        Submitted: ${escapeHtml(marksFormatDate(row.submitted_at))}
+                    </div>
+                </div>
+                ${marksStatusHtml(row.status)}
+            </div>
+            <div class="marks-admin-card-actions">
+                <button type="button" class="marks-primary" onclick="showAdminMarksClassFromSubmission('${escapeHtml(row.class_name)}')">VIEW THIS CLASS</button>
+                <button type="button" class="marks-secondary" onclick="adminReturnMarksProject(${Number(row.id)})">RETURN FOR CORRECTION</button>
+                <button type="button" class="marks-danger" onclick="adminDeleteMarksProject('${escapeHtml(String(row.id))}',this)">DELETE PROJECT</button>
+            </div>
+        </article>`).join("");
+};
+
+function showAdminMarksClassFromSubmission(className){
+    showAdminMarksMode("view");
+    const select=document.getElementById("marksAdminClassFilter");
+    if(select) select.value=className;
+    loadAdminMarksClass(className);
+}
+
+async function marksFinalLoadClassData(db,className){
+    const projectResult=await db.from("marks_projects")
+        .select("id,staff_id,staff_name,class_name,project_name,academic_session,status,submitted_at,created_at")
+        .eq("class_name",className)
+        .eq("status","submitted")
+        .order("submitted_at",{ascending:false});
+    if(projectResult.error) throw projectResult.error;
+    const projects=projectResult.data||[];
+    const students=await marksFetchStudents(db,className);
+    const projectData=await Promise.all(projects.map(async project=>{
+        const [componentResult,entryResult]=await Promise.all([
+            db.from("marks_components").select("id,project_id,subject_name,component_name,full_marks,display_order").eq("project_id",project.id).order("display_order").order("id"),
+            db.from("marks_entries").select("project_id,component_id,student_id,student_name,obtained_marks,is_absent").eq("project_id",project.id)
+        ]);
+        if(componentResult.error) throw componentResult.error;
+        if(entryResult.error) throw entryResult.error;
+        return {project,components:componentResult.data||[],entries:entryResult.data||[]};
+    }));
+    return {className,students,projects:projectData};
+}
+
+function marksFinalRenderClassData(host,data){
+    if(!host) return;
+    if(!data?.projects?.length){
+        host.innerHTML=`<div class="marks-empty">No submitted Marks found for ${escapeHtml(data?.className||"this Class")}.</div>`;
+        return;
+    }
+    host.innerHTML=data.projects.map(({project,components,entries})=>{
+        const entryMap=new Map(entries.map(row=>[`${row.component_id}|${row.student_id}`,row]));
+        const headers=components.map(row=>`<th>${escapeHtml(row.subject_name)}<small>${escapeHtml(row.component_name)} • Full ${escapeHtml(marksNumber(row.full_marks))}</small></th>`).join("");
+        const body=data.students.map((student,index)=>{
+            const cells=components.map(component=>{
+                const entry=entryMap.get(`${component.id}|${student.studentId}`);
+                const value=entry?.is_absent?"AB":marksNumber(entry?.obtained_marks)||"—";
+                return `<td>${escapeHtml(value)}</td>`;
+            }).join("");
+            return `<tr><td>${index+1}</td><td>${escapeHtml(student.studentId)}</td><td class="student-name">${escapeHtml(student.name)}</td>${cells}</tr>`;
+        }).join("");
+        const table=components.length&&data.students.length
+            ?`<div class="marks-table-wrap"><table class="marks-table"><thead><tr><th>Roll No.</th><th>Student ID</th><th>Student Name</th>${headers}</tr></thead><tbody>${body}</tbody></table></div>`
+            :'<div class="marks-empty">No student Marks are available in this submission.</div>';
+        return `<section class="marks-class-project">
+            <div class="marks-admin-detail-head">
+                <div><h4>${escapeHtml(project.project_name)}</h4><div class="marks-admin-card-meta">${escapeHtml(project.class_name)} • Session ${escapeHtml(project.academic_session)} • ${escapeHtml(project.staff_name)} (${escapeHtml(project.staff_id)}) • Submitted ${escapeHtml(marksFormatDate(project.submitted_at))}</div></div>
+                ${marksStatusHtml(project.status)}
+            </div>
+            ${table}
+        </section>`;
+    }).join("");
+}
+
+async function loadAdminMarksClass(className){
+    const host=document.getElementById("marksAdminProjectDetail");
+    if(!studentAdminSession?.access_token||!MARKS_CLASS_ORDER.includes(className)||!host) return;
+    host.innerHTML='<div class="review-empty">Loading every submitted Project/Exam for this Class...</div>';
+    try{
+        marksFinalAdminClassData=await marksFinalLoadClassData(initStudentSupabase(),className);
+        marksFinalRenderClassData(host,marksFinalAdminClassData);
+    }catch(error){
+        host.innerHTML=`<div class="review-empty">Could not load Class Marks: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+adminReturnMarksProject=async function(projectId){
+    if(!studentAdminSession?.access_token) return;
+    const note=prompt("Write the correction note for the teacher:","Please check the entered Marks and submit again.");
+    if(note===null) return;
+    try{
+        const db=initStudentSupabase();
+        const {error}=await db.from("marks_projects").update({status:"returned",admin_note:note.trim()||null}).eq("id",Number(projectId));
+        if(error) throw error;
+        await loadAdminMarksProjects();
+        const className=document.getElementById("marksAdminClassFilter")?.value;
+        if(className) await loadAdminMarksClass(className);
+        alert("Marks Project returned to the teacher for correction.");
+    }catch(error){alert("Project could not be returned: "+(error?.message||"Unknown error"));}
+};
+
+adminDeleteMarksProject=async function(projectId,button=null){
+    if(!studentAdminSession?.access_token) return;
+    const project=marksAdminProjects.find(row=>marksSameProjectId(row.id,projectId));
+    const name=project?.project_name||"this Marks Project";
+    if(!confirm(`Permanently delete ${name}?\n\nAll Subjects, Components and student Marks inside it will be deleted. Export the selected Class first if you need a copy.`)) return;
+    const oldText=button?.textContent||"DELETE PROJECT";
+    if(button){button.disabled=true;button.textContent="DELETING...";}
+    try{
+        const db=initStudentSupabase();
+        const result=await marksDeleteProjectTree(db,projectId);
+        await loadAdminMarksProjects();
+        const className=document.getElementById("marksAdminClassFilter")?.value;
+        if(className) await loadAdminMarksClass(className);
+        alert(result.alreadyDeleted
+            ?"This Marks Project was already deleted. The list has been refreshed."
+            :"Marks Project and all related Marks deleted successfully.");
+    }catch(error){
+        alert("Marks Project could not be deleted: "+(error?.message||"Unknown error"));
+    }finally{
+        if(button?.isConnected){button.disabled=false;button.textContent=oldText;}
+    }
+};
+
+function marksFinalExcelRows(data){
+    const {project,components,entries}=data;
+    const students=marksFinalAdminClassData?.students||[];
+    const entryMap=new Map(entries.map(row=>[`${row.component_id}|${row.student_id}`,row]));
+    const rows=[
+        ["ST. AUGUSTINE ACADEMIC FOUNDATION"],
+        ["Project / Exam",project.project_name],
+        ["Academic Session",project.academic_session],
+        ["Class",project.class_name],
+        ["Teacher",`${project.staff_name} (${project.staff_id})`],
+        ["Submitted",marksFormatDate(project.submitted_at)],
+        [],
+        ["Roll No.","Student ID","Student Name",...components.map(row=>`${row.subject_name} - ${row.component_name}`)],
+        ["FULL MARKS","","",...components.map(row=>Number(row.full_marks))]
+    ];
+    students.forEach((student,index)=>rows.push([
+        index+1,student.studentId,student.name,
+        ...components.map(component=>{
+            const entry=entryMap.get(`${component.id}|${student.studentId}`);
+            if(entry?.is_absent) return "AB";
+            return entry?.obtained_marks===null||entry?.obtained_marks===undefined?"":Number(entry.obtained_marks);
+        })
+    ]));
+    return rows;
+}
+
+async function exportAdminSelectedClass(){
+    try{
+        if(!studentAdminSession?.access_token) throw new Error("Admin login is required.");
+        if(!window.XLSX) throw new Error("Excel export library is still loading. Try again in a moment.");
+        const className=document.getElementById("marksAdminClassFilter")?.value||"";
+        if(!MARKS_CLASS_ORDER.includes(className)) throw new Error("Select one Class first.");
+        marksFinalAdminClassData=await marksFinalLoadClassData(initStudentSupabase(),className);
+        if(!marksFinalAdminClassData.projects.length) throw new Error(`No submitted Marks found for ${className}.`);
+        marksFinalRenderClassData(document.getElementById("marksAdminProjectDetail"),marksFinalAdminClassData);
+        const book=XLSX.utils.book_new();
+        const usedNames=new Set();
+        marksFinalAdminClassData.projects.forEach((data,index)=>{
+            const rows=marksFinalExcelRows(data);
+            const sheet=XLSX.utils.aoa_to_sheet(rows);
+            sheet["!cols"]=[{wch:10},{wch:16},{wch:28},...data.components.map(()=>({wch:22}))];
+            sheet["!merges"]=[{s:{r:0,c:0},e:{r:0,c:Math.max(2,data.components.length+2)}}];
+            if(marksFinalAdminClassData.students.length) sheet["!autofilter"]={ref:`A8:${XLSX.utils.encode_col(data.components.length+2)}${rows.length}`};
+            let base=`${index+1}_${data.project.project_name}`.replace(/[\\/?*\[\]:]/g," ").trim().slice(0,31)||`Project ${index+1}`;
+            let sheetName=base;
+            let suffix=2;
+            while(usedNames.has(sheetName)){
+                const tail=`_${suffix++}`;
+                sheetName=(base.slice(0,31-tail.length)+tail);
+            }
+            usedNames.add(sheetName);
+            XLSX.utils.book_append_sheet(book,sheet,sheetName);
+        });
+        XLSX.writeFile(book,`${marksSafeFileName(className)}_All_Submitted_Marks.xlsx`,{compression:true});
+    }catch(error){
+        alert("Excel could not be exported: "+(error?.message||"Unknown error"));
+    }
+}
+
+async function loadPrincipalMarksNotifications(){
+    const card=document.getElementById("principalMarksNotificationCard");
+    const host=document.getElementById("principalMarksNotificationList");
+    const principal=staffDashboardIsPrincipal();
+    if(card) card.style.display=principal?"block":"none";
+    if(!principal||!host) return;
+    host.innerHTML='<div class="staff-dashboard-empty">Loading Marks submissions...</div>';
+    try{
+        const db=initStaffSupabase();
+        const {data,error}=await db.from("marks_projects")
+            .select("id,staff_id,staff_name,class_name,project_name,academic_session,submitted_at")
+            .eq("status","submitted")
+            .order("submitted_at",{ascending:false})
+            .limit(8);
+        if(error) throw error;
+        if(!data?.length){host.innerHTML='<div class="staff-dashboard-empty">No teacher has submitted Marks yet.</div>';return;}
+        host.innerHTML=data.map(row=>`
+            <button type="button" class="staff-dashboard-preview-item" onclick="openPrincipalMarksView('${escapeHtml(row.class_name)}')">
+                <strong>${escapeHtml(row.staff_name)} — ${escapeHtml(row.class_name)}</strong>
+                <span>${escapeHtml(row.project_name)} • Staff ID: ${escapeHtml(row.staff_id)}</span>
+                <small>Submitted ${escapeHtml(marksFormatDate(row.submitted_at))}</small>
+            </button>`).join("");
+    }catch(error){
+        host.innerHTML=`<div class="staff-dashboard-empty">Could not load Marks submissions: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+async function openPrincipalMarksView(preferredClass=""){
+    if(!loggedInStaff||!staffAuthSession||!staffDashboardIsPrincipal()){
+        alert("Principal login is required for this read-only Marks view.");
+        return;
+    }
+    closeStaffDashboard();
+    const select=document.getElementById("principalMarksClassSelect");
+    marksPopulateClassSelect(select);
+    if(MARKS_CLASS_ORDER.includes(preferredClass)) select.value=preferredClass;
+    const popup=document.getElementById("principalMarksViewPopup");
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+    await loadPrincipalMarksClass(select?.value||MARKS_CLASS_ORDER[0]);
+}
+
+function closePrincipalMarksView(){
+    const popup=document.getElementById("principalMarksViewPopup");
+    if(popup) popup.style.display="none";
+    document.body.style.overflow="auto";
+}
+
+async function loadPrincipalMarksClass(className){
+    const host=document.getElementById("principalMarksClassDetail");
+    if(!staffDashboardIsPrincipal()||!MARKS_CLASS_ORDER.includes(className)||!host) return;
+    host.innerHTML='<div class="staff-dashboard-empty">Loading submitted Class Marks...</div>';
+    try{
+        marksFinalPrincipalClassData=await marksFinalLoadClassData(initStaffSupabase(),className);
+        marksFinalRenderClassData(host,marksFinalPrincipalClassData);
+    }catch(error){
+        host.innerHTML=`<div class="marks-empty">Could not load Class Marks: ${escapeHtml(error?.message||"Unknown error")}</div>`;
+    }
+}
+
+const marksFinalOriginalRefreshStaffDashboard=refreshStaffDashboard;
+refreshStaffDashboard=async function(showConfirmation=true){
+    await marksFinalOriginalRefreshStaffDashboard(showConfirmation);
+    await loadPrincipalMarksNotifications();
+};
+
+const marksFinalOriginalOpenStaffDashboard=openStaffDashboard;
+openStaffDashboard=async function(){
+    const principal=staffDashboardIsPrincipal();
+    const card=document.getElementById("principalMarksNotificationCard");
+    const marksAction=document.querySelector("#staffDashboardPopup .staff-dashboard-action.marks");
+    if(card) card.style.display=principal?"block":"none";
+    if(marksAction){
+        marksAction.textContent=principal?"📘 View Submitted Marks":"📘 Marks Entry";
+        marksAction.setAttribute("onclick",principal?"openPrincipalMarksView()":"openMarksEntryHub()");
+    }
+    await marksFinalOriginalOpenStaffDashboard();
+};
+
+const marksFinalOriginalShowStudentRolls=showStudentRolls;
+showStudentRolls=function(className){
+    if(!MARKS_UPPER_CLASSES_FINAL.includes(className)) return marksFinalOriginalShowStudentRolls(className);
+    return showUpperClassPublicRoster(className);
+};
+
+async function showUpperClassPublicRoster(className){
+    document.getElementById("studentClassView").style.display="none";
+    const rollView=document.getElementById("studentRollView");
+    rollView.style.display="block";
+    rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${escapeHtml(className)} - Student List</h2><div class="student-grid"><div class="marks-empty">Loading student list...</div></div>`;
+    try{
+        const db=initStudentSupabase();
+        const {data,error}=await db.rpc("list_upper_class_public_students");
+        if(error) throw error;
+        const rows=marksSortedStudents((data||[]).filter(row=>row.class_name===className));
+        const list=rows.length
+            ?rows.map(row=>`<button type="button" class="student-roll-btn upper-student-public-row" tabindex="-1">👤 ${escapeHtml(row.name)}</button>`).join("")
+            :'<div class="marks-empty">No students have been added to this Class yet.</div>';
+        rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${escapeHtml(className)} - Student List</h2><div class="student-grid">${list}</div>`;
+    }catch(error){
+        rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${escapeHtml(className)} - Student List</h2><div class="marks-empty">Student list could not be loaded.</div>`;
+    }
+}
+
+const marksFinalOriginalStaffLogout=staffLogout;
+staffLogout=async function(){
+    closePrincipalMarksView();
+    marksFinalAdminClassData=null;
+    marksFinalPrincipalClassData=null;
+    await marksFinalOriginalStaffLogout();
+};
 </script>
 
 </body>
