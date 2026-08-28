@@ -7029,6 +7029,7 @@ body.dark-mode .admin-leave-card{background:#1d2935;border-color:#405467;color:#
             <button id="staffLeaveOpenBtn" type="button" onclick="openStaffLeaveForm()" style="display:none;">📝 LEAVE APPLICATION</button>
             <button id="staffApprovedLeaveOpenBtn" type="button" onclick="openApprovedStaffLeaves()" style="display:none;">✓ APPROVED LEAVE</button>
             <button id="staffUpcomingPlanOpenBtn" type="button" onclick="openUpcomingPlans()" style="display:none;">📅 UPCOMING PLAN</button>
+            <button id="staffVideoTutorialsOpenBtn" type="button" onclick="openVideoTutorials()" style="display:none;">🎬 VIDEO TUTORIALS</button>
             <button id="staffLogoutBtn" type="button" onclick="staffLogout()" style="display:none;background:#667085;">LOG OUT</button>
             <span id="staffLoginStatus" class="staff-login-status">Staff not logged in</span>
         </div>
@@ -9358,6 +9359,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             <button type="button" onclick="showWebsiteAdminTab('staffAnnouncements')">🔔 Staff Announcements</button>
                 <button type="button" onclick="showWebsiteAdminTab('staffIdeas')">💡 Staff Ideas</button>
                 <button type="button" onclick="showWebsiteAdminTab('marks')">📘 Marks Entry</button>
+                <button type="button" onclick="showWebsiteAdminTab('videoTutorials')">🎬 Video Tutorials</button>
                 <button type="button" onclick="showWebsiteAdminTab('upcomingPlans')">📅 Upcoming Plans</button>
             <button type="button" onclick="showWebsiteAdminTab('gallery')">🖼️ Gallery</button>
             <button type="button" onclick="showWebsiteAdminTab('students')">🎓 Students</button>
@@ -9518,6 +9520,34 @@ document.addEventListener("DOMContentLoaded",()=>{
                         <div class="review-empty">Select a Class to view Marks.</div>
                     </div>
                 </section>
+            </div>
+        </div>
+
+        <div id="websiteAdminVideoTutorialsTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>🎬 Video Tutorials</h3>
+                    <p>Upload short website guidance videos for staff and the Principal. Only the Admin can upload or delete.</p>
+                </div>
+                <button type="button" class="admin-mini-btn" onclick="renderAdminVideoTutorials()">↻ Refresh</button>
+            </div>
+
+            <form id="adminVideoTutorialForm" class="video-tutorial-upload-form" onsubmit="uploadVideoTutorial(event)">
+                <label>
+                    Video Name
+                    <input id="adminVideoTutorialTitle" type="text" maxlength="150" placeholder="Example: How to Submit a Leave Application" required>
+                </label>
+                <label>
+                    Choose Video (MP4 or WebM, maximum 50 MB)
+                    <input id="adminVideoTutorialFile" type="file" accept="video/mp4,video/webm,.mp4,.webm" onchange="showSelectedTutorialVideo()" required>
+                </label>
+                <div id="adminVideoTutorialFileInfo" class="video-tutorial-file-info">No video selected.</div>
+                <button id="adminVideoTutorialUploadBtn" type="submit" class="admin-primary-btn">UPLOAD VIDEO</button>
+                <div id="adminVideoTutorialStatus" class="video-tutorial-status" role="status" aria-live="polite"></div>
+            </form>
+
+            <div id="adminVideoTutorialList" class="video-tutorial-grid admin-video-tutorial-grid">
+                <div class="video-tutorial-empty">Open this tab to load tutorial videos.</div>
             </div>
         </div>
 
@@ -9970,7 +10000,7 @@ function closeWebsiteAdminPanel(){
 }
 
 function showWebsiteAdminTab(tab){
-    ["staff","staffAccounts","leaveApplications","staffAnnouncements","staffIdeas","marks","upcomingPlans","gallery","students","notices","monthly"].forEach(name=>{
+    ["staff","staffAccounts","leaveApplications","staffAnnouncements","staffIdeas","marks","videoTutorials","upcomingPlans","gallery","students","notices","monthly"].forEach(name=>{
         const el=document.getElementById(
             name==="staff"?"websiteAdminStaffTab":
             name==="staffAccounts"?"websiteAdminStaffAccountsTab":
@@ -9978,6 +10008,7 @@ function showWebsiteAdminTab(tab){
             name==="staffAnnouncements"?"websiteAdminStaffAnnouncementsTab":
             name==="staffIdeas"?"websiteAdminStaffIdeasTab":
             name==="marks"?"websiteAdminMarksTab":
+            name==="videoTutorials"?"websiteAdminVideoTutorialsTab":
             name==="upcomingPlans"?"websiteAdminUpcomingPlansTab":
             name==="gallery"?"websiteAdminGalleryTab":
             name==="students"?"websiteAdminStudentsTab":
@@ -9993,6 +10024,7 @@ function showWebsiteAdminTab(tab){
     if(tab==="staffAnnouncements") renderAdminStaffAnnouncements();
     if(tab==="staffIdeas") renderAdminStaffIdeas();
     if(tab==="marks") renderAdminMarks();
+    if(tab==="videoTutorials") renderAdminVideoTutorials();
     if(tab==="upcomingPlans") renderAdminUpcomingPlans();
     if(tab==="gallery") renderAdminGalleryList();
     if(tab==="students") renderAdminStudentList();
@@ -15886,6 +15918,559 @@ staffLogout=async function(){
     marksFinalPrincipalClassData=null;
     await marksFinalOriginalStaffLogout();
 };
+</script>
+
+
+<!-- =========================================================
+     VIDEO TUTORIALS
+     Staff and Principal: view only
+     Website Admin: view, upload and delete
+========================================================= -->
+<style id="video-tutorials-css">
+#staffVideoTutorialsOpenBtn{
+    background:linear-gradient(135deg,#7c2d12,#c2410c);
+    color:#fff;
+}
+.video-tutorial-popup-box{
+    width:min(1040px,94vw);
+    max-height:90vh;
+    overflow:auto;
+    padding:0;
+    border-radius:20px;
+    background:#f7f9fc;
+}
+.video-tutorial-hero{
+    position:relative;
+    padding:28px 58px 26px 28px;
+    color:#fff;
+    background:linear-gradient(135deg,#102f50,#174f7c 60%,#8b2d45);
+}
+.video-tutorial-hero h2{
+    margin:0 0 7px;
+    color:#fff;
+    font-size:clamp(23px,3vw,32px);
+}
+.video-tutorial-hero p{
+    margin:0;
+    color:#e8f1f8;
+    line-height:1.6;
+}
+.video-tutorial-popup-box>.close-btn{
+    z-index:2;
+    top:16px;
+    right:18px;
+    width:36px;
+    height:36px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    color:#fff;
+    background:rgba(255,255,255,.16);
+}
+.video-tutorial-viewer-body{padding:24px}
+.video-tutorial-access-note{
+    margin:0 0 18px;
+    padding:11px 14px;
+    border:1px solid #cfe1ee;
+    border-radius:12px;
+    color:#244a66;
+    background:#edf7fc;
+    font-size:14px;
+    line-height:1.55;
+}
+.video-tutorial-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
+    margin-top:18px;
+}
+.video-tutorial-card{
+    overflow:hidden;
+    border:1px solid #dbe3ec;
+    border-radius:16px;
+    background:#fff;
+    box-shadow:0 10px 28px rgba(16,47,80,.08);
+}
+.video-tutorial-card video{
+    display:block;
+    width:100%;
+    aspect-ratio:16/9;
+    object-fit:contain;
+    background:#07121d;
+}
+.video-tutorial-card-content{padding:15px 16px 16px}
+.video-tutorial-card h4{
+    margin:0;
+    color:#123c69;
+    font-size:17px;
+    line-height:1.45;
+    overflow-wrap:anywhere;
+}
+.video-tutorial-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 12px;
+    margin-top:8px;
+    color:#667085;
+    font-size:12px;
+}
+.video-tutorial-actions{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:13px;
+}
+.video-tutorial-delete{
+    border:0;
+    border-radius:9px;
+    padding:9px 13px;
+    background:#b42318;
+    color:#fff;
+    font-weight:800;
+    cursor:pointer;
+}
+.video-tutorial-delete:disabled{opacity:.55;cursor:not-allowed}
+.video-tutorial-empty{
+    grid-column:1/-1;
+    padding:28px 18px;
+    border:1px dashed #b9c7d6;
+    border-radius:14px;
+    text-align:center;
+    color:#667085;
+    background:#fff;
+}
+.video-tutorial-upload-form{
+    display:grid;
+    grid-template-columns:minmax(220px,1fr) minmax(250px,1fr) auto;
+    gap:13px;
+    align-items:end;
+    margin:16px 0 22px;
+    padding:18px;
+    border:1px solid #dbe3ec;
+    border-radius:15px;
+    background:#f7faff;
+}
+.video-tutorial-upload-form label{
+    display:grid;
+    gap:7px;
+    color:#344054;
+    font-size:13px;
+    font-weight:800;
+}
+.video-tutorial-upload-form input{
+    width:100%;
+    min-height:44px;
+    padding:10px 12px;
+    border:1px solid #c8d4e0;
+    border-radius:10px;
+    background:#fff;
+    color:#1d2939;
+}
+.video-tutorial-file-info{
+    grid-column:1/-1;
+    color:#667085;
+    font-size:13px;
+}
+.video-tutorial-status{
+    display:none;
+    grid-column:1/-1;
+    padding:11px 13px;
+    border-radius:10px;
+    font-weight:700;
+}
+.video-tutorial-status.show{display:block}
+.video-tutorial-status.success{color:#067647;background:#ecfdf3}
+.video-tutorial-status.error{color:#b42318;background:#fff1f0}
+.video-tutorial-status.working{color:#175cd3;background:#eff8ff}
+.admin-video-tutorial-grid{margin-top:0}
+body.dark-mode .video-tutorial-popup-box{background:#17232e;color:#eee}
+body.dark-mode .video-tutorial-access-note{background:#193343;border-color:#31556c;color:#d2e9f7}
+body.dark-mode .video-tutorial-card,
+body.dark-mode .video-tutorial-empty{background:#22313f;border-color:#405467}
+body.dark-mode .video-tutorial-card h4{color:#9bd4ff}
+body.dark-mode .video-tutorial-meta,
+body.dark-mode .video-tutorial-empty{color:#cbd5e1}
+body.dark-mode .video-tutorial-upload-form{background:#1d2935;border-color:#405467}
+body.dark-mode .video-tutorial-upload-form label{color:#e4e7ec}
+body.dark-mode .video-tutorial-upload-form input{background:#17232e;color:#fff;border-color:#52677a}
+@media(max-width:780px){
+    .video-tutorial-grid{grid-template-columns:1fr}
+    .video-tutorial-upload-form{grid-template-columns:1fr}
+    .video-tutorial-popup-box{width:100%;min-height:100%;max-height:none;border-radius:0}
+    .video-tutorial-viewer-body{padding:16px}
+    .video-tutorial-hero{padding:24px 54px 22px 18px}
+}
+</style>
+
+<div id="videoTutorialPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="videoTutorialHeading">
+    <div class="popup-box video-tutorial-popup-box">
+        <span class="close-btn" onclick="closeVideoTutorials()" aria-label="Close">&times;</span>
+        <div class="video-tutorial-hero">
+            <h2 id="videoTutorialHeading">🎬 Video Tutorials</h2>
+            <p>Short guidance videos for using the school's website features.</p>
+        </div>
+        <div class="video-tutorial-viewer-body">
+            <p class="video-tutorial-access-note">🔒 These videos are available only after an authorized Staff or Principal login.</p>
+            <div id="staffVideoTutorialList" class="video-tutorial-grid">
+                <div class="video-tutorial-empty">Loading tutorial videos...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="video-tutorials-js">
+/* =========================================================
+   PRIVATE VIDEO TUTORIALS
+   Requires video_tutorials table and staff-tutorial-videos bucket.
+   Supabase RLS is the real access boundary; hidden buttons are only UI.
+========================================================= */
+const VIDEO_TUTORIAL_CONFIG={
+    table:"video_tutorials",
+    bucket:"staff-tutorial-videos",
+    maxBytes:50*1024*1024,
+    signedUrlSeconds:3600,
+    allowedTypes:new Set(["video/mp4","video/webm"])
+};
+
+function videoTutorialEscape(value){
+    return String(value??"")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+function videoTutorialFormatBytes(value){
+    const bytes=Number(value)||0;
+    if(bytes<1024) return `${bytes} B`;
+    if(bytes<1024*1024) return `${(bytes/1024).toFixed(1)} KB`;
+    return `${(bytes/(1024*1024)).toFixed(1)} MB`;
+}
+
+function videoTutorialFormatDate(value){
+    if(!value) return "";
+    const date=new Date(value);
+    if(Number.isNaN(date.getTime())) return String(value);
+    return new Intl.DateTimeFormat("en-GB",{
+        day:"2-digit",month:"short",year:"numeric",
+        hour:"2-digit",minute:"2-digit",hour12:true,
+        timeZone:"Asia/Kathmandu"
+    }).format(date);
+}
+
+function videoTutorialMessage(message,type="error"){
+    const box=document.getElementById("adminVideoTutorialStatus");
+    if(!box) return;
+    box.textContent=message;
+    box.className=`video-tutorial-status show ${type}`;
+}
+
+function clearVideoTutorialMessage(){
+    const box=document.getElementById("adminVideoTutorialStatus");
+    if(box){
+        box.textContent="";
+        box.className="video-tutorial-status";
+    }
+}
+
+function videoTutorialErrorMessage(error){
+    const message=String(error?.message||"Unknown error");
+    if(error?.code==="42P01" || /video_tutorials|bucket not found/i.test(message)){
+        return "Video Tutorials setup is not complete. Run the supplied Supabase SQL once, then refresh this page.";
+    }
+    return message;
+}
+
+function showSelectedTutorialVideo(){
+    const file=document.getElementById("adminVideoTutorialFile")?.files?.[0];
+    const info=document.getElementById("adminVideoTutorialFileInfo");
+    clearVideoTutorialMessage();
+    if(!info) return;
+    info.textContent=file
+        ?`${file.name} • ${videoTutorialFormatBytes(file.size)}`
+        :"No video selected.";
+}
+
+function pauseOtherTutorialVideos(currentVideo=null){
+    document.querySelectorAll("#videoTutorialPopup video, #adminVideoTutorialList video").forEach(video=>{
+        if(video!==currentVideo && !video.paused) video.pause();
+    });
+}
+
+async function videoTutorialSignedUrl(client,path){
+    const {data,error}=await client.storage
+        .from(VIDEO_TUTORIAL_CONFIG.bucket)
+        .createSignedUrl(path,VIDEO_TUTORIAL_CONFIG.signedUrlSeconds);
+    if(error) throw error;
+    if(!data?.signedUrl) throw new Error("A secure video link could not be created.");
+    return data.signedUrl;
+}
+
+async function loadVideoTutorialRows(client){
+    const {data,error}=await client
+        .from(VIDEO_TUTORIAL_CONFIG.table)
+        .select("id,title,storage_path,original_name,mime_type,size_bytes,created_at")
+        .order("created_at",{ascending:false});
+    if(error) throw error;
+    return data||[];
+}
+
+async function prepareVideoTutorialRows(client,rows){
+    return Promise.all(rows.map(async row=>{
+        try{
+            return {...row,signed_url:await videoTutorialSignedUrl(client,row.storage_path),video_error:""};
+        }catch(error){
+            console.error("Tutorial video link error:",error);
+            return {...row,signed_url:"",video_error:"Video is temporarily unavailable."};
+        }
+    }));
+}
+
+function videoTutorialCard(row,isAdmin=false){
+    const title=videoTutorialEscape(row.title||"Untitled Video");
+    const date=videoTutorialEscape(videoTutorialFormatDate(row.created_at));
+    const size=videoTutorialEscape(videoTutorialFormatBytes(row.size_bytes));
+    const media=row.signed_url
+        ?`<video controls controlsList="nodownload" disablePictureInPicture preload="metadata" playsinline onplay="pauseOtherTutorialVideos(this)">
+              <source src="${videoTutorialEscape(row.signed_url)}" type="${videoTutorialEscape(row.mime_type||"video/mp4")}">
+              Your browser cannot play this video.
+          </video>`
+        :`<div class="video-tutorial-empty" style="margin:14px;">${videoTutorialEscape(row.video_error||"Video unavailable.")}</div>`;
+    const adminActions=isAdmin
+        ?`<div class="video-tutorial-actions">
+              <button type="button" class="video-tutorial-delete"
+                      onclick="deleteVideoTutorial(${Number(row.id)},'${encodeURIComponent(String(row.storage_path||""))}',this)">
+                  DELETE VIDEO
+              </button>
+          </div>`
+        :"";
+
+    return `<article class="video-tutorial-card">
+        ${media}
+        <div class="video-tutorial-card-content">
+            <h4>${title}</h4>
+            <div class="video-tutorial-meta"><span>${date}</span><span>${size}</span></div>
+            ${adminActions}
+        </div>
+    </article>`;
+}
+
+async function openVideoTutorials(){
+    if(!loggedInStaff || !staffAuthSession){
+        openStaffLogin();
+        return;
+    }
+    const popup=document.getElementById("videoTutorialPopup");
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+    await renderStaffVideoTutorials();
+}
+
+function closeVideoTutorials(){
+    pauseOtherTutorialVideos();
+    const popup=document.getElementById("videoTutorialPopup");
+    if(popup) popup.style.display="none";
+    const host=document.getElementById("staffVideoTutorialList");
+    if(host) host.innerHTML='<div class="video-tutorial-empty">Open Video Tutorials to load videos.</div>';
+    document.body.style.overflow="auto";
+}
+
+async function renderStaffVideoTutorials(){
+    const host=document.getElementById("staffVideoTutorialList");
+    if(!host) return;
+    if(!loggedInStaff || !staffAuthSession){
+        host.innerHTML='<div class="video-tutorial-empty">Staff or Principal login is required.</div>';
+        return;
+    }
+    host.innerHTML='<div class="video-tutorial-empty">Loading tutorial videos...</div>';
+    try{
+        const client=initStaffSupabase();
+        if(!client) throw new Error("Staff login service is unavailable.");
+        const rows=await loadVideoTutorialRows(client);
+        if(!rows.length){
+            host.innerHTML='<div class="video-tutorial-empty">No tutorial videos have been uploaded yet.</div>';
+            return;
+        }
+        const readyRows=await prepareVideoTutorialRows(client,rows);
+        host.innerHTML=readyRows.map(row=>videoTutorialCard(row,false)).join("");
+    }catch(error){
+        console.error("Staff tutorial video load error:",error);
+        host.innerHTML=`<div class="video-tutorial-empty">Could not load videos. ${videoTutorialEscape(videoTutorialErrorMessage(error))}</div>`;
+    }
+}
+
+async function renderAdminVideoTutorials(){
+    const host=document.getElementById("adminVideoTutorialList");
+    if(!host) return;
+    if(!studentAdminSession || !isWebsiteAdminSession(studentAdminSession)){
+        host.innerHTML='<div class="video-tutorial-empty">Admin login is required.</div>';
+        return;
+    }
+    pauseOtherTutorialVideos();
+    host.innerHTML='<div class="video-tutorial-empty">Loading tutorial videos...</div>';
+    try{
+        const client=initStudentSupabase();
+        if(!client) throw new Error("Admin service is unavailable.");
+        const rows=await loadVideoTutorialRows(client);
+        if(!rows.length){
+            host.innerHTML='<div class="video-tutorial-empty">No tutorial videos have been uploaded yet.</div>';
+            return;
+        }
+        const readyRows=await prepareVideoTutorialRows(client,rows);
+        host.innerHTML=readyRows.map(row=>videoTutorialCard(row,true)).join("");
+    }catch(error){
+        console.error("Admin tutorial video load error:",error);
+        host.innerHTML=`<div class="video-tutorial-empty">Could not load videos. ${videoTutorialEscape(videoTutorialErrorMessage(error))}</div>`;
+    }
+}
+
+function videoTutorialExtension(file){
+    if(videoTutorialMimeType(file)==="video/webm") return "webm";
+    return "mp4";
+}
+
+function videoTutorialMimeType(file){
+    const supplied=String(file?.type||"").toLowerCase();
+    if(VIDEO_TUTORIAL_CONFIG.allowedTypes.has(supplied)) return supplied;
+    const name=String(file?.name||"").toLowerCase();
+    if(name.endsWith(".webm")) return "video/webm";
+    if(name.endsWith(".mp4")) return "video/mp4";
+    return "";
+}
+
+async function uploadVideoTutorial(event){
+    event.preventDefault();
+    if(!studentAdminSession || !isWebsiteAdminSession(studentAdminSession)){
+        videoTutorialMessage("Admin login is required.");
+        return;
+    }
+
+    const title=document.getElementById("adminVideoTutorialTitle")?.value.trim()||"";
+    const file=document.getElementById("adminVideoTutorialFile")?.files?.[0];
+    const button=document.getElementById("adminVideoTutorialUploadBtn");
+    const mimeType=videoTutorialMimeType(file);
+
+    if(!title){videoTutorialMessage("Enter the video name.");return;}
+    if(!file){videoTutorialMessage("Choose an MP4 or WebM video.");return;}
+    if(!mimeType){
+        videoTutorialMessage("Only MP4 or WebM videos are allowed.");
+        return;
+    }
+    if(file.size<=0 || file.size>VIDEO_TUTORIAL_CONFIG.maxBytes){
+        videoTutorialMessage("The video must be smaller than 50 MB.");
+        return;
+    }
+
+    const oldText=button?.textContent||"UPLOAD VIDEO";
+    if(button){button.disabled=true;button.textContent="UPLOADING...";}
+    videoTutorialMessage("Uploading securely. Please keep this page open...","working");
+
+    const randomPart=(globalThis.crypto?.randomUUID?.()||Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9-]/g,"");
+    const storagePath=`tutorials/${Date.now()}-${randomPart}.${videoTutorialExtension(file)}`;
+    const client=initStudentSupabase();
+
+    try{
+        if(!client) throw new Error("Admin service is unavailable.");
+        const {error:uploadError}=await client.storage
+            .from(VIDEO_TUTORIAL_CONFIG.bucket)
+            .upload(storagePath,file,{
+                cacheControl:"3600",
+                upsert:false,
+                contentType:mimeType
+            });
+        if(uploadError) throw uploadError;
+
+        const {error:insertError}=await client
+            .from(VIDEO_TUTORIAL_CONFIG.table)
+            .insert({
+                title,
+                storage_path:storagePath,
+                original_name:file.name,
+                mime_type:mimeType,
+                size_bytes:file.size,
+                created_by:studentAdminSession.user.id
+            });
+
+        if(insertError){
+            await client.storage.from(VIDEO_TUTORIAL_CONFIG.bucket).remove([storagePath]);
+            throw insertError;
+        }
+
+        document.getElementById("adminVideoTutorialForm")?.reset();
+        const info=document.getElementById("adminVideoTutorialFileInfo");
+        if(info) info.textContent="No video selected.";
+        videoTutorialMessage("Video uploaded successfully.","success");
+        await renderAdminVideoTutorials();
+    }catch(error){
+        console.error("Tutorial video upload error:",error);
+        videoTutorialMessage("Upload failed: "+videoTutorialErrorMessage(error));
+    }finally{
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+async function deleteVideoTutorial(id,encodedPath,button){
+    if(!studentAdminSession || !isWebsiteAdminSession(studentAdminSession)){
+        videoTutorialMessage("Admin login is required.");
+        return;
+    }
+    if(!confirm("Delete this tutorial video permanently?")) return;
+
+    const path=decodeURIComponent(encodedPath||"");
+    const oldText=button?.textContent||"DELETE VIDEO";
+    if(button){button.disabled=true;button.textContent="DELETING...";}
+    clearVideoTutorialMessage();
+
+    try{
+        const client=initStudentSupabase();
+        if(!client) throw new Error("Admin service is unavailable.");
+
+        const {error:storageError}=await client.storage
+            .from(VIDEO_TUTORIAL_CONFIG.bucket)
+            .remove([path]);
+        if(storageError) throw storageError;
+
+        const {error:rowError}=await client
+            .from(VIDEO_TUTORIAL_CONFIG.table)
+            .delete()
+            .eq("id",Number(id));
+        if(rowError) throw rowError;
+
+        videoTutorialMessage("Video deleted successfully.","success");
+        await renderAdminVideoTutorials();
+    }catch(error){
+        console.error("Tutorial video delete error:",error);
+        videoTutorialMessage("Delete failed: "+videoTutorialErrorMessage(error));
+        if(button?.isConnected){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+/* Add role-aware visibility without changing the existing login workflow. */
+const videoTutorialOriginalUpdateStaffLoginUI=updateStaffLoginUI;
+updateStaffLoginUI=function(){
+    videoTutorialOriginalUpdateStaffLoginUI();
+    const button=document.getElementById("staffVideoTutorialsOpenBtn");
+    if(button) button.style.display=loggedInStaff?"inline-block":"none";
+};
+
+const videoTutorialOriginalStaffLogout=staffLogout;
+staffLogout=async function(){
+    closeVideoTutorials();
+    await videoTutorialOriginalStaffLogout();
+};
+
+const videoTutorialOriginalCloseAdminPanel=closeWebsiteAdminPanel;
+closeWebsiteAdminPanel=function(){
+    pauseOtherTutorialVideos();
+    videoTutorialOriginalCloseAdminPanel();
+};
+
+document.addEventListener("DOMContentLoaded",()=>{
+    updateStaffLoginUI();
+    document.getElementById("videoTutorialPopup")?.addEventListener("click",event=>{
+        if(event.target?.id==="videoTutorialPopup") closeVideoTutorials();
+    });
+});
 </script>
 
 </body>
