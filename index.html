@@ -9361,6 +9361,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             <button type="button" onclick="showWebsiteAdminTab('staffAnnouncements')">🔔 Staff Announcements</button>
                 <button type="button" onclick="showWebsiteAdminTab('staffIdeas')">💡 Staff Ideas</button>
                 <button type="button" onclick="showWebsiteAdminTab('marks')">📘 Marks Entry</button>
+                <button type="button" onclick="showWebsiteAdminTab('internalEvaluations')">🧾 Internal Evaluation</button>
                 <button type="button" onclick="showWebsiteAdminTab('videoTutorials')">🎬 Video Tutorials</button>
                 <button type="button" onclick="showWebsiteAdminTab('upcomingPlans')">📅 Upcoming Plans</button>
             <button type="button" onclick="showWebsiteAdminTab('gallery')">🖼️ Gallery</button>
@@ -9525,6 +9526,43 @@ document.addEventListener("DOMContentLoaded",()=>{
             </div>
         </div>
 
+        <div id="websiteAdminInternalEvaluationsTab" class="website-admin-tab" style="display:none;">
+            <div class="admin-section-head">
+                <div>
+                    <h3>🧾 Internal Evaluation Management</h3>
+                    <p>Manage Class Teachers, review Class submissions, export Excel, or return a Class Sheet for correction.</p>
+                </div>
+                <button type="button" class="admin-mini-btn" onclick="renderAdminInternalEvaluations()">↻ Refresh</button>
+            </div>
+
+            <section class="internal-admin-section">
+                <h4>Class Teacher Assignment — Nursery to Class 10</h4>
+                <p class="internal-muted">The selected Class Teacher receives every Subject Teacher submission for that Class.</p>
+                <form id="internalAdminAssignmentForm" class="internal-admin-assignment-form" onsubmit="saveInternalClassTeacherAssignment(event)">
+                    <label>Class<select id="internalAdminAssignmentClass" required></select></label>
+                    <label>Class Teacher / Staff ID<select id="internalAdminAssignmentStaff" required></select></label>
+                    <button type="submit" class="admin-primary-btn">SAVE ASSIGNMENT</button>
+                </form>
+                <div id="internalAdminAssignmentList" class="internal-admin-assignment-list">
+                    <div class="review-empty">Open this tab to load Class Teacher assignments.</div>
+                </div>
+            </section>
+
+            <section class="internal-admin-section">
+                <div class="internal-section-head">
+                    <div>
+                        <h4>Class Sheets Received from Class Teachers</h4>
+                        <p class="internal-muted">Principal receives the same submitted Sheet as Read Only.</p>
+                    </div>
+                    <button type="button" class="internal-secondary" onclick="loadInternalAdminGroups()">↻ REFRESH</button>
+                </div>
+                <div id="internalAdminGroupList" class="internal-group-list">
+                    <div class="review-empty">No Class Sheet loaded yet.</div>
+                </div>
+                <div id="internalAdminGroupDetail" class="internal-role-detail"></div>
+            </section>
+        </div>
+
         <div id="websiteAdminVideoTutorialsTab" class="website-admin-tab" style="display:none;">
             <div class="admin-section-head">
                 <div>
@@ -9573,7 +9611,10 @@ document.addEventListener("DOMContentLoaded",()=>{
                     <h3>Student Management</h3>
                     <p>Add students by class and edit student information. Existing passwords are preserved.</p>
                 </div>
-                <button type="button" class="admin-primary-btn" onclick="openStudentDataEditor()">+ Add Student</button>
+                <div class="admin-head-actions">
+                    <button type="button" class="admin-primary-btn" onclick="openStudentDataEditor()">+ Add Nursery–Class 5</button>
+                    <button type="button" class="admin-primary-btn" onclick="umeFocusAdminUpperStudentForm()">+ Add Class 6–10</button>
+                </div>
             </div>
 
             <div class="admin-filter-row">
@@ -9583,6 +9624,8 @@ document.addEventListener("DOMContentLoaded",()=>{
                     <option>Nursery</option><option>LKG</option><option>UKG</option>
                     <option>Class 1</option><option>Class 2</option><option>Class 3</option>
                     <option>Class 4</option><option>Class 5</option>
+                    <option>Class 6</option><option>Class 7</option><option>Class 8</option>
+                    <option>Class 9</option><option>Class 10</option>
                 </select>
                 <input id="adminStudentSearch" type="search" placeholder="Search student..." oninput="renderAdminStudentList()">
             </div>
@@ -11706,8 +11749,10 @@ document.addEventListener("click",function(event){
                         onclick="openDashboardFeature('plans')">📅 Upcoming Plan</button>
                 <button type="button" class="staff-dashboard-action idea"
                         onclick="openDashboardFeature('ideas')">💡 Staff Idea Hub</button>
-                <button type="button" class="staff-dashboard-action marks"
+                <button id="staffDashboardMarksAction" type="button" class="staff-dashboard-action marks"
                         onclick="openMarksEntryHub()">📘 Marks Entry</button>
+                <button id="staffDashboardInternalEvaluationAction" type="button" class="staff-dashboard-action internal-evaluation"
+                        onclick="openInternalEvaluationHub()">🧾 Internal Evaluation</button>
             </div>
         </div>
     </div>
@@ -14602,6 +14647,7 @@ async function loadMarksTeacherAssignments(){
             .from("marks_teacher_assignments")
             .select("class_name,staff_id,staff_name")
             .eq("staff_id",loggedInStaff.username)
+            .in("class_name",["Class 6","Class 7","Class 8","Class 9","Class 10"])
             .order("class_name",{ascending:true});
         if(error) throw error;
 
@@ -14680,6 +14726,7 @@ async function loadMarksTeacherProjects(preferredId=null){
         const db=initStaffSupabase();
         const {data,error}=await db.from("marks_projects")
             .select("id,created_by,staff_id,staff_name,class_name,project_name,academic_session,status,admin_note,submitted_at,created_at,updated_at")
+            .in("class_name",["Class 6","Class 7","Class 8","Class 9","Class 10"])
             .order("created_at",{ascending:false});
         if(error) throw error;
         marksTeacherProjects=data||[];
@@ -15117,6 +15164,7 @@ async function loadAdminMarksProjects(){
         const db=initStudentSupabase();
         const {data,error}=await db.from("marks_projects")
             .select("id,created_by,staff_id,staff_name,class_name,project_name,academic_session,status,admin_note,submitted_at,created_at,updated_at")
+            .in("class_name",["Class 6","Class 7","Class 8","Class 9","Class 10"])
             .order("created_at",{ascending:false});
         if(error) throw error;
         marksAdminProjects=data||[];
@@ -15815,6 +15863,7 @@ async function loadPrincipalMarksNotifications(){
         const {data,error}=await db.from("marks_projects")
             .select("id,staff_id,staff_name,class_name,project_name,academic_session,submitted_at")
             .eq("status","submitted")
+            .in("class_name",["Class 6","Class 7","Class 8","Class 9","Class 10"])
             .order("submitted_at",{ascending:false})
             .limit(8);
         if(error) throw error;
@@ -15837,12 +15886,12 @@ async function openPrincipalMarksView(preferredClass=""){
     }
     closeStaffDashboard();
     const select=document.getElementById("principalMarksClassSelect");
-    marksPopulateClassSelect(select);
-    if(MARKS_CLASS_ORDER.includes(preferredClass)) select.value=preferredClass;
+    marksFinalPopulateUpperSelect(select);
+    if(MARKS_UPPER_CLASSES_FINAL.includes(preferredClass)) select.value=preferredClass;
     const popup=document.getElementById("principalMarksViewPopup");
     if(popup) popup.style.display="block";
     document.body.style.overflow="hidden";
-    await loadPrincipalMarksClass(select?.value||MARKS_CLASS_ORDER[0]);
+    await loadPrincipalMarksClass(select?.value||MARKS_UPPER_CLASSES_FINAL[0]);
 }
 
 function closePrincipalMarksView(){
@@ -15853,7 +15902,7 @@ function closePrincipalMarksView(){
 
 async function loadPrincipalMarksClass(className){
     const host=document.getElementById("principalMarksClassDetail");
-    if(!staffDashboardIsPrincipal()||!MARKS_CLASS_ORDER.includes(className)||!host) return;
+    if(!staffDashboardIsPrincipal()||!MARKS_UPPER_CLASSES_FINAL.includes(className)||!host) return;
     host.innerHTML='<div class="staff-dashboard-empty">Loading submitted Class Marks...</div>';
     try{
         marksFinalPrincipalClassData=await marksFinalLoadClassData(initStaffSupabase(),className);
@@ -16735,6 +16784,1802 @@ document.addEventListener("DOMContentLoaded",()=>{
         if(event.target?.id==="videoTutorialLikersPopup") closeVideoTutorialLikers();
     });
 });
+</script>
+
+<!-- =========================================================
+     INTERNAL EVALUATION + EXAM — NURSERY TO CLASS 10
+========================================================= -->
+<style id="internal-evaluation-styles">
+.staff-dashboard-action.internal-evaluation{background:linear-gradient(135deg,#7a271a,#d92d20)}
+@media(min-width:821px){.staff-dashboard-quick-actions{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.internal-box{position:relative;width:min(97%,1480px);max-height:95vh;overflow:auto;margin:2.5vh auto;padding:24px;border-radius:22px;background:#f8fafc;box-shadow:0 25px 75px rgba(16,24,40,.3)}
+.internal-title{margin:0 45px 5px 0;color:#123c69}.internal-subtitle,.internal-muted{margin:0;color:#667085;font-size:12px;line-height:1.6}
+.internal-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:17px 0}.internal-tab{border:1px solid #b2ccff;border-radius:11px;padding:11px 14px;background:#eef4ff;color:#175cd3;font-weight:900;cursor:pointer}.internal-tab.active{border-color:#123c69;background:#123c69;color:#fff}
+.internal-pane{display:none}.internal-pane.active{display:block}.internal-card,.internal-admin-section{margin-top:14px;padding:16px;border:1px solid #dce6ef;border-radius:16px;background:#fff}.internal-card h3,.internal-card h4,.internal-admin-section h4{margin:0 0 10px;color:#123c69}
+.internal-form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;align-items:end}.internal-field,.internal-admin-assignment-form label{display:flex;flex-direction:column;gap:6px;color:#123c69;font-size:11px;font-weight:850}.internal-field input,.internal-field select,.internal-admin-assignment-form input,.internal-admin-assignment-form select{width:100%;padding:10px 11px;border:1px solid #ccd8e5;border-radius:9px;background:#fff;color:#101828;font:inherit;outline:none}.internal-field input:focus,.internal-field select:focus{border-color:#1976b8;box-shadow:0 0 0 3px rgba(25,118,184,.12)}
+.internal-primary,.internal-secondary,.internal-success,.internal-danger,.internal-warning{border:0;border-radius:10px;padding:10px 13px;font:inherit;font-size:11px;font-weight:900;cursor:pointer}.internal-primary{background:#123c69;color:#fff}.internal-secondary{background:#eef4ff;color:#175cd3;border:1px solid #b2ccff}.internal-success{background:#067647;color:#fff}.internal-danger{background:#fff1f0;color:#b42318;border:1px solid #fda29b}.internal-warning{background:#fff7e6;color:#8a5b00;border:1px solid #f7c96c}.internal-primary:disabled,.internal-secondary:disabled,.internal-success:disabled,.internal-danger:disabled,.internal-warning:disabled{opacity:.5;cursor:not-allowed}
+.internal-project-picker{display:grid;grid-template-columns:auto minmax(240px,1fr) auto;gap:10px;align-items:center}.internal-project-picker label{font-size:11px;font-weight:900;color:#123c69}.internal-project-picker select{padding:10px 11px;border:1px solid #ccd8e5;border-radius:9px;background:#fff;font:inherit}
+.internal-status-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0;padding:11px 13px;border-radius:11px;background:#eff8ff;color:#175cd3;font-size:11px;font-weight:850}.internal-status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:9px;font-weight:950;text-transform:uppercase}.internal-status.draft{background:#fff7e6;color:#8a5b00}.internal-status.pending_class_teacher{background:#eff8ff;color:#175cd3}.internal-status.accepted_by_class_teacher{background:#ecfdf3;color:#067647}.internal-status.submitted_to_admin{background:#eaf2ff;color:#1849a9}.internal-status.returned_by_admin,.internal-status.returned_to_subject_teacher{background:#fff1f0;color:#b42318}
+.internal-note{margin:10px 0;padding:11px 12px;border-left:4px solid #f04438;border-radius:9px;background:#fff1f0;color:#912018;font-size:11px;white-space:pre-wrap}.internal-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.internal-unit-form{display:grid;grid-template-columns:1.5fr .75fr auto;gap:10px;align-items:end}.internal-unit-list{display:grid;gap:8px;margin-top:12px}.internal-unit-row{display:grid;grid-template-columns:55px minmax(210px,1.4fr) minmax(150px,.7fr) minmax(110px,.5fr) auto;gap:9px;align-items:end;padding:10px;border:1px solid #e4e7ec;border-radius:11px;background:#f8fafc}.internal-unit-row .sn{align-self:center;text-align:center;color:#175cd3;font-weight:950}.internal-unit-full{padding:10px;border-radius:8px;background:#ecfdf3;color:#067647;text-align:center;font-size:11px;font-weight:900}
+.internal-table-wrap{margin-top:13px;overflow:auto;border:1px solid #d0d5dd;border-radius:13px;background:#fff}.internal-table{width:100%;min-width:980px;border-collapse:separate;border-spacing:0}.internal-table th,.internal-table td{padding:8px 7px;border-right:1px solid #e4e7ec;border-bottom:1px solid #e4e7ec;text-align:center;vertical-align:middle}.internal-table th{position:sticky;top:0;z-index:3;background:#123c69;color:#fff;font-size:10px;white-space:nowrap}.internal-table th small{display:block;margin-top:3px;color:#cfe8ff;font-size:8px}.internal-table td{background:#fff;color:#344054;font-size:10px}.internal-table td.student-name{text-align:left;min-width:175px;font-weight:850}.internal-table input[type=number]{width:76px;padding:7px 5px;border:1px solid #ccd8e5;border-radius:7px;text-align:center;font:inherit}.internal-table input.invalid{border-color:#f04438;background:#fff1f0}.internal-table .calculated{font-weight:900;color:#175cd3}.internal-table .blank-total{color:#98a2b3}
+.internal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:14px}.internal-message{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;font-size:11px;font-weight:850}.internal-message.show{display:block}.internal-message.success{background:#ecfdf3;color:#067647}.internal-message.error{background:#fff1f0;color:#b42318}
+.internal-group-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.internal-group-card{padding:13px;border:1px solid #d0d5dd;border-left:5px solid #175cd3;border-radius:12px;background:#fff}.internal-group-card h4{margin:0;color:#123c69}.internal-group-card p{margin:5px 0 0;color:#667085;font-size:10px;line-height:1.5}.internal-group-card-actions,.internal-submission-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.internal-role-detail{margin-top:14px}.internal-submission-list{display:grid;gap:9px;margin:12px 0}.internal-submission-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:11px;border:1px solid #e4e7ec;border-radius:11px;background:#f8fafc}.internal-submission-row strong{color:#123c69}.internal-submission-row small{display:block;margin-top:4px;color:#667085;line-height:1.5}
+.internal-summary-wrap{margin-top:12px;overflow:auto;border:1px solid #d0d5dd;border-radius:12px}.internal-summary-table{width:100%;min-width:1050px;border-collapse:collapse}.internal-summary-table th,.internal-summary-table td{padding:8px 7px;border:1px solid #e4e7ec;text-align:center;font-size:9px}.internal-summary-table thead tr:first-child th{background:#123c69;color:#fff}.internal-summary-table thead tr:nth-child(2) th{background:#eaf2ff;color:#1849a9}.internal-summary-table td.student-name{text-align:left;min-width:170px;font-weight:850}.internal-admin-assignment-form{display:grid;grid-template-columns:1fr 1.5fr auto;gap:10px;align-items:end;margin-top:10px}.internal-admin-assignment-list{display:grid;gap:7px;margin-top:11px}.internal-assignment-row{display:grid;grid-template-columns:1fr 1.6fr auto;gap:9px;align-items:center;padding:9px 11px;border:1px solid #e4e7ec;border-radius:10px;background:#f8fafc;font-size:11px}.internal-assignment-row strong{color:#123c69}
+body.dark-mode .internal-box{background:#17232e;color:#eee}body.dark-mode .internal-card,body.dark-mode .internal-admin-section,body.dark-mode .internal-group-card,body.dark-mode .internal-table td{background:#22313f;border-color:#405467;color:#e5e7eb}body.dark-mode .internal-card h3,body.dark-mode .internal-card h4,body.dark-mode .internal-title,body.dark-mode .internal-field,body.dark-mode .internal-group-card h4{color:#8ecbff}body.dark-mode .internal-field input,body.dark-mode .internal-field select,body.dark-mode .internal-project-picker select,body.dark-mode .internal-table input{background:#17232e;color:#fff;border-color:#405467}
+@media(max-width:900px){.internal-box{width:100%;min-height:100%;max-height:none;margin:0;border-radius:0;padding:19px 12px}.internal-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.internal-unit-form,.internal-unit-row,.internal-admin-assignment-form,.internal-assignment-row{grid-template-columns:1fr}.internal-unit-row .sn{text-align:left}.internal-group-list{grid-template-columns:1fr}.internal-project-picker{grid-template-columns:1fr}.internal-actions{justify-content:stretch}.internal-actions button{flex:1}}
+@media(max-width:520px){.internal-form-grid{grid-template-columns:1fr}.internal-tabs{display:grid;grid-template-columns:1fr}.internal-tab{width:100%}}
+</style>
+
+<div id="internalEvaluationPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="internalEvaluationTitle">
+    <div class="internal-box">
+        <span class="close-btn" onclick="closeInternalEvaluationHub()" aria-label="Close Internal Evaluation">&times;</span>
+        <h2 id="internalEvaluationTitle" class="internal-title">🧾 Internal Evaluation &amp; Exam</h2>
+        <p class="internal-subtitle">Nursery to Class 10 • Draft, Excel Export, Class Teacher Acceptance and Admin Submission</p>
+
+        <div class="internal-tabs">
+            <button id="internalSubjectTabBtn" class="internal-tab active" type="button" onclick="showInternalPane('subject')">MY SUBJECT EVALUATIONS</button>
+            <button id="internalClassTeacherTabBtn" class="internal-tab" type="button" onclick="showInternalPane('classTeacher')" style="display:none;">CLASS TEACHER INBOX</button>
+            <button id="internalPrincipalTabBtn" class="internal-tab" type="button" onclick="showInternalPane('principal')" style="display:none;">PRINCIPAL — READ ONLY</button>
+        </div>
+
+        <section id="internalSubjectPane" class="internal-pane active">
+            <div class="internal-card">
+                <h3>Create a New Subject Evaluation</h3>
+                <form id="internalCreateForm" class="internal-form-grid" onsubmit="createInternalEvaluation(event)">
+                    <label class="internal-field">Class<select id="internalCreateClass" required></select></label>
+                    <label class="internal-field">Subject Name<input id="internalCreateSubject" maxlength="100" placeholder="Example: Nepali / नेपाली" required></label>
+                    <label class="internal-field">Evaluation Name / Term<input id="internalCreateName" maxlength="120" placeholder="Example: First Term Internal Evaluation" required></label>
+                    <label class="internal-field">Academic Session<input id="internalCreateSession" maxlength="40" placeholder="Example: 2083" required></label>
+                    <label class="internal-field">Learning Achievement Label
+                        <select id="internalCreateLanguage" required>
+                            <option value="en">Number of Learning Achievements</option>
+                            <option value="ne">सिकाइ उपलब्धि संख्या</option>
+                        </select>
+                    </label>
+                    <label class="internal-field">Exam Full Marks<input id="internalCreateExamFull" type="number" min="0" max="1200" step="0.01" value="0" required></label>
+                    <button id="internalCreateBtn" class="internal-primary" type="submit">CREATE EVALUATION</button>
+                </form>
+            </div>
+
+            <div class="internal-card">
+                <div class="internal-project-picker">
+                    <label for="internalProjectSelect">Open My Evaluation</label>
+                    <select id="internalProjectSelect" onchange="loadInternalTeacherProject(this.value)"></select>
+                    <button type="button" class="internal-secondary" onclick="loadInternalTeacherProjects()">↻ REFRESH</button>
+                </div>
+                <div id="internalTeacherEmpty" class="marks-empty" style="display:none;margin-top:12px;">Create your first Internal Evaluation above.</div>
+
+                <div id="internalTeacherWorkspace" style="display:none;">
+                    <div id="internalTeacherStatusBar" class="internal-status-bar"></div>
+                    <div id="internalTeacherReturnNote" class="internal-note" style="display:none;"></div>
+
+                    <div class="internal-card">
+                        <h4>Evaluation Information</h4>
+                        <div class="internal-form-grid">
+                            <label class="internal-field">Class<select id="internalEditClass" onchange="internalChangeActiveClass()"></select></label>
+                            <label class="internal-field">Subject Name<input id="internalEditSubject" maxlength="100"></label>
+                            <label class="internal-field">Evaluation Name / Term<input id="internalEditName" maxlength="120"></label>
+                            <label class="internal-field">Academic Session<input id="internalEditSession" maxlength="40"></label>
+                            <label class="internal-field">Learning Achievement Label
+                                <select id="internalEditLanguage">
+                                    <option value="en">Number of Learning Achievements</option>
+                                    <option value="ne">सिकाइ उपलब्धि संख्या</option>
+                                </select>
+                            </label>
+                            <label class="internal-field">Exam Full Marks<input id="internalEditExamFull" type="number" min="0" max="1200" step="0.01" onchange="renderInternalMarksTable()"></label>
+                        </div>
+                    </div>
+
+                    <div id="internalUnitManager" class="internal-card">
+                        <h4>Add Theme / Unit</h4>
+                        <form class="internal-unit-form" onsubmit="addInternalUnit(event)">
+                            <label class="internal-field">Theme / Unit Name<input id="internalNewUnitName" maxlength="180" placeholder="English or नेपाली" required></label>
+                            <label class="internal-field"><span id="internalNewUnitCountLabel">Number of Learning Achievements</span><input id="internalNewUnitCount" type="number" min="1" max="300" step="1" required></label>
+                            <button type="submit" class="internal-primary">+ ADD UNIT</button>
+                        </form>
+                        <p class="internal-muted" style="margin-top:9px;">Full Marks is automatic: Learning Achievements × 4.</p>
+                        <div id="internalUnitList" class="internal-unit-list"></div>
+                    </div>
+
+                    <div id="internalMarksTableHost"></div>
+                    <div id="internalTeacherMessage" class="internal-message" role="status"></div>
+                    <div class="internal-actions">
+                        <button type="button" class="internal-secondary" onclick="exportInternalSubjectExcel()">EXPORT EXCEL</button>
+                        <button id="internalSaveBtn" type="button" class="internal-primary" onclick="saveInternalDraft()">SAVE DRAFT</button>
+                        <button id="internalDeleteBtn" type="button" class="internal-danger" onclick="deleteInternalProject()">DELETE</button>
+                        <button id="internalSubmitBtn" type="button" class="internal-success" onclick="submitInternalToClassTeacher()">SUBMIT TO CLASS TEACHER</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="internalClassTeacherPane" class="internal-pane">
+            <div class="internal-card">
+                <div class="internal-section-head">
+                    <div><h3>Class Teacher Inbox</h3><p id="internalClassTeacherIdentity" class="internal-muted">Loading assigned Classes...</p></div>
+                    <button type="button" class="internal-secondary" onclick="loadInternalClassTeacherGroups()">↻ REFRESH</button>
+                </div>
+                <div id="internalClassTeacherGroupList" class="internal-group-list"></div>
+                <div id="internalClassTeacherDetail" class="internal-role-detail"></div>
+            </div>
+        </section>
+
+        <section id="internalPrincipalPane" class="internal-pane">
+            <div class="internal-card">
+                <div class="internal-section-head">
+                    <div><h3>Principal — Submitted Class Sheets</h3><p class="internal-muted">Read Only: Class Sheets appear after the Class Teacher submits them to Admin.</p></div>
+                    <button type="button" class="internal-secondary" onclick="loadInternalPrincipalGroups()">↻ REFRESH</button>
+                </div>
+                <div id="internalPrincipalGroupList" class="internal-group-list"></div>
+                <div id="internalPrincipalDetail" class="internal-role-detail"></div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script id="internal-evaluation-subject-js">
+/* =========================================================
+   INTERNAL EVALUATION — COMMON + SUBJECT TEACHER WORKSPACE
+========================================================= */
+const INTERNAL_CLASS_ORDER=[
+    "Nursery","LKG","UKG","Class 1","Class 2","Class 3","Class 4","Class 5",
+    "Class 6","Class 7","Class 8","Class 9","Class 10"
+];
+const INTERNAL_EDITABLE_STATUSES=["draft","returned_to_subject_teacher"];
+const INTERNAL_PRINCIPAL_STAFF_ID="joseph";
+
+let internalTeacherProjects=[];
+let internalActiveProject=null;
+let internalActiveUnits=[];
+let internalActiveStudents=[];
+let internalUnitMarks=new Map();
+let internalExamMarks=new Map();
+let internalMyClassAssignments=[];
+
+function internalNumber(value){
+    if(value===null||value===undefined||value==="") return "";
+    const n=Number(value);
+    if(!Number.isFinite(n)) return "";
+    return Number.isInteger(n)?String(n):String(Number(n.toFixed(2)));
+}
+function internalNumeric(value){
+    if(value===null||value===undefined||String(value).trim()==="") return null;
+    const n=Number(value);
+    return Number.isFinite(n)?Number(n.toFixed(2)):null;
+}
+function internalKey(){
+    return globalThis.crypto?.randomUUID?.()||`unit-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+function internalStatusLabel(status){
+    return ({
+        draft:"Draft",
+        pending_class_teacher:"Pending — Class Teacher",
+        accepted_by_class_teacher:"Accepted by Class Teacher",
+        submitted_to_admin:"Submitted to Admin",
+        returned_by_admin:"Returned by Admin",
+        returned_to_subject_teacher:"Returned for Correction"
+    })[status]||"Draft";
+}
+function internalStatusHtml(status){
+    const safe=["draft","pending_class_teacher","accepted_by_class_teacher","submitted_to_admin","returned_by_admin","returned_to_subject_teacher"].includes(status)?status:"draft";
+    return `<span class="internal-status ${safe}">${escapeHtml(internalStatusLabel(safe))}</span>`;
+}
+function internalAchievementLabel(language){
+    return language==="ne"?"सिकाइ उपलब्धि संख्या":"Number of Learning Achievements";
+}
+function internalEditable(project=internalActiveProject){
+    return !!project&&INTERNAL_EDITABLE_STATUSES.includes(project.status);
+}
+function internalFormatDate(value){
+    if(!value) return "—";
+    try{return new Date(value).toLocaleString("en-GB",{timeZone:"Asia/Kathmandu"});}
+    catch(_error){return String(value);}
+}
+function internalShowMessage(message,type="error"){
+    const box=document.getElementById("internalTeacherMessage");
+    if(!box) return;
+    box.textContent=message;
+    box.className=`internal-message show ${type}`;
+}
+function internalClearMessage(){
+    const box=document.getElementById("internalTeacherMessage");
+    if(box){box.textContent="";box.className="internal-message";}
+}
+function internalPopulateClassSelect(select){
+    if(!select) return;
+    const current=select.value;
+    select.innerHTML=INTERNAL_CLASS_ORDER.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
+    if(INTERNAL_CLASS_ORDER.includes(current)) select.value=current;
+}
+function internalGroupKey(row){
+    return `${row.class_name}\u0001${String(row.academic_session||"").trim().toLowerCase()}\u0001${String(row.evaluation_name||"").trim().toLowerCase()}`;
+}
+function internalGroupRows(rows){
+    const map=new Map();
+    (rows||[]).forEach(row=>{
+        const key=internalGroupKey(row);
+        if(!map.has(key)) map.set(key,{key,className:row.class_name,evaluationName:row.evaluation_name,session:row.academic_session,rows:[]});
+        map.get(key).rows.push(row);
+    });
+    return [...map.values()].sort((a,b)=>INTERNAL_CLASS_ORDER.indexOf(a.className)-INTERNAL_CLASS_ORDER.indexOf(b.className)||String(b.evaluationName).localeCompare(a.evaluationName));
+}
+function internalSafeFileName(value){
+    if(typeof marksSafeFileName==="function") return marksSafeFileName(value);
+    return String(value||"Internal_Evaluation").replace(/[^a-zA-Z0-9_-]+/g,"_").replace(/^_+|_+$/g,"")||"Internal_Evaluation";
+}
+
+async function openInternalEvaluationHub(){
+    if(!loggedInStaff||!staffAuthSession?.user?.id){openStaffLogin();return;}
+    closeStaffDashboard();
+    internalClearMessage();
+    internalPopulateClassSelect(document.getElementById("internalCreateClass"));
+    internalPopulateClassSelect(document.getElementById("internalEditClass"));
+    const principal=loggedInStaff.username===INTERNAL_PRINCIPAL_STAFF_ID;
+    const principalBtn=document.getElementById("internalPrincipalTabBtn");
+    if(principalBtn) principalBtn.style.display=principal?"inline-block":"none";
+    const popup=document.getElementById("internalEvaluationPopup");
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+    await Promise.all([loadInternalTeacherProjects(),loadMyInternalClassAssignments()]);
+    if(principal){
+        showInternalPane("principal");
+        await loadInternalPrincipalGroups();
+    }else{
+        showInternalPane("subject");
+    }
+}
+function closeInternalEvaluationHub(){
+    const popup=document.getElementById("internalEvaluationPopup");
+    if(popup) popup.style.display="none";
+    document.body.style.overflow="auto";
+}
+function showInternalPane(name){
+    const panes={subject:"internalSubjectPane",classTeacher:"internalClassTeacherPane",principal:"internalPrincipalPane"};
+    const buttons={subject:"internalSubjectTabBtn",classTeacher:"internalClassTeacherTabBtn",principal:"internalPrincipalTabBtn"};
+    Object.entries(panes).forEach(([key,id])=>document.getElementById(id)?.classList.toggle("active",key===name));
+    Object.entries(buttons).forEach(([key,id])=>document.getElementById(id)?.classList.toggle("active",key===name));
+    if(name==="classTeacher") loadInternalClassTeacherGroups();
+    if(name==="principal") loadInternalPrincipalGroups();
+}
+async function loadMyInternalClassAssignments(){
+    try{
+        const db=initStaffSupabase();
+        const {data,error}=await db.rpc("get_my_internal_class_teacher_assignments");
+        if(error) throw error;
+        internalMyClassAssignments=data||[];
+    }catch(error){
+        console.error("Internal Class Teacher assignment error:",error);
+        internalMyClassAssignments=[];
+    }
+    const button=document.getElementById("internalClassTeacherTabBtn");
+    if(button) button.style.display=internalMyClassAssignments.length?"inline-block":"none";
+    const identity=document.getElementById("internalClassTeacherIdentity");
+    if(identity) identity.textContent=internalMyClassAssignments.length
+        ?`Assigned Class: ${internalMyClassAssignments.map(row=>row.class_name).join(", ")}`
+        :"No Class Teacher assignment is linked to this Staff ID.";
+}
+
+async function createInternalEvaluation(event){
+    event.preventDefault();
+    if(!loggedInStaff||!staffAuthSession?.user?.id) return;
+    const button=document.getElementById("internalCreateBtn");
+    const payload={
+        p_class_name:document.getElementById("internalCreateClass")?.value||"",
+        p_subject_name:document.getElementById("internalCreateSubject")?.value.trim()||"",
+        p_evaluation_name:document.getElementById("internalCreateName")?.value.trim()||"",
+        p_academic_session:document.getElementById("internalCreateSession")?.value.trim()||"",
+        p_achievement_language:document.getElementById("internalCreateLanguage")?.value||"en",
+        p_exam_full_marks:internalNumeric(document.getElementById("internalCreateExamFull")?.value)||0,
+        p_staff_name:loggedInStaff.name
+    };
+    const oldText=button?.textContent||"CREATE EVALUATION";
+    if(button){button.disabled=true;button.textContent="CREATING...";}
+    try{
+        const db=initStaffSupabase();
+        const {data,error}=await db.rpc("create_internal_evaluation",payload);
+        if(error) throw error;
+        document.getElementById("internalCreateSubject").value="";
+        internalShowMessage("Internal Evaluation created. Add Theme / Units and enter Marks below.","success");
+        await loadInternalTeacherProjects(data);
+    }catch(error){
+        internalShowMessage("Could not create the Internal Evaluation: "+(error?.message||"Unknown error"));
+    }finally{
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+async function loadInternalTeacherProjects(preferredId=null){
+    const select=document.getElementById("internalProjectSelect");
+    const empty=document.getElementById("internalTeacherEmpty");
+    const workspace=document.getElementById("internalTeacherWorkspace");
+    if(!loggedInStaff||!staffAuthSession?.user?.id) return;
+    try{
+        const db=initStaffSupabase();
+        const {data,error}=await db.from("internal_evaluations")
+            .select("id,created_by,staff_id,staff_name,class_name,subject_name,evaluation_name,academic_session,achievement_language,exam_full_marks,status,class_teacher_staff_id,class_teacher_name,class_teacher_note,admin_note,submitted_to_class_teacher_at,class_teacher_accepted_at,submitted_to_admin_at,returned_at,created_at,updated_at")
+            .eq("staff_id",loggedInStaff.username)
+            .order("updated_at",{ascending:false});
+        if(error) throw error;
+        internalTeacherProjects=data||[];
+        if(!internalTeacherProjects.length){
+            if(select) select.innerHTML="";
+            if(empty) empty.style.display="block";
+            if(workspace) workspace.style.display="none";
+            internalActiveProject=null;
+            return;
+        }
+        if(empty) empty.style.display="none";
+        if(workspace) workspace.style.display="block";
+        if(select){
+            select.innerHTML=internalTeacherProjects.map(row=>`<option value="${Number(row.id)}">${escapeHtml(row.class_name)} — ${escapeHtml(row.subject_name)} — ${escapeHtml(row.evaluation_name)} [${escapeHtml(internalStatusLabel(row.status))}]</option>`).join("");
+        }
+        const chosen=internalTeacherProjects.some(row=>String(row.id)===String(preferredId))?preferredId:internalTeacherProjects[0].id;
+        if(select) select.value=String(chosen);
+        await loadInternalTeacherProject(chosen);
+    }catch(error){
+        internalShowMessage("Could not load Internal Evaluations. Run the supplied Supabase SQL first: "+(error?.message||"Unknown error"));
+        if(workspace) workspace.style.display="none";
+    }
+}
+
+async function loadInternalTeacherProject(projectId){
+    const project=internalTeacherProjects.find(row=>String(row.id)===String(projectId));
+    if(!project) return;
+    internalActiveProject=project;
+    internalActiveUnits=[];
+    internalUnitMarks=new Map();
+    internalExamMarks=new Map();
+    internalClearMessage();
+    try{
+        const db=initStaffSupabase();
+        const [unitsResult,marksResult,examResult,students]=await Promise.all([
+            db.from("internal_evaluation_units").select("id,evaluation_id,client_key,theme_name,learning_achievement_count,full_marks,display_order").eq("evaluation_id",project.id).order("display_order").order("id"),
+            db.from("internal_evaluation_marks").select("evaluation_id,unit_id,student_id,student_name,obtained_marks").eq("evaluation_id",project.id),
+            db.from("internal_exam_marks").select("evaluation_id,student_id,student_name,obtained_marks").eq("evaluation_id",project.id),
+            marksFetchStudents(db,project.class_name)
+        ]);
+        if(unitsResult.error) throw unitsResult.error;
+        if(marksResult.error) throw marksResult.error;
+        if(examResult.error) throw examResult.error;
+        internalActiveUnits=(unitsResult.data||[]).map(row=>({...row,learning_achievement_count:Number(row.learning_achievement_count)}));
+        const keyById=new Map(internalActiveUnits.map(row=>[String(row.id),row.client_key]));
+        (marksResult.data||[]).forEach(row=>{
+            const unitKey=keyById.get(String(row.unit_id));
+            if(unitKey) internalUnitMarks.set(`${unitKey}|${row.student_id}`,internalNumber(row.obtained_marks));
+        });
+        (examResult.data||[]).forEach(row=>internalExamMarks.set(row.student_id,internalNumber(row.obtained_marks)));
+        internalActiveStudents=students||[];
+        renderInternalTeacherProject();
+    }catch(error){
+        internalShowMessage("Could not load this Internal Evaluation: "+(error?.message||"Unknown error"));
+    }
+}
+
+function internalReadMetadata(){
+    return {
+        className:document.getElementById("internalEditClass")?.value||internalActiveProject?.class_name||"",
+        subjectName:document.getElementById("internalEditSubject")?.value.trim()||"",
+        evaluationName:document.getElementById("internalEditName")?.value.trim()||"",
+        session:document.getElementById("internalEditSession")?.value.trim()||"",
+        language:document.getElementById("internalEditLanguage")?.value||"en",
+        examFull:internalNumeric(document.getElementById("internalEditExamFull")?.value)
+    };
+}
+function renderInternalTeacherProject(){
+    if(!internalActiveProject) return;
+    const editable=internalEditable();
+    const ids={
+        internalEditClass:internalActiveProject.class_name,
+        internalEditSubject:internalActiveProject.subject_name,
+        internalEditName:internalActiveProject.evaluation_name,
+        internalEditSession:internalActiveProject.academic_session,
+        internalEditLanguage:internalActiveProject.achievement_language,
+        internalEditExamFull:internalNumber(internalActiveProject.exam_full_marks)
+    };
+    Object.entries(ids).forEach(([id,value])=>{const el=document.getElementById(id);if(el){el.value=value;el.disabled=!editable;}});
+    const status=document.getElementById("internalTeacherStatusBar");
+    if(status) status.innerHTML=`<span>${escapeHtml(internalActiveProject.class_name)} • ${escapeHtml(internalActiveProject.subject_name)} • ${escapeHtml(internalActiveProject.evaluation_name)} • Session ${escapeHtml(internalActiveProject.academic_session)}</span>${internalStatusHtml(internalActiveProject.status)}`;
+    const notes=[internalActiveProject.admin_note?`Admin: ${internalActiveProject.admin_note}`:"",internalActiveProject.class_teacher_note?`Class Teacher: ${internalActiveProject.class_teacher_note}`:""].filter(Boolean);
+    const note=document.getElementById("internalTeacherReturnNote");
+    if(note){note.style.display=notes.length?"block":"none";note.textContent=notes.join("\n\n");}
+    const label=document.getElementById("internalNewUnitCountLabel");
+    if(label) label.textContent=internalAchievementLabel(internalActiveProject.achievement_language);
+    const manager=document.getElementById("internalUnitManager");
+    if(manager) manager.style.display=editable?"block":"none";
+    ["internalSaveBtn","internalDeleteBtn","internalSubmitBtn"].forEach(id=>{const el=document.getElementById(id);if(el) el.style.display=editable?"inline-block":"none";});
+    renderInternalUnitList();
+    renderInternalMarksTable();
+}
+
+function addInternalUnit(event){
+    event.preventDefault();
+    if(!internalEditable()) return;
+    const name=document.getElementById("internalNewUnitName")?.value.trim()||"";
+    const count=Number(document.getElementById("internalNewUnitCount")?.value||0);
+    if(!name||!Number.isInteger(count)||count<1||count>300){internalShowMessage("Enter a Theme / Unit Name and a valid Learning Achievement number (1–300).");return;}
+    internalActiveUnits.push({client_key:internalKey(),theme_name:name,learning_achievement_count:count,full_marks:count*4,display_order:internalActiveUnits.length+1});
+    document.getElementById("internalNewUnitName").value="";
+    document.getElementById("internalNewUnitCount").value="";
+    renderInternalUnitList();
+    renderInternalMarksTable();
+}
+function updateInternalUnit(index,field,value){
+    if(!internalEditable()||!internalActiveUnits[index]) return;
+    if(field==="theme_name") internalActiveUnits[index].theme_name=value;
+    if(field==="learning_achievement_count"){
+        const count=Number(value);
+        internalActiveUnits[index].learning_achievement_count=count;
+        internalActiveUnits[index].full_marks=Number.isFinite(count)?count*4:0;
+        renderInternalMarksTable();
+        const full=document.getElementById(`internalUnitFull-${index}`);
+        if(full) full.textContent=`Full Marks: ${internalNumber(internalActiveUnits[index].full_marks)}`;
+    }
+}
+function deleteInternalUnit(index){
+    if(!internalEditable()||!internalActiveUnits[index]) return;
+    const unit=internalActiveUnits[index];
+    if(!confirm(`Delete Theme / Unit: ${unit.theme_name}?`)) return;
+    internalActiveUnits.splice(index,1);
+    [...internalUnitMarks.keys()].forEach(key=>{if(key.startsWith(`${unit.client_key}|`)) internalUnitMarks.delete(key);});
+    internalActiveUnits.forEach((row,i)=>row.display_order=i+1);
+    renderInternalUnitList();
+    renderInternalMarksTable();
+}
+function renderInternalUnitList(){
+    const host=document.getElementById("internalUnitList");
+    if(!host) return;
+    if(!internalActiveUnits.length){host.innerHTML='<div class="marks-empty">No Theme / Unit added yet.</div>';return;}
+    const editable=internalEditable();
+    const language=document.getElementById("internalEditLanguage")?.value||internalActiveProject?.achievement_language||"en";
+    host.innerHTML=internalActiveUnits.map((unit,index)=>`
+        <div class="internal-unit-row">
+            <div class="sn">S.N. ${index+1}</div>
+            <label class="internal-field">Theme / Unit Name<input value="${escapeHtmlAttr(unit.theme_name)}" maxlength="180" oninput="updateInternalUnit(${index},'theme_name',this.value)" ${editable?"":"disabled"}></label>
+            <label class="internal-field">${escapeHtml(internalAchievementLabel(language))}<input type="number" min="1" max="300" step="1" value="${escapeHtmlAttr(unit.learning_achievement_count)}" oninput="updateInternalUnit(${index},'learning_achievement_count',this.value)" ${editable?"":"disabled"}></label>
+            <div id="internalUnitFull-${index}" class="internal-unit-full">Full Marks: ${escapeHtml(internalNumber(Number(unit.learning_achievement_count)*4))}</div>
+            ${editable?`<button type="button" class="internal-danger" onclick="deleteInternalUnit(${index})">DELETE</button>`:""}
+        </div>`).join("");
+}
+
+function internalStudentTotal(studentId){
+    let total=0,complete=internalActiveUnits.length>0;
+    internalActiveUnits.forEach(unit=>{
+        const value=internalNumeric(internalUnitMarks.get(`${unit.client_key}|${studentId}`));
+        if(value===null) complete=false; else total+=value;
+    });
+    return {complete,total:Number(total.toFixed(2))};
+}
+function internalSetUnitMark(studentIndex,unitIndex,input){
+    const student=internalActiveStudents[studentIndex],unit=internalActiveUnits[unitIndex];
+    if(!student||!unit||!internalEditable()) return;
+    const raw=input.value.trim(),value=internalNumeric(raw),max=Number(unit.learning_achievement_count)*4;
+    input.classList.toggle("invalid",value!==null&&(value<0||value>max));
+    const key=`${unit.client_key}|${student.studentId}`;
+    if(raw==="") internalUnitMarks.delete(key); else internalUnitMarks.set(key,raw);
+    const total=internalStudentTotal(student.studentId);
+    const cell=document.getElementById(`internalTotalCell-${studentIndex}`);
+    if(cell){cell.textContent=total.complete?internalNumber(total.total):"—";cell.className=total.complete?"calculated":"blank-total";}
+}
+function internalSetExamMark(studentIndex,input){
+    const student=internalActiveStudents[studentIndex];
+    if(!student||!internalEditable()) return;
+    const raw=input.value.trim(),value=internalNumeric(raw),max=internalNumeric(document.getElementById("internalEditExamFull")?.value)||0;
+    input.classList.toggle("invalid",value!==null&&(value<0||value>max));
+    if(raw==="") internalExamMarks.delete(student.studentId); else internalExamMarks.set(student.studentId,raw);
+}
+function renderInternalMarksTable(){
+    const host=document.getElementById("internalMarksTableHost");
+    if(!host||!internalActiveProject) return;
+    if(!internalActiveStudents.length){host.innerHTML='<div class="marks-empty">No students were found in the selected Class.</div>';return;}
+    if(!internalActiveUnits.length){host.innerHTML='<div class="marks-empty">Add at least one Theme / Unit to open Marks Entry.</div>';return;}
+    const editable=internalEditable();
+    const language=document.getElementById("internalEditLanguage")?.value||internalActiveProject.achievement_language;
+    const examFull=internalNumeric(document.getElementById("internalEditExamFull")?.value)||0;
+    const totalFull=internalActiveUnits.reduce((sum,unit)=>sum+(Number(unit.learning_achievement_count)||0)*4,0);
+    const headers=internalActiveUnits.map(unit=>`<th>${escapeHtml(unit.theme_name)}<small>${escapeHtml(internalAchievementLabel(language))}: ${escapeHtml(internalNumber(unit.learning_achievement_count))} • FM ${escapeHtml(internalNumber(Number(unit.learning_achievement_count)*4))}</small></th>`).join("");
+    const body=internalActiveStudents.map((student,studentIndex)=>{
+        const unitCells=internalActiveUnits.map((unit,unitIndex)=>{
+            const value=internalUnitMarks.get(`${unit.client_key}|${student.studentId}`)||"";
+            return `<td><input type="number" min="0" max="${Number(unit.learning_achievement_count)*4}" step="0.01" value="${escapeHtmlAttr(value)}" oninput="internalSetUnitMark(${studentIndex},${unitIndex},this)" ${editable?"":"disabled"}></td>`;
+        }).join("");
+        const total=internalStudentTotal(student.studentId);
+        const exam=internalExamMarks.get(student.studentId)||"";
+        return `<tr><td>${studentIndex+1}</td><td>${escapeHtml(student.studentId)}</td><td class="student-name">${escapeHtml(student.name)}</td>${unitCells}<td id="internalTotalCell-${studentIndex}" class="${total.complete?"calculated":"blank-total"}">${total.complete?escapeHtml(internalNumber(total.total)):"—"}</td><td><input type="number" min="0" max="${examFull}" step="0.01" value="${escapeHtmlAttr(exam)}" oninput="internalSetExamMark(${studentIndex},this)" ${editable?"":"disabled"}></td></tr>`;
+    }).join("");
+    host.innerHTML=`<div class="internal-card"><div class="internal-section-head"><div><h4>Student Marks Entry</h4><p class="internal-muted">Internal Full Marks: ${escapeHtml(internalNumber(totalFull))} • Exam Full Marks: ${escapeHtml(internalNumber(examFull))}</p></div></div><div class="internal-table-wrap"><table class="internal-table"><thead><tr><th>S.N.</th><th>Student ID</th><th>Student Name</th>${headers}<th>Internal OM<small>Full ${escapeHtml(internalNumber(totalFull))}</small></th><th>${escapeHtml(internalActiveProject.subject_name)} Exam OM<small>Full ${escapeHtml(internalNumber(examFull))}</small></th></tr></thead><tbody>${body}</tbody></table></div></div>`;
+}
+
+async function internalChangeActiveClass(){
+    if(!internalEditable()) return;
+    const className=document.getElementById("internalEditClass")?.value||"";
+    if(!INTERNAL_CLASS_ORDER.includes(className)) return;
+    if((internalUnitMarks.size||internalExamMarks.size)&&!confirm("Changing Class clears the current unsaved student Marks. Continue?")){
+        document.getElementById("internalEditClass").value=internalActiveProject.class_name;
+        return;
+    }
+    internalUnitMarks=new Map();
+    internalExamMarks=new Map();
+    try{
+        internalActiveStudents=await marksFetchStudents(initStaffSupabase(),className);
+        renderInternalMarksTable();
+    }catch(error){internalShowMessage("Could not load the selected Class roster: "+(error?.message||"Unknown error"));}
+}
+function internalLanguageChanged(){
+    const language=document.getElementById("internalEditLanguage")?.value||"en";
+    const label=document.getElementById("internalNewUnitCountLabel");
+    if(label) label.textContent=internalAchievementLabel(language);
+    renderInternalUnitList();renderInternalMarksTable();
+}
+function internalValidateDraft(requireComplete=false){
+    const meta=internalReadMetadata();
+    if(!INTERNAL_CLASS_ORDER.includes(meta.className)) throw new Error("Select a valid Class.");
+    if(!meta.subjectName||!meta.evaluationName||!meta.session) throw new Error("Subject, Evaluation Name and Academic Session are required.");
+    if(meta.examFull===null||meta.examFull<0||meta.examFull>1200) throw new Error("Exam Full Marks must be between 0 and 1200.");
+    if(requireComplete&&meta.examFull<=0) throw new Error("Enter Exam Full Marks before submitting.");
+    if(requireComplete&&!internalActiveUnits.length) throw new Error("Add at least one Theme / Unit.");
+    internalActiveUnits.forEach((unit,index)=>{
+        const count=Number(unit.learning_achievement_count);
+        if(!String(unit.theme_name||"").trim()) throw new Error(`Theme / Unit ${index+1} needs a name.`);
+        if(!Number.isInteger(count)||count<1||count>300) throw new Error(`Theme / Unit ${index+1} needs a valid Learning Achievement number.`);
+    });
+    internalActiveStudents.forEach(student=>{
+        internalActiveUnits.forEach(unit=>{
+            const raw=internalUnitMarks.get(`${unit.client_key}|${student.studentId}`);
+            const value=internalNumeric(raw),max=Number(unit.learning_achievement_count)*4;
+            if(value!==null&&(value<0||value>max)) throw new Error(`${student.name}: Internal Obtained Marks must be between 0 and ${internalNumber(max)}.`);
+            if(requireComplete&&value===null) throw new Error(`Complete all Internal Marks. Missing: ${student.name} — ${unit.theme_name}.`);
+        });
+        const exam=internalNumeric(internalExamMarks.get(student.studentId));
+        if(exam!==null&&(exam<0||exam>meta.examFull)) throw new Error(`${student.name}: Exam Obtained Marks cannot exceed ${internalNumber(meta.examFull)}.`);
+        if(requireComplete&&exam===null) throw new Error(`Complete Exam Obtained Marks for ${student.name}.`);
+    });
+    return meta;
+}
+function internalSerializeDraft(meta){
+    const units=internalActiveUnits.map((unit,index)=>({client_key:unit.client_key,theme_name:String(unit.theme_name||"").trim(),learning_achievement_count:Number(unit.learning_achievement_count),display_order:index+1}));
+    const marks=[];
+    internalActiveStudents.forEach(student=>internalActiveUnits.forEach(unit=>{
+        const value=internalNumeric(internalUnitMarks.get(`${unit.client_key}|${student.studentId}`));
+        if(value!==null) marks.push({unit_key:unit.client_key,student_id:student.studentId,student_name:student.name,obtained_marks:value});
+    }));
+    const examMarks=[];
+    internalActiveStudents.forEach(student=>{
+        const value=internalNumeric(internalExamMarks.get(student.studentId));
+        if(value!==null) examMarks.push({student_id:student.studentId,student_name:student.name,obtained_marks:value});
+    });
+    return {meta,units,marks,examMarks};
+}
+async function saveInternalDraft(options={}){
+    if(!internalActiveProject||!internalEditable()) return false;
+    const button=document.getElementById("internalSaveBtn"),oldText=button?.textContent||"SAVE DRAFT";
+    try{
+        const meta=internalValidateDraft(!!options.requireComplete);
+        const payload=internalSerializeDraft(meta);
+        if(button){button.disabled=true;button.textContent="SAVING...";}
+        const db=initStaffSupabase();
+        const {error}=await db.rpc("save_internal_evaluation",{
+            p_evaluation_id:Number(internalActiveProject.id),p_class_name:meta.className,p_subject_name:meta.subjectName,
+            p_evaluation_name:meta.evaluationName,p_academic_session:meta.session,p_achievement_language:meta.language,
+            p_exam_full_marks:meta.examFull,p_units:payload.units,p_marks:payload.marks,p_exam_marks:payload.examMarks
+        });
+        if(error) throw error;
+        if(!options.silent) internalShowMessage("Draft saved successfully. You can edit or export it anytime.","success");
+        await loadInternalTeacherProjects(internalActiveProject.id);
+        return true;
+    }catch(error){
+        internalShowMessage("Draft could not be saved: "+(error?.message||"Unknown error"));
+        return false;
+    }finally{if(button){button.disabled=false;button.textContent=oldText;}}
+}
+async function deleteInternalProject(){
+    if(!internalActiveProject||!internalEditable()||!confirm("Delete this Internal Evaluation and all entered Marks?")) return;
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db.rpc("delete_internal_evaluation",{p_evaluation_id:Number(internalActiveProject.id)});
+        if(error) throw error;
+        internalActiveProject=null;
+        internalShowMessage("Internal Evaluation deleted.","success");
+        await loadInternalTeacherProjects();
+    }catch(error){internalShowMessage("Could not delete: "+(error?.message||"Unknown error"));}
+}
+async function submitInternalToClassTeacher(){
+    if(!internalActiveProject||!internalEditable()) return;
+    if(!confirm("Submit this complete Internal Evaluation and Exam to the assigned Class Teacher?\n\nIt will lock immediately. View and Excel Export will remain available.")) return;
+    const saved=await saveInternalDraft({silent:true,requireComplete:true});
+    if(!saved) return;
+    try{
+        const db=initStaffSupabase();
+        const {error}=await db.rpc("submit_internal_evaluation",{p_evaluation_id:Number(internalActiveProject.id)});
+        if(error) throw error;
+        internalShowMessage("Submitted to the Class Teacher. The file is now locked; View and Excel Export remain available.","success");
+        await loadInternalTeacherProjects(internalActiveProject.id);
+    }catch(error){internalShowMessage("Could not submit to the Class Teacher: "+(error?.message||"Unknown error"));}
+}
+
+function exportInternalSubjectExcel(project=internalActiveProject,units=internalActiveUnits,students=internalActiveStudents,unitMarks=internalUnitMarks,examMarks=internalExamMarks){
+    try{
+        if(!project) throw new Error("Open one Internal Evaluation first.");
+        if(!window.XLSX) throw new Error("Excel export library is still loading. Try again in a moment.");
+        const meta=project===internalActiveProject?internalReadMetadata():{
+            className:project.class_name,subjectName:project.subject_name,evaluationName:project.evaluation_name,
+            session:project.academic_session,language:project.achievement_language,examFull:Number(project.exam_full_marks)
+        };
+        const totalLa=units.reduce((sum,u)=>sum+(Number(u.learning_achievement_count)||0),0);
+        const totalFull=totalLa*4;
+        const rows=[
+            ["ST. AUGUSTINE ACADEMIC FOUNDATION"],
+            ["INTERNAL EVALUATION & EXAM — SUBJECT DETAIL"],
+            ["Class",meta.className,"Subject",meta.subjectName],
+            ["Evaluation",meta.evaluationName,"Academic Session",meta.session],
+            ["Subject Teacher",project.staff_name||loggedInStaff?.name||"", "Status",internalStatusLabel(project.status)],
+            [internalAchievementLabel(meta.language),totalLa,"Internal Full Marks",totalFull,"Exam Full Marks",meta.examFull],
+            [],
+            ["S.N.","Student ID","Student Name",...units.map(u=>u.theme_name),`${meta.subjectName} Internal OM`,`${meta.subjectName} Exam OM`],
+            ["LEARNING ACHIEVEMENTS","","",...units.map(u=>Number(u.learning_achievement_count)),totalLa,""],
+            ["FULL MARKS","","",...units.map(u=>Number(u.learning_achievement_count)*4),totalFull,meta.examFull]
+        ];
+        students.forEach((student,index)=>{
+            let total=0,complete=units.length>0;
+            const values=units.map(unit=>{
+                const value=internalNumeric(unitMarks.get(`${unit.client_key}|${student.studentId}`));
+                if(value===null){complete=false;return "";} total+=value;return value;
+            });
+            const exam=internalNumeric(examMarks.get(student.studentId));
+            rows.push([index+1,student.studentId,student.name,...values,complete?Number(total.toFixed(2)):"",exam===null?"":exam]);
+        });
+        const book=XLSX.utils.book_new(),sheet=XLSX.utils.aoa_to_sheet(rows);
+        const lastCol=units.length+4;
+        sheet["!cols"]=[{wch:8},{wch:15},{wch:28},...units.map(()=>({wch:22})),{wch:20},{wch:18}];
+        sheet["!merges"]=[{s:{r:0,c:0},e:{r:0,c:lastCol}},{s:{r:1,c:0},e:{r:1,c:lastCol}}];
+        if(students.length) sheet["!autofilter"]={ref:`A8:${XLSX.utils.encode_col(lastCol)}${rows.length}`};
+        XLSX.utils.book_append_sheet(book,sheet,"Subject Detail");
+        XLSX.writeFile(book,`${internalSafeFileName(meta.className)}_${internalSafeFileName(meta.subjectName)}_${internalSafeFileName(meta.evaluationName)}.xlsx`,{compression:true});
+    }catch(error){internalShowMessage("Excel could not be exported: "+(error?.message||"Unknown error"));}
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+    internalPopulateClassSelect(document.getElementById("internalCreateClass"));
+    internalPopulateClassSelect(document.getElementById("internalEditClass"));
+    document.getElementById("internalEditLanguage")?.addEventListener("change",internalLanguageChanged);
+    document.getElementById("internalEvaluationPopup")?.addEventListener("click",event=>{if(event.target?.id==="internalEvaluationPopup") closeInternalEvaluationHub();});
+});
+</script>
+
+<script id="internal-evaluation-routing-js">
+/* =========================================================
+   CLASS TEACHER, PRINCIPAL, ADMIN, CONSOLIDATION AND EXCEL
+========================================================= */
+const internalRoleGroups={classTeacher:[],principal:[],admin:[]};
+const internalSelectedBundles={classTeacher:null,principal:null,admin:null};
+let internalAdminAssignments=[];
+
+async function internalLoadEvaluationBundle(db,group){
+    const rows=group?.rows||[];
+    const ids=rows.map(row=>Number(row.id));
+    if(!ids.length) return {group,subjects:[],students:[]};
+    const [unitsResult,marksResult,examResult,students]=await Promise.all([
+        db.from("internal_evaluation_units").select("id,evaluation_id,client_key,theme_name,learning_achievement_count,full_marks,display_order").in("evaluation_id",ids).order("display_order").order("id"),
+        db.from("internal_evaluation_marks").select("evaluation_id,unit_id,student_id,student_name,obtained_marks").in("evaluation_id",ids),
+        db.from("internal_exam_marks").select("evaluation_id,student_id,student_name,obtained_marks").in("evaluation_id",ids),
+        marksFetchStudents(db,group.className)
+    ]);
+    if(unitsResult.error) throw unitsResult.error;
+    if(marksResult.error) throw marksResult.error;
+    if(examResult.error) throw examResult.error;
+    const units=unitsResult.data||[],marks=marksResult.data||[],exam=examResult.data||[];
+    const subjects=rows.map(project=>({
+        project,
+        units:units.filter(row=>String(row.evaluation_id)===String(project.id)).sort((a,b)=>Number(a.display_order)-Number(b.display_order)||Number(a.id)-Number(b.id)),
+        marks:marks.filter(row=>String(row.evaluation_id)===String(project.id)),
+        examMarks:exam.filter(row=>String(row.evaluation_id)===String(project.id))
+    })).sort((a,b)=>internalSubjectRank(a.project.subject_name)-internalSubjectRank(b.project.subject_name)||String(a.project.subject_name).localeCompare(String(b.project.subject_name),undefined,{sensitivity:"base"}));
+    return {group,subjects,students:students||[]};
+}
+function internalSubjectRank(name){
+    const value=String(name||"").trim().toLowerCase();
+    const order=[
+        ["nepali","नेपाली"],["english","अंग्रेजी"],["math","mathematics","गणित"],
+        ["science","विज्ञान"],["social","सामाजिक"],["computer","कम्प्युटर"],
+        ["health","स्वास्थ्य"],["g.k","general knowledge","सामान्य ज्ञान"],
+        ["moral","नैतिक"],["drawing","art","कला"]
+    ];
+    const index=order.findIndex(words=>words.some(word=>value===word||value.includes(word)));
+    return index<0?100:index;
+}
+function internalSubjectSummary(subject){
+    const totalLa=subject.units.reduce((sum,row)=>sum+(Number(row.learning_achievement_count)||0),0);
+    const unitIds=new Set(subject.units.map(row=>String(row.id)));
+    const internalByStudent=new Map(),internalCountByStudent=new Map();
+    subject.marks.forEach(row=>{
+        if(!unitIds.has(String(row.unit_id))) return;
+        const current=internalByStudent.get(row.student_id)||0;
+        internalByStudent.set(row.student_id,current+(Number(row.obtained_marks)||0));
+        internalCountByStudent.set(row.student_id,(internalCountByStudent.get(row.student_id)||0)+1);
+    });
+    const examByStudent=new Map(subject.examMarks.map(row=>[row.student_id,Number(row.obtained_marks)]));
+    return {totalLa,totalFull:totalLa*4,internalByStudent,internalCountByStudent,examByStudent};
+}
+function internalRoleGroupHost(role){
+    return document.getElementById(role==="classTeacher"?"internalClassTeacherGroupList":role==="principal"?"internalPrincipalGroupList":"internalAdminGroupList");
+}
+function internalRoleDetailHost(role){
+    return document.getElementById(role==="classTeacher"?"internalClassTeacherDetail":role==="principal"?"internalPrincipalDetail":"internalAdminGroupDetail");
+}
+function internalRenderGroupCards(role){
+    const host=internalRoleGroupHost(role),groups=internalRoleGroups[role]||[];
+    if(!host) return;
+    if(!groups.length){host.innerHTML='<div class="marks-empty">No Internal Evaluation Class Sheet is available.</div>';return;}
+    host.innerHTML=groups.map((group,index)=>{
+        const counts={};group.rows.forEach(row=>counts[row.status]=(counts[row.status]||0)+1);
+        const statusText=Object.entries(counts).map(([status,count])=>`${count} ${internalStatusLabel(status)}`).join(" • ");
+        const adminNote=group.rows.find(row=>row.admin_note)?.admin_note||"";
+        return `<article class="internal-group-card"><h4>${escapeHtml(group.className)} — ${escapeHtml(group.evaluationName)}</h4><p>Academic Session: ${escapeHtml(group.session)}<br>Subjects: ${group.rows.length}<br>${escapeHtml(statusText)}${adminNote?`<br><strong>Admin Note:</strong> ${escapeHtml(adminNote)}`:""}</p><div class="internal-group-card-actions"><button type="button" class="internal-primary" onclick="openInternalRoleGroup('${role}',${index})">OPEN CLASS SHEET</button>${role!=="principal"?`<button type="button" class="internal-secondary" onclick="exportInternalRoleGroup('${role}',${index})">EXPORT EXCEL</button>`:""}</div></article>`;
+    }).join("");
+}
+async function openInternalRoleGroup(role,index){
+    const group=internalRoleGroups[role]?.[index],host=internalRoleDetailHost(role);
+    if(!group||!host) return;
+    host.innerHTML='<div class="marks-empty">Loading consolidated Class Sheet...</div>';
+    try{
+        const db=role==="admin"?initStudentSupabase():initStaffSupabase();
+        const bundle=await internalLoadEvaluationBundle(db,group);
+        internalSelectedBundles[role]={index,bundle};
+        host.innerHTML=internalRenderBundleHtml(bundle,role,index);
+        host.scrollIntoView({behavior:"smooth",block:"start"});
+    }catch(error){host.innerHTML=`<div class="marks-empty">Could not load Class Sheet: ${escapeHtml(error?.message||"Unknown error")}</div>`;}
+}
+function internalRenderBundleHtml(bundle,role,index){
+    const {group,subjects,students}=bundle;
+    const subjectRows=subjects.map(subject=>{
+        const row=subject.project,summary=internalSubjectSummary(subject);
+        const notes=[row.admin_note?`Admin: ${row.admin_note}`:"",row.class_teacher_note?`Class Teacher: ${row.class_teacher_note}`:""].filter(Boolean).join(" | ");
+        let actions="";
+        if(role==="classTeacher"){
+            if(row.status==="pending_class_teacher") actions+=`<button type="button" class="internal-success" onclick="acceptInternalSubmission(${Number(row.id)})">ACCEPT</button>`;
+            if(["pending_class_teacher","accepted_by_class_teacher","returned_by_admin"].includes(row.status)) actions+=`<button type="button" class="internal-warning" onclick="returnInternalSubmission(${Number(row.id)})">RETURN TO SUBJECT TEACHER</button>`;
+        }
+        return `<article class="internal-submission-row"><div><strong>${escapeHtml(row.subject_name)} — ${escapeHtml(row.staff_name)}</strong><small>Staff ID: ${escapeHtml(row.staff_id)} • Total LA: ${summary.totalLa} • Internal FM: ${internalNumber(summary.totalFull)} • Exam FM: ${escapeHtml(internalNumber(row.exam_full_marks))}${notes?`<br>${escapeHtml(notes)}`:""}</small></div><div>${internalStatusHtml(row.status)}<div class="internal-submission-actions">${actions}</div></div></article>`;
+    }).join("");
+    const headers=subjects.map(subject=>`<th colspan="5">${escapeHtml(subject.project.subject_name)}</th>`).join("");
+    const subHeaders=subjects.map(()=>"<th>LA</th><th>Internal FM</th><th>Internal OM</th><th>Exam FM</th><th>Exam OM</th>").join("");
+    const summaries=subjects.map(internalSubjectSummary);
+    const body=students.map((student,studentIndex)=>{
+        const cells=subjects.map((subject,subjectIndex)=>{
+            const summary=summaries[subjectIndex];
+            const complete=summary.internalCountByStudent.get(student.studentId)===subject.units.length&&subject.units.length>0;
+            const internalOm=complete?internalNumber(summary.internalByStudent.get(student.studentId)||0):"—";
+            const examOm=summary.examByStudent.has(student.studentId)?internalNumber(summary.examByStudent.get(student.studentId)):"—";
+            return `<td>${summary.totalLa}</td><td>${internalNumber(summary.totalFull)}</td><td>${escapeHtml(internalOm)}</td><td>${escapeHtml(internalNumber(subject.project.exam_full_marks))}</td><td>${escapeHtml(examOm)}</td>`;
+        }).join("");
+        return `<tr><td>${studentIndex+1}</td><td>${escapeHtml(student.studentId)}</td><td class="student-name">${escapeHtml(student.name)}</td>${cells}</tr>`;
+    }).join("");
+    let groupActions="";
+    if(role!=="principal") groupActions+=`<button type="button" class="internal-secondary" onclick="exportInternalRoleGroup('${role}',${index})">EXPORT CLASS EXCEL</button>`;
+    if(role==="classTeacher"){
+        const blocked=group.rows.some(row=>["pending_class_teacher","returned_to_subject_teacher"].includes(row.status));
+        const ready=group.rows.some(row=>["accepted_by_class_teacher","returned_by_admin"].includes(row.status));
+        if(ready) groupActions+=`<button type="button" class="internal-success" onclick="submitInternalGroupToAdmin(${index})" ${blocked?"disabled title=\"Accept or return every Pending Subject first\"":""}>SUBMIT CLASS TO ADMIN</button>`;
+    }
+    if(role==="admin"&&group.rows.some(row=>row.status==="submitted_to_admin")) groupActions+=`<button type="button" class="internal-warning" onclick="adminReturnInternalGroup(${index})">RETURN TO CLASS TEACHER</button>`;
+    return `<div class="internal-card"><div class="internal-section-head"><div><h3>${escapeHtml(group.className)} — ${escapeHtml(group.evaluationName)}</h3><p class="internal-muted">Academic Session: ${escapeHtml(group.session)} • ${subjects.length} Subject(s)</p></div><div class="internal-actions" style="margin-top:0;">${groupActions}</div></div><div class="internal-submission-list">${subjectRows||'<div class="marks-empty">No Subject submission found.</div>'}</div><div class="internal-summary-wrap"><table class="internal-summary-table"><thead><tr><th rowspan="2">S.N.</th><th rowspan="2">Student ID</th><th rowspan="2">Student Name</th>${headers}</tr><tr>${subHeaders}</tr></thead><tbody>${body||'<tr><td colspan="3">No students found.</td></tr>'}</tbody></table></div></div>`;
+}
+
+async function loadInternalClassTeacherGroups(){
+    const host=internalRoleGroupHost("classTeacher"),detail=internalRoleDetailHost("classTeacher");
+    if(!loggedInStaff||!host) return;
+    host.innerHTML='<div class="marks-empty">Loading Class Teacher submissions...</div>';
+    if(detail) detail.innerHTML="";
+    try{
+        const db=initStaffSupabase();
+        const {data,error}=await db.from("internal_evaluations")
+            .select("id,created_by,staff_id,staff_name,class_name,subject_name,evaluation_name,academic_session,achievement_language,exam_full_marks,status,class_teacher_staff_id,class_teacher_name,class_teacher_note,admin_note,submitted_to_class_teacher_at,class_teacher_accepted_at,submitted_to_admin_at,returned_at,created_at,updated_at")
+            .eq("class_teacher_staff_id",loggedInStaff.username)
+            .neq("status","draft")
+            .order("updated_at",{ascending:false});
+        if(error) throw error;
+        internalRoleGroups.classTeacher=internalGroupRows(data||[]);
+        internalRenderGroupCards("classTeacher");
+    }catch(error){host.innerHTML=`<div class="marks-empty">Could not load Class Teacher Inbox: ${escapeHtml(error?.message||"Unknown error")}</div>`;}
+}
+async function acceptInternalSubmission(evaluationId){
+    if(!confirm("Accept this Subject submission?")) return;
+    try{
+        const {error}=await initStaffSupabase().rpc("accept_internal_evaluation",{p_evaluation_id:Number(evaluationId)});
+        if(error) throw error;
+        await loadInternalClassTeacherGroups();
+        alert("Subject submission accepted. The Subject Teacher can now see Accepted status.");
+    }catch(error){alert("Could not accept: "+(error?.message||"Unknown error"));}
+}
+async function returnInternalSubmission(evaluationId){
+    const note=prompt("Write the correction note for the Subject Teacher:","Please check the entered Internal Evaluation and Exam Marks.");
+    if(note===null) return;
+    try{
+        const {error}=await initStaffSupabase().rpc("return_internal_evaluation_to_subject",{p_evaluation_id:Number(evaluationId),p_note:note});
+        if(error) throw error;
+        await loadInternalClassTeacherGroups();
+        alert("Returned to the Subject Teacher for correction.");
+    }catch(error){alert("Could not return: "+(error?.message||"Unknown error"));}
+}
+async function submitInternalGroupToAdmin(index){
+    const group=internalRoleGroups.classTeacher[index];
+    if(!group||!confirm(`Submit the accepted ${group.className} Class Sheet to Admin?\n\nThe Principal will receive the same Sheet as Read Only.`)) return;
+    try{
+        const {data,error}=await initStaffSupabase().rpc("submit_internal_class_to_admin",{p_class_name:group.className,p_evaluation_name:group.evaluationName,p_academic_session:group.session});
+        if(error) throw error;
+        await loadInternalClassTeacherGroups();
+        alert(`${data||"Accepted"} Subject submission(s) sent to Admin. Principal Read Only view is now available.`);
+    }catch(error){alert("Could not submit the Class Sheet: "+(error?.message||"Unknown error"));}
+}
+
+async function loadInternalPrincipalGroups(){
+    const host=internalRoleGroupHost("principal"),detail=internalRoleDetailHost("principal");
+    if(!loggedInStaff||loggedInStaff.username!==INTERNAL_PRINCIPAL_STAFF_ID||!host) return;
+    host.innerHTML='<div class="marks-empty">Loading submitted Class Sheets...</div>';
+    if(detail) detail.innerHTML="";
+    try{
+        const {data,error}=await initStaffSupabase().from("internal_evaluations")
+            .select("id,created_by,staff_id,staff_name,class_name,subject_name,evaluation_name,academic_session,achievement_language,exam_full_marks,status,class_teacher_staff_id,class_teacher_name,class_teacher_note,admin_note,submitted_to_class_teacher_at,class_teacher_accepted_at,submitted_to_admin_at,returned_at,created_at,updated_at")
+            .order("submitted_to_admin_at",{ascending:false});
+        if(error) throw error;
+        internalRoleGroups.principal=internalGroupRows((data||[]).filter(row=>row.submitted_to_admin_at));
+        internalRenderGroupCards("principal");
+    }catch(error){host.innerHTML=`<div class="marks-empty">Could not load Principal Read Only view: ${escapeHtml(error?.message||"Unknown error")}</div>`;}
+}
+
+function internalBundleSubjectState(bundleSubject,students){
+    const unitById=new Map(bundleSubject.units.map(row=>[String(row.id),row]));
+    const unitMarks=new Map();
+    bundleSubject.marks.forEach(row=>{
+        const unit=unitById.get(String(row.unit_id));
+        if(unit) unitMarks.set(`${unit.client_key}|${row.student_id}`,internalNumber(row.obtained_marks));
+    });
+    const examMarks=new Map(bundleSubject.examMarks.map(row=>[row.student_id,internalNumber(row.obtained_marks)]));
+    return {project:bundleSubject.project,units:bundleSubject.units,students,unitMarks,examMarks};
+}
+function exportInternalBundleSubject(role,evaluationId){
+    const selected=internalSelectedBundles[role];
+    const subject=selected?.bundle?.subjects?.find(item=>String(item.project.id)===String(evaluationId));
+    if(!subject){alert("Open the Class Sheet again before exporting this Subject.");return;}
+    const state=internalBundleSubjectState(subject,selected.bundle.students);
+    exportInternalSubjectExcel(state.project,state.units,state.students,state.unitMarks,state.examMarks);
+}
+async function exportInternalRoleGroup(role,index){
+    try{
+        if(!window.XLSX) throw new Error("Excel export library is still loading. Try again in a moment.");
+        let selected=internalSelectedBundles[role];
+        if(!selected||selected.index!==index){
+            const group=internalRoleGroups[role]?.[index];
+            if(!group) throw new Error("Class Sheet was not found.");
+            const db=role==="admin"?initStudentSupabase():initStaffSupabase();
+            selected={index,bundle:await internalLoadEvaluationBundle(db,group)};
+            internalSelectedBundles[role]=selected;
+        }
+        internalExportConsolidatedWorkbook(selected.bundle);
+    }catch(error){alert("Excel could not be exported: "+(error?.message||"Unknown error"));}
+}
+function internalExportConsolidatedWorkbook(bundle){
+    const {group,subjects,students}=bundle;
+    if(!subjects.length) throw new Error("No Subject submission is available.");
+    const summaries=subjects.map(internalSubjectSummary);
+    const summaryRows=[
+        ["ST. AUGUSTINE ACADEMIC FOUNDATION"],
+        ["INTERNAL EVALUATION & EXAM — CONSOLIDATED CLASS SHEET"],
+        ["Class",group.className,"Evaluation",group.evaluationName,"Academic Session",group.session],
+        [],
+        ["S.N.","Student ID","Student Name",...subjects.flatMap(subject=>[subject.project.subject_name,"","","",""])],
+        ["","","",...subjects.flatMap(()=>["LA","Internal FM","Internal OM","Exam FM","Exam OM"])]
+    ];
+    students.forEach((student,index)=>{
+        const cells=subjects.flatMap((subject,subjectIndex)=>{
+            const summary=summaries[subjectIndex];
+            const complete=summary.internalCountByStudent.get(student.studentId)===subject.units.length&&subject.units.length>0;
+            const internalOm=complete?Number((summary.internalByStudent.get(student.studentId)||0).toFixed(2)):"";
+            const examOm=summary.examByStudent.has(student.studentId)?summary.examByStudent.get(student.studentId):"";
+            return [summary.totalLa,summary.totalFull,internalOm,Number(subject.project.exam_full_marks),examOm];
+        });
+        summaryRows.push([index+1,student.studentId,student.name,...cells]);
+    });
+    const resultRows=[
+        ["ST. AUGUSTINE ACADEMIC FOUNDATION"],
+        ["RESULT COPY SHEET"],
+        ["Class",group.className,"Evaluation",group.evaluationName,"Academic Session",group.session],
+        [],
+        ["S.N.","Student ID","Student Name",...subjects.flatMap(subject=>[`${subject.project.subject_name} Internal`,`${subject.project.subject_name} Exam`])]
+    ];
+    students.forEach((student,index)=>{
+        const cells=subjects.flatMap((subject,subjectIndex)=>{
+            const summary=summaries[subjectIndex];
+            const complete=summary.internalCountByStudent.get(student.studentId)===subject.units.length&&subject.units.length>0;
+            return [complete?Number((summary.internalByStudent.get(student.studentId)||0).toFixed(2)):"",summary.examByStudent.has(student.studentId)?summary.examByStudent.get(student.studentId):""];
+        });
+        resultRows.push([index+1,student.studentId,student.name,...cells]);
+    });
+    const book=XLSX.utils.book_new();
+    const summarySheet=XLSX.utils.aoa_to_sheet(summaryRows),resultSheet=XLSX.utils.aoa_to_sheet(resultRows);
+    const summaryLastCol=2+subjects.length*5,resultLastCol=2+subjects.length*2;
+    summarySheet["!cols"]=[{wch:8},{wch:15},{wch:28},...subjects.flatMap(()=>[{wch:9},{wch:13},{wch:13},{wch:11},{wch:11}])];
+    resultSheet["!cols"]=[{wch:8},{wch:15},{wch:28},...subjects.flatMap(()=>[{wch:18},{wch:16}])];
+    summarySheet["!merges"]=[{s:{r:0,c:0},e:{r:0,c:summaryLastCol}},{s:{r:1,c:0},e:{r:1,c:summaryLastCol}},...subjects.map((_subject,i)=>({s:{r:4,c:3+i*5},e:{r:4,c:7+i*5}}))];
+    resultSheet["!merges"]=[{s:{r:0,c:0},e:{r:0,c:resultLastCol}},{s:{r:1,c:0},e:{r:1,c:resultLastCol}}];
+    if(students.length){summarySheet["!autofilter"]={ref:`A6:${XLSX.utils.encode_col(summaryLastCol)}${summaryRows.length}`};resultSheet["!autofilter"]={ref:`A5:${XLSX.utils.encode_col(resultLastCol)}${resultRows.length}`};}
+    XLSX.utils.book_append_sheet(book,summarySheet,"Internal Evaluation Summary");
+    XLSX.utils.book_append_sheet(book,resultSheet,"Result Copy Sheet");
+    XLSX.writeFile(book,`${internalSafeFileName(group.className)}_${internalSafeFileName(group.evaluationName)}_${internalSafeFileName(group.session)}.xlsx`,{compression:true});
+}
+
+async function renderAdminInternalEvaluations(){
+    if(!studentAdminSession?.access_token){openStudentAdminLogin();return;}
+    internalPopulateClassSelect(document.getElementById("internalAdminAssignmentClass"));
+    const staffSelect=document.getElementById("internalAdminAssignmentStaff");
+    if(staffSelect){
+        const rows=Object.entries(STAFF_LOGIN_DIRECTORY).filter(([,staff])=>/teacher|principal/i.test(staff.designation||"")).sort((a,b)=>a[1].name.localeCompare(b[1].name));
+        staffSelect.innerHTML=rows.map(([id,staff])=>`<option value="${escapeHtml(id)}">${escapeHtml(staff.name)} — ${escapeHtml(id)}</option>`).join("");
+    }
+    await Promise.all([loadInternalAdminAssignments(),loadInternalAdminGroups()]);
+}
+async function loadInternalAdminAssignments(){
+    const host=document.getElementById("internalAdminAssignmentList");
+    if(host) host.innerHTML='<div class="review-empty">Loading Class Teacher assignments...</div>';
+    try{
+        const {data,error}=await initStudentSupabase().rpc("admin_list_internal_class_teacher_assignments");
+        if(error) throw error;
+        internalAdminAssignments=data||[];
+        if(!host) return;
+        if(!internalAdminAssignments.length){host.innerHTML='<div class="review-empty">No Class Teacher is assigned.</div>';return;}
+        host.innerHTML=[...internalAdminAssignments].sort((a,b)=>INTERNAL_CLASS_ORDER.indexOf(a.class_name)-INTERNAL_CLASS_ORDER.indexOf(b.class_name)).map(row=>`<div class="internal-assignment-row"><strong>${escapeHtml(row.class_name)}</strong><span>${escapeHtml(row.staff_name)} • Staff ID: ${escapeHtml(row.staff_id)}</span><button type="button" class="internal-danger" onclick="removeInternalClassTeacherAssignment('${escapeHtml(row.class_name)}')">REMOVE</button></div>`).join("");
+    }catch(error){if(host) host.innerHTML=`<div class="review-empty">Could not load assignments: ${escapeHtml(error?.message||"Unknown error")}</div>`;}
+}
+async function saveInternalClassTeacherAssignment(event){
+    event.preventDefault();
+    if(!studentAdminSession?.access_token) return;
+    const className=document.getElementById("internalAdminAssignmentClass")?.value||"";
+    const staffId=document.getElementById("internalAdminAssignmentStaff")?.value||"";
+    const staff=STAFF_LOGIN_DIRECTORY[staffId];
+    if(!className||!staff) return;
+    try{
+        const {error}=await initStudentSupabase().rpc("admin_set_internal_class_teacher",{p_class_name:className,p_staff_id:staffId,p_staff_name:staff.name});
+        if(error) throw error;
+        await loadInternalAdminAssignments();
+        alert(`${staff.name} assigned as Class Teacher of ${className}.`);
+    }catch(error){alert("Assignment could not be saved: "+(error?.message||"Unknown error"));}
+}
+async function removeInternalClassTeacherAssignment(className){
+    if(!studentAdminSession?.access_token||!confirm(`Remove the Class Teacher assignment for ${className}?\n\nExisting Evaluation records are not deleted, but new routing will stop until another Class Teacher is assigned.`)) return;
+    try{
+        const {error}=await initStudentSupabase().rpc("admin_remove_internal_class_teacher",{p_class_name:className});
+        if(error) throw error;
+        await loadInternalAdminAssignments();
+    }catch(error){alert("Assignment could not be removed: "+(error?.message||"Unknown error"));}
+}
+async function loadInternalAdminGroups(){
+    const host=internalRoleGroupHost("admin"),detail=internalRoleDetailHost("admin");
+    if(!studentAdminSession?.access_token||!host) return;
+    host.innerHTML='<div class="review-empty">Loading Class Sheets...</div>';
+    if(detail) detail.innerHTML="";
+    try{
+        const {data,error}=await initStudentSupabase().from("internal_evaluations")
+            .select("id,created_by,staff_id,staff_name,class_name,subject_name,evaluation_name,academic_session,achievement_language,exam_full_marks,status,class_teacher_staff_id,class_teacher_name,class_teacher_note,admin_note,submitted_to_class_teacher_at,class_teacher_accepted_at,submitted_to_admin_at,returned_at,created_at,updated_at")
+            .order("updated_at",{ascending:false});
+        if(error) throw error;
+        internalRoleGroups.admin=internalGroupRows(data||[]).filter(group=>group.rows.some(row=>["submitted_to_admin","returned_by_admin","returned_to_subject_teacher","accepted_by_class_teacher","pending_class_teacher"].includes(row.status)&&row.submitted_to_admin_at));
+        internalRenderGroupCards("admin");
+    }catch(error){host.innerHTML=`<div class="review-empty">Could not load Admin Class Sheets: ${escapeHtml(error?.message||"Unknown error")}</div>`;}
+}
+async function adminReturnInternalGroup(index){
+    const group=internalRoleGroups.admin[index];
+    if(!group) return;
+    const note=prompt("Write the problem/correction note for the Class Teacher:","Please check this Class Sheet and return the affected Subject to the Subject Teacher.");
+    if(note===null) return;
+    try{
+        const {data,error}=await initStudentSupabase().rpc("admin_return_internal_class",{p_class_name:group.className,p_evaluation_name:group.evaluationName,p_academic_session:group.session,p_note:note});
+        if(error) throw error;
+        await loadInternalAdminGroups();
+        alert(`${data||"Class"} Subject submission(s) returned to the Class Teacher.`);
+    }catch(error){alert("Class Sheet could not be returned: "+(error?.message||"Unknown error"));}
+}
+
+/* Add the new Admin tab without disturbing any existing Admin feature. */
+const internalOriginalShowWebsiteAdminTab=showWebsiteAdminTab;
+showWebsiteAdminTab=function(tab){
+    internalOriginalShowWebsiteAdminTab(tab);
+    const internalTab=document.getElementById("websiteAdminInternalEvaluationsTab");
+    if(internalTab) internalTab.style.display=tab==="internalEvaluations"?"block":"none";
+    if(tab==="internalEvaluations") renderAdminInternalEvaluations();
+};
+
+/* Old Marks Entry stays Class 6–10 only. New Internal Evaluation is N–10. */
+const internalOriginalRenderAdminMarksAssignmentList=renderAdminMarksAssignmentList;
+renderAdminMarksAssignmentList=function(){
+    const all=marksAdminAssignments;
+    marksAdminAssignments=(all||[]).filter(row=>MARKS_UPPER_CLASSES_FINAL.includes(row.class_name));
+    internalOriginalRenderAdminMarksAssignmentList();
+    marksAdminAssignments=all;
+};
+const internalOriginalRenderAdminMarks=renderAdminMarks;
+renderAdminMarks=async function(){
+    await internalOriginalRenderAdminMarks();
+    marksFinalPopulateUpperSelect(document.getElementById("marksAdminAssignmentClass"));
+    marksFinalPopulateUpperSelect(document.getElementById("marksAdminClassFilter"));
+};
+async function internalUpdateOldMarksButtonVisibility(){
+    const button=document.getElementById("staffDashboardMarksAction");
+    if(!button||!loggedInStaff) return;
+    if(loggedInStaff.username===INTERNAL_PRINCIPAL_STAFF_ID){button.style.display="block";return;}
+    button.style.display="none";
+    try{
+        const {data,error}=await initStaffSupabase().from("marks_teacher_assignments").select("class_name").eq("staff_id",loggedInStaff.username).in("class_name",MARKS_UPPER_CLASSES_FINAL);
+        if(error) throw error;
+        button.style.display=data?.length?"block":"none";
+    }catch(error){console.error("Marks Entry visibility error:",error);}
+}
+const internalOriginalOpenStaffDashboard=openStaffDashboard;
+openStaffDashboard=async function(){
+    const marksButton=document.getElementById("staffDashboardMarksAction");
+    const internalButton=document.getElementById("staffDashboardInternalEvaluationAction");
+    if(marksButton&&loggedInStaff?.username!==INTERNAL_PRINCIPAL_STAFF_ID) marksButton.style.display="none";
+    if(internalButton) internalButton.style.display=loggedInStaff?"block":"none";
+    await internalOriginalOpenStaffDashboard();
+    if(internalButton) internalButton.style.display=loggedInStaff?"block":"none";
+    await internalUpdateOldMarksButtonVisibility();
+};
+const internalOriginalStaffLogout=staffLogout;
+staffLogout=async function(){
+    closeInternalEvaluationHub();
+    internalTeacherProjects=[];internalActiveProject=null;internalActiveUnits=[];internalActiveStudents=[];
+    internalUnitMarks=new Map();internalExamMarks=new Map();internalMyClassAssignments=[];
+    await internalOriginalStaffLogout();
+};
+</script>
+
+<!-- =========================================================
+     FINAL UNIFIED MARKS ENTRY — NURSERY TO CLASS 10
+     This final layer replaces the visible old Marks / Internal Evaluation UI.
+========================================================= -->
+<style id="unified-marks-entry-final-styles">
+button[onclick="showWebsiteAdminTab('internalEvaluations')"],
+#websiteAdminInternalEvaluationsTab,
+#staffDashboardInternalEvaluationAction,
+#internalEvaluationPopup{display:none!important}
+.staff-dashboard-action.marks{display:block!important;background:linear-gradient(135deg,#175cd3,#0ba5ec)!important}
+.ume-box{position:relative;width:min(97%,1480px);max-height:95vh;overflow:auto;margin:2.5vh auto;padding:24px;border-radius:22px;background:#f8fafc;box-shadow:0 24px 75px rgba(16,24,40,.32)}
+.ume-title{margin:0 44px 5px 0;color:#123c69}.ume-subtitle{margin:0 44px 16px 0;color:#667085;font-size:13px;line-height:1.55}
+.ume-identity{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:13px 0;padding:12px 14px;border:1px solid #b2ddff;border-radius:12px;background:#eff8ff;color:#175cd3;font-size:12px;font-weight:900}
+.ume-tabs{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}.ume-tabs button,.ume-btn{border:0;border-radius:10px;padding:10px 13px;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
+.ume-tabs button{background:#eef2f6;color:#344054;border:1px solid #d0d5dd}.ume-tabs button.active,.ume-primary{background:#123c69!important;color:#fff!important}.ume-secondary{background:#eef4ff;color:#175cd3;border:1px solid #b2ccff}.ume-success{background:#067647;color:#fff}.ume-warning{background:#fff7e6;color:#8a5b00;border:1px solid #fedf89}.ume-danger{background:#fff1f0;color:#b42318;border:1px solid #fda29b}.ume-btn:disabled{opacity:.5;cursor:not-allowed}
+.ume-panel{display:none}.ume-panel.active{display:block}.ume-card{margin-top:14px;padding:16px;border:1px solid #dce6ef;border-radius:15px;background:#fff}.ume-card h3,.ume-card h4{margin:0 0 10px;color:#123c69}
+.ume-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:end}.ume-field{display:flex;flex-direction:column;gap:6px;color:#123c69;font-size:11px;font-weight:900}.ume-field input,.ume-field select{width:100%;padding:10px 11px;border:1px solid #ccd8e5;border-radius:9px;background:#fff;color:#101828;font:inherit;outline:none}.ume-field input:focus,.ume-field select:focus{border-color:#175cd3;box-shadow:0 0 0 3px rgba(23,92,211,.1)}
+.ume-picker{display:grid;grid-template-columns:auto minmax(250px,1fr) auto;gap:10px;align-items:center}.ume-picker label{color:#123c69;font-size:12px;font-weight:900}.ume-picker select{padding:10px;border:1px solid #ccd8e5;border-radius:9px;background:#fff;font:inherit}
+.ume-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:12px 0}.ume-summary div{padding:10px;border-radius:10px;background:#f2f4f7;color:#667085;font-size:10px}.ume-summary strong{display:block;margin-top:3px;color:#123c69;font-size:12px;overflow-wrap:anywhere}
+.ume-status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:950;text-transform:uppercase}.ume-status.draft{background:#fff7e6;color:#8a5b00}.ume-status.pending{background:#eff8ff;color:#175cd3}.ume-status.accepted{background:#ecfdf3;color:#067647}.ume-status.admin{background:#eef4ff;color:#3538cd}.ume-status.returned{background:#fff1f0;color:#b42318}
+.ume-note{margin:10px 0;padding:11px 12px;border-left:4px solid #f04438;border-radius:9px;background:#fff1f0;color:#912018;font-size:12px;white-space:pre-wrap}
+.ume-component-form{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(130px,.7fr) auto;gap:10px;align-items:end}.ume-components{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin-top:12px}.ume-component{padding:11px;border:1px solid #d0d5dd;border-radius:11px;background:#f8fafc}.ume-component strong{display:block;margin-bottom:7px;color:#123c69}.ume-component-controls{display:flex;align-items:center;gap:7px}.ume-component-controls input{min-width:0;flex:1;padding:8px;border:1px solid #ccd8e5;border-radius:8px;font:inherit}.ume-component-controls button{padding:8px 9px}
+.ume-table-wrap{margin-top:13px;overflow:auto;border:1px solid #d0d5dd;border-radius:12px;background:#fff}.ume-table{width:100%;min-width:820px;border-collapse:separate;border-spacing:0}.ume-table th,.ume-table td{padding:8px;border-right:1px solid #e4e7ec;border-bottom:1px solid #e4e7ec;text-align:center;vertical-align:middle}.ume-table th{background:#123c69;color:#fff;font-size:10px;white-space:nowrap}.ume-table thead tr:nth-child(2) th{background:#175c8f}.ume-table thead tr:nth-child(3) th{background:#1976b8}.ume-table td{background:#fff;color:#344054;font-size:11px}.ume-table td.ume-student{text-align:left;min-width:170px;font-weight:850}.ume-table input[type=number]{width:84px;padding:8px 6px;border:1px solid #ccd8e5;border-radius:8px;text-align:center;font:inherit}.ume-table input:disabled{background:#f2f4f7;color:#667085}
+.ume-table input.ume-invalid,.ume-component-controls input.ume-invalid{border-color:#f04438!important;background:#fff1f0!important;color:#b42318!important;box-shadow:0 0 0 3px rgba(240,68,56,.12)!important}
+.ume-mark-cell{display:flex;align-items:center;justify-content:center;gap:7px;min-width:150px}.ume-absent-label{display:inline-flex;align-items:center;gap:4px;color:#667085;font-size:9px;font-weight:900;white-space:nowrap;cursor:pointer}.ume-absent-label input{width:15px!important;height:15px;margin:0;accent-color:#b42318}.ume-abs-badge{display:none;padding:4px 7px;border-radius:7px;background:#fff1f0;color:#b42318;font-size:10px;font-weight:950}.ume-mark-cell.is-absent .ume-abs-badge{display:inline-flex}.ume-mark-cell.is-absent .ume-obtained{display:none}
+.ume-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:13px}.ume-empty{padding:22px;border:1px dashed #b8c3d0;border-radius:11px;color:#667085;text-align:center;font-size:12px}.ume-message{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12px;font-weight:850}.ume-message.show{display:block}.ume-message.success{background:#ecfdf3;color:#067647}.ume-message.error{background:#fff1f0;color:#b42318}
+.ume-group-list{display:grid;gap:13px}.ume-group{padding:14px;border:1px solid #d0d5dd;border-left:5px solid #175cd3;border-radius:13px;background:#fff}.ume-group-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}.ume-group-title{color:#123c69;font-weight:950}.ume-meta{margin-top:4px;color:#667085;font-size:11px;line-height:1.55}.ume-subjects{display:grid;gap:7px;margin-top:11px}.ume-subject-row{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(150px,1fr) auto;gap:10px;align-items:center;padding:9px 10px;border:1px solid #e4e7ec;border-radius:10px;background:#f8fafc}.ume-subject-row strong{color:#123c69}.ume-row-actions{display:flex;gap:6px;flex-wrap:wrap}.ume-row-actions button{padding:7px 9px}.ume-group-actions{display:flex;gap:7px;flex-wrap:wrap}.ume-admin-map{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.ume-admin-map span{padding:6px 8px;border-radius:8px;background:#eff8ff;color:#175cd3;font-size:10px;font-weight:800}
+.ume-class-filter{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 15px;padding:11px;border:1px solid #dce6ef;border-radius:12px;background:#f8fafc}.ume-class-filter button{border:1px solid #b2ccff;border-radius:9px;padding:8px 11px;background:#eef4ff;color:#175cd3;font:inherit;font-size:11px;font-weight:900;cursor:pointer}.ume-class-filter button.active{border-color:#123c69;background:#123c69;color:#fff;box-shadow:0 3px 9px rgba(18,60,105,.2)}
+body.dark-mode .ume-box{background:#17232e;color:#eee}body.dark-mode .ume-card,body.dark-mode .ume-group,body.dark-mode .ume-table td{background:#22313f;border-color:#405467;color:#e5e7eb}body.dark-mode .ume-title,body.dark-mode .ume-card h3,body.dark-mode .ume-card h4,body.dark-mode .ume-field,body.dark-mode .ume-summary strong,body.dark-mode .ume-group-title,body.dark-mode .ume-subject-row strong{color:#8ecbff}body.dark-mode .ume-field input,body.dark-mode .ume-field select,body.dark-mode .ume-picker select,body.dark-mode .ume-component-controls input,body.dark-mode .ume-table input[type=number]{background:#17232e;color:#fff;border-color:#405467}body.dark-mode .ume-component,body.dark-mode .ume-subject-row{background:#1d2935;border-color:#405467}
+body.dark-mode .ume-class-filter{background:#1d2935;border-color:#405467}body.dark-mode .ume-class-filter button{background:#22313f;color:#8ecbff;border-color:#405467}body.dark-mode .ume-class-filter button.active{background:#175cd3;color:#fff;border-color:#175cd3}
+@media(max-width:900px){.ume-box{width:100%;min-height:100%;max-height:none;margin:0;padding:20px 12px;border-radius:0}.ume-grid,.ume-component-form{grid-template-columns:1fr}.ume-picker{grid-template-columns:1fr}.ume-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.ume-subject-row{grid-template-columns:1fr}.ume-actions{justify-content:stretch}.ume-actions .ume-btn{flex:1}}
+</style>
+
+<div id="umeStaffPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="umeStaffTitle">
+  <div class="ume-box">
+    <span class="close-btn" onclick="closeUnifiedMarksEntry()" aria-label="Close Marks Entry">&times;</span>
+    <h2 id="umeStaffTitle" class="ume-title">📘 Marks Entry</h2>
+    <p class="ume-subtitle">Nursery to Class 10 • Subject Teacher → Class Teacher → Admin • Principal Read Only</p>
+    <div id="umeIdentity" class="ume-identity">Checking Staff Login...</div>
+    <div class="ume-tabs">
+      <button id="umeTeacherTabBtn" type="button" onclick="umeShowStaffTab('teacher')">MY SUBJECT MARKS</button>
+      <button id="umeClassTeacherTabBtn" type="button" onclick="umeShowStaffTab('classTeacher')" style="display:none;">CLASS TEACHER INBOX</button>
+      <button id="umePrincipalTabBtn" type="button" onclick="umeShowStaffTab('principal')" style="display:none;">PRINCIPAL READ ONLY</button>
+    </div>
+
+    <section id="umeTeacherPanel" class="ume-panel">
+      <div id="umeClassRosterCard" class="ume-card" style="display:none;">
+        <h3>Class 6–10 Student Roster — Class Teacher</h3>
+        <p class="ume-subtitle">You may add a student only to your assigned Class. Edit and Delete are available only to the Website Admin.</p>
+        <form id="umeTeacherRosterForm" class="ume-grid" onsubmit="umeAddClassTeacherStudent(event)">
+          <label class="ume-field">Assigned Class<select id="umeTeacherRosterClass" onchange="umeLoadClassTeacherRoster()" required></select></label>
+          <label class="ume-field">Student ID / Roll No.<input id="umeTeacherRosterId" maxlength="24" placeholder="Example: G6001" required></label>
+          <label class="ume-field">Student Name<input id="umeTeacherRosterName" maxlength="140" required></label>
+          <button id="umeTeacherRosterAddBtn" type="submit" class="ume-btn ume-primary">ADD STUDENT</button>
+        </form>
+        <div id="umeTeacherRosterList" class="ume-components"><div class="ume-empty">Loading students...</div></div>
+      </div>
+
+      <div class="ume-card">
+        <h3>Create Subject Marks File</h3>
+        <form id="umeCreateForm" class="ume-grid" onsubmit="umeCreateProject(event)">
+          <label class="ume-field">Class<select id="umeCreateClass" required></select></label>
+          <label class="ume-field">Subject Name<input id="umeCreateSubject" list="umeSubjectSuggestions" maxlength="100" placeholder="Choose or type a Subject" autocomplete="off" required>
+            <datalist id="umeSubjectSuggestions"><option value="NEPALI"></option><option value="ENGLISH"></option><option value="MATH"></option><option value="SCIENCE"></option><option value="SEROPHERO"></option><option value="SURYODAYA"></option><option value="SOCIAL"></option><option value="HEALTH"></option><option value="COMPUTER"></option><option value="MORAL"></option><option value="G.K."></option><option value="ACCOUNT"></option><option value="ECONOMICS"></option></datalist>
+          </label>
+          <label class="ume-field">Term / Examination<input id="umeCreateTerm" maxlength="100" placeholder="Example: Second Term" required></label>
+          <label class="ume-field">Academic Session<input id="umeCreateSession" maxlength="40" placeholder="Example: 2083" required></label>
+          <button id="umeCreateBtn" type="submit" class="ume-btn ume-primary">CREATE SUBJECT</button>
+        </form>
+      </div>
+
+      <div class="ume-card">
+        <div class="ume-picker">
+          <label for="umeProjectSelect">My Marks Files</label>
+          <select id="umeProjectSelect" onchange="umeLoadProject(this.value)"></select>
+          <button type="button" class="ume-btn ume-secondary" onclick="umeLoadMyProjects()">↻ REFRESH</button>
+        </div>
+        <div id="umeTeacherEmpty" class="ume-empty" style="display:none;margin-top:12px;">Create your first Subject Marks file above.</div>
+        <div id="umeTeacherWorkspace" style="display:none;">
+          <div id="umeProjectSummary" class="ume-summary"></div>
+          <div id="umeProjectNotes"></div>
+
+          <div id="umeUpperComponentCard" class="ume-card" style="display:none;">
+            <h4>Add Subject Component</h4>
+            <form class="ume-component-form" onsubmit="umeAddComponent(event)">
+              <label class="ume-field">Component Name<select id="umeComponentName" required><option value="" selected disabled>Choose Component</option><option value="Participation">Participation</option><option value="Project Work">Project Work</option><option value="Terminal Exam">Terminal Exam</option><option value="Exam">Exam</option></select></label>
+              <label class="ume-field">Full Marks<input id="umeComponentFull" type="number" min="0" max="1200" step="0.01" required></label>
+              <button type="submit" class="ume-btn ume-primary">+ ADD COMPONENT</button>
+            </form>
+          </div>
+
+          <div class="ume-card">
+            <h4 id="umeComponentHeading">Components and Common Full Marks</h4>
+            <p class="ume-subtitle">Enter Full Marks once for each Component. It automatically applies to every student.</p>
+            <div id="umeComponentList" class="ume-components"></div>
+          </div>
+          <div id="umeMarksTableHost"></div>
+          <div id="umeTeacherMessage" class="ume-message" role="status"></div>
+          <div id="umeTeacherActions" class="ume-actions"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="umeClassTeacherPanel" class="ume-panel">
+      <div class="ume-card">
+        <h3>Class Teacher Inbox</h3>
+        <p class="ume-subtitle">Accept or return each Subject. When every Subject is ready, send the complete Class package to Admin. Principal receives the same package as Read Only.</p>
+        <div id="umeClassTeacherGroups" class="ume-group-list"><div class="ume-empty">Loading submissions...</div></div>
+      </div>
+      <div id="umeClassTeacherDetail"></div>
+    </section>
+
+    <section id="umePrincipalPanel" class="ume-panel">
+      <div class="ume-card">
+        <h3>Principal — Read Only</h3>
+        <p class="ume-subtitle">Packages appear here only after the Class Teacher sends them to Admin. Editing, returning, deleting and exporting are disabled.</p>
+        <div id="umePrincipalClassFilter" class="ume-class-filter" aria-label="Filter Principal Marks packages by Class"></div>
+        <div id="umePrincipalGroups" class="ume-group-list"><div class="ume-empty">Loading submitted packages...</div></div>
+      </div>
+      <div id="umePrincipalDetail"></div>
+    </section>
+  </div>
+</div>
+
+<script id="unified-marks-entry-final-js">
+/* =========================================================
+   FINAL UNIFIED MARKS ENTRY
+   Visible replacement for both earlier Marks / Evaluation interfaces.
+========================================================= */
+const UME_CLASSES=["Nursery","LKG","UKG","Class 1","Class 2","Class 3","Class 4","Class 5","Class 6","Class 7","Class 8","Class 9","Class 10"];
+const UME_LOWER_CLASSES=new Set(["Nursery","LKG","UKG","Class 1","Class 2","Class 3","Class 4","Class 5"]);
+const UME_UPPER_CLASSES=["Class 6","Class 7","Class 8","Class 9","Class 10"];
+const UME_ALL_CLASSES_FILTER="All Classes";
+const UME_PRINCIPAL_ID="joseph";
+let umeMyProjects=[];
+let umeActiveBundle=null;
+let umeMyClassAssignments=[];
+let umeClassTeacherRows=[];
+let umePrincipalRows=[];
+let umeAdminRows=[];
+let umeTeacherRosterRows=[];
+let umeAdminUpperStudents=[];
+let umeAdminUpperStudentsLoaded=false;
+let umeAdminUpperStudentsLoading=false;
+let umeAdminClassTeachers=[];
+let umeAdminShellReady=false;
+const umePackageClassFilter={principal:UME_ALL_CLASSES_FILTER,admin:UME_ALL_CLASSES_FILTER};
+const umeSelectedGroups={classTeacher:null,principal:null,admin:null};
+
+function umeEscape(value){return typeof escapeHtml==="function"?escapeHtml(String(value??"")):String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function umeNumber(value){if(value===null||value===undefined||value==="") return "";const n=Number(value);return Number.isFinite(n)?(Number.isInteger(n)?n:Number(n.toFixed(2))):"";}
+function umeDate(value){if(!value)return "—";try{return new Date(value).toLocaleString();}catch(_error){return String(value);}}
+function umeSafeFile(value){return String(value||"Marks").replace(/[\\/:*?"<>|]+/g," ").replace(/\s+/g,"_").slice(0,80);}
+function umeProjectEditable(project=umeActiveBundle?.project){return !!project&&["draft","returned_to_subject_teacher"].includes(project.status);}
+function umeStatusLabel(status){return ({draft:"Draft",submitted_to_class_teacher:"Pending Class Teacher",accepted_by_class_teacher:"Accepted by Class Teacher",submitted_to_admin:"Submitted to Admin",returned_by_admin:"Returned by Admin",returned_to_subject_teacher:"Returned to Subject Teacher"})[status]||status||"Unknown";}
+function umeStatusClass(status){if(status==="draft")return "draft";if(status==="submitted_to_class_teacher")return "pending";if(status==="accepted_by_class_teacher")return "accepted";if(status==="submitted_to_admin")return "admin";return "returned";}
+function umeStatusHtml(status){return `<span class="ume-status ${umeStatusClass(status)}">${umeEscape(umeStatusLabel(status))}</span>`;}
+function umeShowMessage(message,type="error"){
+  const box=document.getElementById("umeTeacherMessage");if(!box)return;
+  box.textContent=message;box.className=`ume-message show ${type}`;
+}
+function umeClearMessage(){const box=document.getElementById("umeTeacherMessage");if(box){box.textContent="";box.className="ume-message";}}
+function umeStaffDb(){const db=initStaffSupabase();if(!db)throw new Error("Supabase connection is unavailable.");return db;}
+function umeAdminDb(){const db=initStudentSupabase();if(!db)throw new Error("Supabase connection is unavailable.");return db;}
+async function umeRpc(db,name,args={}){const {data,error}=await db.rpc(name,args);if(error)throw error;return data;}
+function umeFillClassSelect(select){if(!select)return;const current=select.value;select.innerHTML=UME_CLASSES.map(c=>`<option value="${umeEscape(c)}">${umeEscape(c)}</option>`).join("");if(UME_CLASSES.includes(current))select.value=current;}
+
+async function openUnifiedMarksEntry(preferredTab="teacher"){
+  if(!loggedInStaff||!staffAuthSession?.user?.id){openStaffLogin();return;}
+  closeStaffDashboard();
+  const popup=document.getElementById("umeStaffPopup");if(popup)popup.style.display="block";
+  document.body.style.overflow="hidden";
+  umeFillClassSelect(document.getElementById("umeCreateClass"));
+  document.getElementById("umeIdentity").innerHTML=`<span>👩‍🏫 ${umeEscape(loggedInStaff.name)}</span><span>Staff ID: ${umeEscape(loggedInStaff.username)}</span>`;
+  document.getElementById("umePrincipalTabBtn").style.display=loggedInStaff.username===UME_PRINCIPAL_ID?"block":"none";
+  try{
+    umeMyClassAssignments=await umeRpc(umeStaffDb(),"ume_get_my_class_teacher_assignments");
+    document.getElementById("umeClassTeacherTabBtn").style.display=umeMyClassAssignments.length?"block":"none";
+  }catch(error){umeMyClassAssignments=[];console.error("Class Teacher assignment load:",error);}
+  await umeConfigureClassTeacherRoster();
+  if(preferredTab==="principal"&&loggedInStaff.username!==UME_PRINCIPAL_ID)preferredTab="teacher";
+  if(preferredTab==="classTeacher"&&!umeMyClassAssignments.length)preferredTab="teacher";
+  await umeShowStaffTab(preferredTab);
+}
+function closeUnifiedMarksEntry(){const popup=document.getElementById("umeStaffPopup");if(popup)popup.style.display="none";document.body.style.overflow="auto";}
+async function umeShowStaffTab(tab){
+  ["teacher","classTeacher","principal"].forEach(name=>{
+    document.getElementById(`ume${name[0].toUpperCase()+name.slice(1)}Panel`)?.classList.toggle("active",name===tab);
+    document.getElementById(`ume${name[0].toUpperCase()+name.slice(1)}TabBtn`)?.classList.toggle("active",name===tab);
+  });
+  if(tab==="teacher")await umeLoadMyProjects();
+  if(tab==="classTeacher")await umeLoadClassTeacherInbox();
+  if(tab==="principal")await umeLoadPrincipalPackages();
+}
+
+async function umeConfigureClassTeacherRoster(){
+  const card=document.getElementById("umeClassRosterCard"),select=document.getElementById("umeTeacherRosterClass");
+  const assigned=umeMyClassAssignments.map(row=>row.class_name).filter(name=>UME_UPPER_CLASSES.includes(name));
+  if(!card||!select)return;
+  card.style.display=assigned.length?"block":"none";
+  if(!assigned.length)return;
+  const current=select.value;
+  select.innerHTML=assigned.map(name=>`<option value="${umeEscape(name)}">${umeEscape(name)}</option>`).join("");
+  if(assigned.includes(current))select.value=current;
+  await umeLoadClassTeacherRoster();
+}
+async function umeLoadClassTeacherRoster(){
+  const host=document.getElementById("umeTeacherRosterList"),className=document.getElementById("umeTeacherRosterClass")?.value||"";
+  if(!host||!className)return;
+  host.innerHTML='<div class="ume-empty">Loading students...</div>';
+  try{
+    umeTeacherRosterRows=await umeRpc(umeStaffDb(),"ume_list_upper_students");
+    const rows=umeTeacherRosterRows.filter(row=>row.class_name===className).sort((a,b)=>String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
+    host.innerHTML=rows.length?rows.map((row,index)=>`<div class="ume-component"><strong>${index+1}. ${umeEscape(row.name)}</strong><div class="ume-meta">Student ID / Roll No.: ${umeEscape(row.student_id)}</div></div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';
+  }catch(error){host.innerHTML=`<div class="ume-empty">Could not load students: ${umeEscape(error.message||"Unknown error")}</div>`;}
+}
+async function umeAddClassTeacherStudent(event){
+  event.preventDefault();
+  const className=document.getElementById("umeTeacherRosterClass")?.value||"";
+  const studentId=String(document.getElementById("umeTeacherRosterId")?.value||"").trim().toUpperCase();
+  const name=String(document.getElementById("umeTeacherRosterName")?.value||"").trim().toUpperCase();
+  const button=document.getElementById("umeTeacherRosterAddBtn"),old=button?.textContent||"ADD STUDENT";
+  if(!UME_UPPER_CLASSES.includes(className))return;
+  if(!/^[A-Z0-9-]{2,24}$/.test(studentId)){alert("Student ID may contain only 2–24 letters, numbers or hyphens.");return;}
+  if(!name){alert("Enter the Student Name.");return;}
+  if(button){button.disabled=true;button.textContent="ADDING...";}
+  try{
+    await umeRpc(umeStaffDb(),"ume_add_upper_student",{p_class_name:className,p_student_id:studentId,p_name:name});
+    document.getElementById("umeTeacherRosterId").value="";document.getElementById("umeTeacherRosterName").value="";
+    await umeLoadClassTeacherRoster();
+    if(umeActiveBundle?.project?.class_name===className)await umeLoadProject(umeActiveBundle.project.id);
+    alert(`${name} added to ${className}.`);
+  }catch(error){alert("Student could not be added: "+(error.message||"Unknown error"));}
+  finally{if(button){button.disabled=false;button.textContent=old;}}
+}
+
+async function umeCreateProject(event){
+  event.preventDefault();
+  const button=document.getElementById("umeCreateBtn");const old=button.textContent;
+  const args={
+    p_class_name:document.getElementById("umeCreateClass").value,
+    p_subject_name:document.getElementById("umeCreateSubject").value.trim(),
+    p_term_name:document.getElementById("umeCreateTerm").value.trim(),
+    p_academic_session:document.getElementById("umeCreateSession").value.trim(),
+    p_staff_name:loggedInStaff.name
+  };
+  if(!args.p_subject_name||!args.p_term_name||!args.p_academic_session)return;
+  button.disabled=true;button.textContent="CREATING...";
+  try{
+    const id=await umeRpc(umeStaffDb(),"ume_create_project",args);
+    document.getElementById("umeCreateSubject").value="";
+    await umeLoadMyProjects(id);
+    umeShowMessage("Subject Marks file created successfully.","success");
+  }catch(error){alert("Could not create Subject Marks: "+(error.message||"Unknown error"));}
+  finally{button.disabled=false;button.textContent=old;}
+}
+
+async function umeLoadMyProjects(preferredId=""){
+  const select=document.getElementById("umeProjectSelect"),empty=document.getElementById("umeTeacherEmpty"),workspace=document.getElementById("umeTeacherWorkspace");
+  try{
+    umeMyProjects=await umeRpc(umeStaffDb(),"ume_list_my_projects");
+    if(!umeMyProjects.length){select.innerHTML="";empty.style.display="block";workspace.style.display="none";umeActiveBundle=null;return;}
+    empty.style.display="none";workspace.style.display="block";
+    select.innerHTML=umeMyProjects.map(p=>`<option value="${Number(p.id)}">${umeEscape(p.class_name)} • ${umeEscape(p.subject_name)} • ${umeEscape(p.term_name)} • ${umeEscape(umeStatusLabel(p.status))}</option>`).join("");
+    const wanted=String(preferredId||umeActiveBundle?.project?.id||umeMyProjects[0].id);
+    if(umeMyProjects.some(p=>String(p.id)===wanted))select.value=wanted;
+    await umeLoadProject(select.value);
+  }catch(error){empty.style.display="block";workspace.style.display="none";empty.textContent="Marks Entry database is not ready. Run the supplied final SQL first. "+(error.message||"");}
+}
+
+async function umeLoadProject(projectId){
+  if(!projectId)return;
+  umeClearMessage();
+  try{umeActiveBundle=await umeRpc(umeStaffDb(),"ume_get_project_bundle",{p_project_id:Number(projectId)});umeRenderTeacherProject();}
+  catch(error){umeShowMessage("Could not load this Marks file: "+(error.message||"Unknown error"));}
+}
+
+function umeRenderTeacherProject(){
+  const bundle=umeActiveBundle;if(!bundle)return;
+  const p=bundle.project,editable=umeProjectEditable(p),lower=UME_LOWER_CLASSES.has(p.class_name);
+  document.getElementById("umeProjectSummary").innerHTML=`
+    <div>Class<strong>${umeEscape(p.class_name)}</strong></div><div>Subject<strong>${umeEscape(p.subject_name)}</strong></div>
+    <div>Term<strong>${umeEscape(p.term_name)}</strong></div><div>Session<strong>${umeEscape(p.academic_session)}</strong></div>
+    <div>Class Teacher<strong>${umeEscape(p.class_teacher_name||"Assigned on submission")}</strong></div><div>Status<strong>${umeStatusHtml(p.status)}</strong></div>`;
+  let notes="";
+  if(p.admin_note)notes+=`<div class="ume-note"><strong>Admin Return Note:</strong><br>${umeEscape(p.admin_note)}</div>`;
+  if(p.class_teacher_note)notes+=`<div class="ume-note"><strong>Class Teacher Note:</strong><br>${umeEscape(p.class_teacher_note)}</div>`;
+  document.getElementById("umeProjectNotes").innerHTML=notes;
+  document.getElementById("umeUpperComponentCard").style.display=!lower&&editable?"block":"none";
+  document.getElementById("umeComponentHeading").textContent=lower?`${p.subject_name}: Evaluation and Exam Full Marks`:`${p.subject_name}: Components and Common Full Marks`;
+  document.getElementById("umeComponentList").innerHTML=bundle.components.length?bundle.components.map(c=>`
+    <div class="ume-component"><strong>${umeEscape(p.subject_name)} — ${umeEscape(c.component_name)}</strong>
+      <div class="ume-component-controls"><input class="ume-full-marks" data-component-id="${Number(c.id)}" type="number" min="0" max="1200" step="0.01" value="${umeEscape(umeNumber(c.full_marks))}" oninput="umeHandleFullMarksInput(this)" ${editable?"":"disabled"} aria-label="Full Marks for ${umeEscape(c.component_name)}">
+      ${!lower&&editable?`<button type="button" class="ume-btn ume-danger" onclick="umeDeleteComponent(${Number(c.id)})">DELETE</button>`:""}</div>
+    </div>`).join(""):'<div class="ume-empty">Add the first Component to open the Marks table.</div>';
+  umeRenderTeacherMarksTable();
+  document.getElementById("umeTeacherActions").innerHTML=`
+    <button type="button" class="ume-btn ume-secondary" onclick="umeExportActiveSubject()">EXPORT SUBJECT EXCEL</button>
+    ${editable?`<button type="button" class="ume-btn ume-primary" onclick="umeSaveDraft(true)">SAVE DRAFT</button><button type="button" class="ume-btn ume-success" onclick="umeSubmitProject()">SUBMIT TO CLASS TEACHER</button><button type="button" class="ume-btn ume-danger" onclick="umeDeleteProject()">DELETE</button>`:""}`;
+}
+
+function umeEntryMap(bundle){return new Map((bundle.entries||[]).map(e=>[`${e.component_id}|${e.student_id}`,e]));}
+function umeEntryIsAbsent(entry){return entry?.is_absent===true||entry?.is_absent==="true";}
+function umeValidateObtainedInput(input){
+  if(!input)return true;
+  const cell=input.closest(".ume-mark-cell"),absent=cell?.querySelector(".ume-absent")?.checked;
+  if(absent){input.classList.remove("ume-invalid");return true;}
+  const raw=input.value.trim(),value=Number(raw),fullInput=document.querySelector(`#umeComponentList .ume-full-marks[data-component-id="${input.dataset.componentId}"]`);
+  const full=Number(fullInput?.value??input.max);
+  input.max=Number.isFinite(full)?String(full):"";
+  const valid=raw===""||(Number.isFinite(value)&&Number.isFinite(full)&&value>=0&&value<=full);
+  input.classList.toggle("ume-invalid",!valid);
+  return valid;
+}
+function umeToggleAbsent(checkbox){
+  const cell=checkbox?.closest(".ume-mark-cell"),input=cell?.querySelector(".ume-obtained");if(!cell||!input)return;
+  cell.classList.toggle("is-absent",checkbox.checked);
+  if(checkbox.checked){input.value="";input.disabled=true;input.classList.remove("ume-invalid");}
+  else{input.disabled=!umeProjectEditable();umeValidateObtainedInput(input);if(!input.disabled)input.focus();}
+}
+function umeHandleFullMarksInput(input){
+  const value=Number(input.value),valid=input.value.trim()!==""&&Number.isFinite(value)&&value>=0&&value<=1200;
+  input.classList.toggle("ume-invalid",!valid);
+  document.querySelectorAll(`#umeMarksTableHost .ume-obtained[data-component-id="${input.dataset.componentId}"]`).forEach(mark=>umeValidateObtainedInput(mark));
+}
+function umeRenderTeacherMarksTable(){
+  const host=document.getElementById("umeMarksTableHost"),bundle=umeActiveBundle;if(!bundle)return;
+  const editable=umeProjectEditable(bundle.project),components=bundle.components||[],students=bundle.students||[];
+  if(!students.length){host.innerHTML='<div class="ume-card"><div class="ume-empty">No students were found in this Class roster.</div></div>';return;}
+  if(!components.length){host.innerHTML="";return;}
+  const map=umeEntryMap(bundle);
+  const headers=components.map(c=>`<th>${umeEscape(c.component_name)} OM<br><small>Full Marks: ${umeEscape(umeNumber(c.full_marks))}</small></th>`).join("");
+  const body=students.map((s,index)=>`<tr><td>${index+1}</td><td>${umeEscape(s.student_id)}</td><td class="ume-student">${umeEscape(s.student_name)}</td>${components.map(c=>{
+    const entry=map.get(`${c.id}|${s.student_id}`),absent=umeEntryIsAbsent(entry);return `<td><div class="ume-mark-cell ${absent?"is-absent":""}"><input class="ume-obtained" data-component-id="${Number(c.id)}" data-student-id="${umeEscape(s.student_id)}" data-student-name="${umeEscape(s.student_name)}" type="number" min="0" max="${umeEscape(umeNumber(c.full_marks))}" step="0.01" value="${absent?"":umeEscape(umeNumber(entry?.obtained_marks))}" oninput="umeValidateObtainedInput(this)" ${editable&&!absent?"":"disabled"}><span class="ume-abs-badge">ABS</span><label class="ume-absent-label"><input class="ume-absent" type="checkbox" onchange="umeToggleAbsent(this)" ${absent?"checked":""} ${editable?"":"disabled"}> ABSENT</label></div></td>`;
+  }).join("")}</tr>`).join("");
+  host.innerHTML=`<div class="ume-card"><h4>${umeEscape(bundle.project.subject_name)} — Student Obtained Marks</h4><div class="ume-table-wrap"><table class="ume-table"><thead><tr><th>S.N.</th><th>Student ID</th><th>Student Name</th>${headers}</tr></thead><tbody>${body}</tbody></table></div></div>`;
+}
+
+async function umeAddComponent(event){
+  event.preventDefault();if(!umeActiveBundle||!umeProjectEditable())return;
+  const name=document.getElementById("umeComponentName").value.trim(),full=Number(document.getElementById("umeComponentFull").value);
+  if(!name||!Number.isFinite(full)||full<0)return;
+  try{await umeRpc(umeStaffDb(),"ume_add_component",{p_project_id:Number(umeActiveBundle.project.id),p_component_name:name,p_full_marks:full});document.getElementById("umeComponentName").value="";document.getElementById("umeComponentFull").value="";await umeLoadProject(umeActiveBundle.project.id);umeShowMessage("Component added.","success");}
+  catch(error){alert("Could not add Component: "+(error.message||"Unknown error"));}
+}
+async function umeDeleteComponent(id){
+  if(!confirm("Delete this Component and all Marks entered under it?"))return;
+  try{await umeRpc(umeStaffDb(),"ume_delete_component",{p_component_id:Number(id)});await umeLoadProject(umeActiveBundle.project.id);umeShowMessage("Component deleted.","success");}
+  catch(error){alert("Could not delete Component: "+(error.message||"Unknown error"));}
+}
+
+function umeCollectTeacherData(){
+  const fullInputs=[...document.querySelectorAll("#umeComponentList .ume-full-marks")];
+  const components=fullInputs.map(input=>({component_id:Number(input.dataset.componentId),full_marks:Number(input.value)}));
+  const fullById=new Map(components.map(c=>[String(c.component_id),c.full_marks]));
+  for(const input of fullInputs)umeHandleFullMarksInput(input);
+  if(fullInputs.some(input=>input.classList.contains("ume-invalid")))throw new Error("Correct the red Full Marks box before saving.");
+  for(const c of components)if(!Number.isFinite(c.full_marks)||c.full_marks<0||c.full_marks>1200)throw new Error("Correct the red Full Marks box before saving.");
+  const entries=[];
+  for(const input of document.querySelectorAll("#umeMarksTableHost .ume-obtained")){
+    const cell=input.closest(".ume-mark-cell"),isAbsent=!!cell?.querySelector(".ume-absent")?.checked;
+    if(isAbsent){entries.push({component_id:Number(input.dataset.componentId),student_id:input.dataset.studentId,student_name:input.dataset.studentName,obtained_marks:null,is_absent:true});continue;}
+    const raw=input.value.trim();if(raw==="")continue;
+    const value=Number(raw),full=fullById.get(String(input.dataset.componentId));
+    if(!umeValidateObtainedInput(input)||!Number.isFinite(value)||value<0||value>full)throw new Error(`Correct the red Marks box for ${input.dataset.studentName}.`);
+    entries.push({component_id:Number(input.dataset.componentId),student_id:input.dataset.studentId,student_name:input.dataset.studentName,obtained_marks:value,is_absent:false});
+  }
+  return {components,entries};
+}
+async function umeSaveDraft(showSuccess=false){
+  if(!umeActiveBundle||!umeProjectEditable())return false;
+  try{
+    const payload=umeCollectTeacherData();
+    await umeRpc(umeStaffDb(),"ume_save_project",{p_project_id:Number(umeActiveBundle.project.id),p_components:payload.components,p_entries:payload.entries});
+    const id=umeActiveBundle.project.id;await umeLoadProject(id);if(showSuccess)umeShowMessage("Draft saved successfully.","success");return true;
+  }catch(error){umeShowMessage("Could not save Draft: "+(error.message||"Unknown error"));return false;}
+}
+async function umeSubmitProject(){
+  if(!umeActiveBundle||!umeProjectEditable())return;
+  if(!confirm("Submit this complete Subject Marks file to the assigned Class Teacher?\n\nIt will lock immediately. Excel Export will remain available."))return;
+  if(!await umeSaveDraft(false))return;
+  try{const id=umeActiveBundle.project.id;await umeRpc(umeStaffDb(),"ume_submit_to_class_teacher",{p_project_id:Number(id)});await umeLoadMyProjects(id);alert("Submitted to the Class Teacher successfully. The file is now locked.");}
+  catch(error){umeShowMessage("Could not submit: "+(error.message||"Unknown error"));}
+}
+async function umeDeleteProject(){
+  if(!umeActiveBundle||!confirm("Delete this Subject Marks file and all entered Marks permanently?"))return;
+  try{await umeRpc(umeStaffDb(),"ume_delete_my_project",{p_project_id:Number(umeActiveBundle.project.id)});umeActiveBundle=null;await umeLoadMyProjects();alert("Marks file deleted.");}
+  catch(error){alert("Could not delete Marks file: "+(error.message||"Unknown error"));}
+}
+
+function umeGroupRows(rows){
+  const map=new Map();
+  for(const row of rows||[]){const key=[row.class_name,String(row.academic_session).trim().toLowerCase(),String(row.term_name).trim().toLowerCase()].join("|");if(!map.has(key))map.set(key,{key,className:row.class_name,session:row.academic_session,term:row.term_name,rows:[]});map.get(key).rows.push(row);}
+  return [...map.values()].sort((a,b)=>{const timeB=Math.max(...b.rows.map(r=>new Date(r.updated_at).getTime()||0)),timeA=Math.max(...a.rows.map(r=>new Date(r.updated_at).getTime()||0));return timeB-timeA||UME_CLASSES.indexOf(a.className)-UME_CLASSES.indexOf(b.className);});
+}
+function umeSubjectRank(name){const n=String(name||"").trim().toLowerCase();const order=["नेपाली","nepali","english","अंग्रेजी","mathematics","math","गणित","science","विज्ञान","social studies","social","computer","health","moral","g.k.","gk"];const i=order.indexOf(n);return i<0?100:i;}
+function umeSortSubjectRows(rows){return [...rows].sort((a,b)=>umeSubjectRank(a.subject_name)-umeSubjectRank(b.subject_name)||String(a.subject_name).localeCompare(String(b.subject_name),undefined,{numeric:true,sensitivity:"base"}));}
+
+async function umeLoadClassTeacherInbox(){
+  const host=document.getElementById("umeClassTeacherGroups"),detail=document.getElementById("umeClassTeacherDetail");host.innerHTML='<div class="ume-empty">Loading submissions...</div>';detail.innerHTML="";
+  try{umeClassTeacherRows=await umeRpc(umeStaffDb(),"ume_list_class_teacher_projects");umeRenderGroupCards("classTeacher",umeGroupRows(umeClassTeacherRows),host);}
+  catch(error){host.innerHTML=`<div class="ume-empty">Could not load Class Teacher Inbox: ${umeEscape(error.message||"Unknown error")}</div>`;}
+}
+async function umeLoadPrincipalPackages(){
+  const host=document.getElementById("umePrincipalGroups"),detail=document.getElementById("umePrincipalDetail");host.innerHTML='<div class="ume-empty">Loading submitted packages...</div>';detail.innerHTML="";
+  try{umePrincipalRows=await umeRpc(umeStaffDb(),"ume_list_final_projects");umeRenderPackageClassFilter("principal");umeRenderGroupCards("principal",umeRoleGroups("principal"),host);}
+  catch(error){host.innerHTML=`<div class="ume-empty">Could not load Principal view: ${umeEscape(error.message||"Unknown error")}</div>`;}
+}
+
+function umePackageRoleRows(role){return role==="principal"?umePrincipalRows:role==="admin"?umeAdminRows:umeClassTeacherRows;}
+function umeRenderPackageClassFilter(role){
+  const host=document.getElementById(role==="principal"?"umePrincipalClassFilter":"umeAdminClassFilter");if(!host)return;
+  const groups=umeGroupRows(umePackageRoleRows(role)),selected=umePackageClassFilter[role]||UME_ALL_CLASSES_FILTER;
+  host.innerHTML=[UME_ALL_CLASSES_FILTER,...UME_CLASSES].map(className=>{
+    const count=className===UME_ALL_CLASSES_FILTER?groups.length:groups.filter(group=>group.className===className).length;
+    return `<button type="button" class="${className===selected?"active":""}" onclick="umeSetPackageClassFilter('${role}','${umeEscape(className)}')">${umeEscape(className)}${count?` (${count})`:""}</button>`;
+  }).join("");
+}
+function umeSetPackageClassFilter(role,className){
+  if(!["principal","admin"].includes(role)||![UME_ALL_CLASSES_FILTER,...UME_CLASSES].includes(className))return;
+  umePackageClassFilter[role]=className;umeSelectedGroups[role]=null;umeRenderPackageClassFilter(role);
+  const host=document.getElementById(role==="principal"?"umePrincipalGroups":"umeAdminGroups"),detail=umeGroupDetailHost(role);
+  if(detail)detail.innerHTML="";
+  if(host)umeRenderGroupCards(role,umeRoleGroups(role),host);
+}
+
+function umeRenderGroupCards(role,groups,host){
+  if(!groups.length){const selected=umePackageClassFilter[role];host.innerHTML=`<div class="ume-empty">${selected&&selected!==UME_ALL_CLASSES_FILTER?`No Marks package has been received for ${umeEscape(selected)}.`:"No Marks package is available."}</div>`;return;}
+  host.innerHTML=groups.map((g,index)=>{
+    const rows=umeSortSubjectRows(g.rows);
+    const submittedRow=rows.find(row=>row.submitted_to_admin_at);
+    const subjectRows=rows.map(row=>{
+      let actions="";
+      if(role==="classTeacher"&&row.status==="submitted_to_class_teacher")actions+=`<button type="button" class="ume-btn ume-success" onclick="umeAcceptProject(${Number(row.id)})">ACCEPT</button><button type="button" class="ume-btn ume-warning" onclick="umeReturnProject(${Number(row.id)})">RETURN</button>`;
+      if(role==="classTeacher"&&row.status==="accepted_by_class_teacher")actions+=`<button type="button" class="ume-btn ume-warning" onclick="umeReturnProject(${Number(row.id)})">RETURN</button>`;
+      if(role==="classTeacher"&&row.status==="returned_by_admin")actions+=`<button type="button" class="ume-btn ume-success" onclick="umeAcceptProject(${Number(row.id)})">ACCEPT AGAIN</button><button type="button" class="ume-btn ume-warning" onclick="umeReturnProject(${Number(row.id)})">RETURN TO SUBJECT TEACHER</button>`;
+      return `<div class="ume-subject-row"><div><strong>${umeEscape(row.subject_name)}</strong><div class="ume-meta">Subject Teacher: ${umeEscape(row.subject_teacher_name)} • Staff ID: ${umeEscape(row.subject_teacher_id)}</div></div><div>${umeStatusHtml(row.status)}${row.admin_note?`<div class="ume-meta">Admin: ${umeEscape(row.admin_note)}</div>`:""}${row.class_teacher_note?`<div class="ume-meta">Class Teacher: ${umeEscape(row.class_teacher_note)}</div>`:""}</div><div class="ume-row-actions">${actions}</div></div>`;
+    }).join("");
+    let groupActions=`<button type="button" class="ume-btn ume-primary" onclick="umeViewCombined('${role}',${index})">VIEW COMBINED</button>`;
+    if(role!=="principal")groupActions+=`<button type="button" class="ume-btn ume-secondary" onclick="umeExportCombined('${role}',${index})">EXPORT ONE EXCEL</button>`;
+    if(role==="classTeacher"){
+      const blocked=rows.some(r=>["submitted_to_class_teacher","returned_to_subject_teacher","returned_by_admin"].includes(r.status));
+      const ready=rows.some(r=>r.status==="accepted_by_class_teacher");
+      if(ready)groupActions+=`<button type="button" class="ume-btn ume-success" onclick="umeSubmitPackage(${index})" ${blocked?'disabled title="Finish every pending or returned Subject first"':""}>SUBMIT PACKAGE TO ADMIN</button>`;
+    }
+    if(role==="admin"){
+      if(rows.some(r=>r.status==="submitted_to_admin"))groupActions+=`<button type="button" class="ume-btn ume-warning" onclick="umeAdminReturnPackage(${index})">RETURN TO CLASS TEACHER</button>`;
+      groupActions+=`<button type="button" class="ume-btn ume-danger" onclick="umeAdminDeletePackage(${index})">DELETE PACKAGE</button>`;
+    }
+    return `<article class="ume-group"><div class="ume-group-head"><div><div class="ume-group-title">${umeEscape(g.className)} — ${umeEscape(g.term)}</div><div class="ume-meta">Academic Session: ${umeEscape(g.session)} • ${rows.length} Subject(s) • Class Teacher: ${umeEscape(rows[0]?.class_teacher_name||"—")}</div>${submittedRow?`<div class="ume-meta"><strong>Package Submitted By:</strong> ${umeEscape(submittedRow.class_teacher_name||"Class Teacher")} • ${umeEscape(umeDate(submittedRow.submitted_to_admin_at))}</div>`:""}</div><div class="ume-group-actions">${groupActions}</div></div><div class="ume-subjects">${subjectRows}</div></article>`;
+  }).join("");
+}
+
+function umeRoleGroups(role){
+  const groups=umeGroupRows(umePackageRoleRows(role)),selected=umePackageClassFilter[role];
+  return selected&&selected!==UME_ALL_CLASSES_FILTER?groups.filter(group=>group.className===selected):groups;
+}
+function umeRoleDb(role){return role==="admin"?umeAdminDb():umeStaffDb();}
+async function umeLoadGroupBundles(role,index){
+  const group=umeRoleGroups(role)[index];if(!group)throw new Error("Class package was not found.");
+  const bundles=await Promise.all(umeSortSubjectRows(group.rows).map(r=>umeRpc(umeRoleDb(role),"ume_get_project_bundle",{p_project_id:Number(r.id)})));
+  const selected={index,group,bundles};umeSelectedGroups[role]=selected;return selected;
+}
+function umeGroupDetailHost(role){return document.getElementById(role==="classTeacher"?"umeClassTeacherDetail":role==="principal"?"umePrincipalDetail":"umeAdminDetail");}
+async function umeViewCombined(role,index){
+  const host=umeGroupDetailHost(role);host.innerHTML='<div class="ume-card"><div class="ume-empty">Loading combined Class table...</div></div>';
+  try{const selected=await umeLoadGroupBundles(role,index);host.innerHTML=umeCombinedTableHtml(selected.group,selected.bundles);host.scrollIntoView({behavior:"smooth",block:"start"});}
+  catch(error){host.innerHTML=`<div class="ume-card"><div class="ume-empty">Could not load combined Marks: ${umeEscape(error.message||"Unknown error")}</div></div>`;}
+}
+function umeCombinedState(bundles){
+  const sorted=[...bundles].sort((a,b)=>umeSubjectRank(a.project.subject_name)-umeSubjectRank(b.project.subject_name)||String(a.project.subject_name).localeCompare(String(b.project.subject_name)));
+  const studentsMap=new Map();for(const b of sorted)for(const s of b.students||[])studentsMap.set(String(s.student_id),s);
+  const students=[...studentsMap.values()].sort((a,b)=>String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
+  return {bundles:sorted,students};
+}
+function umeCombinedTableHtml(group,bundles){
+  const state=umeCombinedState(bundles);if(!state.bundles.length)return '<div class="ume-card"><div class="ume-empty">No Subject is available.</div></div>';
+  const subjectHeader=state.bundles.map(b=>`<th colspan="${Math.max(1,b.components.length)}">${umeEscape(b.project.subject_name)}</th>`).join("");
+  const componentHeader=state.bundles.map(b=>b.components.length?b.components.map(c=>`<th>${umeEscape(c.component_name)} (${umeEscape(umeNumber(c.full_marks))})</th>`).join(""):'<th>No Component</th>').join("");
+  const maps=new Map(state.bundles.map(b=>[String(b.project.id),umeEntryMap(b)]));
+  const body=state.students.map((s,index)=>`<tr><td>${index+1}</td><td>${umeEscape(s.student_id)}</td><td class="ume-student">${umeEscape(s.student_name)}</td>${state.bundles.map(b=>b.components.length?b.components.map(c=>{const e=maps.get(String(b.project.id)).get(`${c.id}|${s.student_id}`);return `<td>${umeEntryIsAbsent(e)?"ABS":umeEscape(umeNumber(e?.obtained_marks))}</td>`;}).join(""):'<td></td>').join("")}</tr>`).join("");
+  return `<div class="ume-card"><div class="ume-group-head"><div><h3>${umeEscape(group.className)} — ${umeEscape(group.term)}</h3><div class="ume-meta">Academic Session: ${umeEscape(group.session)} • Combined Class Marks • Full Marks is shown in brackets</div></div></div><div class="ume-table-wrap"><table class="ume-table"><thead><tr><th rowspan="2">S.N.</th><th rowspan="2">Student ID</th><th rowspan="2">Student Name</th>${subjectHeader}</tr><tr>${componentHeader}</tr></thead><tbody>${body||'<tr><td colspan="3">No students found.</td></tr>'}</tbody></table></div></div>`;
+}
+
+async function umeAcceptProject(id){if(!confirm("Accept this Subject Marks file?"))return;try{await umeRpc(umeStaffDb(),"ume_accept_project",{p_project_id:Number(id)});await umeLoadClassTeacherInbox();}catch(error){alert("Could not accept: "+(error.message||"Unknown error"));}}
+async function umeReturnProject(id){const note=prompt("Write the correction note for the Subject Teacher:","Please check the entered Marks.");if(note===null)return;try{await umeRpc(umeStaffDb(),"ume_return_to_subject_teacher",{p_project_id:Number(id),p_note:note});await umeLoadClassTeacherInbox();alert("Returned to the Subject Teacher for correction.");}catch(error){alert("Could not return: "+(error.message||"Unknown error"));}}
+async function umeSubmitPackage(index){
+  const group=umeRoleGroups("classTeacher")[index];if(!group)return;
+  if(!confirm(`Submit all accepted Subjects of ${group.className} — ${group.term} to Admin?\n\nThe Principal will receive the same package as Read Only.`))return;
+  try{const count=await umeRpc(umeStaffDb(),"ume_submit_class_package",{p_class_name:group.className,p_term_name:group.term,p_academic_session:group.session});await umeLoadClassTeacherInbox();alert(`${count} Subject(s) sent to Admin successfully.`);}catch(error){alert("Could not submit Class package: "+(error.message||"Unknown error"));}
+}
+
+function umeExcelState(group,bundles){
+  const state=umeCombinedState(bundles),rows=[
+    ["ST. AUGUSTINE ACADEMIC FOUNDATION"],
+    ["COMBINED CLASS MARKS"],
+    ["Class",group.className,"Term / Examination",group.term,"Academic Session",group.session],
+    [],
+    ["S.N.","Student ID","Student Name",...state.bundles.flatMap(b=>b.components.map((_c,i)=>i===0?b.project.subject_name:""))],
+    ["","","",...state.bundles.flatMap(b=>b.components.map(c=>`${c.component_name} (${umeNumber(c.full_marks)})`))]
+  ];
+  const entryMaps=new Map(state.bundles.map(b=>[String(b.project.id),umeEntryMap(b)]));
+  for(const [index,s] of state.students.entries()){
+    const cells=state.bundles.flatMap(b=>b.components.map(c=>{const e=entryMaps.get(String(b.project.id)).get(`${c.id}|${s.student_id}`);return umeEntryIsAbsent(e)?"ABS":e?.obtained_marks===null||e?.obtained_marks===undefined?"":Number(e.obtained_marks);}));
+    rows.push([index+1,s.student_id,s.student_name,...cells]);
+  }
+  return {state,rows};
+}
+function umeWriteCombinedWorkbook(group,bundles){
+  if(!window.XLSX)throw new Error("Excel export library is still loading. Try again in a moment.");
+  const {state,rows}=umeExcelState(group,bundles);if(!state.bundles.length)throw new Error("No Subject is available for Export.");
+  const sheet=XLSX.utils.aoa_to_sheet(rows),book=XLSX.utils.book_new();
+  const lastCol=Math.max(2,2+state.bundles.reduce((sum,b)=>sum+b.components.length,0));
+  const merges=[{s:{r:0,c:0},e:{r:0,c:lastCol}},{s:{r:1,c:0},e:{r:1,c:lastCol}},{s:{r:4,c:0},e:{r:5,c:0}},{s:{r:4,c:1},e:{r:5,c:1}},{s:{r:4,c:2},e:{r:5,c:2}}];
+  let col=3;
+  for(const b of state.bundles){const start=col,end=col+b.components.length-1;if(end>=start)merges.push({s:{r:4,c:start},e:{r:4,c:end}});col+=b.components.length;}
+  sheet["!merges"]=merges;sheet["!cols"]=[{wch:8},{wch:16},{wch:28},...Array.from({length:Math.max(0,lastCol-2)},()=>({wch:19}))];
+  XLSX.utils.book_append_sheet(book,sheet,"Combined Marks");
+  XLSX.writeFile(book,`${umeSafeFile(group.className)}_${umeSafeFile(group.term)}_${umeSafeFile(group.session)}_Combined.xlsx`,{compression:true});
+}
+async function umeExportCombined(role,index){try{const selected=await umeLoadGroupBundles(role,index);umeWriteCombinedWorkbook(selected.group,selected.bundles);}catch(error){alert("Excel could not be exported: "+(error.message||"Unknown error"));}}
+async function umeExportOneProject(role,id){try{const bundle=await umeRpc(umeRoleDb(role),"ume_get_project_bundle",{p_project_id:Number(id)});const group={className:bundle.project.class_name,term:bundle.project.term_name,session:bundle.project.academic_session};umeWriteCombinedWorkbook(group,[bundle]);}catch(error){alert("Subject Excel could not be exported: "+(error.message||"Unknown error"));}}
+function umeExportActiveSubject(){
+  if(!umeActiveBundle)return;
+  try{
+    let bundle=umeActiveBundle;
+    /* Editable, unsaved cells are included too, so a half-completed Draft can be exported immediately. */
+    if(umeProjectEditable()){
+      const current=umeCollectTeacherData(),fullMap=new Map(current.components.map(c=>[String(c.component_id),c.full_marks]));
+      bundle={...umeActiveBundle,
+        components:umeActiveBundle.components.map(c=>({...c,full_marks:fullMap.get(String(c.id))})),
+        entries:current.entries.map(e=>({...e,project_id:umeActiveBundle.project.id}))
+      };
+    }
+    const p=bundle.project;umeWriteCombinedWorkbook({className:p.class_name,term:p.term_name,session:p.academic_session},[bundle]);
+  }catch(error){alert("Excel could not be exported: "+(error.message||"Unknown error"));}
+}
+
+function umeBuildAdminShell(){
+  const host=document.getElementById("websiteAdminMarksTab");if(!host)return;
+  host.innerHTML=`<div class="admin-section-head"><div><h3>📘 Unified Marks Entry Management</h3><p>Nursery to Class 10 • Combined Class packages received from Class Teachers.</p></div><button type="button" class="admin-mini-btn" onclick="renderAdminMarks()">↻ Refresh</button></div><div class="ume-card"><h4>Class Teacher Management</h4><p class="ume-subtitle">Choose any Staff from the complete Staff list. The selected person must have a working Staff Login ID.</p><div id="umeAdminTeacherMap" class="ume-group-list"></div></div><div class="ume-card"><h4>Class Packages</h4><p class="ume-subtitle">Choose a Class to see only its received packages. View, export one combined Excel, return for correction, or permanently delete completed packages.</p><div id="umeAdminClassFilter" class="ume-class-filter" aria-label="Filter Admin Marks packages by Class"></div><div id="umeAdminGroups" class="ume-group-list"><div class="ume-empty">Loading packages...</div></div></div><div id="umeAdminDetail"></div>`;
+  umeAdminShellReady=true;
+}
+function umeAllStaffChoices(){
+  const choices=new Map();
+  if(typeof STAFF_LOGIN_DIRECTORY==="object")Object.entries(STAFF_LOGIN_DIRECTORY).forEach(([id,staff])=>choices.set(id,{id,name:staff.name||id,designation:staff.designation||"Staff"}));
+  if(typeof adminManagedStaff==="object")Object.entries(adminManagedStaff).forEach(([key,staff])=>{
+    const id=String(staff.staffKey||key||"").trim().toLowerCase();if(!id)return;
+    const previous=choices.get(id)||{};choices.set(id,{id,name:staff.name||previous.name||id,designation:staff.designation||previous.designation||"Staff"});
+  });
+  return [...choices.values()].sort((a,b)=>String(a.name).localeCompare(String(b.name),undefined,{sensitivity:"base"}));
+}
+function umeRenderAdminClassTeacherMap(){
+  const host=document.getElementById("umeAdminTeacherMap");if(!host)return;
+  const staff=umeAllStaffChoices();
+  host.innerHTML=UME_CLASSES.map((className,index)=>{
+    const current=umeAdminClassTeachers.find(row=>row.class_name===className);
+    const options=[...staff];
+    if(current&&!options.some(item=>item.id===current.staff_id))options.push({id:current.staff_id,name:current.staff_name,designation:"Current Class Teacher"});
+    return `<div class="ume-subject-row"><div><strong>${umeEscape(className)}</strong><div class="ume-meta">Current: ${umeEscape(current?.staff_name||"Not Assigned")} ${current?.staff_id?`• ${umeEscape(current.staff_id)}`:""}</div></div><label class="ume-field">Select Staff<select id="umeAdminClassTeacherSelect${index}">${options.map(item=>`<option value="${umeEscape(item.id)}" ${item.id===current?.staff_id?"selected":""}>${umeEscape(item.name)} — ${umeEscape(item.id)} — ${umeEscape(item.designation)}</option>`).join("")}</select></label><div class="ume-row-actions"><button type="button" class="ume-btn ume-primary" onclick="umeSaveClassTeacherAssignment(${index})">SAVE ASSIGNMENT</button></div></div>`;
+  }).join("");
+}
+async function umeSaveClassTeacherAssignment(index){
+  const className=UME_CLASSES[index],select=document.getElementById(`umeAdminClassTeacherSelect${index}`),selectedId=select?.value;
+  const current=umeAdminClassTeachers.find(row=>row.class_name===className);
+  const staff=umeAllStaffChoices().find(item=>item.id===selectedId)||(current?.staff_id===selectedId?{id:current.staff_id,name:current.staff_name}:null);
+  if(!className||!staff)return;
+  if(!confirm(`Assign ${staff.name} as Class Teacher of ${className}?`))return;
+  try{await umeRpc(umeAdminDb(),"ume_admin_set_class_teacher",{p_class_name:className,p_staff_id:staff.id,p_staff_name:staff.name});await renderAdminMarks();alert(`${staff.name} is now the Class Teacher of ${className}.`);}catch(error){alert("Class Teacher could not be changed: "+(error.message||"Unknown error"));}
+}
+renderAdminMarks=async function(){
+  if(!studentAdminSession?.access_token){openStudentAdminLogin();return;}
+  if(!umeAdminShellReady||!document.getElementById("umeAdminGroups"))umeBuildAdminShell();
+  const host=document.getElementById("umeAdminGroups"),map=document.getElementById("umeAdminTeacherMap"),detail=document.getElementById("umeAdminDetail");host.innerHTML='<div class="ume-empty">Loading packages...</div>';detail.innerHTML="";
+  try{
+    const [teachers,rows]=await Promise.all([umeRpc(umeAdminDb(),"ume_get_class_teachers"),umeRpc(umeAdminDb(),"ume_list_final_projects")]);
+    umeAdminClassTeachers=teachers;umeRenderAdminClassTeacherMap();
+    umeAdminRows=rows;umeRenderPackageClassFilter("admin");umeRenderGroupCards("admin",umeRoleGroups("admin"),host);
+  }catch(error){host.innerHTML=`<div class="ume-empty">Could not load Unified Marks: ${umeEscape(error.message||"Unknown error")}. Run the supplied final SQL first.</div>`;}
+};
+async function umeAdminReturnPackage(index){
+  const group=umeRoleGroups("admin")[index];if(!group)return;
+  const note=prompt("Write the problem/correction note for the Class Teacher:","Please check this Class package and return the affected Subject to the Subject Teacher.");if(note===null)return;
+  try{const count=await umeRpc(umeAdminDb(),"ume_admin_return_package",{p_class_name:group.className,p_term_name:group.term,p_academic_session:group.session,p_note:note});await renderAdminMarks();alert(`${count} Subject(s) returned to the Class Teacher.`);}catch(error){alert("Package could not be returned: "+(error.message||"Unknown error"));}
+}
+async function umeAdminDeletePackage(index){
+  const group=umeRoleGroups("admin")[index];if(!group)return;
+  if(!confirm(`PERMANENTLY DELETE ${group.className} — ${group.term} — ${group.session}?\n\nAll submitted Subjects, Components and student Marks in this package will be deleted. This cannot be undone.`))return;
+  if(!confirm("Final confirmation: Delete this complete Class package now?"))return;
+  try{const count=await umeRpc(umeAdminDb(),"ume_admin_delete_package",{p_class_name:group.className,p_term_name:group.term,p_academic_session:group.session});await renderAdminMarks();alert(`${count} Subject file(s) deleted permanently.`);}catch(error){alert("Package could not be deleted: "+(error.message||"Unknown error"));}
+}
+
+/* Class 6-10 roster management is added below the unchanged Nursery-Class 5
+   Student Management area in the Admin Controller. */
+function umeEnsureAdminUpperRosterSection(){
+  const tab=document.getElementById("websiteAdminStudentsTab");if(!tab||document.getElementById("umeAdminUpperRosterSection"))return;
+  const section=document.createElement("section");section.id="umeAdminUpperRosterSection";section.className="ume-card";
+  section.innerHTML=`<div class="admin-section-head"><div><h3>Class 6–10 Student List</h3><p>Add, edit or delete the name-only students used by Public Portfolio and Marks Entry.</p></div></div><form id="umeAdminUpperRosterForm" class="ume-grid" onsubmit="umeSaveAdminUpperStudent(event)"><input id="umeAdminUpperOriginalId" type="hidden"><label class="ume-field">Class<select id="umeAdminUpperClass" required>${UME_UPPER_CLASSES.map(c=>`<option>${umeEscape(c)}</option>`).join("")}</select></label><label class="ume-field">Student ID / Roll No.<input id="umeAdminUpperId" maxlength="24" required></label><label class="ume-field">Student Name<input id="umeAdminUpperName" maxlength="140" required></label><button id="umeAdminUpperSaveBtn" type="submit" class="ume-btn ume-primary">ADD STUDENT</button><button id="umeAdminUpperCancelBtn" type="button" class="ume-btn ume-secondary" onclick="umeResetAdminUpperForm()" style="display:none;">CANCEL EDIT</button></form><div class="ume-picker" style="margin-top:14px;"><label for="umeAdminUpperFilter">Roster List</label><select id="umeAdminUpperFilter" onchange="umeRenderAdminUpperStudents()">${UME_UPPER_CLASSES.map(c=>`<option>${umeEscape(c)}</option>`).join("")}</select><button type="button" class="ume-btn ume-secondary" onclick="umeLoadAdminUpperStudents()">↻ REFRESH</button></div><div id="umeAdminUpperList" class="ume-components"><div class="ume-empty">Loading Class 6–10 students...</div></div>`;
+  tab.appendChild(section);
+}
+async function umeLoadAdminUpperStudents(){
+  umeEnsureAdminUpperRosterSection();const host=document.getElementById("umeAdminUpperList");if(!host||!studentAdminSession?.access_token)return;
+  if(umeAdminUpperStudentsLoading)return;
+  umeAdminUpperStudentsLoading=true;
+  host.innerHTML='<div class="ume-empty">Loading Class 6–10 students...</div>';
+  try{
+    const rows=await umeRpc(umeAdminDb(),"ume_admin_list_upper_students");
+    umeAdminUpperStudents=(rows||[]).map(row=>({
+      ...row,
+      class_name:String(row.class_name||"").trim(),
+      student_id:String(row.student_id||"").trim(),
+      name:String(row.name||row.student_name||"").trim()
+    })).filter(row=>UME_UPPER_CLASSES.includes(row.class_name)&&row.student_id&&row.name);
+    umeAdminUpperStudentsLoaded=true;
+    umeRenderAdminUpperStudents();
+    umeRenderCombinedAdminStudentList();
+  }
+  catch(error){umeAdminUpperStudentsLoaded=false;host.innerHTML=`<div class="ume-empty">Could not load Class 6–10 students: ${umeEscape(error.message||"Unknown error")}. Run the latest SQL file once, then press Refresh.</div>`;umeRenderCombinedAdminStudentList();}
+  finally{umeAdminUpperStudentsLoading=false;}
+}
+function umeRenderAdminUpperStudents(){
+  const host=document.getElementById("umeAdminUpperList"),className=document.getElementById("umeAdminUpperFilter")?.value||UME_UPPER_CLASSES[0];if(!host)return;
+  const rows=umeAdminUpperStudents.filter(row=>String(row.class_name).trim()===className).sort((a,b)=>String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
+  host.innerHTML=rows.length?rows.map((row,index)=>`<div class="ume-component"><strong>${index+1}. ${umeEscape(row.name)}</strong><div class="ume-meta">${umeEscape(row.class_name)} • Student ID / Roll No.: ${umeEscape(row.student_id)}</div><div class="ume-row-actions" style="margin-top:8px;"><button type="button" class="ume-btn ume-secondary" onclick="umeEditAdminUpperStudent('${umeEscape(row.student_id)}')">EDIT</button><button type="button" class="ume-btn ume-danger" onclick="umeDeleteAdminUpperStudent('${umeEscape(row.student_id)}')">DELETE</button></div></div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';
+}
+function umeResetAdminUpperForm(){
+  const form=document.getElementById("umeAdminUpperRosterForm"),className=document.getElementById("umeAdminUpperClass")?.value;form?.reset();
+  if(className)document.getElementById("umeAdminUpperClass").value=className;
+  document.getElementById("umeAdminUpperOriginalId").value="";document.getElementById("umeAdminUpperSaveBtn").textContent="ADD STUDENT";document.getElementById("umeAdminUpperCancelBtn").style.display="none";
+}
+function umeFocusAdminUpperStudentForm(){
+  umeEnsureAdminUpperRosterSection();umeResetAdminUpperForm();
+  const section=document.getElementById("umeAdminUpperRosterSection");section?.scrollIntoView({behavior:"smooth",block:"start"});
+  setTimeout(()=>document.getElementById("umeAdminUpperId")?.focus(),250);
+}
+function umeEditAdminUpperStudent(studentId){
+  const row=umeAdminUpperStudents.find(item=>item.student_id===studentId);if(!row)return;
+  document.getElementById("umeAdminUpperOriginalId").value=row.student_id;document.getElementById("umeAdminUpperClass").value=row.class_name;document.getElementById("umeAdminUpperId").value=row.student_id;document.getElementById("umeAdminUpperName").value=row.name;document.getElementById("umeAdminUpperSaveBtn").textContent="SAVE CHANGES";document.getElementById("umeAdminUpperCancelBtn").style.display="inline-block";document.getElementById("umeAdminUpperId").focus();
+}
+function umeOpenAdminUpperStudentEdit(studentId){
+  umeEditAdminUpperStudent(studentId);
+  document.getElementById("umeAdminUpperRosterSection")?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function umeSaveAdminUpperStudent(event){
+  event.preventDefault();
+  const original=document.getElementById("umeAdminUpperOriginalId").value;
+  const className=document.getElementById("umeAdminUpperClass").value;
+  const studentId=document.getElementById("umeAdminUpperId").value.trim().toUpperCase();
+  const name=document.getElementById("umeAdminUpperName").value.trim().toUpperCase();
+  if(!/^[A-Z0-9-]{2,24}$/.test(studentId)){alert("Student ID may contain only 2–24 letters, numbers or hyphens.");return;}
+  if(!name)return;
+  try{await umeRpc(umeAdminDb(),"ume_admin_save_upper_student",{p_original_student_id:original,p_student_id:studentId,p_name:name,p_class_name:className});umeResetAdminUpperForm();document.getElementById("umeAdminUpperFilter").value=className;await umeLoadAdminUpperStudents();alert(original?"Student updated successfully.":"Student added successfully.");}
+  catch(error){alert("Student could not be saved: "+(error.message||"Unknown error"));}
+}
+async function umeDeleteAdminUpperStudent(studentId){
+  const row=umeAdminUpperStudents.find(item=>item.student_id===studentId);if(!row)return;
+  if(!confirm(`Delete ${row.name} from the active ${row.class_name} Student list?\n\nPreviously submitted final Marks remain preserved.`))return;
+  try{await umeRpc(umeAdminDb(),"ume_admin_delete_upper_student",{p_student_id:studentId});await umeLoadAdminUpperStudents();alert("Student deleted from the active roster.");}
+  catch(error){alert("Student could not be deleted: "+(error.message||"Unknown error"));}
+}
+const umePreviousRenderAdminStudentList=renderAdminStudentList;
+function umeRenderCombinedAdminStudentList(){
+  const host=document.getElementById("adminStudentList");if(!host)return;
+  const classFilter=document.getElementById("adminStudentClassFilter")?.value||"ALL";
+  const q=String(document.getElementById("adminStudentSearch")?.value||"").trim().toLowerCase();
+  const lower=(adminManagedStudents||[]).filter(student=>!UME_UPPER_CLASSES.includes(student.className)).map(student=>({...student,umeUpper:false}));
+  const upper=(umeAdminUpperStudents||[]).map(row=>({studentId:row.student_id,name:row.name,className:row.class_name,dob:"",umeUpper:true}));
+  const students=[...lower,...upper]
+    .filter(student=>classFilter==="ALL"||student.className===classFilter)
+    .filter(student=>!q||String(student.name).toLowerCase().includes(q)||String(student.studentId).toLowerCase().includes(q))
+    .sort((a,b)=>UME_CLASSES.indexOf(a.className)-UME_CLASSES.indexOf(b.className)||String(a.studentId).localeCompare(String(b.studentId),undefined,{numeric:true,sensitivity:"base"}));
+  host.innerHTML=students.map(student=>`<div class="admin-manager-row"><div style="width:58px;height:52px;border-radius:10px;background:#e8eef5;display:flex;align-items:center;justify-content:center;font-size:26px;">👤</div><div><div class="admin-manager-title">${umeEscape(student.name)}</div><div class="admin-manager-meta">${umeEscape(student.className)} • ${umeEscape(student.studentId)}${student.umeUpper?" • Class 6–10 Roster":student.dob?` • DOB ${umeEscape(student.dob)}`:""}</div></div><div class="admin-manager-actions">${student.umeUpper?`<button type="button" onclick="umeOpenAdminUpperStudentEdit('${umeEscape(student.studentId)}')">Edit</button><button type="button" class="danger" onclick="umeDeleteAdminUpperStudent('${umeEscape(student.studentId)}')">Delete</button>`:`<button type="button" onclick="openStudentDataEditor('${umeEscape(student.studentId)}')">Edit</button><button type="button" class="danger" onclick="deleteStudentItem('${umeEscape(student.studentId)}')">Delete</button>`}</div></div>`).join("")||'<p style="text-align:center;color:#667085;padding:20px;">No students found.</p>';
+}
+renderAdminStudentList=function(){
+  umeEnsureAdminUpperRosterSection();umeRenderCombinedAdminStudentList();
+  if(studentAdminSession?.access_token&&!umeAdminUpperStudentsLoaded&&!umeAdminUpperStudentsLoading)umeLoadAdminUpperStudents();
+};
+
+/* Public Class 6-10 Portfolio: names only, with no clickable profile. */
+showUpperClassPublicRoster=async function(className){
+  document.getElementById("studentClassView").style.display="none";
+  const rollView=document.getElementById("studentRollView");rollView.style.display="block";
+  rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${umeEscape(className)} - Student List</h2><div class="student-grid"><div class="ume-empty">Loading student list...</div></div>`;
+  try{const db=initStudentSupabase();if(!db)throw new Error("Connection unavailable");const {data,error}=await db.rpc("ume_list_public_upper_students");if(error)throw error;const rows=(data||[]).filter(row=>row.class_name===className);const list=rows.length?rows.map(row=>`<div class="student-roll-btn upper-student-public-row" aria-label="Student name">👤 ${umeEscape(row.name)}</div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${umeEscape(className)} - Student List</h2><div class="student-grid">${list}</div>`;}
+  catch(error){rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${umeEscape(className)} - Student List</h2><div class="ume-empty">Student list could not be loaded.</div>`;}
+};
+
+/* Replace the earlier visible entry points without changing other website features. */
+openMarksEntryHub=function(){return openUnifiedMarksEntry("teacher");};
+openPrincipalMarksView=function(){return openUnifiedMarksEntry("principal");};
+loadPrincipalMarksNotifications=async function(){
+  const card=document.getElementById("principalMarksNotificationCard"),host=document.getElementById("principalMarksNotificationList"),principal=loggedInStaff?.username===UME_PRINCIPAL_ID;
+  if(card)card.style.display=principal?"block":"none";if(!principal||!host)return;
+  host.innerHTML='<div class="staff-dashboard-empty">Loading submitted packages...</div>';
+  try{const rows=await umeRpc(umeStaffDb(),"ume_list_final_projects"),groups=umeGroupRows(rows);host.innerHTML=groups.length?groups.slice(0,8).map(g=>`<button type="button" class="staff-dashboard-preview-item" onclick="openUnifiedMarksEntry('principal')"><strong>${umeEscape(g.className)} — ${umeEscape(g.term)}</strong><span>${umeEscape(g.session)} • ${g.rows.length} Subject(s)</span><small>Read Only</small></button>`).join(""):'<div class="staff-dashboard-empty">No Class package has been submitted yet.</div>';}
+  catch(error){host.innerHTML='<div class="staff-dashboard-empty">Could not load Marks packages.</div>';}
+};
+
+/* Existing IDs use the built-in directory. A newly hired Staff member can also
+   be resolved from the Supabase staff table after their Auth account is made. */
+async function umeResolveStaffLoginProfile(staffId){
+  const id=normalizeStaffId(staffId);
+  if(STAFF_LOGIN_DIRECTORY[id])return STAFF_LOGIN_DIRECTORY[id];
+  const local=typeof adminManagedStaff==="object"?adminManagedStaff[id]:null;
+  if(local){STAFF_LOGIN_DIRECTORY[id]={name:local.name||id.toUpperCase(),designation:local.designation||"Staff"};return STAFF_LOGIN_DIRECTORY[id];}
+  try{
+    const db=initStaffSupabase();if(!db)return null;
+    const {data,error}=await db.from("staff").select("staff_key,name,designation").eq("staff_key",id).maybeSingle();
+    if(error||!data)return null;
+    STAFF_LOGIN_DIRECTORY[id]={name:data.name||id.toUpperCase(),designation:data.designation||"Staff"};
+    return STAFF_LOGIN_DIRECTORY[id];
+  }catch(_error){return null;}
+}
+staffLogin=async function(){
+  const username=normalizeStaffId(document.getElementById("staffUsername")?.value||"");
+  const password=document.getElementById("staffPassword")?.value||"";
+  if(!username||!password){showStaffMessage("Enter your Staff ID and password.");return;}
+  const client=initStaffSupabase();if(!client){showStaffMessage("Supabase connection is unavailable.");return;}
+  showStaffMessage("Signing in...","success");
+  const {data,error}=await client.auth.signInWithPassword({email:staffInternalEmail(username),password});
+  if(error||!data?.session){showStaffMessage("Login failed. Check Staff ID and password.");return;}
+  const sessionUsername=normalizeStaffId((data.user?.email||"").split("@")[0]);
+  const profile=sessionUsername===username?await umeResolveStaffLoginProfile(sessionUsername):null;
+  if(!profile){await client.auth.signOut();showStaffMessage("This account is not authorized for staff access.");return;}
+  staffAuthSession=data.session;loggedInStaff={username:sessionUsername,...profile};
+  const passwordBox=document.getElementById("staffPassword");if(passwordBox)passwordBox.value="";
+  updateStaffLoginUI();closeStaffLogin();openStaffDashboard();
+};
+restoreStaffSession=async function(){
+  const client=initStaffSupabase();if(!client)return;
+  const {data}=await client.auth.getSession();const session=data?.session||null;
+  if(session?.user?.email){
+    const username=normalizeStaffId(session.user.email.split("@")[0]),profile=await umeResolveStaffLoginProfile(username);
+    if(profile){staffAuthSession=session;loggedInStaff={username,...profile};}
+    else{await client.auth.signOut();staffAuthSession=null;loggedInStaff=null;}
+  }
+  updateStaffLoginUI();
+  client.auth.onAuthStateChange(async(_event,nextSession)=>{
+    if(nextSession?.user?.email){const username=normalizeStaffId(nextSession.user.email.split("@")[0]),profile=await umeResolveStaffLoginProfile(username);if(profile){staffAuthSession=nextSession;loggedInStaff={username,...profile};}else{staffAuthSession=null;loggedInStaff=null;}}
+    else{staffAuthSession=null;loggedInStaff=null;}
+    updateStaffLoginUI();
+  });
+};
+const umePreviousOpenStaffDashboard=openStaffDashboard;
+openStaffDashboard=async function(){await umePreviousOpenStaffDashboard();const marks=document.getElementById("staffDashboardMarksAction"),internal=document.getElementById("staffDashboardInternalEvaluationAction");if(marks){marks.style.display="block";marks.textContent="📘 Marks Entry";marks.setAttribute("onclick","openUnifiedMarksEntry('teacher')");}if(internal)internal.style.display="none";};
+const umePreviousStaffLogout=staffLogout;
+staffLogout=async function(){closeUnifiedMarksEntry();umeMyProjects=[];umeActiveBundle=null;umeMyClassAssignments=[];umeTeacherRosterRows=[];await umePreviousStaffLogout();};
+document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll('button[onclick="showWebsiteAdminTab(\'internalEvaluations\')"]').forEach(b=>b.style.display="none");const internal=document.getElementById("staffDashboardInternalEvaluationAction");if(internal)internal.style.display="none";});
 </script>
 
 </body>
