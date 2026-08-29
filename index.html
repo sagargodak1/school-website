@@ -6953,7 +6953,8 @@ body.dark-mode .admin-leave-card{background:#1d2935;border-color:#405467;color:#
     <h2>⭐ Rate Our School</h2>
     <div class="section-divider"></div>
     <p style="max-width:650px;margin:0 auto 20px;line-height:1.7;">
-        Select your rating and submit. Your rating will be sent directly to the school.
+        Select your rating and submit. No sign-in or personal information is required.
+        Your rating will be sent directly to the school.
     </p>
 
     <div class="review-form star-only-review">
@@ -6971,6 +6972,7 @@ body.dark-mode .admin-leave-card{background:#1d2935;border-color:#405467;color:#
                    value="New School Star Rating - St. Augustine Academic Foundation">
             <input type="hidden" name="_template" value="table">
             <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="Visitor Gmail" value="Not available (anonymous visitor)">
 
             <div class="review-field full">
                 <label>Your Rating</label>
@@ -11571,7 +11573,7 @@ document.addEventListener("click",function(event){
             <div class="staff-dashboard-grid">
                 <section class="staff-dashboard-card">
                     <div class="staff-dashboard-card-head">
-                        <h3>🔔 Principal's Important Announcements</h3>
+                        <h3>🔔 Principal's Announcements</h3>
                         <span class="staff-dashboard-live-badge">LIVE</span>
                     </div>
 
@@ -11712,7 +11714,7 @@ document.addEventListener("click",function(event){
 </div>
 
 
-<!-- Principal-only acknowledgement report for Important/Urgent announcements -->
+<!-- Principal-only acknowledgement report for every announcement -->
 <div id="announcementReadStatusPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="announcementReadStatusTitle">
     <div class="announcement-read-status-box">
         <span class="close-btn" onclick="closeAnnouncementReadStatus()" aria-label="Close read status">&times;</span>
@@ -13016,9 +13018,6 @@ function staffDashboardEventDetailsHtml(row){
 }
 
 function staffDashboardAcknowledgementHtml(row,acknowledgements){
-    const priority=String(row.priority||"normal").toLowerCase();
-    if(!["important","urgent"].includes(priority)) return "";
-
     if(staffDashboardIsPrincipal()){
         const required=staffDashboardRequiredStaff();
         const respondedIds=new Set((acknowledgements||[]).map(item=>normalizeStaffId(item.staff_id)));
@@ -13277,14 +13276,12 @@ async function loadStaffDashboardAnnouncements(){
         if(!data?.length){
             staffAnnouncementAcknowledgementCache=new Map();
             staffAnnouncementRecordCache=new Map();
-            host.innerHTML='<div class="staff-dashboard-empty">No important announcements have been published.</div>';
+            host.innerHTML='<div class="staff-dashboard-empty">No staff announcements have been published.</div>';
             return;
         }
 
         staffAnnouncementRecordCache=new Map(data.map(row=>[String(row.id),row]));
-        const acknowledgementIds=data
-            .filter(row=>["important","urgent"].includes(String(row.priority||"").toLowerCase()))
-            .map(row=>Number(row.id));
+        const acknowledgementIds=data.map(row=>Number(row.id));
         let acknowledgementRows=[];
 
         if(acknowledgementIds.length){
@@ -13347,7 +13344,7 @@ async function loadStaffDashboardAnnouncements(){
         if(counter) counter.textContent="0";
         staffAnnouncementAcknowledgementCache=new Map();
         staffAnnouncementRecordCache=new Map();
-        host.innerHTML='<div class="staff-dashboard-empty">No important announcements have been published.</div>';
+        host.innerHTML='<div class="staff-dashboard-empty">No staff announcements have been published.</div>';
     }
 }
 
@@ -13536,9 +13533,8 @@ async function acknowledgeStaffAnnouncement(announcementId,response,button){
     }
 
     const announcement=staffAnnouncementRecordCache.get(String(announcementId));
-    const priority=String(announcement?.priority||"").toLowerCase();
-    if(!["important","urgent"].includes(priority)){
-        alert("Acknowledgement is available only for Important or Urgent announcements.");
+    if(!announcement){
+        alert("Announcement information could not be found. Please refresh the dashboard.");
         return;
     }
 
@@ -16019,6 +16015,91 @@ staffLogout=async function(){
     justify-content:flex-end;
     margin-top:13px;
 }
+.video-tutorial-feedback{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:13px;
+    padding-top:12px;
+    border-top:1px solid #e4eaf0;
+}
+.video-tutorial-like-count{
+    color:#667085;
+    font-size:12px;
+    font-weight:800;
+}
+.video-tutorial-like{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    min-width:92px;
+    border:1px solid #b9c9d8;
+    border-radius:999px;
+    padding:8px 13px;
+    color:#123c69;
+    background:#f5f9fc;
+    font-weight:900;
+    cursor:pointer;
+}
+.video-tutorial-like:hover{background:#eaf2f8}
+.video-tutorial-like.liked{
+    color:#fff;
+    border-color:#176b4d;
+    background:#176b4d;
+}
+.video-tutorial-like:disabled{opacity:.6;cursor:not-allowed}
+.video-tutorial-who-liked{
+    border:0;
+    border-radius:999px;
+    padding:8px 13px;
+    color:#fff;
+    background:#123c69;
+    font-size:11px;
+    font-weight:900;
+    cursor:pointer;
+}
+.video-tutorial-who-liked:hover{background:#0c2d51}
+.video-tutorial-likers-popup{z-index:12050}
+.video-tutorial-likers-box{
+    width:min(480px,92vw);
+    max-height:82vh;
+    overflow:auto;
+    padding:26px;
+    border-radius:18px;
+    background:#fff;
+}
+.video-tutorial-likers-box h2{
+    margin:0 38px 5px 0;
+    color:#123c69;
+}
+.video-tutorial-likers-title{
+    margin:0 38px 16px 0;
+    color:#667085;
+    font-size:13px;
+    overflow-wrap:anywhere;
+}
+.video-tutorial-likers-count{
+    margin-bottom:12px;
+    color:#176b4d;
+    font-size:13px;
+    font-weight:900;
+}
+.video-tutorial-likers-list{display:grid;gap:9px}
+.video-tutorial-liker-name{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:11px 13px;
+    border:1px solid #dbe3ec;
+    border-radius:11px;
+    color:#123c69;
+    background:#f8fbfd;
+    font-size:14px;
+    font-weight:850;
+}
 .video-tutorial-delete{
     border:0;
     border-radius:9px;
@@ -16089,6 +16170,14 @@ body.dark-mode .video-tutorial-empty{background:#22313f;border-color:#405467}
 body.dark-mode .video-tutorial-card h4{color:#9bd4ff}
 body.dark-mode .video-tutorial-meta,
 body.dark-mode .video-tutorial-empty{color:#cbd5e1}
+body.dark-mode .video-tutorial-feedback{border-top-color:#405467}
+body.dark-mode .video-tutorial-like-count{color:#cbd5e1}
+body.dark-mode .video-tutorial-like{background:#17232e;border-color:#52677a;color:#9bd4ff}
+body.dark-mode .video-tutorial-like.liked{background:#176b4d;border-color:#176b4d;color:#fff}
+body.dark-mode .video-tutorial-likers-box{background:#1d2935;color:#eee}
+body.dark-mode .video-tutorial-likers-box h2{color:#9bd4ff}
+body.dark-mode .video-tutorial-likers-title{color:#cbd5e1}
+body.dark-mode .video-tutorial-liker-name{background:#17232e;border-color:#405467;color:#e4e7ec}
 body.dark-mode .video-tutorial-upload-form{background:#1d2935;border-color:#405467}
 body.dark-mode .video-tutorial-upload-form label{color:#e4e7ec}
 body.dark-mode .video-tutorial-upload-form input{background:#17232e;color:#fff;border-color:#52677a}
@@ -16117,6 +16206,18 @@ body.dark-mode .video-tutorial-upload-form input{background:#17232e;color:#fff;b
     </div>
 </div>
 
+<div id="videoTutorialLikersPopup" class="popup video-tutorial-likers-popup" role="dialog" aria-modal="true" aria-labelledby="videoTutorialLikersHeading">
+    <div class="popup-box video-tutorial-likers-box">
+        <span class="close-btn" onclick="closeVideoTutorialLikers()" aria-label="Close">&times;</span>
+        <h2 id="videoTutorialLikersHeading">👍 Staff Who Liked</h2>
+        <p id="videoTutorialLikersTitle" class="video-tutorial-likers-title"></p>
+        <div id="videoTutorialLikersCount" class="video-tutorial-likers-count"></div>
+        <div id="videoTutorialLikersList" class="video-tutorial-likers-list">
+            <div class="video-tutorial-empty">Loading staff names...</div>
+        </div>
+    </div>
+</div>
+
 <script id="video-tutorials-js">
 /* =========================================================
    PRIVATE VIDEO TUTORIALS
@@ -16130,6 +16231,7 @@ const VIDEO_TUTORIAL_CONFIG={
     signedUrlSeconds:3600,
     allowedTypes:new Set(["video/mp4","video/webm"])
 };
+let videoTutorialAdminRowCache=new Map();
 
 function videoTutorialEscape(value){
     return String(value??"")
@@ -16175,7 +16277,7 @@ function clearVideoTutorialMessage(){
 
 function videoTutorialErrorMessage(error){
     const message=String(error?.message||"Unknown error");
-    if(error?.code==="42P01" || /video_tutorials|bucket not found/i.test(message)){
+    if(error?.code==="42P01" || /video_tutorials|video_tutorial_like|bucket not found/i.test(message)){
         return "Video Tutorials setup is not complete. Run the supplied Supabase SQL once, then refresh this page.";
     }
     return message;
@@ -16215,6 +16317,27 @@ async function loadVideoTutorialRows(client){
     return data||[];
 }
 
+async function loadVideoTutorialLikeSummary(client){
+    const {data,error}=await client.rpc("get_video_tutorial_like_summary");
+    if(error) throw error;
+
+    const summary=new Map();
+    (data||[]).forEach(item=>{
+        summary.set(String(item.tutorial_id),{
+            like_count:Math.max(0,Number(item.like_count)||0),
+            liked_by_me:item.liked_by_me===true
+        });
+    });
+    return summary;
+}
+
+function attachVideoTutorialLikeSummary(rows,summary){
+    return (rows||[]).map(row=>{
+        const likeInfo=summary.get(String(row.id))||{like_count:0,liked_by_me:false};
+        return {...row,...likeInfo};
+    });
+}
+
 async function prepareVideoTutorialRows(client,rows){
     return Promise.all(rows.map(async row=>{
         try{
@@ -16230,12 +16353,33 @@ function videoTutorialCard(row,isAdmin=false){
     const title=videoTutorialEscape(row.title||"Untitled Video");
     const date=videoTutorialEscape(videoTutorialFormatDate(row.created_at));
     const size=videoTutorialEscape(videoTutorialFormatBytes(row.size_bytes));
+    const likeCount=Math.max(0,Number(row.like_count)||0);
+    const likedByMe=row.liked_by_me===true;
     const media=row.signed_url
         ?`<video controls controlsList="nodownload" disablePictureInPicture preload="metadata" playsinline onplay="pauseOtherTutorialVideos(this)">
               <source src="${videoTutorialEscape(row.signed_url)}" type="${videoTutorialEscape(row.mime_type||"video/mp4")}">
               Your browser cannot play this video.
           </video>`
         :`<div class="video-tutorial-empty" style="margin:14px;">${videoTutorialEscape(row.video_error||"Video unavailable.")}</div>`;
+    const feedback=isAdmin
+        ?`<div class="video-tutorial-feedback">
+              <span class="video-tutorial-like-count">👍 ${likeCount} ${likeCount===1?"Like":"Likes"}</span>
+              <button type="button" class="video-tutorial-who-liked"
+                      onclick="openVideoTutorialLikers(${Number(row.id)})">
+                  VIEW WHO LIKED
+              </button>
+          </div>`
+        :`<div class="video-tutorial-feedback">
+              <span id="videoTutorialLikeCount-${Number(row.id)}" class="video-tutorial-like-count">
+                  👍 ${likeCount} ${likeCount===1?"Like":"Likes"}
+              </span>
+              <button type="button"
+                      class="video-tutorial-like${likedByMe?" liked":""}"
+                      aria-pressed="${likedByMe?"true":"false"}"
+                      onclick="toggleVideoTutorialLike(${Number(row.id)},this)">
+                  ${likedByMe?"👍 LIKED":"👍 LIKE"}
+              </button>
+          </div>`;
     const adminActions=isAdmin
         ?`<div class="video-tutorial-actions">
               <button type="button" class="video-tutorial-delete"
@@ -16250,9 +16394,110 @@ function videoTutorialCard(row,isAdmin=false){
         <div class="video-tutorial-card-content">
             <h4>${title}</h4>
             <div class="video-tutorial-meta"><span>${date}</span><span>${size}</span></div>
+            ${feedback}
             ${adminActions}
         </div>
     </article>`;
+}
+
+async function toggleVideoTutorialLike(tutorialId,button){
+    if(!loggedInStaff || !staffAuthSession?.user?.id){
+        alert("A valid Staff or Principal login is required.");
+        openStaffLogin();
+        return;
+    }
+
+    const oldText=button?.textContent||"👍 LIKE";
+    if(button){
+        button.disabled=true;
+        button.textContent="SAVING...";
+    }
+
+    try{
+        const client=initStaffSupabase();
+        if(!client) throw new Error("Staff login service is unavailable.");
+
+        const {data,error}=await client.rpc("toggle_video_tutorial_like",{
+            p_tutorial_id:Number(tutorialId),
+            p_staff_name:loggedInStaff.name
+        });
+        if(error) throw error;
+
+        const result=Array.isArray(data)?data[0]:data;
+        const liked=result?.liked===true;
+        const count=Math.max(0,Number(result?.like_count)||0);
+        const countBox=document.getElementById(`videoTutorialLikeCount-${Number(tutorialId)}`);
+
+        if(countBox) countBox.textContent=`👍 ${count} ${count===1?"Like":"Likes"}`;
+        if(button){
+            button.classList.toggle("liked",liked);
+            button.setAttribute("aria-pressed",liked?"true":"false");
+            button.textContent=liked?"👍 LIKED":"👍 LIKE";
+        }
+    }catch(error){
+        console.error("Tutorial like error:",error);
+        alert("Like could not be saved: "+videoTutorialErrorMessage(error));
+        if(button) button.textContent=oldText;
+    }finally{
+        if(button) button.disabled=false;
+    }
+}
+
+async function openVideoTutorialLikers(tutorialId){
+    if(!studentAdminSession || !isWebsiteAdminSession(studentAdminSession)){
+        alert("Website Admin login is required.");
+        return;
+    }
+
+    const id=Number(tutorialId);
+    const row=videoTutorialAdminRowCache.get(id);
+    const popup=document.getElementById("videoTutorialLikersPopup");
+    const title=document.getElementById("videoTutorialLikersTitle");
+    const count=document.getElementById("videoTutorialLikersCount");
+    const host=document.getElementById("videoTutorialLikersList");
+
+    if(title) title.textContent=row?.title||"Video Tutorial";
+    if(count) count.textContent="";
+    if(host) host.innerHTML='<div class="video-tutorial-empty">Loading staff names...</div>';
+    if(popup) popup.style.display="block";
+    document.body.style.overflow="hidden";
+
+    try{
+        const client=initStudentSupabase();
+        if(!client) throw new Error("Admin service is unavailable.");
+
+        const {data,error}=await client.rpc("get_video_tutorial_likers",{
+            p_tutorial_id:id
+        });
+        if(error) throw error;
+
+        const names=(data||[])
+            .map(item=>String(item.staff_name||"").trim())
+            .filter(Boolean);
+
+        if(count) count.textContent=`${names.length} Staff ${names.length===1?"Member":"Members"} Liked`;
+        if(host){
+            host.innerHTML=names.length
+                ?names.map(name=>`
+                    <div class="video-tutorial-liker-name">
+                        <span aria-hidden="true">👤</span>
+                        <span>${videoTutorialEscape(name)}</span>
+                    </div>`).join("")
+                :'<div class="video-tutorial-empty">No staff member has liked this video yet.</div>';
+        }
+    }catch(error){
+        console.error("Tutorial liker list error:",error);
+        if(host){
+            host.innerHTML=`<div class="video-tutorial-empty">Could not load staff names. ${videoTutorialEscape(videoTutorialErrorMessage(error))}</div>`;
+        }
+    }
+}
+
+function closeVideoTutorialLikers(){
+    const popup=document.getElementById("videoTutorialLikersPopup");
+    if(popup) popup.style.display="none";
+    const adminPanelOpen=document.getElementById("websiteAdminPanel")?.style.display==="block";
+    document.body.style.overflow=adminPanelOpen?"hidden":"auto";
 }
 
 async function openVideoTutorials(){
@@ -16286,12 +16531,18 @@ async function renderStaffVideoTutorials(){
     try{
         const client=initStaffSupabase();
         if(!client) throw new Error("Staff login service is unavailable.");
-        const rows=await loadVideoTutorialRows(client);
+        const [rows,likeSummary]=await Promise.all([
+            loadVideoTutorialRows(client),
+            loadVideoTutorialLikeSummary(client)
+        ]);
         if(!rows.length){
             host.innerHTML='<div class="video-tutorial-empty">No tutorial videos have been uploaded yet.</div>';
             return;
         }
-        const readyRows=await prepareVideoTutorialRows(client,rows);
+        const readyRows=await prepareVideoTutorialRows(
+            client,
+            attachVideoTutorialLikeSummary(rows,likeSummary)
+        );
         host.innerHTML=readyRows.map(row=>videoTutorialCard(row,false)).join("");
     }catch(error){
         console.error("Staff tutorial video load error:",error);
@@ -16311,15 +16562,24 @@ async function renderAdminVideoTutorials(){
     try{
         const client=initStudentSupabase();
         if(!client) throw new Error("Admin service is unavailable.");
-        const rows=await loadVideoTutorialRows(client);
+        const [rows,likeSummary]=await Promise.all([
+            loadVideoTutorialRows(client),
+            loadVideoTutorialLikeSummary(client)
+        ]);
         if(!rows.length){
+            videoTutorialAdminRowCache=new Map();
             host.innerHTML='<div class="video-tutorial-empty">No tutorial videos have been uploaded yet.</div>';
             return;
         }
-        const readyRows=await prepareVideoTutorialRows(client,rows);
+        const readyRows=await prepareVideoTutorialRows(
+            client,
+            attachVideoTutorialLikeSummary(rows,likeSummary)
+        );
+        videoTutorialAdminRowCache=new Map(readyRows.map(row=>[Number(row.id),row]));
         host.innerHTML=readyRows.map(row=>videoTutorialCard(row,true)).join("");
     }catch(error){
         console.error("Admin tutorial video load error:",error);
+        videoTutorialAdminRowCache=new Map();
         host.innerHTML=`<div class="video-tutorial-empty">Could not load videos. ${videoTutorialEscape(videoTutorialErrorMessage(error))}</div>`;
     }
 }
@@ -16462,6 +16722,7 @@ staffLogout=async function(){
 const videoTutorialOriginalCloseAdminPanel=closeWebsiteAdminPanel;
 closeWebsiteAdminPanel=function(){
     pauseOtherTutorialVideos();
+    closeVideoTutorialLikers();
     videoTutorialOriginalCloseAdminPanel();
 };
 
@@ -16469,6 +16730,9 @@ document.addEventListener("DOMContentLoaded",()=>{
     updateStaffLoginUI();
     document.getElementById("videoTutorialPopup")?.addEventListener("click",event=>{
         if(event.target?.id==="videoTutorialPopup") closeVideoTutorials();
+    });
+    document.getElementById("videoTutorialLikersPopup")?.addEventListener("click",event=>{
+        if(event.target?.id==="videoTutorialLikersPopup") closeVideoTutorialLikers();
     });
 });
 </script>
