@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Final website: Staff Login Welcome + Premium Staff Dashboard -->
 <html lang="en">
 
 <head>
@@ -11570,6 +11571,43 @@ document.addEventListener("click",function(event){
 
 
 <!-- =========================================================
+     STAFF LOGIN SUCCESS WELCOME — OPENS BEFORE THE DASHBOARD
+========================================================= -->
+<div id="staffDashboardWelcomePopup" class="popup staff-dashboard-welcome-popup"
+     role="dialog" aria-modal="true" aria-labelledby="staffDashboardWelcomeTitle">
+    <div class="staff-dashboard-welcome-card">
+        <div class="staff-dashboard-welcome-glow one"></div>
+        <div class="staff-dashboard-welcome-glow two"></div>
+        <div class="staff-dashboard-welcome-content">
+            <div class="staff-dashboard-welcome-logo-wrap">
+                <img id="staffDashboardWelcomePhoto" src="logo.jpeg" alt="Staff profile photo">
+                <span class="staff-dashboard-welcome-check" aria-hidden="true">✓</span>
+            </div>
+            <div class="staff-dashboard-welcome-badge">LOGIN SUCCESSFUL</div>
+            <h2 id="staffDashboardWelcomeTitle">
+                Welcome to St. Augustine<br>
+                <span>Digital Staff Dashboard</span>
+            </h2>
+            <div class="staff-dashboard-welcome-identity">
+                <strong id="staffDashboardWelcomeName">Staff Member</strong>
+                <span id="staffDashboardWelcomeRole">St. Augustine Academic Foundation</span>
+            </div>
+            <p class="staff-dashboard-welcome-message">
+                Your secure staff workspace is ready. Open the dashboard to view announcements,
+                plans, leave information, Marks Entry and other staff services.
+            </p>
+            <button id="staffDashboardWelcomeEnter" type="button" onclick="enterStaffDashboard()">
+                <span>OK</span>
+                <strong>ENTER DASHBOARD</strong>
+                <span aria-hidden="true">→</span>
+            </button>
+            <p class="staff-dashboard-welcome-school">ST. AUGUSTINE ACADEMIC FOUNDATION</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- =========================================================
      SMART STAFF DASHBOARD — ALL LOGGED-IN STAFF
 ========================================================= -->
 <div id="staffDashboardPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="staffDashboardGreeting">
@@ -11593,6 +11631,56 @@ document.addEventListener("click",function(event){
 
         <div class="staff-dashboard-content">
             <div id="staffDashboardToast" class="staff-dashboard-toast" role="status"></div>
+
+            <section class="staff-dashboard-quick-shell" aria-label="Staff dashboard quick access">
+                <div class="staff-dashboard-quick-heading">
+                    <div>
+                        <p>QUICK ACCESS</p>
+                        <h3>Your staff services, one click away</h3>
+                    </div>
+                    <span>SECURE STAFF AREA</span>
+                </div>
+                <div class="staff-dashboard-quick-actions">
+                    <button id="staffDashboardLeaveAction" type="button" class="staff-dashboard-action leave"
+                            onclick="openDashboardFeature('leave')">
+                        <span class="staff-dashboard-action-icon">📝</span>
+                        <span class="staff-dashboard-action-copy"><strong>Leave Application</strong><small>Apply or review requests</small></span>
+                        <span class="staff-dashboard-action-arrow">→</span>
+                    </button>
+                    <button id="staffDashboardApprovedAction" type="button" class="staff-dashboard-action approved"
+                            onclick="openDashboardFeature('approved')">
+                        <span class="staff-dashboard-action-icon">✓</span>
+                        <span class="staff-dashboard-action-copy"><strong>Approved Leave</strong><small>View approved staff leave</small></span>
+                        <span class="staff-dashboard-action-arrow">→</span>
+                    </button>
+                    <button id="staffDashboardPlanAction" type="button" class="staff-dashboard-action plan"
+                            onclick="openDashboardFeature('plans')">
+                        <span class="staff-dashboard-action-icon">📅</span>
+                        <span class="staff-dashboard-action-copy"><strong>Upcoming Plan</strong><small>Open school plans</small></span>
+                        <span class="staff-dashboard-action-arrow">→</span>
+                    </button>
+                    <button id="staffDashboardIdeaAction" type="button" class="staff-dashboard-action idea"
+                            onclick="openDashboardFeature('ideas')">
+                        <span class="staff-dashboard-action-icon">💡</span>
+                        <span class="staff-dashboard-action-copy"><strong>Staff Idea Hub</strong><small>Share and support ideas</small></span>
+                        <span class="staff-dashboard-action-arrow">→</span>
+                    </button>
+                    <button id="staffDashboardMarksAction" type="button" class="staff-dashboard-action marks"
+                            onclick="openUnifiedMarksEntry('teacher')">
+                        <span class="staff-dashboard-action-icon">📘</span>
+                        <span class="staff-dashboard-action-copy"><strong>Marks Entry</strong><small>Enter and manage marks</small></span>
+                        <span class="staff-dashboard-action-arrow">→</span>
+                    </button>
+                    <button id="staffDashboardVideoTutorialsAction" type="button" class="staff-dashboard-action video"
+                            onclick="openDashboardFeature('videos')">
+                        <span class="staff-dashboard-action-icon">🎬</span>
+                        <span class="staff-dashboard-action-copy"><strong>Video Tutorials</strong><small>Learn website features</small></span>
+                        <span class="staff-dashboard-action-arrow">→</span>
+                    </button>
+                    <button id="staffDashboardInternalEvaluationAction" type="button" class="staff-dashboard-action internal-evaluation"
+                            onclick="openInternalEvaluationHub()">Internal Evaluation</button>
+                </div>
+            </section>
 
             <div class="staff-dashboard-stats" aria-label="Staff dashboard summary">
                 <div class="staff-dashboard-stat notice">
@@ -11740,20 +11828,6 @@ document.addEventListener("click",function(event){
                 </div>
             </div>
 
-            <div class="staff-dashboard-quick-actions">
-                <button id="staffDashboardLeaveAction" type="button" class="staff-dashboard-action leave"
-                        onclick="openDashboardFeature('leave')">📝 Leave Application</button>
-                <button type="button" class="staff-dashboard-action approved"
-                        onclick="openDashboardFeature('approved')">✓ Approved Leave</button>
-                <button type="button" class="staff-dashboard-action plan"
-                        onclick="openDashboardFeature('plans')">📅 Upcoming Plan</button>
-                <button type="button" class="staff-dashboard-action idea"
-                        onclick="openDashboardFeature('ideas')">💡 Staff Idea Hub</button>
-                <button id="staffDashboardMarksAction" type="button" class="staff-dashboard-action marks"
-                        onclick="openMarksEntryHub()">📘 Marks Entry</button>
-                <button id="staffDashboardInternalEvaluationAction" type="button" class="staff-dashboard-action internal-evaluation"
-                        onclick="openInternalEvaluationHub()">🧾 Internal Evaluation</button>
-            </div>
         </div>
     </div>
 </div>
@@ -17865,6 +17939,403 @@ body.dark-mode .ume-class-filter{background:#1d2935;border-color:#405467}body.da
 @media(max-width:900px){.ume-box{width:100%;min-height:100%;max-height:none;margin:0;padding:20px 12px;border-radius:0}.ume-grid,.ume-component-form{grid-template-columns:1fr}.ume-picker{grid-template-columns:1fr}.ume-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.ume-subject-row{grid-template-columns:1fr}.ume-actions{justify-content:stretch}.ume-actions .ume-btn{flex:1}}
 </style>
 
+<style id="staff-dashboard-premium-final-css">
+/* =========================================================
+   FINAL STAFF WELCOME + PREMIUM DASHBOARD POLISH
+========================================================= */
+.staff-dashboard-welcome-popup{
+    z-index:30000;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:
+        radial-gradient(circle at 15% 18%,rgba(255,209,102,.19),transparent 27%),
+        radial-gradient(circle at 87% 82%,rgba(66,153,225,.19),transparent 29%),
+        rgba(3,15,30,.88);
+}
+.staff-dashboard-welcome-card{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    width:min(96%,650px);
+    border:1px solid rgba(255,255,255,.24);
+    border-radius:30px;
+    padding:1px;
+    background:linear-gradient(145deg,rgba(255,209,102,.94),rgba(255,255,255,.34),rgba(84,169,255,.78));
+    box-shadow:0 34px 100px rgba(0,0,0,.46);
+    animation:staffWelcomeRise .5s cubic-bezier(.2,.82,.25,1);
+}
+.staff-dashboard-welcome-card::before{
+    content:"";
+    position:absolute;
+    inset:1px;
+    z-index:-2;
+    border-radius:29px;
+    background:
+        linear-gradient(145deg,rgba(255,255,255,.08),transparent 40%),
+        linear-gradient(145deg,#06294f 0%,#0b3d70 48%,#6f1732 100%);
+}
+.staff-dashboard-welcome-card::after{
+    content:"";
+    position:absolute;
+    left:9%;
+    right:9%;
+    bottom:0;
+    height:1px;
+    background:linear-gradient(90deg,transparent,#ffd166,transparent);
+}
+.staff-dashboard-welcome-glow{
+    position:absolute;
+    z-index:-1;
+    border-radius:50%;
+    filter:blur(2px);
+    pointer-events:none;
+}
+.staff-dashboard-welcome-glow.one{
+    width:240px;
+    height:240px;
+    top:-145px;
+    right:-70px;
+    background:rgba(255,209,102,.16);
+    border:1px solid rgba(255,209,102,.28);
+}
+.staff-dashboard-welcome-glow.two{
+    width:210px;
+    height:210px;
+    bottom:-150px;
+    left:-95px;
+    background:rgba(73,157,232,.18);
+    border:1px solid rgba(144,202,249,.21);
+}
+.staff-dashboard-welcome-content{
+    position:relative;
+    z-index:2;
+    padding:38px 48px 31px;
+    text-align:center;
+    color:#fff;
+}
+.staff-dashboard-welcome-logo-wrap{
+    position:relative;
+    width:105px;
+    height:105px;
+    margin:0 auto 17px;
+    border-radius:50%;
+    padding:5px;
+    background:linear-gradient(145deg,#ffd166,#fff4c7);
+    box-shadow:0 13px 34px rgba(0,0,0,.3),0 0 0 8px rgba(255,255,255,.07);
+}
+.staff-dashboard-welcome-logo-wrap img{
+    width:100%;
+    height:100%;
+    display:block;
+    border-radius:50%;
+    object-fit:cover;
+    background:#fff;
+    border:3px solid #fff;
+}
+.staff-dashboard-welcome-check{
+    position:absolute;
+    right:-3px;
+    bottom:4px;
+    width:30px;
+    height:30px;
+    display:grid;
+    place-items:center;
+    border:3px solid #0b3d70;
+    border-radius:50%;
+    background:#12b76a;
+    color:#fff;
+    font-size:16px;
+    font-weight:950;
+    box-shadow:0 5px 13px rgba(0,0,0,.22);
+}
+.staff-dashboard-welcome-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    margin-bottom:13px;
+    padding:6px 12px;
+    border:1px solid rgba(171,239,198,.38);
+    border-radius:999px;
+    background:rgba(18,183,106,.12);
+    color:#b9f6d4;
+    font-size:10px;
+    font-weight:950;
+    letter-spacing:1.35px;
+}
+.staff-dashboard-welcome-badge::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#32d583;
+    box-shadow:0 0 0 5px rgba(50,213,131,.12);
+}
+.staff-dashboard-welcome-content h2{
+    margin:0;
+    color:#fff;
+    font-size:clamp(25px,4vw,38px);
+    line-height:1.17;
+    letter-spacing:-.6px;
+    text-shadow:0 3px 14px rgba(0,0,0,.22);
+}
+.staff-dashboard-welcome-content h2 span{color:#ffd166}
+.staff-dashboard-welcome-identity{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px 13px;
+    flex-wrap:wrap;
+    margin:19px auto 13px;
+}
+.staff-dashboard-welcome-identity strong{
+    color:#fff;
+    font-size:15px;
+    font-weight:950;
+}
+.staff-dashboard-welcome-identity span{
+    padding:5px 10px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    background:rgba(255,255,255,.08);
+    color:#dbeafe;
+    font-size:11px;
+    font-weight:800;
+}
+.staff-dashboard-welcome-message{
+    max-width:520px;
+    margin:0 auto 22px;
+    color:rgba(255,255,255,.78);
+    font-size:13px;
+    line-height:1.7;
+}
+#staffDashboardWelcomeEnter{
+    width:min(100%,420px);
+    min-height:55px;
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+    gap:11px;
+    margin:0 auto;
+    padding:11px 17px;
+    border:0;
+    border-radius:15px;
+    background:linear-gradient(135deg,#ffd166,#f3b83d);
+    color:#102a43;
+    cursor:pointer;
+    box-shadow:0 13px 30px rgba(244,183,55,.23);
+    transition:transform .22s ease,box-shadow .22s ease,filter .22s ease;
+}
+#staffDashboardWelcomeEnter span:first-child{
+    padding:5px 8px;
+    border-radius:8px;
+    background:rgba(16,42,67,.1);
+    font-size:11px;
+    font-weight:950;
+}
+#staffDashboardWelcomeEnter strong{font-size:14px;letter-spacing:.6px}
+#staffDashboardWelcomeEnter span:last-child{font-size:21px;font-weight:900}
+#staffDashboardWelcomeEnter:hover{
+    transform:translateY(-3px);
+    filter:brightness(1.04);
+    box-shadow:0 17px 35px rgba(244,183,55,.31);
+}
+#staffDashboardWelcomeEnter:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.staff-dashboard-welcome-school{
+    margin:19px 0 0;
+    color:rgba(255,255,255,.47);
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:1.45px;
+}
+@keyframes staffWelcomeRise{
+    from{opacity:0;transform:translateY(22px) scale(.95)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* Dashboard visual upgrade and Quick Access at the top. */
+.staff-dashboard-box{
+    width:min(97%,1180px);
+    background:linear-gradient(180deg,#f5f8fc 0%,#edf3f8 100%);
+    border:1px solid rgba(255,255,255,.8);
+    box-shadow:0 34px 100px rgba(6,28,50,.38);
+}
+.staff-dashboard-hero{
+    min-height:139px;
+    background:
+        radial-gradient(circle at 90% 12%,rgba(255,209,102,.33),transparent 29%),
+        radial-gradient(circle at 58% 110%,rgba(63,144,210,.22),transparent 35%),
+        linear-gradient(125deg,#06294f 0%,#0b4f82 54%,#6f1732 100%);
+}
+.staff-dashboard-content{padding:22px 24px 27px}
+.staff-dashboard-quick-shell{
+    position:relative;
+    overflow:hidden;
+    margin:0 0 18px;
+    padding:17px;
+    border:1px solid #d8e5ef;
+    border-radius:20px;
+    background:linear-gradient(145deg,#ffffff 0%,#f5f9fd 100%);
+    box-shadow:0 9px 27px rgba(18,60,105,.08);
+}
+.staff-dashboard-quick-shell::after{
+    content:"";
+    position:absolute;
+    width:170px;
+    height:170px;
+    top:-115px;
+    right:-75px;
+    border-radius:50%;
+    background:rgba(255,209,102,.18);
+    pointer-events:none;
+}
+.staff-dashboard-quick-heading{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:16px;
+    margin:0 2px 13px;
+}
+.staff-dashboard-quick-heading p{
+    margin:0 0 3px;
+    color:#7a1734;
+    font-size:9px;
+    font-weight:950;
+    letter-spacing:1.25px;
+}
+.staff-dashboard-quick-heading h3{margin:0;color:#123c69;font-size:17px}
+.staff-dashboard-quick-heading>span{
+    padding:6px 10px;
+    border-radius:999px;
+    background:#ecfdf3;
+    color:#067647;
+    font-size:9px;
+    font-weight:950;
+    letter-spacing:.55px;
+}
+.staff-dashboard-quick-actions{
+    position:relative;
+    z-index:1;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin:0;
+}
+.staff-dashboard-action,
+.staff-dashboard-action.marks{
+    position:relative;
+    overflow:hidden;
+    min-height:78px;
+    display:flex!important;
+    align-items:center;
+    gap:11px;
+    padding:12px 13px!important;
+    border:1px solid rgba(255,255,255,.2)!important;
+    border-radius:15px!important;
+    color:#fff!important;
+    text-align:left;
+    box-shadow:0 7px 17px rgba(16,42,67,.13);
+    transition:transform .2s ease,box-shadow .2s ease,filter .2s ease!important;
+}
+.staff-dashboard-action::after{
+    content:"";
+    position:absolute;
+    width:72px;
+    height:72px;
+    right:-36px;
+    bottom:-43px;
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:50%;
+}
+.staff-dashboard-action:hover{
+    transform:translateY(-3px)!important;
+    filter:brightness(1.06)!important;
+    box-shadow:0 11px 23px rgba(16,42,67,.2);
+}
+.staff-dashboard-action.leave{background:linear-gradient(135deg,#087443,#12a36a)!important}
+.staff-dashboard-action.approved{background:linear-gradient(135deg,#0b4f82,#1976b8)!important}
+.staff-dashboard-action.plan{background:linear-gradient(135deg,#5b21b6,#8b5cf6)!important}
+.staff-dashboard-action.idea{background:linear-gradient(135deg,#9a6700,#d49b13)!important}
+.staff-dashboard-action.marks{background:linear-gradient(135deg,#175cd3,#0ba5ec)!important}
+.staff-dashboard-action.video{background:linear-gradient(135deg,#6f1732,#ad3d61)!important}
+.staff-dashboard-action-icon{
+    width:42px;
+    height:42px;
+    flex:0 0 auto;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:12px;
+    background:rgba(255,255,255,.14);
+    font-size:19px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.13);
+}
+.staff-dashboard-action-copy{min-width:0;flex:1;display:block}
+.staff-dashboard-action-copy strong{
+    display:block;
+    color:#fff;
+    font-size:13px;
+    line-height:1.2;
+}
+.staff-dashboard-action-copy small{
+    display:block;
+    margin-top:4px;
+    color:rgba(255,255,255,.76);
+    font-size:9px;
+    font-weight:700;
+    line-height:1.3;
+}
+.staff-dashboard-action-arrow{
+    position:relative;
+    z-index:1;
+    color:rgba(255,255,255,.8);
+    font-size:17px;
+    transition:transform .2s ease;
+}
+.staff-dashboard-action:hover .staff-dashboard-action-arrow{transform:translateX(3px)}
+.staff-dashboard-stats{margin-bottom:18px}
+.staff-dashboard-stat{
+    border:1px solid #dfe8ef;
+    box-shadow:0 7px 19px rgba(18,60,105,.06);
+    transition:transform .2s ease,box-shadow .2s ease;
+}
+.staff-dashboard-stat:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(18,60,105,.1)}
+.staff-dashboard-card{border-color:#dbe5ed;box-shadow:0 9px 25px rgba(18,60,105,.07)}
+body.dark-mode .staff-dashboard-quick-shell{background:linear-gradient(145deg,#22313f,#1b2936);border-color:#405467}
+body.dark-mode .staff-dashboard-quick-heading h3{color:#8ecbff}
+body.dark-mode .staff-dashboard-quick-heading p{color:#f1a9bf}
+body.dark-mode .staff-dashboard-box{background:linear-gradient(180deg,#17232e,#111d27)}
+@media(max-width:900px){
+    .staff-dashboard-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+    .staff-dashboard-welcome-popup{padding:12px}
+    .staff-dashboard-welcome-card{width:100%;border-radius:25px}
+    .staff-dashboard-welcome-card::before{border-radius:24px}
+    .staff-dashboard-welcome-content{padding:30px 20px 25px}
+    .staff-dashboard-welcome-logo-wrap{width:88px;height:88px}
+    .staff-dashboard-welcome-message{font-size:12px}
+    .staff-dashboard-content{padding:13px}
+    .staff-dashboard-quick-shell{padding:13px;border-radius:16px}
+    .staff-dashboard-quick-heading{align-items:flex-start}
+    .staff-dashboard-quick-heading>span{display:none}
+    .staff-dashboard-quick-heading h3{font-size:15px}
+    .staff-dashboard-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .staff-dashboard-action,.staff-dashboard-action.marks{min-height:72px;padding:10px!important;gap:8px}
+    .staff-dashboard-action-icon{width:36px;height:36px;border-radius:10px;font-size:16px}
+    .staff-dashboard-action-copy strong{font-size:11px}
+    .staff-dashboard-action-copy small{display:none}
+    .staff-dashboard-action-arrow{font-size:14px}
+}
+@media(max-width:410px){
+    .staff-dashboard-quick-actions{grid-template-columns:1fr}
+    .staff-dashboard-action,.staff-dashboard-action.marks{min-height:62px}
+    .staff-dashboard-action-copy small{display:block}
+}
+</style>
+
 <div id="umeStaffPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="umeStaffTitle">
   <div class="ume-box">
     <span class="close-btn" onclick="closeUnifiedMarksEntry()" aria-label="Close Marks Entry">&times;</span>
@@ -18545,6 +19016,64 @@ async function umeResolveStaffLoginProfile(staffId){
     return STAFF_LOGIN_DIRECTORY[id];
   }catch(_error){return null;}
 }
+
+function showStaffDashboardWelcome(){
+  if(!loggedInStaff||!staffAuthSession){openStaffLogin();return;}
+  const popup=document.getElementById("staffDashboardWelcomePopup");
+  const name=document.getElementById("staffDashboardWelcomeName");
+  const role=document.getElementById("staffDashboardWelcomeRole");
+  const photo=document.getElementById("staffDashboardWelcomePhoto");
+  if(name)name.textContent=loggedInStaff.name||"Staff Member";
+  if(role)role.textContent=loggedInStaff.designation||"Staff Member";
+  if(photo){
+    photo.onerror=function(){this.onerror=null;this.src="logo.jpeg";this.alt="St. Augustine logo";};
+    photo.src=typeof getLoggedInStaffPhoto==="function"?getLoggedInStaffPhoto():"logo.jpeg";
+    photo.alt=loggedInStaff.name?`${loggedInStaff.name} profile photo`:"Staff profile photo";
+  }
+  if(popup)popup.style.display="flex";
+  document.body.style.overflow="hidden";
+  setTimeout(()=>document.getElementById("staffDashboardWelcomeEnter")?.focus(),180);
+}
+function closeStaffDashboardWelcome(){
+  const popup=document.getElementById("staffDashboardWelcomePopup");
+  if(popup)popup.style.display="none";
+  document.body.style.overflow="auto";
+}
+async function enterStaffDashboard(){
+  if(!loggedInStaff||!staffAuthSession){closeStaffDashboardWelcome();openStaffLogin();return;}
+  const button=document.getElementById("staffDashboardWelcomeEnter");
+  if(button){button.disabled=true;button.innerHTML="<strong>OPENING DASHBOARD...</strong>";}
+  closeStaffDashboardWelcome();
+  try{await openStaffDashboard();}
+  finally{
+    if(button){
+      button.disabled=false;
+      button.innerHTML='<span>OK</span><strong>ENTER DASHBOARD</strong><span aria-hidden="true">→</span>';
+    }
+  }
+}
+function decorateStaffDashboardActions(){
+  const setAction=(id,icon,title,detail)=>{
+    const button=document.getElementById(id);if(!button)return;
+    button.innerHTML=`<span class="staff-dashboard-action-icon">${icon}</span><span class="staff-dashboard-action-copy"><strong>${title}</strong><small>${detail}</small></span><span class="staff-dashboard-action-arrow">→</span>`;
+  };
+  const principal=typeof staffDashboardIsPrincipal==="function"&&staffDashboardIsPrincipal();
+  setAction("staffDashboardLeaveAction",principal?"📋":"📝",principal?"Review Leave Requests":"Leave Application",principal?"Approve or reject requests":"Submit a leave request");
+  setAction("staffDashboardApprovedAction","✓","Approved Leave","View approved staff leave");
+  setAction("staffDashboardPlanAction","📅","Upcoming Plan","Open school plans");
+  setAction("staffDashboardIdeaAction","💡","Staff Idea Hub","Share and support ideas");
+  setAction("staffDashboardMarksAction","📘","Marks Entry",principal?"Read submitted class marks":"Enter and manage marks");
+  setAction("staffDashboardVideoTutorialsAction","🎬","Video Tutorials","Learn website features");
+  const marks=document.getElementById("staffDashboardMarksAction");
+  if(marks){marks.style.display="flex";marks.setAttribute("onclick",principal?"openUnifiedMarksEntry('principal')":"openUnifiedMarksEntry('teacher')");}
+  const internal=document.getElementById("staffDashboardInternalEvaluationAction");
+  if(internal)internal.style.display="none";
+}
+const umePreviousOpenDashboardFeature=openDashboardFeature;
+openDashboardFeature=function(feature){
+  if(feature==="videos"){closeStaffDashboard();openVideoTutorials();return;}
+  return umePreviousOpenDashboardFeature(feature);
+};
 staffLogin=async function(){
   const username=normalizeStaffId(document.getElementById("staffUsername")?.value||"");
   const password=document.getElementById("staffPassword")?.value||"";
@@ -18558,7 +19087,7 @@ staffLogin=async function(){
   if(!profile){await client.auth.signOut();showStaffMessage("This account is not authorized for staff access.");return;}
   staffAuthSession=data.session;loggedInStaff={username:sessionUsername,...profile};
   const passwordBox=document.getElementById("staffPassword");if(passwordBox)passwordBox.value="";
-  updateStaffLoginUI();closeStaffLogin();openStaffDashboard();
+  updateStaffLoginUI();closeStaffLogin();showStaffDashboardWelcome();
 };
 restoreStaffSession=async function(){
   const client=initStaffSupabase();if(!client)return;
@@ -18576,9 +19105,9 @@ restoreStaffSession=async function(){
   });
 };
 const umePreviousOpenStaffDashboard=openStaffDashboard;
-openStaffDashboard=async function(){await umePreviousOpenStaffDashboard();const marks=document.getElementById("staffDashboardMarksAction"),internal=document.getElementById("staffDashboardInternalEvaluationAction");if(marks){marks.style.display="block";marks.textContent="📘 Marks Entry";marks.setAttribute("onclick","openUnifiedMarksEntry('teacher')");}if(internal)internal.style.display="none";};
+openStaffDashboard=async function(){const opening=umePreviousOpenStaffDashboard();decorateStaffDashboardActions();await opening;decorateStaffDashboardActions();};
 const umePreviousStaffLogout=staffLogout;
-staffLogout=async function(){closeUnifiedMarksEntry();umeMyProjects=[];umeActiveBundle=null;umeMyClassAssignments=[];umeTeacherRosterRows=[];await umePreviousStaffLogout();};
+staffLogout=async function(){closeStaffDashboardWelcome();closeUnifiedMarksEntry();umeMyProjects=[];umeActiveBundle=null;umeMyClassAssignments=[];umeTeacherRosterRows=[];await umePreviousStaffLogout();};
 document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll('button[onclick="showWebsiteAdminTab(\'internalEvaluations\')"]').forEach(b=>b.style.display="none");const internal=document.getElementById("staffDashboardInternalEvaluationAction");if(internal)internal.style.display="none";});
 </script>
 
