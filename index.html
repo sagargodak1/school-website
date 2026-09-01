@@ -7588,11 +7588,11 @@ function showStudentRolls(className){
         <div class="student-grid">
     `;
 
-    students.forEach(student => {
+    students.forEach((student,index) => {
         html += `
             <button class="student-roll-btn"
                 onclick="showStudentProfile('${className}','${student.studentId}')">
-                👤 ${student.name}
+                ${index+1}. ${student.name}
             </button>
         `;
     });
@@ -14666,11 +14666,15 @@ function marksClearTeacherMessage(){
     if(box){box.textContent="";box.className="marks-inline-message";}
 }
 function marksSortedStudents(rows){
-    return [...(rows||[])].sort((a,b)=>
-        String(a.studentId||a.student_id||"").localeCompare(
+    return [...(rows||[])].sort((a,b)=>{
+        const nameCompare=String(a.name||a.student_name||"").localeCompare(
+            String(b.name||b.student_name||""),undefined,{sensitivity:"base"}
+        );
+        if(nameCompare!==0) return nameCompare;
+        return String(a.studentId||a.student_id||"").localeCompare(
             String(b.studentId||b.student_id||""),undefined,{numeric:true,sensitivity:"base"}
-        )
-    );
+        );
+    });
 }
 async function marksFetchStudents(db,className){
     try{
@@ -15555,7 +15559,8 @@ async function loadTeacherUpperStudents(){
         const {data,error}=await db.from("marks_upper_students")
             .select("student_id,name,class_name,created_by_staff_id,created_by_name,created_at")
             .eq("class_name",className)
-            .order("student_id");
+            .order("name",{ascending:true})
+            .order("student_id",{ascending:true});
         if(error) throw error;
         if(!data?.length){
             host.innerHTML='<div class="review-empty">No students added to this Class yet.</div>';
@@ -16022,7 +16027,7 @@ async function showUpperClassPublicRoster(className){
         if(error) throw error;
         const rows=marksSortedStudents((data||[]).filter(row=>row.class_name===className));
         const list=rows.length
-            ?rows.map(row=>`<button type="button" class="student-roll-btn upper-student-public-row" tabindex="-1">👤 ${escapeHtml(row.name)}</button>`).join("")
+            ?rows.map((row,index)=>`<button type="button" class="student-roll-btn upper-student-public-row" tabindex="-1">${index+1}. ${escapeHtml(row.name)}</button>`).join("")
             :'<div class="marks-empty">No students have been added to this Class yet.</div>';
         rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${escapeHtml(className)} - Student List</h2><div class="student-grid">${list}</div>`;
     }catch(error){
@@ -18354,7 +18359,7 @@ body.dark-mode .staff-dashboard-box{background:linear-gradient(180deg,#17232e,#1
         <p class="ume-subtitle">You may add a student only to your assigned Class. Edit and Delete are available only to the Website Admin.</p>
         <form id="umeTeacherRosterForm" class="ume-grid" onsubmit="umeAddClassTeacherStudent(event)">
           <label class="ume-field">Assigned Class<select id="umeTeacherRosterClass" onchange="umeLoadClassTeacherRoster()" required></select></label>
-          <label class="ume-field">Student ID / Roll No.<input id="umeTeacherRosterId" maxlength="24" placeholder="Example: G6001" required></label>
+          <label class="ume-field">Student ID<input id="umeTeacherRosterId" maxlength="24" placeholder="Example: G6001" required></label>
           <label class="ume-field">Student Name<input id="umeTeacherRosterName" maxlength="140" required></label>
           <button id="umeTeacherRosterAddBtn" type="submit" class="ume-btn ume-primary">ADD STUDENT</button>
         </form>
@@ -18515,8 +18520,8 @@ async function umeLoadClassTeacherRoster(){
   host.innerHTML='<div class="ume-empty">Loading students...</div>';
   try{
     umeTeacherRosterRows=await umeRpc(umeStaffDb(),"ume_list_upper_students");
-    const rows=umeTeacherRosterRows.filter(row=>row.class_name===className).sort((a,b)=>String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
-    host.innerHTML=rows.length?rows.map((row,index)=>`<div class="ume-component"><strong>${index+1}. ${umeEscape(row.name)}</strong><div class="ume-meta">Student ID / Roll No.: ${umeEscape(row.student_id)}</div></div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';
+    const rows=umeTeacherRosterRows.filter(row=>row.class_name===className).sort((a,b)=>String(a.name||a.student_name||"").localeCompare(String(b.name||b.student_name||""),undefined,{sensitivity:"base"})||String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
+    host.innerHTML=rows.length?rows.map((row,index)=>`<div class="ume-component"><strong>Roll No. ${index+1} — ${umeEscape(row.name)}</strong><div class="ume-meta">Student ID: ${umeEscape(row.student_id)}</div></div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';
   }catch(error){host.innerHTML=`<div class="ume-empty">Could not load students: ${umeEscape(error.message||"Unknown error")}</div>`;}
 }
 async function umeAddClassTeacherStudent(event){
@@ -18630,7 +18635,7 @@ function umeHandleFullMarksInput(input){
 }
 function umeRenderTeacherMarksTable(){
   const host=document.getElementById("umeMarksTableHost"),bundle=umeActiveBundle;if(!bundle)return;
-  const editable=umeProjectEditable(bundle.project),components=bundle.components||[],students=bundle.students||[];
+  const editable=umeProjectEditable(bundle.project),components=bundle.components||[],students=[...(bundle.students||[])].sort((a,b)=>String(a.student_name||a.name||"").localeCompare(String(b.student_name||b.name||""),undefined,{sensitivity:"base"})||String(a.student_id||"").localeCompare(String(b.student_id||""),undefined,{numeric:true,sensitivity:"base"}));
   if(!students.length){host.innerHTML='<div class="ume-card"><div class="ume-empty">No students were found in this Class roster.</div></div>';return;}
   if(!components.length){host.innerHTML="";return;}
   const map=umeEntryMap(bundle);
@@ -18638,7 +18643,7 @@ function umeRenderTeacherMarksTable(){
   const body=students.map((s,index)=>`<tr><td>${index+1}</td><td>${umeEscape(s.student_id)}</td><td class="ume-student">${umeEscape(s.student_name)}</td>${components.map(c=>{
     const entry=map.get(`${c.id}|${s.student_id}`),absent=umeEntryIsAbsent(entry);return `<td><div class="ume-mark-cell ${absent?"is-absent":""}"><input class="ume-obtained" data-component-id="${Number(c.id)}" data-student-id="${umeEscape(s.student_id)}" data-student-name="${umeEscape(s.student_name)}" type="number" min="0" max="${umeEscape(umeNumber(c.full_marks))}" step="0.01" value="${absent?"":umeEscape(umeNumber(entry?.obtained_marks))}" oninput="umeValidateObtainedInput(this)" ${editable&&!absent?"":"disabled"}><span class="ume-abs-badge">ABS</span><label class="ume-absent-label"><input class="ume-absent" type="checkbox" onchange="umeToggleAbsent(this)" ${absent?"checked":""} ${editable?"":"disabled"}> ABSENT</label></div></td>`;
   }).join("")}</tr>`).join("");
-  host.innerHTML=`<div class="ume-card"><h4>${umeEscape(bundle.project.subject_name)} — Student Obtained Marks</h4><div class="ume-table-wrap"><table class="ume-table"><thead><tr><th>S.N.</th><th>Student ID</th><th>Student Name</th>${headers}</tr></thead><tbody>${body}</tbody></table></div></div>`;
+  host.innerHTML=`<div class="ume-card"><h4>${umeEscape(bundle.project.subject_name)} — Student Obtained Marks</h4><div class="ume-table-wrap"><table class="ume-table"><thead><tr><th>Roll No.</th><th>Student ID</th><th>Student Name</th>${headers}</tr></thead><tbody>${body}</tbody></table></div></div>`;
 }
 
 async function umeAddComponent(event){
@@ -18775,7 +18780,7 @@ async function umeViewCombined(role,index){
 function umeCombinedState(bundles){
   const sorted=[...bundles].sort((a,b)=>umeSubjectRank(a.project.subject_name)-umeSubjectRank(b.project.subject_name)||String(a.project.subject_name).localeCompare(String(b.project.subject_name)));
   const studentsMap=new Map();for(const b of sorted)for(const s of b.students||[])studentsMap.set(String(s.student_id),s);
-  const students=[...studentsMap.values()].sort((a,b)=>String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
+  const students=[...studentsMap.values()].sort((a,b)=>String(a.name||a.student_name||"").localeCompare(String(b.name||b.student_name||""),undefined,{sensitivity:"base"})||String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
   return {bundles:sorted,students};
 }
 function umeCombinedTableHtml(group,bundles){
@@ -18784,7 +18789,7 @@ function umeCombinedTableHtml(group,bundles){
   const componentHeader=state.bundles.map(b=>b.components.length?b.components.map(c=>`<th>${umeEscape(c.component_name)} (${umeEscape(umeNumber(c.full_marks))})</th>`).join(""):'<th>No Component</th>').join("");
   const maps=new Map(state.bundles.map(b=>[String(b.project.id),umeEntryMap(b)]));
   const body=state.students.map((s,index)=>`<tr><td>${index+1}</td><td>${umeEscape(s.student_id)}</td><td class="ume-student">${umeEscape(s.student_name)}</td>${state.bundles.map(b=>b.components.length?b.components.map(c=>{const e=maps.get(String(b.project.id)).get(`${c.id}|${s.student_id}`);return `<td>${umeEntryIsAbsent(e)?"ABS":umeEscape(umeNumber(e?.obtained_marks))}</td>`;}).join(""):'<td></td>').join("")}</tr>`).join("");
-  return `<div class="ume-card"><div class="ume-group-head"><div><h3>${umeEscape(group.className)} — ${umeEscape(group.term)}</h3><div class="ume-meta">Academic Session: ${umeEscape(group.session)} • Combined Class Marks • Full Marks is shown in brackets</div></div></div><div class="ume-table-wrap"><table class="ume-table"><thead><tr><th rowspan="2">S.N.</th><th rowspan="2">Student ID</th><th rowspan="2">Student Name</th>${subjectHeader}</tr><tr>${componentHeader}</tr></thead><tbody>${body||'<tr><td colspan="3">No students found.</td></tr>'}</tbody></table></div></div>`;
+  return `<div class="ume-card"><div class="ume-group-head"><div><h3>${umeEscape(group.className)} — ${umeEscape(group.term)}</h3><div class="ume-meta">Academic Session: ${umeEscape(group.session)} • Combined Class Marks • Full Marks is shown in brackets</div></div></div><div class="ume-table-wrap"><table class="ume-table"><thead><tr><th rowspan="2">Roll No.</th><th rowspan="2">Student ID</th><th rowspan="2">Student Name</th>${subjectHeader}</tr><tr>${componentHeader}</tr></thead><tbody>${body||'<tr><td colspan="3">No students found.</td></tr>'}</tbody></table></div></div>`;
 }
 
 async function umeAcceptProject(id){if(!confirm("Accept this Subject Marks file?"))return;try{await umeRpc(umeStaffDb(),"ume_accept_project",{p_project_id:Number(id)});await umeLoadClassTeacherInbox();}catch(error){alert("Could not accept: "+(error.message||"Unknown error"));}}
@@ -18801,7 +18806,7 @@ function umeExcelState(group,bundles){
     ["COMBINED CLASS MARKS"],
     ["Class",group.className,"Term / Examination",group.term,"Academic Session",group.session],
     [],
-    ["S.N.","Student ID","Student Name",...state.bundles.flatMap(b=>b.components.map((_c,i)=>i===0?b.project.subject_name:""))],
+    ["Roll No.","Student ID","Student Name",...state.bundles.flatMap(b=>b.components.map((_c,i)=>i===0?b.project.subject_name:""))],
     ["","","",...state.bundles.flatMap(b=>b.components.map(c=>`${c.component_name} (${umeNumber(c.full_marks)})`))]
   ];
   const entryMaps=new Map(state.bundles.map(b=>[String(b.project.id),umeEntryMap(b)]));
@@ -18900,7 +18905,7 @@ async function umeAdminDeletePackage(index){
 function umeEnsureAdminUpperRosterSection(){
   const tab=document.getElementById("websiteAdminStudentsTab");if(!tab||document.getElementById("umeAdminUpperRosterSection"))return;
   const section=document.createElement("section");section.id="umeAdminUpperRosterSection";section.className="ume-card";
-  section.innerHTML=`<div class="admin-section-head"><div><h3>Class 6–10 Student List</h3><p>Add, edit or delete the name-only students used by Public Portfolio and Marks Entry.</p></div></div><form id="umeAdminUpperRosterForm" class="ume-grid" onsubmit="umeSaveAdminUpperStudent(event)"><input id="umeAdminUpperOriginalId" type="hidden"><label class="ume-field">Class<select id="umeAdminUpperClass" required>${UME_UPPER_CLASSES.map(c=>`<option>${umeEscape(c)}</option>`).join("")}</select></label><label class="ume-field">Student ID / Roll No.<input id="umeAdminUpperId" maxlength="24" required></label><label class="ume-field">Student Name<input id="umeAdminUpperName" maxlength="140" required></label><button id="umeAdminUpperSaveBtn" type="submit" class="ume-btn ume-primary">ADD STUDENT</button><button id="umeAdminUpperCancelBtn" type="button" class="ume-btn ume-secondary" onclick="umeResetAdminUpperForm()" style="display:none;">CANCEL EDIT</button></form><div class="ume-picker" style="margin-top:14px;"><label for="umeAdminUpperFilter">Roster List</label><select id="umeAdminUpperFilter" onchange="umeRenderAdminUpperStudents()">${UME_UPPER_CLASSES.map(c=>`<option>${umeEscape(c)}</option>`).join("")}</select><button type="button" class="ume-btn ume-secondary" onclick="umeLoadAdminUpperStudents()">↻ REFRESH</button></div><div id="umeAdminUpperList" class="ume-components"><div class="ume-empty">Loading Class 6–10 students...</div></div>`;
+  section.innerHTML=`<div class="admin-section-head"><div><h3>Class 6–10 Student List</h3><p>Add, edit or delete the name-only students used by Public Portfolio and Marks Entry.</p></div></div><form id="umeAdminUpperRosterForm" class="ume-grid" onsubmit="umeSaveAdminUpperStudent(event)"><input id="umeAdminUpperOriginalId" type="hidden"><label class="ume-field">Class<select id="umeAdminUpperClass" required>${UME_UPPER_CLASSES.map(c=>`<option>${umeEscape(c)}</option>`).join("")}</select></label><label class="ume-field">Student ID<input id="umeAdminUpperId" maxlength="24" required></label><label class="ume-field">Student Name<input id="umeAdminUpperName" maxlength="140" required></label><button id="umeAdminUpperSaveBtn" type="submit" class="ume-btn ume-primary">ADD STUDENT</button><button id="umeAdminUpperCancelBtn" type="button" class="ume-btn ume-secondary" onclick="umeResetAdminUpperForm()" style="display:none;">CANCEL EDIT</button></form><div class="ume-picker" style="margin-top:14px;"><label for="umeAdminUpperFilter">Roster List</label><select id="umeAdminUpperFilter" onchange="umeRenderAdminUpperStudents()">${UME_UPPER_CLASSES.map(c=>`<option>${umeEscape(c)}</option>`).join("")}</select><button type="button" class="ume-btn ume-secondary" onclick="umeLoadAdminUpperStudents()">↻ REFRESH</button></div><div id="umeAdminUpperList" class="ume-components"><div class="ume-empty">Loading Class 6–10 students...</div></div>`;
   tab.appendChild(section);
 }
 async function umeLoadAdminUpperStudents(){
@@ -18925,8 +18930,8 @@ async function umeLoadAdminUpperStudents(){
 }
 function umeRenderAdminUpperStudents(){
   const host=document.getElementById("umeAdminUpperList"),className=document.getElementById("umeAdminUpperFilter")?.value||UME_UPPER_CLASSES[0];if(!host)return;
-  const rows=umeAdminUpperStudents.filter(row=>String(row.class_name).trim()===className).sort((a,b)=>String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
-  host.innerHTML=rows.length?rows.map((row,index)=>`<div class="ume-component"><strong>${index+1}. ${umeEscape(row.name)}</strong><div class="ume-meta">${umeEscape(row.class_name)} • Student ID / Roll No.: ${umeEscape(row.student_id)}</div><div class="ume-row-actions" style="margin-top:8px;"><button type="button" class="ume-btn ume-secondary" onclick="umeEditAdminUpperStudent('${umeEscape(row.student_id)}')">EDIT</button><button type="button" class="ume-btn ume-danger" onclick="umeDeleteAdminUpperStudent('${umeEscape(row.student_id)}')">DELETE</button></div></div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';
+  const rows=umeAdminUpperStudents.filter(row=>String(row.class_name).trim()===className).sort((a,b)=>String(a.name||a.student_name||"").localeCompare(String(b.name||b.student_name||""),undefined,{sensitivity:"base"})||String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
+  host.innerHTML=rows.length?rows.map((row,index)=>`<div class="ume-component"><strong>${index+1}. ${umeEscape(row.name)}</strong><div class="ume-meta">${umeEscape(row.class_name)} • Student ID: ${umeEscape(row.student_id)}</div><div class="ume-row-actions" style="margin-top:8px;"><button type="button" class="ume-btn ume-secondary" onclick="umeEditAdminUpperStudent('${umeEscape(row.student_id)}')">EDIT</button><button type="button" class="ume-btn ume-danger" onclick="umeDeleteAdminUpperStudent('${umeEscape(row.student_id)}')">DELETE</button></div></div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';
 }
 function umeResetAdminUpperForm(){
   const form=document.getElementById("umeAdminUpperRosterForm"),className=document.getElementById("umeAdminUpperClass")?.value;form?.reset();
@@ -18973,7 +18978,7 @@ function umeRenderCombinedAdminStudentList(){
   const students=[...lower,...upper]
     .filter(student=>classFilter==="ALL"||student.className===classFilter)
     .filter(student=>!q||String(student.name).toLowerCase().includes(q)||String(student.studentId).toLowerCase().includes(q))
-    .sort((a,b)=>UME_CLASSES.indexOf(a.className)-UME_CLASSES.indexOf(b.className)||String(a.studentId).localeCompare(String(b.studentId),undefined,{numeric:true,sensitivity:"base"}));
+    .sort((a,b)=>UME_CLASSES.indexOf(a.className)-UME_CLASSES.indexOf(b.className)||String(a.name||"").localeCompare(String(b.name||""),undefined,{sensitivity:"base"})||String(a.studentId).localeCompare(String(b.studentId),undefined,{numeric:true,sensitivity:"base"}));
   host.innerHTML=students.map(student=>`<div class="admin-manager-row"><div style="width:58px;height:52px;border-radius:10px;background:#e8eef5;display:flex;align-items:center;justify-content:center;font-size:26px;">👤</div><div><div class="admin-manager-title">${umeEscape(student.name)}</div><div class="admin-manager-meta">${umeEscape(student.className)} • ${umeEscape(student.studentId)}${student.umeUpper?" • Class 6–10 Roster":student.dob?` • DOB ${umeEscape(student.dob)}`:""}</div></div><div class="admin-manager-actions">${student.umeUpper?`<button type="button" onclick="umeOpenAdminUpperStudentEdit('${umeEscape(student.studentId)}')">Edit</button><button type="button" class="danger" onclick="umeDeleteAdminUpperStudent('${umeEscape(student.studentId)}')">Delete</button>`:`<button type="button" onclick="openStudentDataEditor('${umeEscape(student.studentId)}')">Edit</button><button type="button" class="danger" onclick="deleteStudentItem('${umeEscape(student.studentId)}')">Delete</button>`}</div></div>`).join("")||'<p style="text-align:center;color:#667085;padding:20px;">No students found.</p>';
 }
 renderAdminStudentList=function(){
@@ -18986,7 +18991,7 @@ showUpperClassPublicRoster=async function(className){
   document.getElementById("studentClassView").style.display="none";
   const rollView=document.getElementById("studentRollView");rollView.style.display="block";
   rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${umeEscape(className)} - Student List</h2><div class="student-grid"><div class="ume-empty">Loading student list...</div></div>`;
-  try{const db=initStudentSupabase();if(!db)throw new Error("Connection unavailable");const {data,error}=await db.rpc("ume_list_public_upper_students");if(error)throw error;const rows=(data||[]).filter(row=>row.class_name===className);const list=rows.length?rows.map(row=>`<div class="student-roll-btn upper-student-public-row" aria-label="Student name">👤 ${umeEscape(row.name)}</div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${umeEscape(className)} - Student List</h2><div class="student-grid">${list}</div>`;}
+  try{const db=initStudentSupabase();if(!db)throw new Error("Connection unavailable");const {data,error}=await db.rpc("ume_list_public_upper_students");if(error)throw error;const rows=(data||[]).filter(row=>row.class_name===className).sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),undefined,{sensitivity:"base"})||String(a.student_id||"").localeCompare(String(b.student_id||""),undefined,{numeric:true,sensitivity:"base"}));const list=rows.length?rows.map((row,index)=>`<div class="student-roll-btn upper-student-public-row" aria-label="Roll No. ${index+1}, ${umeEscape(row.name)}">${index+1}. ${umeEscape(row.name)}</div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${umeEscape(className)} - Student List</h2><div class="student-grid">${list}</div>`;}
   catch(error){rollView.innerHTML=`<button class="student-back-btn" onclick="backToStudentClasses()">← Back to Classes</button><h2 class="student-portfolio-title">🎓 ${umeEscape(className)} - Student List</h2><div class="ume-empty">Student list could not be loaded.</div>`;}
 };
 
