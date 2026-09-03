@@ -19700,6 +19700,509 @@ function ctpCancelLowerAdminDrafts(){if(ctpAdminLowerDraftPhotos.size&&!confirm(
 const ctpDraftPreviousRenderProfile=renderStudentProfile;renderStudentProfile=function(className,studentId){ctpClearDraftMap(ctpAdminLowerDraftPhotos);return ctpDraftPreviousRenderProfile(className,studentId);};
 </script>
 
+
+<!-- =========================================================
+     STUDENT PORTFOLIO PRIVACY LAYER
+     Dynamic watermark + anti-easy-save protections.
+     NOTE: Browsers cannot guarantee 100% screenshot blocking.
+     This layer makes screenshots traceable and discourages misuse.
+     ========================================================= -->
+<style id="student-portfolio-privacy-style">
+/* Only Student Portfolio / student monthly-progress images are affected. */
+#studentRollView .student-photo-item,
+#studentRollView .student-main-photo-wrap,
+#studentRollView .ctp-profile-photo{
+    position:relative;
+    overflow:hidden;
+}
+
+/* Do not allow the browser's normal image selection/drag behavior. */
+#studentRollView img[data-student-month-photo],
+#studentRollView .student-main-photo,
+#studentRollView [id^="ctpPublicMonth"],
+#studentRollView #ctpPublicProfile img,
+#photoLightbox.student-secure-lightbox #largePhoto{
+    -webkit-user-select:none !important;
+    user-select:none !important;
+    -webkit-user-drag:none !important;
+    pointer-events:auto;
+}
+
+/* Watermark shown over every visible Student Portfolio photo thumbnail. */
+.student-secure-thumb-watermark{
+    position:absolute;
+    inset:0;
+    z-index:8;
+    pointer-events:none;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.student-secure-thumb-watermark::before{
+    content:attr(data-watermark);
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:160%;
+    transform:translate(-50%,-50%) rotate(-24deg);
+    color:rgba(255,255,255,.64);
+    text-shadow:0 1px 3px rgba(0,0,0,.72);
+    font-size:10px;
+    font-weight:800;
+    line-height:2.7;
+    letter-spacing:.25px;
+    white-space:pre-wrap;
+    text-align:center;
+    word-spacing:8px;
+}
+
+/* Full-screen lightbox watermark. */
+#studentSecureLightboxWatermark{
+    position:absolute;
+    inset:0;
+    z-index:9;
+    pointer-events:none;
+    overflow:hidden;
+    display:none;
+}
+
+#photoLightbox.student-secure-lightbox #studentSecureLightboxWatermark{
+    display:block;
+}
+
+#studentSecureLightboxWatermark .student-secure-watermark-grid{
+    position:absolute;
+    inset:-18%;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(230px,1fr));
+    grid-auto-rows:145px;
+    align-items:center;
+    justify-items:center;
+    transform:rotate(-24deg) scale(1.12);
+    opacity:.78;
+}
+
+#studentSecureLightboxWatermark .student-secure-watermark-cell{
+    color:rgba(255,255,255,.72);
+    text-shadow:0 2px 5px rgba(0,0,0,.85);
+    font-weight:800;
+    font-size:13px;
+    line-height:1.55;
+    text-align:center;
+    white-space:nowrap;
+}
+
+#studentSecureLightboxWatermark .student-secure-watermark-banner{
+    position:absolute;
+    left:50%;
+    bottom:16px;
+    transform:translateX(-50%);
+    max-width:94%;
+    padding:8px 14px;
+    border-radius:20px;
+    background:rgba(0,0,0,.62);
+    color:#fff;
+    font-size:12px;
+    font-weight:700;
+    text-align:center;
+    box-shadow:0 3px 12px rgba(0,0,0,.28);
+}
+
+/* Small privacy notice inside the Student Portfolio page only. */
+.student-secure-privacy-note{
+    margin:15px auto 5px;
+    max-width:620px;
+    padding:9px 12px;
+    border-radius:10px;
+    background:#fff7df;
+    border:1px solid #f3d488;
+    color:#795400;
+    font-size:12px;
+    line-height:1.5;
+    text-align:center;
+}
+
+body.dark-mode .student-secure-privacy-note{
+    background:#3a321d;
+    border-color:#776631;
+    color:#ffe7a0;
+}
+
+@media(max-width:600px){
+    .student-secure-thumb-watermark::before{
+        font-size:8px;
+        line-height:2.45;
+    }
+    #studentSecureLightboxWatermark .student-secure-watermark-grid{
+        grid-template-columns:repeat(2,minmax(170px,1fr));
+        grid-auto-rows:125px;
+    }
+    #studentSecureLightboxWatermark .student-secure-watermark-cell{
+        font-size:10px;
+    }
+    #studentSecureLightboxWatermark .student-secure-watermark-banner{
+        bottom:10px;
+        font-size:10px;
+        padding:7px 10px;
+    }
+}
+
+/* Printing Student Portfolio photos is intentionally hidden. */
+@media print{
+    #studentRollView .student-photo-gallery,
+    #studentRollView .student-main-photo-wrap,
+    #studentRollView .ctp-profile-photo,
+    #photoLightbox.student-secure-lightbox{
+        display:none !important;
+    }
+}
+</style>
+
+<script id="student-portfolio-privacy-script">
+(function(){
+    "use strict";
+
+    let secureStudentPhotoOpen=false;
+    let secureMonthNumber=null;
+    let securityRefreshTimer=null;
+
+    function secureEsc(value){
+        return String(value==null?"":value)
+            .replace(/[&<>"']/g,function(ch){
+                return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch];
+            });
+    }
+
+    function currentStudentPrivacyInfo(){
+        const active=(typeof activeStudentPortfolio!=="undefined" && activeStudentPortfolio)
+            ? activeStudentPortfolio
+            : {};
+
+        const studentId=String(active.studentId||"Student").trim();
+        let className=String(active.className||"").trim();
+        let studentName="";
+
+        /* Prefer the name already visible in the opened profile. */
+        const title=document.querySelector("#studentRollView .student-portfolio-title");
+        if(title){
+            studentName=title.textContent.replace(/^.*?🎓\s*/,"").trim();
+        }
+
+        if(!studentName){
+            const nameRows=[...document.querySelectorAll("#studentRollView .student-profile-row")];
+            const nameRow=nameRows.find(row=>/Student Name\s*:/i.test(row.textContent||""));
+            if(nameRow){
+                studentName=(nameRow.textContent||"").replace(/Student Name\s*:/i,"").trim();
+            }
+        }
+
+        /* If the existing student record helper is available, use it as a fallback. */
+        try{
+            if((!studentName || !className) &&
+               typeof getStudentRecord==="function" &&
+               active.className && active.studentId){
+                const record=getStudentRecord(active.className,active.studentId);
+                if(record){
+                    studentName=studentName || String(record.name||"").trim();
+                    className=className || String(record.className||record.class_name||"").trim();
+                }
+            }
+        }catch(_e){}
+
+        return {
+            studentId:studentId || "Student",
+            studentName:studentName || "Student",
+            className:className || ""
+        };
+    }
+
+    function formattedPrivacyTime(){
+        try{
+            return new Intl.DateTimeFormat("en-GB",{
+                timeZone:"Asia/Kathmandu",
+                year:"numeric",
+                month:"short",
+                day:"2-digit",
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }).format(new Date());
+        }catch(_e){
+            return new Date().toLocaleString();
+        }
+    }
+
+    function watermarkShortText(){
+        const info=currentStudentPrivacyInfo();
+        return [
+            "ST. AUGUSTINE • CONFIDENTIAL",
+            `${info.studentName} • ${info.studentId}`,
+            formattedPrivacyTime()
+        ].join("\n");
+    }
+
+    function ensurePrivacyNote(){
+        const gallery=document.querySelector("#studentRollView .student-photo-gallery");
+        if(!gallery || gallery.querySelector(".student-secure-privacy-note")) return;
+
+        const note=document.createElement("div");
+        note.className="student-secure-privacy-note";
+        note.innerHTML="🔒 <strong>Private Student Record:</strong> Photos are protected with a dynamic Student ID and date/time watermark. Unauthorized saving, sharing or reproduction is discouraged.";
+        gallery.insertBefore(note,gallery.firstChild.nextSibling || gallery.firstChild);
+    }
+
+    function addThumbWatermark(host){
+        if(!host || host.querySelector(":scope > .student-secure-thumb-watermark")) return;
+        const mark=document.createElement("div");
+        mark.className="student-secure-thumb-watermark";
+        mark.setAttribute("aria-hidden","true");
+        mark.dataset.watermark=watermarkShortText();
+        host.appendChild(mark);
+    }
+
+    function refreshStudentThumbnailSecurity(){
+        const root=document.getElementById("studentRollView");
+        if(!root) return;
+
+        ensurePrivacyNote();
+
+        root.querySelectorAll(".student-photo-item").forEach(function(item){
+            const img=item.querySelector("img");
+            if(!img) return;
+            img.setAttribute("draggable","false");
+            img.setAttribute("oncontextmenu","return false;");
+            addThumbWatermark(item);
+        });
+
+        const mainWrap=root.querySelector(".student-main-photo-wrap");
+        if(mainWrap){
+            const img=mainWrap.querySelector("img");
+            if(img){
+                img.setAttribute("draggable","false");
+                img.setAttribute("oncontextmenu","return false;");
+            }
+            addThumbWatermark(mainWrap);
+        }
+
+        /* Class 6–10 public profile photo container. */
+        const upperProfile=root.querySelector("#ctpPublicProfile");
+        if(upperProfile){
+            const img=upperProfile.querySelector("img");
+            if(img){
+                img.setAttribute("draggable","false");
+                img.setAttribute("oncontextmenu","return false;");
+            }
+            addThumbWatermark(upperProfile);
+        }
+
+        root.querySelectorAll(".student-secure-thumb-watermark").forEach(function(mark){
+            mark.dataset.watermark=watermarkShortText();
+        });
+    }
+
+    function ensureLightboxWatermark(){
+        const lightbox=document.getElementById("photoLightbox");
+        if(!lightbox) return null;
+
+        let wm=document.getElementById("studentSecureLightboxWatermark");
+        if(!wm){
+            wm=document.createElement("div");
+            wm.id="studentSecureLightboxWatermark";
+            wm.setAttribute("aria-hidden","true");
+            lightbox.appendChild(wm);
+        }
+        return wm;
+    }
+
+    function renderLightboxWatermark(){
+        if(!secureStudentPhotoOpen) return;
+
+        const lightbox=document.getElementById("photoLightbox");
+        const wm=ensureLightboxWatermark();
+        if(!lightbox || !wm) return;
+
+        const info=currentStudentPrivacyInfo();
+        const time=formattedPrivacyTime();
+        const monthText=secureMonthNumber ? ` • Month ${secureMonthNumber}` : "";
+        const cellText=`ST. AUGUSTINE\nCONFIDENTIAL\n${info.studentName}\nID: ${info.studentId}${monthText}\n${time}`;
+
+        let cells="";
+        for(let i=0;i<18;i++){
+            cells+=`<div class="student-secure-watermark-cell">${secureEsc(cellText).replace(/\n/g,"<br>")}</div>`;
+        }
+
+        wm.innerHTML=`
+            <div class="student-secure-watermark-grid">${cells}</div>
+            <div class="student-secure-watermark-banner">
+                🔒 PRIVATE STUDENT RECORD • ${secureEsc(info.studentName)} • ID: ${secureEsc(info.studentId)}
+                ${secureMonthNumber ? ` • Month ${secureMonthNumber}` : ""}
+                • Viewed ${secureEsc(time)}
+            </div>
+        `;
+
+        lightbox.classList.add("student-secure-lightbox");
+
+        const img=document.getElementById("largePhoto");
+        if(img){
+            img.draggable=false;
+            img.setAttribute("draggable","false");
+            img.setAttribute("oncontextmenu","return false;");
+        }
+    }
+
+    function clearSecureLightboxMode(){
+        secureStudentPhotoOpen=false;
+        secureMonthNumber=null;
+        const lightbox=document.getElementById("photoLightbox");
+        if(lightbox) lightbox.classList.remove("student-secure-lightbox");
+        const wm=document.getElementById("studentSecureLightboxWatermark");
+        if(wm) wm.innerHTML="";
+    }
+
+    /* Wrap the FINAL Student Monthly Report opener after all existing scripts load. */
+    function installStudentPhotoWrapper(){
+        if(typeof window.openStudentPhotoGallery!=="function") return;
+        if(window.openStudentPhotoGallery.__studentPrivacyWrapped) return;
+
+        const original=window.openStudentPhotoGallery;
+
+        const wrapped=async function(studentId,startIndex){
+            secureStudentPhotoOpen=true;
+            secureMonthNumber=Number(startIndex)+1;
+
+            let result;
+            try{
+                result=original.apply(this,arguments);
+                if(result && typeof result.then==="function"){
+                    await result;
+                }
+            }finally{
+                /* Existing code opens the lightbox asynchronously in some versions. */
+                setTimeout(renderLightboxWatermark,0);
+                setTimeout(renderLightboxWatermark,120);
+                setTimeout(renderLightboxWatermark,450);
+            }
+            return result;
+        };
+
+        wrapped.__studentPrivacyWrapped=true;
+        window.openStudentPhotoGallery=wrapped;
+    }
+
+    /* If the normal gallery openPhoto() is used later, ensure it is NOT treated
+       as a protected student image unless openStudentPhotoGallery activated it. */
+    function installNormalPhotoWrapper(){
+        if(typeof window.openPhoto!=="function") return;
+        if(window.openPhoto.__studentPrivacyNormalWrapped) return;
+
+        const original=window.openPhoto;
+        const wrapped=function(){
+            if(!secureStudentPhotoOpen){
+                clearSecureLightboxMode();
+            }
+            return original.apply(this,arguments);
+        };
+        wrapped.__studentPrivacyNormalWrapped=true;
+        window.openPhoto=wrapped;
+    }
+
+    /* Right-click and drag protection, limited strictly to Student Portfolio. */
+    document.addEventListener("contextmenu",function(e){
+        const inStudent=e.target.closest && e.target.closest("#studentRollView");
+        const inSecureLightbox=e.target.closest && e.target.closest("#photoLightbox.student-secure-lightbox");
+        if(inStudent || inSecureLightbox){
+            e.preventDefault();
+        }
+    },true);
+
+    document.addEventListener("dragstart",function(e){
+        const inStudent=e.target.closest && e.target.closest("#studentRollView");
+        const inSecureLightbox=e.target.closest && e.target.closest("#photoLightbox.student-secure-lightbox");
+        if((inStudent || inSecureLightbox) && e.target.tagName==="IMG"){
+            e.preventDefault();
+        }
+    },true);
+
+    /* Block common "save/print/source" shortcuts while the protected photo is open.
+       This is deterrence only; browser/OS screenshot controls cannot be guaranteed. */
+    document.addEventListener("keydown",function(e){
+        const lightbox=document.getElementById("photoLightbox");
+        const studentView=document.getElementById("studentRollView");
+        const protectedOpen=!!(lightbox && lightbox.classList.contains("student-secure-lightbox") &&
+                               getComputedStyle(lightbox).display!=="none");
+        const studentVisible=!!(studentView && studentView.offsetParent!==null);
+
+        if(!(protectedOpen || studentVisible)) return;
+
+        const key=(e.key||"").toLowerCase();
+        const ctrl=e.ctrlKey || e.metaKey;
+
+        if((ctrl && ["s","p","u"].includes(key)) ||
+           (ctrl && e.shiftKey && ["i","j","c"].includes(key))){
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    },true);
+
+    /* Remove protected mode when the lightbox is closed. */
+    document.addEventListener("click",function(e){
+        if(!secureStudentPhotoOpen) return;
+        const close=e.target.closest && e.target.closest("#photoLightbox .photo-close");
+        if(close){
+            setTimeout(clearSecureLightboxMode,0);
+        }
+    },true);
+
+    /* Keep dynamic timestamp and newly rendered student profiles updated. */
+    const observer=new MutationObserver(function(){
+        clearTimeout(securityRefreshTimer);
+        securityRefreshTimer=setTimeout(function(){
+            installStudentPhotoWrapper();
+            installNormalPhotoWrapper();
+            refreshStudentThumbnailSecurity();
+            if(secureStudentPhotoOpen) renderLightboxWatermark();
+        },60);
+    });
+
+    function initStudentPrivacyLayer(){
+        installStudentPhotoWrapper();
+        installNormalPhotoWrapper();
+        refreshStudentThumbnailSecurity();
+        ensureLightboxWatermark();
+
+        const root=document.body;
+        if(root){
+            observer.observe(root,{childList:true,subtree:true});
+        }
+
+        /* Timestamp refresh. */
+        setInterval(function(){
+            refreshStudentThumbnailSecurity();
+            if(secureStudentPhotoOpen) renderLightboxWatermark();
+        },30000);
+    }
+
+    if(document.readyState==="loading"){
+        document.addEventListener("DOMContentLoaded",initStudentPrivacyLayer,{once:true});
+    }else{
+        initStudentPrivacyLayer();
+    }
+
+    /* Existing scripts near the end redefine some functions; install once more
+       after the entire page load so this remains the final wrapper. */
+    window.addEventListener("load",function(){
+        setTimeout(function(){
+            installStudentPhotoWrapper();
+            installNormalPhotoWrapper();
+            refreshStudentThumbnailSecurity();
+        },900);
+    });
+})();
+</script>
+
 </body>
 
 </html>
