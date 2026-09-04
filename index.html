@@ -9653,6 +9653,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             <button type="button" onclick="showWebsiteAdminTab('staffAnnouncements')">🔔 Staff Announcements</button>
                 <button type="button" onclick="showWebsiteAdminTab('staffIdeas')">💡 Staff Ideas</button>
                 <button type="button" onclick="showWebsiteAdminTab('marks')">📘 Marks Entry</button>
+                <button id="websiteAdminExamButton" type="button" onclick="openExamManagement('admin')">📝 Exam Management</button>
                 <button type="button" onclick="showWebsiteAdminTab('internalEvaluations')">🧾 Internal Evaluation</button>
                 <button type="button" onclick="showWebsiteAdminTab('videoTutorials')">🎬 Video Tutorials</button>
                 <button type="button" onclick="showWebsiteAdminTab('upcomingPlans')">📅 Upcoming Plans</button>
@@ -11960,6 +11961,12 @@ document.addEventListener("click",function(event){
                             onclick="openUnifiedMarksEntry('teacher')">
                         <span class="staff-dashboard-action-icon">📘</span>
                         <span class="staff-dashboard-action-copy"><strong>Marks Entry</strong><small>Enter and manage marks</small></span>
+                        <span class="staff-dashboard-action-arrow">→</span>
+                    </button>
+                    <button id="staffDashboardExamAction" type="button" class="staff-dashboard-action exam"
+                            onclick="openExamManagement((typeof staffDashboardIsPrincipal==='function'&&staffDashboardIsPrincipal())?'principal':'staff')">
+                        <span class="staff-dashboard-action-icon">📝</span>
+                        <span class="staff-dashboard-action-copy"><strong>Exam Management</strong><small>Routine, submission & class-wise view</small></span>
                         <span class="staff-dashboard-action-arrow">→</span>
                     </button>
                     <button id="staffDashboardVideoTutorialsAction" type="button" class="staff-dashboard-action video"
@@ -20412,6 +20419,454 @@ umeRenderGroupCards=function(role,groups,host){
   return umeOriginalRenderGroupCardsFinal(role,groups,host);
 };
 </script>
+
+
+
+<!-- =========================================================
+     FINAL EXAM MANAGEMENT MODULE V2 — COORDINATOR + PUBLISH FLOW
+========================================================= -->
+<style id="exam-management-final-styles">
+#examManagementPopup{z-index:100000}
+.exam-mgmt-box{position:relative;width:min(98%,1600px);max-height:96vh;overflow:auto;margin:2vh auto;padding:24px;border-radius:24px;background:#f8fafc;box-shadow:0 28px 90px rgba(16,24,40,.36)}
+.exam-mgmt-title{margin:0 52px 4px 0;color:#123c69;font-size:26px}.exam-mgmt-subtitle{margin:0 52px 18px 0;color:#667085;font-size:13px;line-height:1.55}
+.exam-context{display:grid;grid-template-columns:minmax(170px,.7fr) minmax(220px,1fr) minmax(260px,1fr);gap:10px;align-items:end;margin:12px 0;padding:14px;border:1px solid #b2ddff;border-radius:15px;background:#eff8ff}
+.exam-field{display:flex;flex-direction:column;gap:6px;color:#123c69;font-size:11px;font-weight:900}.exam-field input,.exam-field select{width:100%;min-height:40px;padding:9px 10px;border:1px solid #ccd8e5;border-radius:9px;background:#fff;color:#101828;font:inherit;outline:none}.exam-field input:focus,.exam-field select:focus{border-color:#175cd3;box-shadow:0 0 0 3px rgba(23,92,211,.1)}
+.exam-role-wrap{display:flex;flex-direction:column;gap:7px}.exam-role-badge,.exam-publish-badge{display:inline-flex;align-items:center;gap:6px;width:max-content;max-width:100%;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:950;text-transform:uppercase}.exam-role-badge{background:#123c69;color:#fff}.exam-publish-badge.draft{background:#fff4e5;color:#934b00}.exam-publish-badge.published{background:#ecfdf3;color:#067647}
+.exam-manager-bar{display:none;gap:8px;flex-wrap:wrap;margin:10px 0}.exam-manager-bar.show{display:flex}.exam-btn,.exam-tab-btn{border:0;border-radius:10px;padding:10px 13px;font:inherit;font-size:11px;font-weight:950;cursor:pointer}.exam-btn.primary{background:#175cd3;color:#fff}.exam-btn.secondary{background:#eef4ff;color:#175cd3;border:1px solid #b2ccff}.exam-btn.success{background:#067647;color:#fff}.exam-btn.warning{background:#fff4e5;color:#934b00;border:1px solid #fec84b}.exam-btn.danger{background:#fff1f0;color:#b42318;border:1px solid #fda29b}.exam-btn.ghost{background:#fff;color:#475467;border:1px solid #d0d5dd}.exam-btn:disabled{opacity:.48;cursor:not-allowed}
+.exam-create-form{display:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:end;margin:10px 0;padding:13px;border:1px solid #d0d5dd;border-radius:12px;background:#f9fafb}.exam-create-form.show{display:grid}.exam-create-actions{display:flex;gap:7px;flex-wrap:wrap}
+.exam-coordinator-panel{display:none;margin:10px 0;padding:14px;border:1px solid #d6bbfb;border-radius:14px;background:#f9f5ff}.exam-coordinator-panel.show{display:block}.exam-coordinator-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}.exam-coordinator-controls{display:grid;grid-template-columns:minmax(240px,1fr) auto;gap:8px;align-items:end;margin-top:10px}.exam-coordinator-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.exam-coordinator-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #d6bbfb;border-radius:999px;background:#fff;color:#53389e;font-size:11px;font-weight:900}.exam-coordinator-chip button{border:0;border-radius:999px;padding:4px 7px;background:#fee4e2;color:#b42318;font-size:9px;font-weight:950;cursor:pointer}
+.exam-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.exam-tab-btn{background:#eef2f6;color:#344054;border:1px solid #d0d5dd}.exam-tab-btn.active{background:#123c69;color:#fff;border-color:#123c69}.exam-panel{display:none}.exam-panel.active{display:block}
+.exam-card{margin-top:12px;padding:15px;border:1px solid #dce6ef;border-radius:15px;background:#fff}.exam-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.exam-card h3,.exam-card h4{margin:0;color:#123c69}.exam-note{margin-top:4px;color:#667085;font-size:11px;line-height:1.5}.exam-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.exam-empty{padding:30px 16px;text-align:center;border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc;color:#667085;font-size:12px}.exam-error{padding:12px;border:1px solid #fda29b;border-radius:10px;background:#fff1f0;color:#912018;font-size:12px}.exam-success{padding:12px;border:1px solid #abefc6;border-radius:10px;background:#ecfdf3;color:#067647;font-size:12px}
+.exam-table-wrap{overflow:auto;border:1px solid #d0d5dd;border-radius:13px;background:#fff}.exam-table{width:100%;border-collapse:separate;border-spacing:0;min-width:900px}.exam-table th,.exam-table td{border-right:1px solid #e4e7ec;border-bottom:1px solid #e4e7ec;padding:9px;vertical-align:top;text-align:center}.exam-table th:last-child,.exam-table td:last-child{border-right:0}.exam-table tr:last-child td{border-bottom:0}.exam-table thead th{position:sticky;top:0;z-index:3;background:#123c69;color:#fff;font-size:11px}.exam-table .exam-class-col{position:sticky;left:0;z-index:2;min-width:110px;background:#f8fafc;color:#123c69;font-weight:950;vertical-align:middle}.exam-table thead .exam-class-col{z-index:4;background:#0f3358;color:#fff}
+.exam-day-head{min-width:185px}.exam-day-head strong{display:block;font-size:12px}.exam-day-head small{display:block;margin-top:4px;color:#d0e8ff;font-size:10px}.exam-day-edit{display:grid;gap:5px}.exam-day-edit input{width:100%;padding:6px 7px;border:1px solid #b2ccff;border-radius:7px;font-size:10px}.exam-day-edit button{border:1px solid rgba(255,255,255,.4);border-radius:7px;padding:5px;background:rgba(255,255,255,.12);color:#fff;font-size:9px;font-weight:900;cursor:pointer}
+.exam-view-cell{display:flex;min-height:64px;flex-direction:column;align-items:center;justify-content:center;gap:5px}.exam-view-cell strong,.exam-subject{display:block;color:#101828;font-size:12px;font-weight:950}.exam-view-cell span,.exam-teacher{display:block;color:#667085;font-size:10px;font-weight:800}.exam-special{color:#7f56d9!important;font-weight:950!important}
+.exam-cell-editor{display:grid;gap:6px;min-width:160px}.exam-cell-editor input{width:100%;padding:7px 8px;border:1px solid #d0d5dd;border-radius:8px;font-size:10px}.exam-cell-editor input:first-child{font-weight:900}.exam-edit-note{margin:8px 0 12px;padding:9px 11px;border-radius:9px;background:#fffaeb;color:#7a2e0e;font-size:10px;font-weight:800}
+.exam-status-stack{display:flex;flex-direction:column;gap:5px;margin-top:8px}.exam-status-line{display:flex;align-items:center;justify-content:center;gap:5px;padding:5px;border-radius:7px;background:#f8fafc;color:#667085;font-size:10px;font-weight:900}.exam-status-line.active{background:#ecfdf3;color:#067647}.exam-status-line.printed{background:#eff8ff;color:#175cd3}.exam-bulb{filter:grayscale(1);opacity:.35}.exam-bulb.on{filter:none;opacity:1}.exam-status-line input{accent-color:#067647}.exam-tracker-cell{min-width:155px}
+.exam-filter-row{display:grid;grid-template-columns:minmax(220px,.7fr) 1fr;gap:10px;align-items:end;margin-bottom:10px}.exam-class-routine{width:100%;border-collapse:collapse}.exam-class-routine th,.exam-class-routine td{border:1px solid #e4e7ec;padding:9px;text-align:center;font-size:11px}.exam-class-routine th{background:#123c69;color:#fff}.exam-info-line{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.exam-info-chip{padding:6px 9px;border-radius:999px;background:#f2f4f7;color:#475467;font-size:10px;font-weight:900}
+@media(max-width:850px){.exam-context{grid-template-columns:1fr 1fr}.exam-context .exam-role-wrap{grid-column:1/-1}.exam-create-form{grid-template-columns:1fr 1fr}.exam-coordinator-controls{grid-template-columns:1fr}.exam-filter-row{grid-template-columns:1fr}}
+@media(max-width:560px){.exam-mgmt-box{width:100%;max-height:100vh;min-height:100vh;margin:0;padding:16px;border-radius:0}.exam-mgmt-title{font-size:22px}.exam-context,.exam-create-form{grid-template-columns:1fr}.exam-create-form .exam-create-actions{grid-column:auto}.exam-tabs{display:grid;grid-template-columns:1fr}.exam-tab-btn{width:100%}.exam-card{padding:11px}.exam-actions{width:100%}.exam-actions .exam-btn{flex:1}}
+</style>
+
+<style id="exam-management-premium-theme">
+/* =========================================================
+   EXAM MANAGEMENT — PREMIUM VISUAL THEME
+   Visual-only overrides. No workflow/data logic changed.
+========================================================= */
+
+/* Dashboard buttons — make Exam Management impossible to miss */
+.staff-dashboard-action.exam{
+    background:linear-gradient(135deg,#7a1734 0%,#b4235a 48%,#f0448d 100%)!important;
+    border:1px solid rgba(255,255,255,.28)!important;
+    box-shadow:0 10px 24px rgba(122,23,52,.28),inset 0 1px 0 rgba(255,255,255,.2)!important;
+}
+.staff-dashboard-action.exam .staff-dashboard-action-icon{
+    background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10));
+    box-shadow:0 6px 14px rgba(74,8,32,.18),inset 0 1px 0 rgba(255,255,255,.25);
+}
+#websiteAdminExamButton{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg,#7a1734,#b4235a 55%,#e94683)!important;
+    color:#fff!important;
+    border:1px solid rgba(255,255,255,.18)!important;
+    box-shadow:0 8px 18px rgba(122,23,52,.24)!important;
+}
+#websiteAdminExamButton:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.06);
+    box-shadow:0 12px 24px rgba(122,23,52,.30)!important;
+}
+
+/* Full Exam workspace */
+.exam-mgmt-box{
+    position:relative;
+    isolation:isolate;
+    background:
+      radial-gradient(circle at 7% 0%,rgba(240,68,141,.14),transparent 25%),
+      radial-gradient(circle at 95% 4%,rgba(23,92,211,.13),transparent 27%),
+      linear-gradient(180deg,#f7fbff 0%,#fff7fb 48%,#f8fafc 100%)!important;
+    border:1px solid rgba(18,60,105,.12);
+    box-shadow:0 32px 100px rgba(15,51,88,.38)!important;
+}
+.exam-mgmt-box::before{
+    content:"";
+    position:absolute;
+    z-index:-1;
+    inset:0 0 auto 0;
+    height:112px;
+    border-radius:24px 24px 32px 32px;
+    background:linear-gradient(120deg,#0f3358 0%,#175cd3 44%,#7a1734 100%);
+    box-shadow:0 10px 28px rgba(15,51,88,.18);
+}
+.exam-mgmt-box>.close-btn{
+    position:sticky;
+    top:4px;
+    float:right;
+    z-index:20;
+    width:38px;
+    height:38px;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(255,255,255,.26);
+    border-radius:50%;
+    background:rgba(255,255,255,.15);
+    color:#fff!important;
+    backdrop-filter:blur(8px);
+    box-shadow:0 6px 18px rgba(0,0,0,.16);
+}
+.exam-mgmt-title{
+    position:relative;
+    z-index:1;
+    color:#fff!important;
+    font-size:29px!important;
+    letter-spacing:-.4px;
+    text-shadow:0 2px 10px rgba(0,0,0,.16);
+}
+.exam-mgmt-subtitle{
+    position:relative;
+    z-index:1;
+    min-height:45px;
+    margin-bottom:22px!important;
+    color:rgba(255,255,255,.86)!important;
+    max-width:880px;
+}
+
+/* Year / term selector becomes a clear control deck */
+.exam-context{
+    position:relative;
+    z-index:2;
+    margin-top:4px!important;
+    padding:16px!important;
+    border:1px solid rgba(18,60,105,.13)!important;
+    background:rgba(255,255,255,.96)!important;
+    box-shadow:0 12px 30px rgba(18,60,105,.10)!important;
+}
+.exam-field{color:#0f3358!important;letter-spacing:.15px}
+.exam-field input,.exam-field select{
+    min-height:44px!important;
+    border:1px solid #c7d8e8!important;
+    background:linear-gradient(180deg,#fff,#f8fbff)!important;
+    box-shadow:inset 0 1px 2px rgba(16,24,40,.03);
+}
+.exam-field input:focus,.exam-field select:focus{
+    border-color:#175cd3!important;
+    box-shadow:0 0 0 4px rgba(23,92,211,.12)!important;
+}
+.exam-role-badge{
+    background:linear-gradient(135deg,#0f3358,#175cd3)!important;
+    box-shadow:0 5px 13px rgba(23,92,211,.20);
+}
+.exam-publish-badge.published{
+    background:linear-gradient(135deg,#dcfae6,#ecfdf3)!important;
+    border:1px solid #abefc6;
+    box-shadow:0 4px 12px rgba(6,118,71,.10);
+}
+.exam-publish-badge.draft{
+    background:linear-gradient(135deg,#fff1d6,#fff8ea)!important;
+    border:1px solid #fec84b;
+}
+
+/* Manager controls */
+.exam-manager-bar.show{
+    padding:12px;
+    border:1px solid #dde7f0;
+    border-radius:15px;
+    background:rgba(255,255,255,.88);
+    box-shadow:0 8px 22px rgba(18,60,105,.07);
+}
+.exam-btn,.exam-tab-btn{
+    min-height:40px;
+    transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+.exam-btn:hover:not(:disabled),.exam-tab-btn:hover{transform:translateY(-2px);filter:brightness(1.03)}
+.exam-btn.primary{background:linear-gradient(135deg,#175cd3,#0ba5ec)!important;box-shadow:0 6px 15px rgba(23,92,211,.20)}
+.exam-btn.success{background:linear-gradient(135deg,#087443,#12a36a)!important;box-shadow:0 6px 15px rgba(8,116,67,.18)}
+.exam-btn.secondary{background:linear-gradient(180deg,#f4f7ff,#eaf1ff)!important;border-color:#b2ccff!important}
+.exam-btn.warning{background:linear-gradient(180deg,#fff7e8,#fff0cd)!important}
+.exam-btn.danger{background:linear-gradient(180deg,#fff3f2,#fee4e2)!important}
+.exam-btn.ghost{background:#fff!important;box-shadow:0 3px 10px rgba(16,24,40,.05)}
+
+/* Main navigation tabs */
+.exam-tabs{
+    padding:7px;
+    border:1px solid rgba(18,60,105,.11);
+    border-radius:15px;
+    background:rgba(255,255,255,.76);
+    box-shadow:0 8px 20px rgba(18,60,105,.06);
+}
+.exam-tab-btn{
+    flex:1 1 180px;
+    background:#eef3f8!important;
+    color:#344054!important;
+    border:1px solid #d8e2eb!important;
+}
+.exam-tab-btn.active{
+    background:linear-gradient(135deg,#0f3358,#175cd3)!important;
+    color:#fff!important;
+    border-color:transparent!important;
+    box-shadow:0 8px 18px rgba(23,92,211,.22);
+}
+
+/* Content cards */
+.exam-card{
+    border:1px solid rgba(18,60,105,.11)!important;
+    border-radius:18px!important;
+    background:rgba(255,255,255,.94)!important;
+    box-shadow:0 12px 30px rgba(18,60,105,.08)!important;
+}
+.exam-card-head{
+    margin:-15px -15px 14px!important;
+    padding:14px 15px;
+    border-bottom:1px solid #e5edf4;
+    border-radius:18px 18px 0 0;
+    background:linear-gradient(100deg,#f5f9ff,#fff6fa);
+}
+.exam-card h3,.exam-card h4{color:#0f3358!important}
+.exam-empty{
+    border:1px dashed #9fb7cc!important;
+    background:linear-gradient(145deg,#f8fbff,#fff8fb)!important;
+    color:#53677a!important;
+}
+
+/* Routine grids */
+.exam-table-wrap{
+    border:1px solid #cfdce7!important;
+    box-shadow:0 7px 20px rgba(18,60,105,.06);
+}
+.exam-table thead th,.exam-class-routine th{
+    background:linear-gradient(135deg,#0f3358,#175cd3)!important;
+    color:#fff!important;
+}
+.exam-table thead .exam-class-col{background:linear-gradient(135deg,#7a1734,#a61b4d)!important}
+.exam-table .exam-class-col{
+    background:linear-gradient(180deg,#fff7fa,#f9edf2)!important;
+    color:#7a1734!important;
+}
+.exam-table tbody tr:nth-child(even) td:not(.exam-class-col){background:#fbfdff}
+.exam-view-cell{border-radius:10px;transition:background .18s ease,transform .18s ease}
+.exam-table td:hover .exam-view-cell{background:#f5f9ff;transform:translateY(-1px)}
+.exam-view-cell strong,.exam-subject{color:#123c69!important;font-size:12.5px!important}
+.exam-view-cell span,.exam-teacher{color:#7a1734!important}
+.exam-special{color:#7f56d9!important}
+.exam-cell-editor input{
+    border-color:#cddbe7!important;
+    background:#fff!important;
+}
+.exam-cell-editor input:focus{outline:none;border-color:#175cd3!important;box-shadow:0 0 0 3px rgba(23,92,211,.10)}
+.exam-status-line{border:1px solid #edf1f4;background:#f8fafc!important}
+.exam-status-line.active{border-color:#abefc6;background:#ecfdf3!important;box-shadow:0 3px 9px rgba(6,118,71,.08)}
+.exam-status-line.printed{border-color:#b2ddff;background:#eff8ff!important;box-shadow:0 3px 9px rgba(23,92,211,.08)}
+.exam-info-chip{background:linear-gradient(180deg,#f3f7fb,#eaf0f6)!important;color:#123c69!important;border:1px solid #d8e2eb}
+
+/* Coordinator area */
+.exam-coordinator-panel.show{
+    border:1px solid #d6bbfb!important;
+    background:linear-gradient(145deg,#fbf8ff,#f5efff)!important;
+    box-shadow:0 9px 22px rgba(127,86,217,.09);
+}
+.exam-coordinator-chip{box-shadow:0 4px 10px rgba(83,56,158,.08)}
+
+body.dark-mode .exam-mgmt-box{
+    background:linear-gradient(180deg,#162534,#101b25)!important;
+    border-color:#344b60;
+}
+body.dark-mode .exam-context,body.dark-mode .exam-card,body.dark-mode .exam-manager-bar.show,body.dark-mode .exam-tabs{
+    background:rgba(27,43,57,.96)!important;
+    border-color:#405467!important;
+}
+body.dark-mode .exam-card-head{background:linear-gradient(100deg,#23394c,#382333);border-color:#405467}
+body.dark-mode .exam-card h3,body.dark-mode .exam-card h4,body.dark-mode .exam-field{color:#d8ecff!important}
+body.dark-mode .exam-note{color:#aab9c7}
+body.dark-mode .exam-table td:not(.exam-class-col){background:#172633!important;color:#dbe8f3}
+body.dark-mode .exam-table .exam-class-col{background:#30202a!important;color:#f0b6c9!important}
+body.dark-mode .exam-view-cell strong,body.dark-mode .exam-subject{color:#e5f2ff!important}
+body.dark-mode .exam-view-cell span,body.dark-mode .exam-teacher{color:#f1a9bf!important}
+
+@media(max-width:560px){
+    .exam-mgmt-box::before{height:125px;border-radius:0 0 28px 28px}
+    .exam-mgmt-title{font-size:24px!important}
+    .exam-mgmt-subtitle{min-height:55px}
+    .exam-tabs{padding:6px}
+}
+</style>
+
+
+<div id="examManagementPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="examManagementTitle">
+  <div class="exam-mgmt-box">
+    <span class="close-btn" onclick="closeExamManagement()" aria-label="Close Exam Management">&times;</span>
+    <h2 id="examManagementTitle" class="exam-mgmt-title">📝 Exam Management</h2>
+    <p class="exam-mgmt-subtitle">Published exam routine, question submission tracking, class-wise routine and secure Exam Coordinator control.</p>
+
+    <div class="exam-context">
+      <label class="exam-field">Academic Year / Session
+        <select id="examYearSelect" onchange="examYearChanged(this.value)"><option value="">— Select Year —</option></select>
+      </label>
+      <label class="exam-field">Term / Examination
+        <select id="examTermSelect" onchange="examTermChanged(this.value)" disabled><option value="">— Select Term —</option></select>
+      </label>
+      <div class="exam-role-wrap">
+        <div><span id="examRoleBadge" class="exam-role-badge">VIEW MODE</span> <span id="examPublishBadge" class="exam-publish-badge draft" style="display:none">DRAFT</span></div>
+        <div id="examSelectedExamInfo" class="exam-note">Select Academic Year and Term first.</div>
+      </div>
+    </div>
+
+    <div id="examManagerBar" class="exam-manager-bar">
+      <button type="button" class="exam-btn primary" onclick="examTogglePeriodForm(true)">+ CREATE YEAR / TERM</button>
+      <button id="examEditPeriodBtn" type="button" class="exam-btn secondary" onclick="examEditCurrentPeriod()" disabled>✏️ EDIT YEAR / TERM</button>
+      <button id="examDeletePeriodBtn" type="button" class="exam-btn danger" onclick="examDeleteCurrentPeriod()" disabled>🗑 DELETE EXAM</button>
+      <button id="examCoordinatorManageBtn" type="button" class="exam-btn secondary" onclick="examToggleCoordinatorPanel()" style="display:none">👤 EXAM COORDINATOR ACCESS</button>
+    </div>
+
+    <div id="examPeriodForm" class="exam-create-form">
+      <label class="exam-field">Academic Year / Session<input id="examPeriodYear" type="text" maxlength="20" placeholder="Example: 2083" autocomplete="off"></label>
+      <label class="exam-field">Term<input id="examPeriodTerm" type="text" list="examTermSuggestions" maxlength="80" placeholder="Example: First Terminal Examination" autocomplete="off"></label>
+      <label class="exam-field">Exam Title — Optional<input id="examPeriodTitle" type="text" maxlength="120" placeholder="Example: First Terminal Examination 2083" autocomplete="off"></label>
+      <div class="exam-create-actions"><button type="button" class="exam-btn success" onclick="examSavePeriod()">✓ SAVE</button><button type="button" class="exam-btn ghost" onclick="examTogglePeriodForm(false)">CANCEL</button></div>
+    </div>
+
+    <div id="examCoordinatorPanel" class="exam-coordinator-panel">
+      <div class="exam-coordinator-head"><div><h4>👤 Exam Coordinator Access</h4><p class="exam-note">Admin and Principal can grant or remove access. Coordinator receives full Exam Management control but cannot grant coordinator access to others.</p></div><button type="button" class="exam-btn ghost" onclick="examToggleCoordinatorPanel(false)">CLOSE</button></div>
+      <div class="exam-coordinator-controls">
+        <label class="exam-field">Select Staff<select id="examCoordinatorStaffSelect"><option value="">— Select Staff —</option></select></label>
+        <button type="button" class="exam-btn success" onclick="examGrantCoordinator()">✓ GRANT ACCESS</button>
+      </div>
+      <div id="examCoordinatorList" class="exam-coordinator-list"><span class="exam-note">Loading...</span></div>
+    </div>
+
+    <datalist id="examTermSuggestions"><option value="First Terminal Examination"></option><option value="Second Terminal Examination"></option><option value="Third Terminal Examination"></option><option value="Final Terminal Examination"></option><option value="First Term"></option><option value="Second Term"></option><option value="Final Term"></option><option value="Unit Test"></option></datalist>
+    <datalist id="examSubjectSuggestions"></datalist><datalist id="examTeacherSuggestions"></datalist>
+
+    <div class="exam-tabs" role="tablist" aria-label="Exam Management sections">
+      <button id="examTabRoutine" type="button" class="exam-tab-btn active" onclick="examShowTab('routine')">1. OVERALL ROUTINE</button>
+      <button id="examTabTracker" type="button" class="exam-tab-btn" onclick="examShowTab('tracker')">2. QUESTION SUBMISSION</button>
+      <button id="examTabClass" type="button" class="exam-tab-btn" onclick="examShowTab('classwise')">3. CLASS-WISE ROUTINE</button>
+    </div>
+    <div id="examStatusMessage"></div>
+
+    <section id="examPanelRoutine" class="exam-panel active"><div class="exam-card">
+      <div class="exam-card-head"><div><h3 id="examRoutineHeading">📅 Overall Routine</h3><p id="examRoutineNote" class="exam-note">Published Routine for all Classes.</p></div>
+      <div class="exam-actions">
+        <button id="examEditRoutineBtn" type="button" class="exam-btn secondary" onclick="examEnterEditMode()" style="display:none">✏️ EDIT ROUTINE</button>
+        <button id="examAddDayBtn" type="button" class="exam-btn primary" onclick="examAddDay()" style="display:none">+ ADD DAY</button>
+        <button id="examSaveDraftBtn" type="button" class="exam-btn warning" onclick="examSaveRoutine(false)" style="display:none">💾 SAVE DRAFT</button>
+        <button id="examSavePublishBtn" type="button" class="exam-btn success" onclick="examSaveRoutine(true)" style="display:none">📢 SAVE & PUBLISH</button>
+        <button id="examCancelEditBtn" type="button" class="exam-btn ghost" onclick="examCancelEditMode()" style="display:none">CANCEL EDIT</button>
+        <button id="examPublishBtn" type="button" class="exam-btn success" onclick="examPublishCurrent()" style="display:none">📢 PUBLISH ROUTINE</button>
+        <button id="examUnpublishBtn" type="button" class="exam-btn danger" onclick="examUnpublishCurrent()" style="display:none">🙈 UNPUBLISH ROUTINE</button>
+        <button type="button" class="exam-btn secondary" onclick="examExportCSV('routine')">⬇ EXPORT CSV</button><button type="button" class="exam-btn ghost" onclick="examPrintCurrent('routine')">🖨 PRINT / PDF</button>
+      </div></div>
+      <div id="examRoutineHost" class="exam-empty">Select Academic Year and Term to view the Routine.</div>
+    </div></section>
+
+    <section id="examPanelTracker" class="exam-panel"><div class="exam-card"><div class="exam-card-head"><div><h3>✅ Question Submission & Printing Tracker</h3><p class="exam-note">Routine appears automatically. Admin, Principal and Exam Coordinator can Publish/Unpublish and tick Submitted/Printed; other Staff see only the currently Published version.</p></div><div class="exam-actions"><button type="button" class="exam-btn secondary" onclick="examExportCSV('tracker')">⬇ EXPORT CSV</button><button type="button" class="exam-btn ghost" onclick="examPrintCurrent('tracker')">🖨 PRINT / PDF</button></div></div><div id="examTrackerHost" class="exam-empty">Select Academic Year and Term to view Question Submission status.</div></div></section>
+
+    <section id="examPanelClasswise" class="exam-panel"><div class="exam-card"><div class="exam-card-head"><div><h3>🎓 Class-wise Routine</h3><p class="exam-note">Choose Nursery–Class 10 to view only that Class. Submission/Print status is not shown here.</p></div><div class="exam-actions"><button type="button" class="exam-btn secondary" onclick="examExportCSV('classwise')">⬇ EXPORT CSV</button><button type="button" class="exam-btn ghost" onclick="examPrintCurrent('classwise')">🖨 PRINT / PDF</button></div></div><div class="exam-filter-row"><label class="exam-field">Class<select id="examClasswiseSelect" onchange="examRenderClasswise()" disabled><option value="">— Select Class —</option></select></label><div id="examClasswiseInfo" class="exam-note">Select Academic Year and Term first.</div></div><div id="examClasswiseHost" class="exam-empty">Select Academic Year, Term and Class to view Class-wise Routine.</div></div></section>
+  </div>
+</div>
+
+<script id="exam-management-final-js">
+const EXAM_CLASSES=["Nursery","LKG","UKG","Class 1","Class 2","Class 3","Class 4","Class 5","Class 6","Class 7","Class 8","Class 9","Class 10"];
+const EXAM_SUBJECTS=["NEPALI","ENGLISH","MATH","SCIENCE","SEROPHERO","SURYODAYA","SOCIAL","HEALTH","COMPUTER","MORAL","G.K.","ACCOUNT","ECONOMICS","REVISION","HOLIDAY","LEAVE","—"];
+const EXAM_NO_QUESTION=new Set(["REVISION","HOLIDAY","LEAVE","—","-","DASH","OFF","NO EXAM",""]);
+let examPortalRole="staff",examPeriods=[],examDays=[],examEntries=[],examStatuses=[],examCurrentPeriod=null,examActiveTab="routine",examPeriodEditId=null,examEditMode=false,examCoordinatorRows=[],examVisibilityTimer=null;
+function examEscape(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;")}
+function examNormalize(v){return String(v??"").trim().replace(/\s+/g," ")}
+function examUpper(v){return examNormalize(v).toUpperCase()}
+function examCsv(v){const s=String(v??"");return /[\",\n]/.test(s)?`\"${s.replace(/\"/g,'\"\"')}\"`:s}
+function examIsCoreManager(){return examPortalRole==="admin"||examPortalRole==="principal"}
+function examIsManager(){return examIsCoreManager()||examPortalRole==="coordinator"}
+function examRoleLabel(){return examPortalRole==="admin"?"ADMIN — FULL CONTROL":examPortalRole==="principal"?"PRINCIPAL — FULL CONTROL":examPortalRole==="coordinator"?"EXAM COORDINATOR — FULL CONTROL":"STAFF — PUBLISHED VIEW / EXPORT"}
+function examDb(){return examPortalRole==="admin"?(typeof initStudentSupabase==="function"?initStudentSupabase():null):(typeof initStaffSupabase==="function"?initStaffSupabase():null)}
+function examActorName(){return examPortalRole==="admin"?"Website Admin":String(window.loggedInStaff?.name||loggedInStaff?.name||"Staff Member")}
+function examActorId(){return examPortalRole==="admin"?"admin":String(window.loggedInStaff?.username||loggedInStaff?.username||"")}
+function examDbError(error){const m=String(error?.message||"Unknown error");if(error?.code==="42P01"||/exam_periods|exam_days|exam_routine_entries|exam_question_status|exam_coordinators/i.test(m))return "Exam Management database is not ready. Run the updated Exam Management SQL once, then refresh.";if(/row-level security|permission denied|policy/i.test(m))return "This account does not have permission for that Exam Management action.";return m}
+function examMessage(message,type="error"){const h=document.getElementById("examStatusMessage");if(!h)return;h.innerHTML=`<div class="${type==="success"?"exam-success":"exam-error"}">${examEscape(message)}</div>`;if(type==="success")setTimeout(()=>{if(h.textContent===message)h.innerHTML=""},2600)}
+function examClearMessage(){const h=document.getElementById("examStatusMessage");if(h)h.innerHTML=""}
+function examPopulateDatalists(){const s=document.getElementById("examSubjectSuggestions");if(s)s.innerHTML=EXAM_SUBJECTS.map(v=>`<option value="${examEscape(v)}"></option>`).join("");const dir=typeof STAFF_LOGIN_DIRECTORY!=="undefined"?STAFF_LOGIN_DIRECTORY:{};const names=[...new Set(Object.values(dir).map(v=>examNormalize(v?.name)).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const t=document.getElementById("examTeacherSuggestions");if(t)t.innerHTML=names.map(v=>`<option value="${examEscape(v)}"></option>`).join("");const c=document.getElementById("examClasswiseSelect");if(c&&c.options.length===1)c.insertAdjacentHTML("beforeend",EXAM_CLASSES.map(v=>`<option value="${examEscape(v)}">${examEscape(v)}</option>`).join(""));const sc=document.getElementById("examCoordinatorStaffSelect");if(sc&&sc.options.length===1)sc.insertAdjacentHTML("beforeend",Object.entries(dir).filter(([id])=>id!==String(typeof PRINCIPAL_STAFF_ID!=="undefined"?PRINCIPAL_STAFF_ID:"joseph")).map(([id,v])=>`<option value="${examEscape(id)}">${examEscape(v.name)} — ${examEscape(v.designation||"Staff")}</option>`).join(""))}
+async function examResolveStaffRole(){if(examPortalRole==="admin"||examPortalRole==="principal")return;try{const db=examDb(),id=examActorId();if(!db||!id)return;const {data,error}=await db.from("exam_coordinators").select("staff_id,staff_name,enabled").eq("staff_id",id).eq("enabled",true).maybeSingle();if(error&&error.code!=="PGRST116")throw error;if(data?.enabled)examPortalRole="coordinator"}catch(e){console.warn("Exam coordinator role check:",e)}}
+async function openExamManagement(source="staff"){
+  const requestedRole=String(source||"staff").toLowerCase();
+  const isPrincipalNow=(typeof staffDashboardIsPrincipal==="function"&&staffDashboardIsPrincipal());
+  if(requestedRole==="admin") examPortalRole="admin";
+  else if(requestedRole==="principal"||isPrincipalNow) examPortalRole="principal";
+  else examPortalRole="staff";
+
+  if(examPortalRole==="admin"){
+    if(!studentAdminSession){
+      if(typeof openStudentAdminLogin==="function") openStudentAdminLogin();
+      return;
+    }
+  }else{
+    if(!loggedInStaff||!staffAuthSession){
+      if(typeof openStaffLogin==="function") openStaffLogin();
+      return;
+    }
+  }
+
+  await examResolveStaffRole();
+  examClearMessage();
+  examCurrentPeriod=null;examDays=[];examEntries=[];examStatuses=[];examPeriodEditId=null;examEditMode=false;
+  examPopulateDatalists();
+  const p=document.getElementById("examManagementPopup");
+  if(!p){
+    alert("Exam Management panel could not be opened. Please refresh the page once.");
+    return;
+  }
+  p.style.display="block";
+  p.style.zIndex="100000";
+  document.body.style.overflow="hidden";
+  examApplyRoleUI();
+  examTogglePeriodForm(false);
+  examShowTab("routine");
+  examResetSelectionUI();
+  await examLoadPeriods();
+  examStartVisibilityWatch();
+}
+function closeExamManagement(){document.getElementById("examManagementPopup").style.display="none";document.body.style.overflow="auto";examEditMode=false;examStopVisibilityWatch();examClearMessage()}
+function examApplyRoleUI(){const b=document.getElementById("examRoleBadge");if(b)b.textContent=examRoleLabel();document.getElementById("examManagerBar")?.classList.toggle("show",examIsManager());const cb=document.getElementById("examCoordinatorManageBtn");if(cb)cb.style.display=examIsCoreManager()?"inline-block":"none";const tab=document.getElementById("examTabRoutine"),head=document.getElementById("examRoutineHeading"),note=document.getElementById("examRoutineNote");if(tab)tab.textContent=examIsManager()?"1. ROUTINE MANAGEMENT":"1. OVERALL ROUTINE";if(head)head.textContent=examIsManager()?"📅 Routine Management":"📅 Overall Routine";if(note)note.textContent=examIsManager()?"Routine opens in View Mode. Use Edit Routine only when changes are needed.":"Published Routine for all Classes.";examUpdateRoutineButtons()}
+function examUpdatePublishBadge(){const b=document.getElementById("examPublishBadge");if(!b)return;if(!examCurrentPeriod){b.style.display="none";return}b.style.display="inline-flex";b.textContent=examCurrentPeriod.is_published?"PUBLISHED ✓":"UNPUBLISHED / DRAFT";b.className=`exam-publish-badge ${examCurrentPeriod.is_published?"published":"draft"}`}
+function examUpdateRoutineButtons(){const ready=!!examCurrentPeriod,manager=examIsManager();const show=(id,on)=>{const e=document.getElementById(id);if(e)e.style.display=on?"inline-block":"none"};show("examEditRoutineBtn",manager&&ready&&!examEditMode);show("examAddDayBtn",manager&&ready&&examEditMode);show("examSaveDraftBtn",manager&&ready&&examEditMode);show("examSavePublishBtn",manager&&ready&&examEditMode);show("examCancelEditBtn",manager&&ready&&examEditMode);show("examPublishBtn",manager&&ready&&!examEditMode&&!examCurrentPeriod?.is_published);show("examUnpublishBtn",manager&&ready&&!examEditMode&&!!examCurrentPeriod?.is_published);const ep=document.getElementById("examEditPeriodBtn"),dp=document.getElementById("examDeletePeriodBtn");if(ep)ep.disabled=!manager||!ready;if(dp)dp.disabled=!manager||!ready}
+function examResetSelectionUI(){const y=document.getElementById("examYearSelect"),t=document.getElementById("examTermSelect");if(y)y.value="";if(t){t.innerHTML='<option value="">— Select Term —</option>';t.disabled=true}document.getElementById("examClasswiseSelect").disabled=true;document.getElementById("examClasswiseSelect").value="";document.getElementById("examSelectedExamInfo").textContent=examIsManager()?"Select Academic Year and Term first.":"Only published Exam Routines are shown here.";document.getElementById("examRoutineHost").innerHTML='<div class="exam-empty">Select Academic Year and Term to view the Routine.</div>';document.getElementById("examTrackerHost").innerHTML='<div class="exam-empty">Select Academic Year and Term to view Question Submission status.</div>';document.getElementById("examClasswiseHost").innerHTML='<div class="exam-empty">Select Academic Year, Term and Class to view Class-wise Routine.</div>';examUpdatePublishBadge();examUpdateRoutineButtons()}
+async function examLoadPeriods(preferredId=null){try{const db=examDb();if(!db)throw new Error("Supabase connection unavailable.");const {data,error}=await db.from("exam_periods").select("id,academic_year,term_name,exam_title,is_published,published_at,published_by_name,created_at,updated_at").order("academic_year",{ascending:false}).order("created_at",{ascending:false});if(error)throw error;examPeriods=(data||[]).filter(p=>examIsManager()||p.is_published);const years=[...new Set(examPeriods.map(r=>examNormalize(r.academic_year)).filter(Boolean))];const y=document.getElementById("examYearSelect");y.innerHTML='<option value="">— Select Year —</option>'+years.map(v=>`<option value="${examEscape(v)}">${examEscape(v)}</option>`).join("");if(!examPeriods.length&&!examIsManager())document.getElementById("examSelectedExamInfo").textContent="No Exam Routine has been published yet.";if(preferredId){const p=examPeriods.find(r=>String(r.id)===String(preferredId));if(p){y.value=p.academic_year;examYearChanged(p.academic_year,String(p.id))}}}catch(e){examMessage(examDbError(e))}}
+function examYearChanged(yearValue,preferredId=""){examCurrentPeriod=null;examDays=[];examEntries=[];examStatuses=[];examEditMode=false;const year=examNormalize(yearValue),t=document.getElementById("examTermSelect"),list=examPeriods.filter(r=>examNormalize(r.academic_year)===year);t.innerHTML='<option value="">— Select Term —</option>'+list.map(r=>`<option value="${Number(r.id)}">${examEscape(r.term_name)}${r.is_published?" ✓":" (Draft)"}</option>`).join("");t.disabled=!year||!list.length;document.getElementById("examClasswiseSelect").disabled=true;document.getElementById("examSelectedExamInfo").textContent=year?(list.length?"Now select a Term / Examination.":"No available Term for this Year."):"Select Academic Year and Term first.";examUpdatePublishBadge();examUpdateRoutineButtons();if(preferredId){t.value=preferredId;examTermChanged(preferredId)}}
+async function examTermChanged(periodId){examEditMode=false;examCurrentPeriod=examPeriods.find(r=>String(r.id)===String(periodId))||null;if(!examCurrentPeriod){examYearChanged(document.getElementById("examYearSelect")?.value||"");return}document.getElementById("examSelectedExamInfo").textContent=`${examCurrentPeriod.academic_year} • ${examCurrentPeriod.term_name}${examCurrentPeriod.exam_title?" • "+examCurrentPeriod.exam_title:""}`;const c=document.getElementById("examClasswiseSelect");c.disabled=false;c.value="";document.getElementById("examClasswiseInfo").textContent="Select a Class to view only that Class's Routine.";examUpdatePublishBadge();examUpdateRoutineButtons();await examLoadCurrentPeriodData()}
+async function examLoadCurrentPeriodData(){if(!examCurrentPeriod)return;try{const db=examDb(),pid=examCurrentPeriod.id;let [d,e,s]=await Promise.all([db.from("exam_days").select("id,period_id,day_label,exam_date,sort_order").eq("period_id",pid).order("sort_order").order("id"),db.from("exam_routine_entries").select("id,period_id,day_id,class_name,activity_title,teacher_name,teacher_staff_id,question_required,updated_at").eq("period_id",pid),db.from("exam_question_status").select("entry_id,submitted,submitted_at,submitted_by_name,printed,printed_at,printed_by_name").eq("period_id",pid)]);if(d.error)throw d.error;if(e.error)throw e.error;if(s.error)throw s.error;if(examIsManager()&&!(d.data||[]).length){const defaults=Array.from({length:8},(_,i)=>({period_id:pid,day_label:`Day ${i+1}`,exam_date:null,sort_order:i+1}));const created=await db.from("exam_days").insert(defaults);if(created.error)throw created.error;d=await db.from("exam_days").select("id,period_id,day_label,exam_date,sort_order").eq("period_id",pid).order("sort_order").order("id");if(d.error)throw d.error}examDays=d.data||[];examEntries=e.data||[];examStatuses=s.data||[];examRenderAll()}catch(err){examMessage(examDbError(err))}}
+function examEntryFor(dayId,cls){return examEntries.find(r=>String(r.day_id)===String(dayId)&&r.class_name===cls)||null}function examStatusFor(id){return examStatuses.find(r=>String(r.entry_id)===String(id))||null}function examIsNoQuestionTitle(title){return EXAM_NO_QUESTION.has(examUpper(title))}
+function examRenderAll(){examRenderRoutine();examRenderTracker();examRenderClasswise();examUpdateRoutineButtons();examUpdatePublishBadge()}
+function examShowTab(tab){examActiveTab=tab;[["routine","Routine"],["tracker","Tracker"],["classwise","Classwise"]].forEach(([n,s])=>{document.getElementById(`examPanel${s}`)?.classList.toggle("active",n===tab)});[["routine","Routine"],["tracker","Tracker"],["classwise","Class"]].forEach(([n,s])=>document.getElementById(`examTab${s}`)?.classList.toggle("active",n===tab));if(tab==="classwise")examRenderClasswise()}
+function examTogglePeriodForm(show,period=null){if(show&&!examIsManager())return;const f=document.getElementById("examPeriodForm");f.classList.toggle("show",!!show);if(!show){examPeriodEditId=null;["examPeriodYear","examPeriodTerm","examPeriodTitle"].forEach(id=>document.getElementById(id).value="");return}examPeriodEditId=period?.id||null;document.getElementById("examPeriodYear").value=period?.academic_year||"";document.getElementById("examPeriodTerm").value=period?.term_name||"";document.getElementById("examPeriodTitle").value=period?.exam_title||""}
+function examEditCurrentPeriod(){if(examCurrentPeriod&&examIsManager())examTogglePeriodForm(true,examCurrentPeriod)}
+async function examSavePeriod(){if(!examIsManager())return;const academic_year=examNormalize(document.getElementById("examPeriodYear").value),term_name=examNormalize(document.getElementById("examPeriodTerm").value),exam_title=examNormalize(document.getElementById("examPeriodTitle").value)||null;if(!academic_year||!term_name){examMessage("Academic Year and Term are required.");return}try{const db=examDb();let res,isNew=!examPeriodEditId;if(examPeriodEditId)res=await db.from("exam_periods").update({academic_year,term_name,exam_title,updated_at:new Date().toISOString()}).eq("id",examPeriodEditId).select("id").single();else res=await db.from("exam_periods").insert({academic_year,term_name,exam_title,is_published:false,created_by_role:examPortalRole,created_by_name:examActorName()}).select("id").single();if(res.error)throw res.error;const id=res.data?.id||examPeriodEditId;if(isNew){const defaults=Array.from({length:8},(_,i)=>({period_id:id,day_label:`Day ${i+1}`,exam_date:null,sort_order:i+1}));const dr=await db.from("exam_days").insert(defaults);if(dr.error)throw dr.error}examTogglePeriodForm(false);examMessage(isNew?"Exam created with Day 1–Day 8. Add Routine and Publish when ready.":"Exam Year / Term updated.","success");await examLoadPeriods(id)}catch(e){examMessage(examDbError(e))}}
+async function examDeleteCurrentPeriod(){if(!examCurrentPeriod||!examIsManager())return;if(!confirm(`Delete ${examCurrentPeriod.academic_year} • ${examCurrentPeriod.term_name}?\n\nIts Routine and tracker status will also be deleted.`))return;try{const r=await examDb().from("exam_periods").delete().eq("id",examCurrentPeriod.id);if(r.error)throw r.error;examCurrentPeriod=null;await examLoadPeriods();examResetSelectionUI();examMessage("Exam deleted.","success")}catch(e){examMessage(examDbError(e))}}
+function examEnterEditMode(){if(!examIsManager()||!examCurrentPeriod)return;examEditMode=true;examRenderRoutine();examUpdateRoutineButtons()}
+function examCancelEditMode(){examEditMode=false;examRenderRoutine();examUpdateRoutineButtons()}
+async function examAddDay(){if(!examIsManager()||!examCurrentPeriod||!examEditMode)return;try{const next=Math.max(0,...examDays.map(d=>Number(d.sort_order)||0))+1,r=await examDb().from("exam_days").insert({period_id:examCurrentPeriod.id,day_label:`Day ${next}`,exam_date:null,sort_order:next});if(r.error)throw r.error;await examMarkDraft();await examLoadCurrentPeriodData();examEditMode=true;examRenderRoutine();examUpdateRoutineButtons();examMessage(`Day ${next} added.`,"success")}catch(e){examMessage(examDbError(e))}}
+async function examDeleteDay(dayId){if(!examIsManager()||!examEditMode)return;const d=examDays.find(x=>String(x.id)===String(dayId));if(!d||!confirm(`Delete ${d.day_label}? All Routine entries under this Day will also be deleted.`))return;try{const r=await examDb().from("exam_days").delete().eq("id",dayId);if(r.error)throw r.error;await examMarkDraft();await examLoadCurrentPeriodData();examEditMode=true;examRenderRoutine();examUpdateRoutineButtons()}catch(e){examMessage(examDbError(e))}}
+function examRenderRoutine(){const host=document.getElementById("examRoutineHost");if(!examCurrentPeriod){host.innerHTML='<div class="exam-empty">Select Academic Year and Term to view the Routine.</div>';return}if(!examDays.length){host.innerHTML=`<div class="exam-empty">No Exam Days found.${examIsManager()?" Create or Add Day to continue.":""}</div>`;return}const heads=examDays.map((d,i)=>examEditMode?`<th class="exam-day-head"><div class="exam-day-edit"><input id="examDayLabel_${d.id}" value="${examEscape(d.day_label)}" placeholder="Day ${i+1}"><input id="examDayDate_${d.id}" value="${examEscape(d.exam_date||"")}" placeholder="Date"><button type="button" onclick="examDeleteDay(${Number(d.id)})">DELETE DAY</button></div></th>`:`<th class="exam-day-head"><strong>${examEscape(d.day_label)}</strong><small>${examEscape(d.exam_date||"Date not set")}</small></th>`).join("");const rows=EXAM_CLASSES.map((cls,ri)=>`<tr><td class="exam-class-col">${examEscape(cls)}</td>${examDays.map(d=>examRoutineCellHtml(d,cls,ri)).join("")}</tr>`).join("");host.innerHTML=`${examEditMode?'<div class="exam-edit-note">Subject / Activity and Teacher Name are both optional. Use REVISION, HOLIDAY, LEAVE or — where needed. Subject is shown first and Teacher Name directly underneath in the same cell.</div>':""}<div class="exam-table-wrap"><table class="exam-table"><thead><tr><th class="exam-class-col">CLASS</th>${heads}</tr></thead><tbody>${rows}</tbody></table></div>`}
+function examRoutineCellHtml(day,cls,rowIndex){const e=examEntryFor(day.id,cls);if(!examEditMode){if(!e||(!examNormalize(e.activity_title)&&!examNormalize(e.teacher_name)))return '<td><div class="exam-view-cell"><span class="exam-special">—</span></div></td>';const title=examNormalize(e.activity_title),teacher=examNormalize(e.teacher_name);return `<td><div class="exam-view-cell">${title?`<strong class="${examIsNoQuestionTitle(title)?"exam-special":""}">${examEscape(title)}</strong>`:""}${teacher?`<span>${examEscape(teacher)}</span>`:""}</div></td>`}const key=`${day.id}_${rowIndex}`;return `<td><div class="exam-cell-editor"><input id="examActivity_${key}" type="text" list="examSubjectSuggestions" maxlength="80" value="${examEscape(e?.activity_title||"")}" placeholder="Subject / Activity" autocomplete="off"><input id="examTeacher_${key}" type="text" list="examTeacherSuggestions" maxlength="120" value="${examEscape(e?.teacher_name||"")}" placeholder="Teacher Name" autocomplete="off"></div></td>`}
+async function examMarkDraft(){if(!examCurrentPeriod||!examIsManager())return;const r=await examDb().from("exam_periods").update({is_published:false,published_at:null,published_by_name:null,updated_at:new Date().toISOString()}).eq("id",examCurrentPeriod.id);if(r.error)throw r.error;examCurrentPeriod.is_published=false;examCurrentPeriod.published_at=null;examCurrentPeriod.published_by_name=null}
+async function examSaveRoutine(publishAfter=false){if(!examIsManager()||!examCurrentPeriod||!examEditMode)return;try{const db=examDb(),pid=examCurrentPeriod.id,now=new Date().toISOString();if(examCurrentPeriod.is_published)await examMarkDraft();const dayUpdates=examDays.map((d,i)=>({id:d.id,period_id:pid,day_label:examNormalize(document.getElementById(`examDayLabel_${d.id}`)?.value)||`Day ${i+1}`,exam_date:examNormalize(document.getElementById(`examDayDate_${d.id}`)?.value)||null,sort_order:i+1,updated_at:now}));if(dayUpdates.length){const r=await db.from("exam_days").upsert(dayUpdates,{onConflict:"id"});if(r.error)throw r.error}const upserts=[],deleteIds=[],resetStatusIds=[];EXAM_CLASSES.forEach((cls,ri)=>examDays.forEach(d=>{const key=`${d.id}_${ri}`,title=examNormalize(document.getElementById(`examActivity_${key}`)?.value),teacher=examNormalize(document.getElementById(`examTeacher_${key}`)?.value),old=examEntryFor(d.id,cls);if(!title&&!teacher){if(old)deleteIds.push(old.id);return}const questionRequired=!!title&&!examIsNoQuestionTitle(title);if(old&&(examNormalize(old.activity_title)!==title||examNormalize(old.teacher_name)!==teacher||!!old.question_required!==questionRequired))resetStatusIds.push(old.id);upserts.push({period_id:pid,day_id:d.id,class_name:cls,activity_title:title||null,teacher_name:teacher||null,teacher_staff_id:null,question_required:questionRequired,updated_at:now})}));if(upserts.length){const r=await db.from("exam_routine_entries").upsert(upserts,{onConflict:"period_id,day_id,class_name"});if(r.error)throw r.error}if(resetStatusIds.length){const r=await db.from("exam_question_status").delete().in("entry_id",resetStatusIds);if(r.error)throw r.error}if(deleteIds.length){const r=await db.from("exam_routine_entries").delete().in("id",deleteIds);if(r.error)throw r.error}if(!examCurrentPeriod.is_published)await examMarkDraft();if(publishAfter)await examDoPublish();examEditMode=false;await examLoadPeriods(pid);examMessage(publishAfter?"Routine updated and published successfully. All Staff now see the latest version.":"Routine saved as Unpublished / Draft. It is hidden from ordinary Staff until Publish.","success")}catch(e){examMessage(examDbError(e))}}
+async function examDoPublish(){const now=new Date().toISOString(),r=await examDb().from("exam_periods").update({is_published:true,published_at:now,published_by_name:examActorName(),updated_at:now}).eq("id",examCurrentPeriod.id);if(r.error)throw r.error;examCurrentPeriod.is_published=true;examCurrentPeriod.published_at=now;examCurrentPeriod.published_by_name=examActorName()}
+async function examPublishCurrent(){if(!examIsManager()||!examCurrentPeriod)return;if(!confirm("Publish this Routine now? The latest saved Routine will become visible to all Staff."))return;try{await examDoPublish();await examLoadPeriods(examCurrentPeriod.id);examMessage("Routine published. All Staff now see the latest saved version.","success")}catch(e){examMessage(examDbError(e))}}
+async function examUnpublishCurrent(){if(!examIsManager()||!examCurrentPeriod||!examCurrentPeriod.is_published)return;if(!confirm("Unpublish this Routine now? It will immediately be hidden from ordinary Staff until you Publish it again."))return;try{const pid=examCurrentPeriod.id;await examMarkDraft();await examLoadPeriods(pid);examMessage("Routine unpublished. It is now hidden from ordinary Staff. Edit if needed, then Publish again.","success")}catch(e){examMessage(examDbError(e))}}
+function examStopVisibilityWatch(){if(examVisibilityTimer){clearInterval(examVisibilityTimer);examVisibilityTimer=null}}
+function examStartVisibilityWatch(){examStopVisibilityWatch();if(examIsManager())return;examVisibilityTimer=setInterval(async()=>{const popup=document.getElementById("examManagementPopup");if(!popup||popup.style.display==="none"||!examCurrentPeriod)return;const pid=examCurrentPeriod.id,knownUpdated=examCurrentPeriod.updated_at||"";try{const {data,error}=await examDb().from("exam_periods").select("id,is_published,updated_at").eq("id",pid).maybeSingle();if(error&&error.code!=="PGRST116")throw error;if(!data||!data.is_published){examCurrentPeriod=null;examDays=[];examEntries=[];examStatuses=[];examEditMode=false;await examLoadPeriods();examResetSelectionUI();examMessage("This Exam Routine has been unpublished and is temporarily hidden from Staff.","error");return}if((data.updated_at||"")!==knownUpdated){await examLoadPeriods(pid);examMessage("Exam Routine was updated. The latest published version is now shown.","success")}}catch(e){console.warn("Exam publish visibility watch:",e)}},15000)}
+function examRenderTracker(){const host=document.getElementById("examTrackerHost");if(!examCurrentPeriod){host.innerHTML='<div class="exam-empty">Select Academic Year and Term to view Question Submission status.</div>';return}if(!examDays.length){host.innerHTML='<div class="exam-empty">No Exam Days are available.</div>';return}const head=examDays.map(d=>`<th class="exam-day-head"><strong>${examEscape(d.day_label)}</strong><small>${examEscape(d.exam_date||"Date not set")}</small></th>`).join("");const rows=EXAM_CLASSES.map(cls=>`<tr><td class="exam-class-col">${examEscape(cls)}</td>${examDays.map(d=>examTrackerCellHtml(d,cls)).join("")}</tr>`).join("");host.innerHTML=`<div class="exam-table-wrap"><table class="exam-table"><thead><tr><th class="exam-class-col">CLASS</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`}
+function examTrackerCellHtml(day,cls){const e=examEntryFor(day.id,cls);if(!e||!examNormalize(e.activity_title))return '<td class="exam-tracker-cell"><span class="exam-special">—</span></td>';if(!e.question_required)return `<td class="exam-tracker-cell"><span class="exam-special">${examEscape(e.activity_title)}</span>${e.teacher_name?`<span class="exam-teacher">${examEscape(e.teacher_name)}</span>`:""}</td>`;const s=examStatusFor(e.id)||{},submitted=!!s.submitted,printed=!!s.printed,m=examIsManager();return `<td class="exam-tracker-cell"><span class="exam-subject">${examEscape(e.activity_title)}</span>${e.teacher_name?`<span class="exam-teacher">${examEscape(e.teacher_name)}</span>`:""}<div class="exam-status-stack"><label class="exam-status-line ${submitted?"active":""}"><span class="exam-bulb ${submitted?"on":""}">💡</span>${m?`<input type="checkbox" ${submitted?"checked":""} onchange="examSetStatus(${Number(e.id)},'submitted',this.checked)">`:submitted?"✅":"☐"}<span>${submitted?"Submitted":"Submit"}</span></label><label class="exam-status-line ${printed?"printed":""}">${m?`<input type="checkbox" ${printed?"checked":""} ${submitted?"":"disabled"} onchange="examSetStatus(${Number(e.id)},'printed',this.checked)">`:printed?"✅":"☐"}<span>🖨 ${printed?"Printed":"Print"}</span></label></div></td>`}
+async function examSetStatus(entryId,field,checked){if(!examIsManager()||!examCurrentPeriod)return;const e=examEntries.find(r=>String(r.id)===String(entryId));if(!e?.question_required)return;const old=examStatusFor(entryId)||{};let submitted=!!old.submitted,printed=!!old.printed;if(field==="submitted"){submitted=!!checked;if(!submitted)printed=false}else if(field==="printed"){if(!submitted&&checked){examMessage("Mark Submitted first.");examRenderTracker();return}printed=!!checked}const now=new Date().toISOString(),p={entry_id:entryId,period_id:examCurrentPeriod.id,submitted,printed,updated_at:now};if(submitted&&!old.submitted){p.submitted_at=now;p.submitted_by_role=examPortalRole;p.submitted_by_name=examActorName()}else if(!submitted){p.submitted_at=null;p.submitted_by_role=null;p.submitted_by_name=null}if(printed&&!old.printed){p.printed_at=now;p.printed_by_role=examPortalRole;p.printed_by_name=examActorName()}else if(!printed){p.printed_at=null;p.printed_by_role=null;p.printed_by_name=null}try{const r=await examDb().from("exam_question_status").upsert(p,{onConflict:"entry_id"});if(r.error)throw r.error;await examLoadCurrentPeriodData()}catch(err){examMessage(examDbError(err));examRenderTracker()}}
+function examRenderClasswise(){const host=document.getElementById("examClasswiseHost"),sel=document.getElementById("examClasswiseSelect");if(!examCurrentPeriod){host.innerHTML='<div class="exam-empty">Select Academic Year, Term and Class to view Class-wise Routine.</div>';return}const cls=sel.value;if(!cls){host.innerHTML='<div class="exam-empty">Select one Class to view its Routine.</div>';return}const rows=examDays.map(d=>{const e=examEntryFor(d.id,cls),title=examNormalize(e?.activity_title),teacher=examNormalize(e?.teacher_name);return `<tr><td><strong>${examEscape(d.day_label)}</strong></td><td>${examEscape(d.exam_date||"—")}</td><td>${title?`<strong>${examEscape(title)}</strong>${teacher?`<br>${examEscape(teacher)}`:""}`:"—"}</td></tr>`}).join("");host.innerHTML=`<div class="exam-info-line"><span class="exam-info-chip">${examEscape(examCurrentPeriod.academic_year)}</span><span class="exam-info-chip">${examEscape(examCurrentPeriod.term_name)}</span><span class="exam-info-chip">${examEscape(cls)}</span></div><div class="exam-table-wrap"><table class="exam-class-routine"><thead><tr><th>Day</th><th>Date</th><th>Routine</th></tr></thead><tbody>${rows}</tbody></table></div>`}
+function examCurrentSelectionReady(){return !!examCurrentPeriod}
+function examExportCSV(kind){if(!examCurrentSelectionReady()){examMessage("Select Academic Year and Term first.");return}let rows=[],p=examCurrentPeriod;if(kind==="routine"){rows.push(["Academic Year",p.academic_year],["Term",p.term_name],["Status",p.is_published?"Published":"Draft"],[]);rows.push(["Class",...examDays.flatMap(d=>[`${d.day_label} - Routine`,`${d.day_label} - Teacher`,`${d.day_label} - Date`])]);EXAM_CLASSES.forEach(cls=>rows.push([cls,...examDays.flatMap(d=>{const e=examEntryFor(d.id,cls);return[e?.activity_title||"—",e?.teacher_name||"",d.exam_date||""]})]))}else if(kind==="tracker"){rows.push(["Academic Year",p.academic_year],["Term",p.term_name],[]);rows.push(["Class",...examDays.flatMap(d=>[`${d.day_label} - Routine`,`${d.day_label} - Teacher`,`${d.day_label} - Submission`,`${d.day_label} - Print`])]);EXAM_CLASSES.forEach(cls=>rows.push([cls,...examDays.flatMap(d=>{const e=examEntryFor(d.id,cls);if(!e)return["—","","",""];if(!e.question_required)return[e.activity_title||"—",e.teacher_name||"","N/A","N/A"];const s=examStatusFor(e.id)||{};return[e.activity_title||"",e.teacher_name||"",s.submitted?"Submitted":"Not Submitted",s.printed?"Printed":"Not Printed"]})]))}else{const cls=document.getElementById("examClasswiseSelect").value;if(!cls){examMessage("Select a Class first.");return}rows.push(["Academic Year",p.academic_year],["Term",p.term_name],["Class",cls],[]);rows.push(["Day","Date","Routine","Teacher"]);examDays.forEach(d=>{const e=examEntryFor(d.id,cls);rows.push([d.day_label,d.exam_date||"",e?.activity_title||"—",e?.teacher_name||""])})}const csv="\ufeff"+rows.map(r=>r.map(examCsv).join(",")).join("\r\n"),blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`exam_${kind}_${String(p.academic_year).replace(/\W+/g,"_")}_${String(p.term_name).replace(/\W+/g,"_")}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function examPrintableRoutine(){const head=examDays.map(d=>`<th>${examEscape(d.day_label)}<br>${examEscape(d.exam_date||"")}</th>`).join("");const rows=EXAM_CLASSES.map(cls=>`<tr><td><strong>${examEscape(cls)}</strong></td>${examDays.map(d=>{const e=examEntryFor(d.id,cls);return `<td>${e?.activity_title?`<strong>${examEscape(e.activity_title)}</strong>`:"—"}${e?.teacher_name?`<br>${examEscape(e.teacher_name)}`:""}</td>`}).join("")}</tr>`).join("");return `<div class="exam-table-wrap"><table class="exam-table"><thead><tr><th>CLASS</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`}
+function examPrintableTracker(){const head=examDays.map(d=>`<th>${examEscape(d.day_label)}<br>${examEscape(d.exam_date||"")}</th>`).join("");const rows=EXAM_CLASSES.map(cls=>`<tr><td><strong>${examEscape(cls)}</strong></td>${examDays.map(d=>{const e=examEntryFor(d.id,cls);if(!e?.activity_title)return"<td>—</td>";if(!e.question_required)return`<td><strong>${examEscape(e.activity_title)}</strong>${e.teacher_name?`<br>${examEscape(e.teacher_name)}`:""}</td>`;const s=examStatusFor(e.id)||{};return`<td><strong>${examEscape(e.activity_title)}</strong>${e.teacher_name?`<br>${examEscape(e.teacher_name)}`:""}<br>${s.submitted?"✅ Submitted":"☐ Submit"}<br>${s.printed?"✅ Printed":"☐ Print"}</td>`}).join("")}</tr>`).join("");return `<div class="exam-table-wrap"><table class="exam-table"><thead><tr><th>CLASS</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`}
+function examPrintCurrent(kind){if(!examCurrentPeriod){examMessage("Select Academic Year and Term first.");return}let title="Exam Routine",html="";if(kind==="routine")html=examPrintableRoutine();else if(kind==="tracker"){title="Question Submission & Printing Tracker";html=examPrintableTracker()}else{const cls=document.getElementById("examClasswiseSelect").value;if(!cls){examMessage("Select a Class first.");return}title=`${cls} — Exam Routine`;html=document.getElementById("examClasswiseHost").innerHTML}const p=examCurrentPeriod,w=window.open("","_blank","width=1200,height=800");if(!w){examMessage("Pop-up was blocked. Allow pop-ups to Print / PDF.");return}w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${examEscape(title)}</title><style>body{font-family:Arial,sans-serif;padding:24px}.exam-table,.exam-class-routine{width:100%;border-collapse:collapse;font-size:10px}.exam-table th,.exam-table td,.exam-class-routine th,.exam-class-routine td{border:1px solid #888;padding:6px;text-align:center;vertical-align:top}.exam-table th,.exam-class-routine th{background:#eee}.exam-info-line{margin:10px 0}.exam-info-chip{margin-right:8px;font-weight:bold}@page{size:landscape;margin:10mm}</style></head><body><h1>${examEscape(title)}</h1><p>${examEscape(p.academic_year)} • ${examEscape(p.term_name)}</p>${html}<script>window.onload=function(){window.print()}<\/script></body></html>`);w.document.close()}
+function examToggleCoordinatorPanel(force){if(!examIsCoreManager())return;const p=document.getElementById("examCoordinatorPanel"),show=typeof force==="boolean"?force:!p.classList.contains("show");p.classList.toggle("show",show);if(show)examLoadCoordinators()}
+async function examLoadCoordinators(){if(!examIsCoreManager())return;const host=document.getElementById("examCoordinatorList");host.innerHTML='<span class="exam-note">Loading...</span>';try{const {data,error}=await examDb().from("exam_coordinators").select("staff_id,staff_name,enabled,granted_by_name,granted_at").eq("enabled",true).order("staff_name");if(error)throw error;examCoordinatorRows=data||[];host.innerHTML=examCoordinatorRows.length?examCoordinatorRows.map(r=>`<span class="exam-coordinator-chip">${examEscape(r.staff_name||r.staff_id)} <button type="button" onclick="examRemoveCoordinator('${examEscape(r.staff_id)}')">REMOVE</button></span>`).join(""):'<span class="exam-note">No Exam Coordinator access is active.</span>'}catch(e){host.innerHTML=`<span class="exam-error">${examEscape(examDbError(e))}</span>`}}
+async function examGrantCoordinator(){if(!examIsCoreManager())return;const id=document.getElementById("examCoordinatorStaffSelect").value;if(!id){examMessage("Select a Staff member first.");return}const staff=typeof STAFF_LOGIN_DIRECTORY!=="undefined"?STAFF_LOGIN_DIRECTORY[id]:null;if(!staff){examMessage("Staff record not found.");return}try{const now=new Date().toISOString(),r=await examDb().from("exam_coordinators").upsert({staff_id:id,staff_name:staff.name,enabled:true,granted_by_role:examPortalRole,granted_by_name:examActorName(),granted_at:now,updated_at:now},{onConflict:"staff_id"});if(r.error)throw r.error;document.getElementById("examCoordinatorStaffSelect").value="";await examLoadCoordinators();examMessage(`${staff.name} now has Exam Coordinator full control.`,"success")}catch(e){examMessage(examDbError(e))}}
+async function examRemoveCoordinator(id){if(!examIsCoreManager())return;if(!confirm("Remove Exam Coordinator access from this Staff member?"))return;try{const r=await examDb().from("exam_coordinators").delete().eq("staff_id",id);if(r.error)throw r.error;await examLoadCoordinators();examMessage("Exam Coordinator access removed.","success")}catch(e){examMessage(examDbError(e))}}
+document.addEventListener("DOMContentLoaded",()=>{examPopulateDatalists();const adminTabs=document.querySelector("#websiteAdminPanel .website-admin-tabs");if(adminTabs&&!document.getElementById("websiteAdminExamButton")){const b=document.createElement("button");b.id="websiteAdminExamButton";b.type="button";b.innerHTML="📝 Exam Management";b.addEventListener("click",()=>openExamManagement("admin"));adminTabs.appendChild(b)}const quick=document.querySelector("#staffDashboardPopup .staff-dashboard-quick-actions");if(quick&&!document.getElementById("staffDashboardExamAction")){const b=document.createElement("button");b.id="staffDashboardExamAction";b.type="button";b.className="staff-dashboard-action exam";b.innerHTML='<span class="staff-dashboard-action-icon">📝</span><span class="staff-dashboard-action-copy"><strong>Exam Management</strong><small>Routine, submission & class-wise view</small></span><span class="staff-dashboard-action-arrow">→</span>';b.addEventListener("click",()=>openExamManagement((typeof staffDashboardIsPrincipal==="function"&&staffDashboardIsPrincipal())?"principal":"staff"));const marks=document.getElementById("staffDashboardMarksAction");marks?marks.insertAdjacentElement("afterend",b):quick.appendChild(b)}});
+</script>
+
 
 </body>
 
