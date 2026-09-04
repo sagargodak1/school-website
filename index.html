@@ -18723,6 +18723,22 @@ body.dark-mode .staff-dashboard-box{background:linear-gradient(180deg,#17232e,#1
   </div>
 </div>
 
+
+<style id="ume-roster-grid-final-style">
+/* Class Teacher Student Roster — clean 3-column portfolio-style layout */
+#umeTeacherRosterList.ume-roster-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+#umeTeacherRosterList .ume-roster-card{display:flex;align-items:center;gap:12px;min-height:74px;padding:14px 15px;border:1px solid #dce6ef;border-radius:15px;background:linear-gradient(145deg,#f8fbff,#eef5fc);box-shadow:0 5px 14px rgba(18,60,105,.08)}
+#umeTeacherRosterList .ume-roster-sn{flex:0 0 34px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#123c69,#1976b8);color:#fff;font-size:13px;font-weight:900;box-shadow:0 4px 10px rgba(18,60,105,.18)}
+#umeTeacherRosterList .ume-roster-info{min-width:0;text-align:left}
+#umeTeacherRosterList .ume-roster-name{color:#123c69;font-size:13px;font-weight:900;line-height:1.35;word-break:break-word}
+#umeTeacherRosterList .ume-roster-id{margin-top:4px;color:#667085;font-size:10px;font-weight:700;word-break:break-word}
+body.dark-mode #umeTeacherRosterList .ume-roster-card{background:#22313f;border-color:#405467}
+body.dark-mode #umeTeacherRosterList .ume-roster-name{color:#8ecbff}
+body.dark-mode #umeTeacherRosterList .ume-roster-id{color:#c7d4df}
+@media(max-width:900px){#umeTeacherRosterList.ume-roster-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){#umeTeacherRosterList.ume-roster-grid{grid-template-columns:1fr}}
+</style>
+
 <script id="unified-marks-entry-final-js">
 /* =========================================================
    FINAL UNIFIED MARKS ENTRY
@@ -18812,7 +18828,8 @@ async function umeLoadClassTeacherRoster(){
   try{
     umeTeacherRosterRows=await umeRpc(umeStaffDb(),"ume_list_upper_students");
     const rows=umeTeacherRosterRows.filter(row=>row.class_name===className).sort((a,b)=>String(a.name||a.student_name||"").localeCompare(String(b.name||b.student_name||""),undefined,{sensitivity:"base"})||String(a.student_id).localeCompare(String(b.student_id),undefined,{numeric:true,sensitivity:"base"}));
-    host.innerHTML=rows.length?rows.map((row,index)=>`<div class="ume-component"><strong>Roll No. ${index+1} — ${umeEscape(row.name)}</strong><div class="ume-meta">Student ID: ${umeEscape(row.student_id)}</div></div>`).join(""):'<div class="ume-empty">No students have been added to this Class yet.</div>';
+    host.className="ume-roster-grid";
+    host.innerHTML=rows.length?rows.map((row,index)=>`<div class="ume-roster-card"><div class="ume-roster-sn">${index+1}</div><div class="ume-roster-info"><div class="ume-roster-name">${umeEscape(row.name)}</div><div class="ume-roster-id">Student ID: ${umeEscape(row.student_id)}</div></div></div>`).join(""):'<div class="ume-empty" style="grid-column:1/-1;">No students have been added to this Class yet.</div>';
   }catch(error){host.innerHTML=`<div class="ume-empty">Could not load students: ${umeEscape(error.message||"Unknown error")}</div>`;}
 }
 async function umeAddClassTeacherStudent(event){
@@ -20201,6 +20218,199 @@ body.dark-mode .student-secure-privacy-note{
         },900);
     });
 })();
+</script>
+
+
+<!-- =========================================================
+     FINAL VIEW / FILTER / WATERMARK ENHANCEMENT — 2026-09-04
+     - Marks View + Grade View (view-only; export/submit data unchanged)
+     - Draft Grade Preview
+     - Academic Year filtered clean dashboards
+     - Class Teacher roster stays blank until class is selected
+     - Single ST. AUGUSTINE watermark only
+========================================================= -->
+<style id="marks-grade-view-final-css">
+.ume-filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:12px 0 15px;padding:12px;border:1px solid #d7e3ef;border-radius:14px;background:#f8fbff}
+.ume-filter-bar .ume-field{min-width:180px;flex:0 1 230px}.ume-view-switch{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.ume-view-switch .active{background:#123c69!important;color:#fff!important;border-color:#123c69!important}.ume-grade-cell{min-width:105px;text-align:center;font-weight:900;color:#123c69}.ume-grade-cell small{display:block;margin-top:3px;font-size:10px;font-weight:700;color:#667085;line-height:1.35}.ume-incomplete{color:#9b6700!important}.ume-grade-ng{color:#b42318!important}.ume-filter-prompt{padding:24px;text-align:center;border:1px dashed #b7c8d9;border-radius:13px;background:#fbfdff;color:#667085;font-weight:750}.ume-project-year-wrap{margin-bottom:12px}.ume-project-year-wrap select{min-width:170px}.ume-hidden-view{display:none!important}
+body.dark-mode .ume-filter-bar{background:#1d2935;border-color:#405467}.body.dark-mode .ume-filter-prompt,body.dark-mode .ume-filter-prompt{background:#1d2935;border-color:#405467;color:#c8d3df}
+/* Replace the old repeated Portfolio watermark with ONE light watermark only. */
+.student-secure-thumb-watermark::before{content:"ST. AUGUSTINE"!important;width:auto!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%) rotate(-18deg)!important;white-space:nowrap!important;line-height:1!important;font-size:11px!important;letter-spacing:1px!important;word-spacing:normal!important;color:rgba(255,255,255,.62)!important;padding:5px 9px!important;border-radius:7px!important;background:rgba(0,0,0,.10)!important}
+#studentSecureLightboxWatermark .student-secure-watermark-grid,#studentSecureLightboxWatermark .student-secure-watermark-banner{display:none!important}
+#photoLightbox.student-secure-lightbox #studentSecureLightboxWatermark::before{content:"ST. AUGUSTINE";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-18deg);color:rgba(255,255,255,.62);text-shadow:0 2px 5px rgba(0,0,0,.8);font-size:18px;font-weight:900;letter-spacing:1.5px;white-space:nowrap;padding:8px 14px;border-radius:9px;background:rgba(0,0,0,.10)}
+@media(max-width:600px){.ume-filter-bar{display:grid;grid-template-columns:1fr}.ume-filter-bar .ume-field{min-width:0}.student-secure-thumb-watermark::before{font-size:9px!important}#photoLightbox.student-secure-lightbox #studentSecureLightboxWatermark::before{font-size:14px}}
+</style>
+<script id="marks-grade-view-final-js">
+/* View-only enhancement. Existing save / submit / package / Excel functions remain unchanged. */
+const UME_GRADE_SCALE_FINAL=[
+  {min:90,grade:"A+",gp:4.0},{min:80,grade:"A",gp:3.6},{min:70,grade:"B+",gp:3.2},
+  {min:60,grade:"B",gp:2.8},{min:50,grade:"C+",gp:2.4},{min:40,grade:"C",gp:2.0},
+  {min:35,grade:"D",gp:1.6},{min:0,grade:"NG",gp:0.0}
+];
+const umeFinalFilters={teacherYear:"",classTeacherYear:"",classTeacherClass:"",principalYear:"",principalClass:"",adminYear:"",adminClass:""};
+function umeGradeFromPercentFinal(percent){
+  const p=Number(percent);if(!Number.isFinite(p))return null;
+  const item=UME_GRADE_SCALE_FINAL.find(row=>p>=row.min)||UME_GRADE_SCALE_FINAL[UME_GRADE_SCALE_FINAL.length-1];
+  return {...item,percent:Number(p.toFixed(2))};
+}
+function umeNormFinal(value){return String(value||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
+function umeIsEvComponentFinal(name){const n=umeNormFinal(name);return n==="participation"||n==="project work"||n==="terminal exam"||n==="terminal examination";}
+function umeGradeGroupsFinal(bundle){
+  const lower=UME_LOWER_CLASSES.has(bundle.project.class_name),components=bundle.components||[];
+  if(lower){
+    const evals=components.filter(c=>!umeNormFinal(c.component_name).includes("exam"));
+    const exams=components.filter(c=>umeNormFinal(c.component_name).includes("exam"));
+    return [{key:"ev",label:"Evaluation (EV)",components:evals},{key:"exam",label:"Exam",components:exams}];
+  }
+  return [
+    {key:"ev",label:"Internal Evaluation (EV)",components:components.filter(c=>umeIsEvComponentFinal(c.component_name))},
+    {key:"exam",label:"Exam",components:components.filter(c=>!umeIsEvComponentFinal(c.component_name))}
+  ];
+}
+function umeGradeResultFinal(bundle,studentId,group){
+  if(!group.components.length)return {state:"empty"};
+  const map=umeEntryMap(bundle);let full=0,obtained=0;
+  for(const c of group.components){
+    full+=Number(c.full_marks)||0;const e=map.get(`${c.id}|${studentId}`);
+    if(umeEntryIsAbsent(e))return {state:"absent",full};
+    if(!e||e.obtained_marks===null||e.obtained_marks===undefined||e.obtained_marks==="")return {state:"incomplete",full};
+    const n=Number(e.obtained_marks);if(!Number.isFinite(n))return {state:"incomplete",full};obtained+=n;
+  }
+  if(!(full>0))return {state:"incomplete",full,obtained};
+  const result=umeGradeFromPercentFinal(obtained/full*100);return {state:"ready",full,obtained,...result};
+}
+function umeGradeCellFinal(result){
+  if(result.state==="empty")return '<td class="ume-grade-cell">—</td>';
+  if(result.state==="absent")return '<td class="ume-grade-cell ume-grade-ng">ABS<small>Absent</small></td>';
+  if(result.state!=="ready")return '<td class="ume-grade-cell ume-incomplete">Incomplete<small>Enter all required Marks</small></td>';
+  return `<td class="ume-grade-cell ${result.grade==="NG"?"ume-grade-ng":""}">${umeEscape(result.grade)}<small>GP ${result.gp.toFixed(1)} • ${umeEscape(umeNumber(result.percent))}%</small></td>`;
+}
+function umeGradeTableFinal(group,bundles){
+  const state=umeCombinedState(bundles);if(!state.bundles.length)return '<div class="ume-empty">No Subject is available.</div>';
+  const subjectHeader=state.bundles.map(b=>`<th colspan="2">${umeEscape(b.project.subject_name)}</th>`).join("");
+  const groupHeader=state.bundles.map(b=>umeGradeGroupsFinal(b).map(g=>`<th>${umeEscape(g.label)}</th>`).join("")).join("");
+  const body=state.students.map((s,index)=>`<tr><td>${index+1}</td><td>${umeEscape(s.student_id)}</td><td class="ume-student">${umeEscape(s.student_name||s.name)}</td>${state.bundles.map(b=>umeGradeGroupsFinal(b).map(g=>umeGradeCellFinal(umeGradeResultFinal(b,s.student_id,g))).join("")).join("")}</tr>`).join("");
+  return `<div class="ume-table-wrap"><table class="ume-table"><thead><tr><th rowspan="2">Roll No.</th><th rowspan="2">Student ID</th><th rowspan="2">Student Name</th>${subjectHeader}</tr><tr>${groupHeader}</tr></thead><tbody>${body||'<tr><td colspan="3">No students found.</td></tr>'}</tbody></table></div>`;
+}
+function umeSwitchCombinedViewFinal(id,mode){
+  document.getElementById(`${id}-marks`)?.classList.toggle("ume-hidden-view",mode!=="marks");
+  document.getElementById(`${id}-grade`)?.classList.toggle("ume-hidden-view",mode!=="grade");
+  document.getElementById(`${id}-marks-btn`)?.classList.toggle("active",mode==="marks");
+  document.getElementById(`${id}-grade-btn`)?.classList.toggle("active",mode==="grade");
+}
+const umeOriginalCombinedTableHtmlFinal=umeCombinedTableHtml;
+umeCombinedTableHtml=function(group,bundles){
+  const id=`ume-view-${Date.now()}-${Math.floor(Math.random()*100000)}`;
+  const marks=umeOriginalCombinedTableHtmlFinal(group,bundles);
+  const grade=umeGradeTableFinal(group,bundles);
+  return `<div class="ume-view-switch"><button id="${id}-marks-btn" type="button" class="ume-btn ume-secondary active" onclick="umeSwitchCombinedViewFinal('${id}','marks')">MARKS VIEW</button><button id="${id}-grade-btn" type="button" class="ume-btn ume-secondary" onclick="umeSwitchCombinedViewFinal('${id}','grade')">GRADE VIEW</button></div><div id="${id}-marks">${marks}</div><div id="${id}-grade" class="ume-card ume-hidden-view"><div class="ume-group-head"><div><h3>${umeEscape(group.className)} — ${umeEscape(group.term)} — Grade View</h3><div class="ume-meta">Academic Session: ${umeEscape(group.session)} • View only; saved Marks and Excel Export remain component-wise.</div></div></div>${grade}</div>`;
+};
+function umeCurrentTeacherBundleFinal(){
+  if(!umeActiveBundle)return null;let bundle=umeActiveBundle;
+  if(umeProjectEditable()){
+    try{const current=umeCollectTeacherData(),fullMap=new Map(current.components.map(c=>[String(c.component_id),c.full_marks]));bundle={...umeActiveBundle,components:umeActiveBundle.components.map(c=>({...c,full_marks:fullMap.get(String(c.id))})),entries:current.entries.map(e=>({...e,project_id:umeActiveBundle.project.id}))};}catch(_error){}
+  }
+  return bundle;
+}
+function umeTeacherSetViewFinal(mode){
+  const host=document.getElementById("umeMarksTableHost"),preview=document.getElementById("umeTeacherGradePreview");if(!host)return;
+  const cards=[...host.children].filter(el=>el.id!=="umeTeacherGradePreview");cards.forEach(el=>el.classList.toggle("ume-hidden-view",mode==="grade"));
+  if(mode==="marks"){preview?.classList.add("ume-hidden-view");return;}
+  const bundle=umeCurrentTeacherBundleFinal();if(!bundle)return;
+  let box=preview;if(!box){box=document.createElement("div");box.id="umeTeacherGradePreview";host.appendChild(box);}box.className="ume-card";
+  const p=bundle.project,group={className:p.class_name,term:p.term_name,session:p.academic_session};box.innerHTML=`<h4>${umeEscape(p.subject_name)} — Grade Preview</h4><p class="ume-subtitle">Draft preview only. Incomplete sections are marked Incomplete; this does not change saved Marks or Export.</p>${umeGradeTableFinal(group,[bundle])}`;
+}
+const umeOriginalRenderTeacherProjectFinal=umeRenderTeacherProject;
+umeRenderTeacherProject=function(){
+  umeOriginalRenderTeacherProjectFinal();const actions=document.getElementById("umeTeacherActions");if(!actions)return;
+  actions.insertAdjacentHTML("afterbegin",'<button type="button" class="ume-btn ume-secondary" onclick="umeTeacherSetViewFinal(\'marks\')">MARKS VIEW</button><button type="button" class="ume-btn ume-secondary" onclick="umeTeacherSetViewFinal(\'grade\')">GRADE VIEW</button>');
+};
+
+/* ---------- Clean Teacher project list: choose Academic Year first ---------- */
+function umeEnsureTeacherYearFilterFinal(){
+  const picker=document.querySelector("#umeTeacherPanel .ume-picker");if(!picker||document.getElementById("umeTeacherYearFilter"))return;
+  const wrap=document.createElement("div");wrap.id="umeTeacherYearFilter";wrap.className="ume-filter-bar ume-project-year-wrap";wrap.innerHTML='<label class="ume-field">Academic Year / Session<select id="umeTeacherYearSelect" onchange="umeTeacherYearChangedFinal(this.value)"><option value="">— Select Year —</option></select></label><div class="ume-subtitle">Choose a year first. Only your Marks files from that year will appear.</div>';picker.parentElement.insertBefore(wrap,picker);
+}
+function umeTeacherYearChangedFinal(value){umeFinalFilters.teacherYear=String(value||"");umeRenderTeacherProjectOptionsFinal();}
+function umeRenderTeacherProjectOptionsFinal(preferredId=""){
+  umeEnsureTeacherYearFilterFinal();const yearSelect=document.getElementById("umeTeacherYearSelect"),select=document.getElementById("umeProjectSelect"),empty=document.getElementById("umeTeacherEmpty"),workspace=document.getElementById("umeTeacherWorkspace");
+  const years=[...new Set((umeMyProjects||[]).map(p=>String(p.academic_session||"").trim()).filter(Boolean))].sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+  if(yearSelect){yearSelect.innerHTML='<option value="">— Select Year —</option>'+years.map(y=>`<option value="${umeEscape(y)}">${umeEscape(y)}</option>`).join("");if(years.includes(umeFinalFilters.teacherYear))yearSelect.value=umeFinalFilters.teacherYear;}
+  if(!umeFinalFilters.teacherYear){select.innerHTML='<option value="">Select Academic Year first</option>';empty.style.display="block";empty.textContent="Select Academic Year / Session to view your Marks files.";workspace.style.display="none";umeActiveBundle=null;return;}
+  const rows=(umeMyProjects||[]).filter(p=>String(p.academic_session||"").trim()===umeFinalFilters.teacherYear);
+  if(!rows.length){select.innerHTML='<option value="">No project in this year</option>';empty.style.display="block";empty.textContent=`No Marks file found for ${umeFinalFilters.teacherYear}.`;workspace.style.display="none";umeActiveBundle=null;return;}
+  select.innerHTML='<option value="">— Choose Marks File —</option>'+rows.map(p=>`<option value="${Number(p.id)}">${umeEscape(p.class_name)} • ${umeEscape(p.subject_name)} • ${umeEscape(p.term_name)} • ${umeEscape(umeStatusLabel(p.status))}</option>`).join("");empty.style.display="none";workspace.style.display="none";umeActiveBundle=null;
+  const wanted=String(preferredId||"");if(wanted&&rows.some(p=>String(p.id)===wanted)){select.value=wanted;umeLoadProject(wanted);}
+}
+umeLoadMyProjects=async function(preferredId=""){
+  const empty=document.getElementById("umeTeacherEmpty"),workspace=document.getElementById("umeTeacherWorkspace");
+  try{umeMyProjects=await umeRpc(umeStaffDb(),"ume_list_my_projects");if(preferredId){const project=umeMyProjects.find(p=>String(p.id)===String(preferredId));if(project)umeFinalFilters.teacherYear=String(project.academic_session||"").trim();}umeRenderTeacherProjectOptionsFinal(preferredId);}
+  catch(error){empty.style.display="block";workspace.style.display="none";empty.textContent="Marks Entry database is not ready. "+(error.message||"");}
+};
+
+/* FIX: after choosing a filtered Marks file, reveal the workspace again. */
+const umeFilteredOriginalLoadProjectFinal=umeLoadProject;
+umeLoadProject=async function(projectId){
+  const workspace=document.getElementById("umeTeacherWorkspace"),empty=document.getElementById("umeTeacherEmpty");
+  if(!projectId){if(workspace)workspace.style.display="none";return;}
+  await umeFilteredOriginalLoadProjectFinal(projectId);
+  if(umeActiveBundle){
+    if(empty)empty.style.display="none";
+    if(workspace)workspace.style.display="block";
+  }
+};
+
+/* ---------- Class Teacher roster: blank until assigned Class is explicitly selected ---------- */
+umeConfigureClassTeacherRoster=async function(){
+  const card=document.getElementById("umeClassRosterCard"),select=document.getElementById("umeTeacherRosterClass"),host=document.getElementById("umeTeacherRosterList");
+  const assigned=umeMyClassAssignments.map(row=>row.class_name).filter(name=>UME_UPPER_CLASSES.includes(name));if(!card||!select)return;
+  card.style.display=assigned.length?"block":"none";if(!assigned.length)return;
+  select.innerHTML='<option value="">— Select Assigned Class —</option>'+assigned.map(name=>`<option value="${umeEscape(name)}">${umeEscape(name)}</option>`).join("");select.value="";if(host)host.innerHTML='<div class="ume-filter-prompt">Select your assigned Class to view its student list.</div>';
+};
+const umeOriginalLoadClassTeacherRosterFinal=umeLoadClassTeacherRoster;
+umeLoadClassTeacherRoster=async function(){const className=document.getElementById("umeTeacherRosterClass")?.value||"",host=document.getElementById("umeTeacherRosterList");if(!className){if(host)host.innerHTML='<div class="ume-filter-prompt">Select your assigned Class to view its student list.</div>';return;}return umeOriginalLoadClassTeacherRosterFinal();};
+
+/* ---------- Year + Class filters for Class Teacher / Principal / Admin ---------- */
+function umeAvailableYearsFinal(rows){return [...new Set((rows||[]).map(r=>String(r.academic_session||"").trim()).filter(Boolean))].sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));}
+function umeEnsureClassTeacherFiltersFinal(){
+  const host=document.getElementById("umeClassTeacherGroups");if(!host||document.getElementById("umeClassTeacherFilterBar"))return;
+  const bar=document.createElement("div");bar.id="umeClassTeacherFilterBar";bar.className="ume-filter-bar";bar.innerHTML='<label class="ume-field">Academic Year / Session<select id="umeClassTeacherYearSelect" onchange="umeClassTeacherFilterChangedFinal()"><option value="">— Select Year —</option></select></label><label class="ume-field">Assigned Class<select id="umeClassTeacherClassSelect" onchange="umeClassTeacherFilterChangedFinal()"><option value="">— Select Class —</option></select></label>';
+  host.parentElement.insertBefore(bar,host);
+}
+function umePopulateClassTeacherFiltersFinal(){
+  umeEnsureClassTeacherFiltersFinal();const ys=document.getElementById("umeClassTeacherYearSelect"),cs=document.getElementById("umeClassTeacherClassSelect");
+  const years=umeAvailableYearsFinal(umeClassTeacherRows),classes=[...new Set(umeMyClassAssignments.map(r=>r.class_name))].filter(Boolean);
+  ys.innerHTML='<option value="">— Select Year —</option>'+years.map(y=>`<option value="${umeEscape(y)}">${umeEscape(y)}</option>`).join("");cs.innerHTML='<option value="">— Select Class —</option>'+classes.map(c=>`<option value="${umeEscape(c)}">${umeEscape(c)}</option>`).join("");
+  if(years.includes(umeFinalFilters.classTeacherYear))ys.value=umeFinalFilters.classTeacherYear;if(classes.includes(umeFinalFilters.classTeacherClass))cs.value=umeFinalFilters.classTeacherClass;
+}
+function umeClassTeacherFilterChangedFinal(){umeFinalFilters.classTeacherYear=document.getElementById("umeClassTeacherYearSelect")?.value||"";umeFinalFilters.classTeacherClass=document.getElementById("umeClassTeacherClassSelect")?.value||"";umeSelectedGroups.classTeacher=null;document.getElementById("umeClassTeacherDetail").innerHTML="";umeRenderGroupCards("classTeacher",umeRoleGroups("classTeacher"),document.getElementById("umeClassTeacherGroups"));}
+const umeOriginalLoadClassTeacherInboxFinal=umeLoadClassTeacherInbox;
+umeLoadClassTeacherInbox=async function(){
+  const host=document.getElementById("umeClassTeacherGroups"),detail=document.getElementById("umeClassTeacherDetail");host.innerHTML='<div class="ume-empty">Loading submissions...</div>';detail.innerHTML="";
+  try{umeClassTeacherRows=await umeRpc(umeStaffDb(),"ume_list_class_teacher_projects");umePopulateClassTeacherFiltersFinal();umeRenderGroupCards("classTeacher",umeRoleGroups("classTeacher"),host);}catch(error){host.innerHTML=`<div class="ume-empty">Could not load Class Teacher Inbox: ${umeEscape(error.message||"Unknown error")}</div>`;}
+};
+function umeRenderYearClassFilterFinal(role){
+  const host=document.getElementById(role==="principal"?"umePrincipalClassFilter":"umeAdminClassFilter");if(!host)return;
+  const rows=role==="principal"?umePrincipalRows:umeAdminRows,years=umeAvailableYearsFinal(rows),yearKey=role+"Year",classKey=role+"Class";
+  host.className="ume-filter-bar";host.innerHTML=`<label class="ume-field">Academic Year / Session<select onchange="umePackageFilterChangedFinal('${role}','year',this.value)"><option value="">— Select Year —</option>${years.map(y=>`<option value="${umeEscape(y)}" ${umeFinalFilters[yearKey]===y?"selected":""}>${umeEscape(y)}</option>`).join("")}</select></label><label class="ume-field">Class<select onchange="umePackageFilterChangedFinal('${role}','class',this.value)" ${umeFinalFilters[yearKey]?"":"disabled"}><option value="">All Classes</option>${UME_CLASSES.map(c=>`<option value="${umeEscape(c)}" ${umeFinalFilters[classKey]===c?"selected":""}>${umeEscape(c)}</option>`).join("")}</select></label>`;
+}
+function umePackageFilterChangedFinal(role,type,value){umeFinalFilters[role+(type==="year"?"Year":"Class")]=String(value||"");if(type==="year")umeFinalFilters[role+"Class"]="";umeSelectedGroups[role]=null;umeRenderYearClassFilterFinal(role);const host=document.getElementById(role==="principal"?"umePrincipalGroups":"umeAdminGroups"),detail=umeGroupDetailHost(role);if(detail)detail.innerHTML="";umeRenderGroupCards(role,umeRoleGroups(role),host);}
+umeRenderPackageClassFilter=function(role){if(role==="principal"||role==="admin")umeRenderYearClassFilterFinal(role);};
+const umeOriginalRoleGroupsFinal=umeRoleGroups;
+umeRoleGroups=function(role){
+  const groups=umeGroupRows(umePackageRoleRows(role));
+  if(role==="classTeacher")return groups.filter(g=>umeFinalFilters.classTeacherYear&&umeFinalFilters.classTeacherClass&&String(g.session).trim()===umeFinalFilters.classTeacherYear&&g.className===umeFinalFilters.classTeacherClass);
+  if(role==="principal"||role==="admin"){
+    const year=umeFinalFilters[role+"Year"],cls=umeFinalFilters[role+"Class"];if(!year)return [];
+    return groups.filter(g=>String(g.session).trim()===year&&(!cls||g.className===cls));
+  }
+  return umeOriginalRoleGroupsFinal(role);
+};
+const umeOriginalRenderGroupCardsFinal=umeRenderGroupCards;
+umeRenderGroupCards=function(role,groups,host){
+  if(role==="classTeacher"&&(!umeFinalFilters.classTeacherYear||!umeFinalFilters.classTeacherClass)){host.innerHTML='<div class="ume-filter-prompt">Select Academic Year and Assigned Class to view submissions.</div>';return;}
+  if((role==="principal"||role==="admin")&&!umeFinalFilters[role+"Year"]){host.innerHTML='<div class="ume-filter-prompt">Select Academic Year / Session to view Marks packages.</div>';return;}
+  return umeOriginalRenderGroupCardsFinal(role,groups,host);
+};
 </script>
 
 </body>
