@@ -21768,15 +21768,49 @@ body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-body{padding:11px
   const realOpenLogin=typeof window.openStaffLogin==='function' ? window.openStaffLogin : null;
 
   function signedIn(){
-    return typeof window.loggedInStaff!=='undefined' && !!window.loggedInStaff &&
-           typeof window.staffAuthSession!=='undefined' && !!window.staffAuthSession;
+    /* staffAuthSession and loggedInStaff are top-level `let` bindings, not
+       properties on window. Reading them directly is required here. */
+    return typeof loggedInStaff!=='undefined' && !!loggedInStaff &&
+           typeof staffAuthSession!=='undefined' && !!staffAuthSession;
   }
+
+  async function ensureRememberedStaffSession(){
+    if(signedIn()) return true;
+    try{
+      const client=typeof initStaffSupabase==='function' ? initStaffSupabase() : null;
+      if(!client) return false;
+
+      /* Supabase persistSession:true stores only the auth session/refresh token,
+         never the staff password. Restore it before deciding that login is needed. */
+      const {data,error}=await client.auth.getSession();
+      if(error) return false;
+      const session=data?.session||null;
+      if(!session?.user?.email) return false;
+
+      const username=normalizeStaffId(session.user.email.split('@')[0]);
+      let profile=null;
+      if(typeof umeResolveStaffLoginProfile==='function'){
+        profile=await umeResolveStaffLoginProfile(username);
+      }else if(typeof STAFF_LOGIN_DIRECTORY==='object'){
+        profile=STAFF_LOGIN_DIRECTORY[username]||null;
+      }
+      if(!profile) return false;
+
+      staffAuthSession=session;
+      loggedInStaff={username,...profile};
+      if(typeof updateStaffLoginUI==='function') updateStaffLoginUI();
+      return true;
+    }catch(_error){
+      return false;
+    }
+  }
+
   function setShellStatus(){
     const status=document.getElementById('staffAppShellStatus');
     const btn=document.getElementById('staffAppShellOpen');
     if(!status||!btn) return;
     if(signedIn()){
-      status.textContent=`✓ Ready for ${window.loggedInStaff?.name || 'Staff'}`;
+      status.textContent=`✓ Ready for ${loggedInStaff?.name || 'Staff'}`;
       btn.textContent='OPEN MY DASHBOARD';
     }else{
       status.textContent='Secure staff login is ready.';
@@ -21818,9 +21852,13 @@ body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-body{padding:11px
     if(shell) shell.setAttribute('aria-hidden','false');
     setShellStatus();
 
-    /* Let Supabase restore the remembered session, but keep the splash visible
-       for at least 1.25s so the installed app actually looks like an app. */
-    for(let i=0;i<18;i++){
+    /* Restore the persisted Supabase session first. This makes the installed
+       app reopen directly to the dashboard until the user explicitly logs out. */
+    if(!signedIn()) await ensureRememberedStaffSession();
+
+    /* Give the existing restore listener a short chance to finish too, while
+       keeping the splash visible for at least 1.25s. */
+    for(let i=0;i<12;i++){
       if(signedIn()) break;
       await new Promise(r=>setTimeout(r,100));
     }
@@ -21838,7 +21876,7 @@ body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-body{padding:11px
   if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
     window.addEventListener('load',async()=>{
       try{
-        const reg=await navigator.serviceWorker.register('./sw.js?v=5',{scope:'./',updateViaCache:'none'});
+        const reg=await navigator.serviceWorker.register('./sw.js?v=6',{scope:'./',updateViaCache:'none'});
         await reg.update();
         if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
       }catch(e){ console.warn('Staff PWA V3 update check:',e); }
