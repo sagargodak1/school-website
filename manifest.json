@@ -1,0 +1,31 @@
+{
+  "id": "/?staffapp=1",
+  "name": "St. Augustine Staff",
+  "short_name": "SA Staff",
+  "description": "Secure staff workspace for St. Augustine Academic Foundation.",
+  "start_url": "/?staffapp=1",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#f5f7fb",
+  "theme_color": "#123c69",
+  "orientation": "any",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

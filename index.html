@@ -11,6 +11,15 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://yxecklijkcaxrfshpzna.supabase.co wss://yxecklijkcaxrfshpzna.supabase.co; frame-src https://www.google.com https://formsubmit.co https://staugustine.edu.np https://www.staugustine.edu.np; form-action 'self' https://formsubmit.co; object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
 
 <title>St. Augustine Academic Foundation</title>
+<!-- STAFF PWA / INSTALLABLE APP -->
+<meta name="theme-color" content="#123c69">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="St. Augustine Staff">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="pwa-icon-192.png">
+
 
 <style>
 
@@ -21031,6 +21040,215 @@ body.dark-mode #websiteAdminPanel .website-admin-tabs,body.dark-mode .saaf-syste
   /* New dynamic controls can be added by Portfolio Access after DOM load; keep menu styling automatic. */
   const obs=new MutationObserver(()=>{ensureSystemControl();document.querySelectorAll("#websiteAdminPanel .website-admin-tabs>button").forEach(b=>b.setAttribute("data-saaf-admin-menu","1"));});
   document.addEventListener("DOMContentLoaded",()=>{ensureSystemControl();const panel=document.getElementById("websiteAdminPanel");if(panel)obs.observe(panel,{childList:true,subtree:true});window.saafFinalLoadAcademicYear();setTimeout(()=>{saafApplyYearDefaults();window.renderAdminStaffAccountList?.()},400);});
+})();
+</script>
+
+
+
+<!-- =========================================================
+     ST. AUGUSTINE STAFF PWA — INSTALL AFTER STAFF LOGIN ONLY
+     Public website remains unchanged. Supabase/database workflow
+     remains the same. No API/data requests are cached here.
+========================================================= -->
+<style id="staff-pwa-install-css">
+.staff-dashboard-action.install-app{
+    background:linear-gradient(135deg,#123c69,#1f7bb5)!important;
+    color:#fff!important;
+    border-color:rgba(255,255,255,.12)!important;
+}
+.staff-dashboard-action.install-app .staff-dashboard-action-icon{
+    background:rgba(255,255,255,.17)!important;
+    color:#fff!important;
+}
+.staff-dashboard-action.install-app .staff-dashboard-action-copy strong,
+.staff-dashboard-action.install-app .staff-dashboard-action-copy small,
+.staff-dashboard-action.install-app .staff-dashboard-action-arrow{
+    color:#fff!important;
+}
+.staff-pwa-guide{
+    position:fixed;inset:0;z-index:30050;display:none;align-items:center;justify-content:center;
+    padding:18px;background:rgba(4,18,35,.82);backdrop-filter:blur(7px);
+}
+.staff-pwa-guide.show{display:flex}
+.staff-pwa-guide-card{
+    width:min(440px,100%);background:#fff;border-radius:22px;overflow:hidden;
+    box-shadow:0 28px 80px rgba(0,0,0,.34);color:#172b4d;
+}
+.staff-pwa-guide-head{
+    padding:20px 20px 17px;background:linear-gradient(135deg,#123c69,#1d6fa5);color:#fff;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.staff-pwa-guide-head h3{margin:0;font-size:18px}
+.staff-pwa-guide-close{border:0;background:rgba(255,255,255,.16);color:#fff;width:36px;height:36px;border-radius:50%;font-size:22px;cursor:pointer}
+.staff-pwa-guide-body{padding:20px}
+.staff-pwa-guide-body p{margin:0 0 14px;line-height:1.55;color:#475467;font-size:13px}
+.staff-pwa-guide-steps{display:grid;gap:10px;margin:12px 0 18px;counter-reset:pwaStep}
+.staff-pwa-guide-step{display:flex;gap:11px;align-items:flex-start;padding:11px 12px;border:1px solid #dce6ef;border-radius:13px;background:#f8fbfd;font-size:13px;line-height:1.45}
+.staff-pwa-guide-step::before{counter-increment:pwaStep;content:counter(pwaStep);flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#123c69;color:#fff;font-weight:900}
+.staff-pwa-guide-ok{width:100%;border:0;border-radius:12px;padding:12px 15px;background:#123c69;color:#fff;font-weight:900;cursor:pointer}
+@media(min-width:901px){#staffDashboardInstallAction{display:none!important}}
+</style>
+
+<div id="staffPwaGuide" class="staff-pwa-guide" role="dialog" aria-modal="true" aria-labelledby="staffPwaGuideTitle">
+  <div class="staff-pwa-guide-card">
+    <div class="staff-pwa-guide-head">
+      <h3 id="staffPwaGuideTitle">Install Staff App</h3>
+      <button class="staff-pwa-guide-close" type="button" onclick="closeStaffPwaGuide()" aria-label="Close">×</button>
+    </div>
+    <div class="staff-pwa-guide-body">
+      <p id="staffPwaGuideIntro">Install this staff workspace on your phone.</p>
+      <div id="staffPwaGuideSteps" class="staff-pwa-guide-steps"></div>
+      <button class="staff-pwa-guide-ok" type="button" onclick="closeStaffPwaGuide()">OK</button>
+    </div>
+  </div>
+</div>
+
+<script id="staff-pwa-install-js">
+(function(){
+  let deferredStaffPwaPrompt=null;
+
+  function pwaIsStandalone(){
+    return window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone===true;
+  }
+  function pwaIsIOS(){
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  }
+  function pwaIsAndroid(){ return /Android/i.test(navigator.userAgent); }
+  function pwaIsMobile(){ return pwaIsIOS() || pwaIsAndroid() || window.innerWidth<=900; }
+
+  function ensureStaffPwaButton(){
+    const host=document.querySelector('#staffDashboardPopup .staff-dashboard-quick-actions');
+    if(!host || document.getElementById('staffDashboardInstallAction')) return;
+    const button=document.createElement('button');
+    button.id='staffDashboardInstallAction';
+    button.type='button';
+    button.className='staff-dashboard-action install-app';
+    button.setAttribute('onclick','installStaffPwa()');
+    button.innerHTML='<span class="staff-dashboard-action-icon">📲</span><span class="staff-dashboard-action-copy"><strong>Install Staff App</strong><small>Install on this mobile</small></span><span class="staff-dashboard-action-arrow">→</span>';
+    host.appendChild(button);
+  }
+
+  function refreshStaffPwaButton(){
+    ensureStaffPwaButton();
+    const button=document.getElementById('staffDashboardInstallAction');
+    if(!button) return;
+    const loggedIn=typeof loggedInStaff!=='undefined' && !!loggedInStaff;
+    const canShow=loggedIn && pwaIsMobile() && !pwaIsStandalone();
+    button.style.display=canShow?'flex':'none';
+    const title=button.querySelector('strong');
+    const detail=button.querySelector('small');
+    if(pwaIsIOS()){
+      if(title) title.textContent='Add Staff App to Home Screen';
+      if(detail) detail.textContent='iPhone / iPad';
+    }else{
+      if(title) title.textContent='Install Staff App';
+      if(detail) detail.textContent=deferredStaffPwaPrompt?'Ready to install':'Install on this mobile';
+    }
+  }
+
+  function showStaffPwaGuide(kind){
+    const popup=document.getElementById('staffPwaGuide');
+    const intro=document.getElementById('staffPwaGuideIntro');
+    const steps=document.getElementById('staffPwaGuideSteps');
+    if(!popup || !steps) return;
+    if(kind==='ios'){
+      if(intro) intro.textContent='On iPhone/iPad, add the Staff App from Safari:';
+      steps.innerHTML='<div class="staff-pwa-guide-step">Open this website in <strong>Safari</strong>.</div><div class="staff-pwa-guide-step">Tap the <strong>Share</strong> button (⬆).</div><div class="staff-pwa-guide-step">Choose <strong>Add to Home Screen</strong>.</div><div class="staff-pwa-guide-step">Tap <strong>Add</strong>. The St. Augustine Staff icon will appear on the Home Screen.</div>';
+    }else{
+      if(intro) intro.textContent='If the install popup does not appear automatically:';
+      steps.innerHTML='<div class="staff-pwa-guide-step">Open this website in <strong>Chrome</strong>.</div><div class="staff-pwa-guide-step">Tap the browser menu <strong>⋮</strong>.</div><div class="staff-pwa-guide-step">Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</div><div class="staff-pwa-guide-step">Confirm <strong>Install</strong>.</div>';
+    }
+    popup.classList.add('show');
+    document.body.style.overflow='hidden';
+  }
+
+  window.closeStaffPwaGuide=function(){
+    document.getElementById('staffPwaGuide')?.classList.remove('show');
+    const dashboard=document.getElementById('staffDashboardPopup');
+    document.body.style.overflow=dashboard?.style.display==='block'?'hidden':'auto';
+  };
+
+  window.installStaffPwa=async function(){
+    if(typeof loggedInStaff==='undefined' || !loggedInStaff){
+      if(typeof openStaffLogin==='function') openStaffLogin();
+      return;
+    }
+    if(pwaIsStandalone()){
+      if(typeof showStaffDashboardToast==='function') showStaffDashboardToast('Staff App is already installed.');
+      return;
+    }
+    if(deferredStaffPwaPrompt){
+      try{
+        deferredStaffPwaPrompt.prompt();
+        const choice=await deferredStaffPwaPrompt.userChoice;
+        if(choice?.outcome==='accepted') deferredStaffPwaPrompt=null;
+        refreshStaffPwaButton();
+        return;
+      }catch(error){ console.warn('PWA install prompt failed:',error); }
+    }
+    showStaffPwaGuide(pwaIsIOS()?'ios':'android');
+  };
+
+  window.addEventListener('beforeinstallprompt',event=>{
+    event.preventDefault();
+    deferredStaffPwaPrompt=event;
+    refreshStaffPwaButton();
+  });
+  window.addEventListener('appinstalled',()=>{
+    deferredStaffPwaPrompt=null;
+    refreshStaffPwaButton();
+    if(typeof showStaffDashboardToast==='function') showStaffDashboardToast('✓ St. Augustine Staff App installed.');
+  });
+  window.matchMedia?.('(display-mode: standalone)')?.addEventListener?.('change',refreshStaffPwaButton);
+  window.addEventListener('resize',refreshStaffPwaButton);
+
+  if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(error=>console.warn('Service worker registration failed:',error));
+    });
+  }
+
+  const previousUpdateStaffLoginUI=window.updateStaffLoginUI;
+  if(typeof previousUpdateStaffLoginUI==='function'){
+    window.updateStaffLoginUI=function(){
+      const result=previousUpdateStaffLoginUI.apply(this,arguments);
+      ensureStaffPwaButton();
+      refreshStaffPwaButton();
+      return result;
+    };
+  }
+
+  const previousOpenStaffDashboard=window.openStaffDashboard;
+  if(typeof previousOpenStaffDashboard==='function'){
+    window.openStaffDashboard=async function(){
+      ensureStaffPwaButton();
+      const result=await previousOpenStaffDashboard.apply(this,arguments);
+      ensureStaffPwaButton();
+      refreshStaffPwaButton();
+      return result;
+    };
+  }
+
+  async function openStaffAppStart(){
+    const launchedForStaff=new URLSearchParams(location.search).get('staffapp')==='1' || pwaIsStandalone();
+    if(!launchedForStaff) return;
+    for(let i=0;i<16;i++){
+      if(typeof loggedInStaff!=='undefined' && loggedInStaff && typeof staffAuthSession!=='undefined' && staffAuthSession) break;
+      await new Promise(resolve=>setTimeout(resolve,150));
+    }
+    if(typeof loggedInStaff!=='undefined' && loggedInStaff && typeof staffAuthSession!=='undefined' && staffAuthSession){
+      if(typeof showStaffDashboardWelcome==='function') showStaffDashboardWelcome();
+      else if(typeof openStaffDashboard==='function') openStaffDashboard();
+    }else if(typeof openStaffLogin==='function'){
+      openStaffLogin();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    ensureStaffPwaButton();
+    refreshStaffPwaButton();
+    setTimeout(openStaffAppStart,450);
+  });
 })();
 </script>
 
