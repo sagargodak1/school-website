@@ -5,7 +5,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="description" content="Official website of St. Augustine Academic Foundation, Suryodaya-11, Tinghare, Ilam, Nepal.">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://yxecklijkcaxrfshpzna.supabase.co wss://yxecklijkcaxrfshpzna.supabase.co; frame-src https://www.google.com https://formsubmit.co https://staugustine.edu.np https://www.staugustine.edu.np; form-action 'self' https://formsubmit.co; object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
@@ -17,8 +17,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="St. Augustine Staff">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="pwa-icon-192.png">
+<link rel="manifest" href="manifest.json?v=3">
+<link rel="apple-touch-icon" href="pwa-icon-192-v3.png?v=3">
 
 
 <style>
@@ -20868,635 +20868,7 @@ function examCurrentSelectionReady(){return !!examCurrentPeriod}
 function examExportCSV(kind){if(!examCurrentSelectionReady()){examMessage("Select Academic Year and Term first.");return}let rows=[],p=examCurrentPeriod;if(kind==="routine"){rows.push(["Academic Year",p.academic_year],["Term",p.term_name],["Status",p.is_published?"Published":"Draft"],[]);rows.push(["Class",...examDays.flatMap(d=>[`${d.day_label} - Routine`,`${d.day_label} - Teacher`,`${d.day_label} - Date`])]);EXAM_CLASSES.forEach(cls=>rows.push([cls,...examDays.flatMap(d=>{const e=examEntryFor(d.id,cls);return[e?.activity_title||"—",e?.teacher_name||"",d.exam_date||""]})]))}else if(kind==="tracker"){rows.push(["Academic Year",p.academic_year],["Term",p.term_name],[]);rows.push(["Class",...examDays.flatMap(d=>[`${d.day_label} - Routine`,`${d.day_label} - Teacher`,`${d.day_label} - Submission`,`${d.day_label} - Print`])]);EXAM_CLASSES.forEach(cls=>rows.push([cls,...examDays.flatMap(d=>{const e=examEntryFor(d.id,cls);if(!e)return["—","","",""];if(!e.question_required)return[e.activity_title||"—",e.teacher_name||"","N/A","N/A"];const s=examStatusFor(e.id)||{};return[e.activity_title||"",e.teacher_name||"",s.submitted?"Submitted":"Not Submitted",s.printed?"Printed":"Not Printed"]})]))}else{const cls=document.getElementById("examClasswiseSelect").value;if(!cls){examMessage("Select a Class first.");return}rows.push(["Academic Year",p.academic_year],["Term",p.term_name],["Class",cls],[]);rows.push(["Day","Date","Routine","Teacher"]);examDays.forEach(d=>{const e=examEntryFor(d.id,cls);rows.push([d.day_label,d.exam_date||"",e?.activity_title||"—",e?.teacher_name||""])})}const csv="\ufeff"+rows.map(r=>r.map(examCsv).join(",")).join("\r\n"),blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`exam_${kind}_${String(p.academic_year).replace(/\W+/g,"_")}_${String(p.term_name).replace(/\W+/g,"_")}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function examPrintableRoutine(){const head=examDays.map(d=>`<th>${examEscape(d.day_label)}<br>${examEscape(d.exam_date||"")}</th>`).join("");const rows=EXAM_CLASSES.map(cls=>`<tr><td><strong>${examEscape(cls)}</strong></td>${examDays.map(d=>{const e=examEntryFor(d.id,cls);return `<td>${e?.activity_title?`<strong>${examEscape(e.activity_title)}</strong>`:"—"}${e?.teacher_name?`<br>${examEscape(e.teacher_name)}`:""}</td>`}).join("")}</tr>`).join("");return `<div class="exam-table-wrap"><table class="exam-table"><thead><tr><th>CLASS</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`}
 function examPrintableTracker(){const head=examDays.map(d=>`<th>${examEscape(d.day_label)}<br>${examEscape(d.exam_date||"")}</th>`).join("");const rows=EXAM_CLASSES.map(cls=>`<tr><td><strong>${examEscape(cls)}</strong></td>${examDays.map(d=>{const e=examEntryFor(d.id,cls);if(!e?.activity_title)return"<td>—</td>";if(!e.question_required)return`<td><strong>${examEscape(e.activity_title)}</strong>${e.teacher_name?`<br>${examEscape(e.teacher_name)}`:""}</td>`;const s=examStatusFor(e.id)||{};return`<td><strong>${examEscape(e.activity_title)}</strong>${e.teacher_name?`<br>${examEscape(e.teacher_name)}`:""}<br>${s.submitted?"✅ Submitted":"☐ Submit"}<br>${s.printed?"✅ Printed":"☐ Print"}</td>`}).join("")}</tr>`).join("");return `<div class="exam-table-wrap"><table class="exam-table"><thead><tr><th>CLASS</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`}
-function examPrintCurrent(kind){if(!examCurrentPeriod){examMessage("Select Academic Year and Term first.");return}let title="Exam Routine",html="";if(kind==="routine")html=examPrintableRoutine();else if(kind==="tracker"){title="Question Submission & Printing Tracker";html=examPrintableTracker()}else{const cls=document.getElementById("examClasswiseSelect").value;if(!cls){examMessage("Select a Class first.");return}title=`${cls} — Exam Routine`;html=document.getElementById("examClasswiseHost").innerHTML}const p=examCurrentPeriod,w=window.open("","_blank","width=1200,height=800");if(!w){examMessage("Pop-up was blocked. Allow pop-ups to Print / PDF.");return}w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${examEscape(title)}</title><style>body{font-family:Arial,sans-serif;padding:24px}.exam-table,.exam-class-routine{width:100%;border-collapse:collapse;font-size:10px}.exam-table th,.exam-table td,.exam-class-routine th,.exam-class-routine td{border:1px solid #888;padding:6px;text-align:center;vertical-align:top}.exam-table th,.exam-class-routine th{background:#eee}.exam-info-line{margin:10px 0}.exam-info-chip{margin-right:8px;font-weight:bold}@page{size:landscape;margin:10mm}</style></head><body><h1>${examEscape(title)}</h1><p>${examEscape(p.academic_year)} • ${examEscape(p.term_name)}</p>${html}<script>window.onload=function(){window.print()}<\/script>
-<!-- =========================================================
-     STAFF INSTALLED APP — PREMIUM MOBILE SKIN 2026
-     VISUAL ONLY. Applied ONLY when body has .staff-app-mode.
-     Public website / normal browser Staff Login remains unchanged.
-========================================================= -->
-<style id="staff-installed-premium-2026">
-/* ---- App-only design tokens ---- */
-body.staff-app-mode{
-  --sa-app-navy:#06172b;
-  --sa-app-blue:#0a3762;
-  --sa-app-blue2:#0e5687;
-  --sa-app-cyan:#63d8ff;
-  --sa-app-gold:#f4c75d;
-  --sa-app-ink:#0f2438;
-  --sa-app-muted:#6c7d8e;
-  --sa-app-line:#dce7ef;
-  --sa-app-surface:#f6f9fc;
-  --sa-app-card:#ffffff;
-  --sa-app-shadow:0 18px 48px rgba(4,24,46,.14);
-  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif!important;
-  background:var(--sa-app-navy)!important;
-}
-
-/* ---- Installed app launch / home shell ---- */
-body.staff-app-mode #staffAppShell{
-  overflow:auto!important;
-  padding:
-    max(24px,env(safe-area-inset-top))
-    18px
-    max(24px,env(safe-area-inset-bottom))!important;
-  background:
-    radial-gradient(circle at 10% 8%,rgba(99,216,255,.20),transparent 29%),
-    radial-gradient(circle at 91% 82%,rgba(244,199,93,.15),transparent 30%),
-    linear-gradient(145deg,#04101f 0%,#07243f 48%,#0a3b64 100%)!important;
-}
-body.staff-app-mode #staffAppShell::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  opacity:.24;
-  background-image:
-    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
-  background-size:28px 28px;
-  mask-image:linear-gradient(to bottom,black,transparent 78%);
-}
-body.staff-app-mode .staff-app-shell-card{
-  position:relative;
-  isolation:isolate;
-  width:min(430px,100%)!important;
-  padding:34px 24px 24px!important;
-  border-radius:32px!important;
-  overflow:hidden;
-  color:#fff!important;
-  text-align:center;
-  background:
-    linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.055))!important;
-  border:1px solid rgba(255,255,255,.22)!important;
-  box-shadow:
-    0 34px 90px rgba(0,0,0,.42),
-    inset 0 1px 0 rgba(255,255,255,.20)!important;
-  backdrop-filter:blur(22px)!important;
-  -webkit-backdrop-filter:blur(22px)!important;
-}
-body.staff-app-mode .staff-app-shell-card::before{
-  content:"";
-  position:absolute;
-  z-index:-1;
-  width:220px;height:220px;
-  left:-115px;top:-130px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(99,216,255,.32),transparent 67%);
-}
-body.staff-app-mode .staff-app-shell-card::after{
-  content:"STAFF • SECURE • SYNCED";
-  display:block;
-  margin:16px auto 0;
-  color:rgba(220,239,252,.68);
-  font-size:9px;
-  font-weight:900;
-  letter-spacing:1.65px;
-}
-body.staff-app-mode .staff-app-shell-logo{
-  width:112px!important;
-  height:112px!important;
-  margin:0 auto 17px!important;
-  padding:7px!important;
-  border-radius:30px!important;
-  object-fit:contain!important;
-  background:linear-gradient(145deg,#fff,#eaf5fb)!important;
-  border:2px solid rgba(244,199,93,.90)!important;
-  box-shadow:
-    0 18px 40px rgba(0,0,0,.35),
-    0 0 0 8px rgba(255,255,255,.055)!important;
-}
-body.staff-app-mode .staff-app-shell-badge{
-  padding:7px 12px!important;
-  gap:7px!important;
-  border-radius:999px!important;
-  color:#dff6ff!important;
-  background:rgba(3,17,33,.35)!important;
-  border:1px solid rgba(99,216,255,.24)!important;
-  font-size:10px!important;
-  font-weight:950!important;
-  letter-spacing:1.1px!important;
-}
-body.staff-app-mode .staff-app-shell-card h1{
-  margin:16px 0 7px!important;
-  color:#fff!important;
-  font-size:28px!important;
-  font-weight:950!important;
-  line-height:1.08!important;
-  letter-spacing:-.5px!important;
-  text-shadow:0 3px 18px rgba(0,0,0,.22);
-}
-body.staff-app-mode .staff-app-shell-card h1 span{
-  display:block!important;
-  margin-top:7px!important;
-  color:#91e4ff!important;
-  font-size:15px!important;
-  font-weight:800!important;
-  letter-spacing:.3px!important;
-}
-body.staff-app-mode .staff-app-shell-card>p:not(.staff-app-shell-note){
-  max-width:345px!important;
-  margin:12px auto!important;
-  color:#d5e7f5!important;
-  font-size:12.5px!important;
-  line-height:1.62!important;
-}
-body.staff-app-mode .staff-app-shell-status{
-  position:relative;
-  margin:21px 0 12px!important;
-  padding:13px 14px 13px 40px!important;
-  border-radius:15px!important;
-  color:#e8f7ff!important;
-  text-align:left!important;
-  font-size:11.5px!important;
-  font-weight:800!important;
-  background:rgba(3,17,33,.34)!important;
-  border:1px solid rgba(255,255,255,.11)!important;
-}
-body.staff-app-mode .staff-app-shell-status::before{
-  content:"";
-  position:absolute;
-  left:15px;top:50%;
-  width:10px;height:10px;
-  transform:translateY(-50%);
-  border-radius:50%;
-  background:#54e39b;
-  box-shadow:0 0 0 5px rgba(84,227,155,.10),0 0 14px rgba(84,227,155,.70);
-}
-body.staff-app-mode .staff-app-shell-open{
-  min-height:54px!important;
-  padding:14px 18px!important;
-  border-radius:16px!important;
-  color:#06233d!important;
-  font-size:13px!important;
-  font-weight:950!important;
-  letter-spacing:.35px!important;
-  background:linear-gradient(135deg,#fff 0%,#dff6ff 56%,#f8e5ae 100%)!important;
-  border:1px solid rgba(255,255,255,.75)!important;
-  box-shadow:0 15px 34px rgba(0,0,0,.25)!important;
-}
-body.staff-app-mode .staff-app-shell-open:active{
-  transform:scale(.985)!important;
-}
-body.staff-app-mode .staff-app-shell-note{
-  margin:13px 0 0!important;
-  color:#9bb7cb!important;
-  font-size:10px!important;
-  line-height:1.5!important;
-}
-
-/* ---- Installed-app Staff Login only ---- */
-body.staff-app-mode #staffLoginPopup{
-  background:
-    radial-gradient(circle at 12% 10%,rgba(99,216,255,.18),transparent 30%),
-    radial-gradient(circle at 90% 90%,rgba(244,199,93,.12),transparent 31%),
-    linear-gradient(145deg,#04101f,#07243f 55%,#0a385e)!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-  padding:
-    max(24px,env(safe-area-inset-top))
-    18px
-    max(24px,env(safe-area-inset-bottom))!important;
-}
-body.staff-app-mode #staffLoginPopup::before{
-  opacity:.20!important;
-  background-size:34px 34px!important;
-}
-body.staff-app-mode #staffLoginPopup::after{
-  display:none!important;
-}
-body.staff-app-mode #staffLoginPopup .staff-login-box{
-  width:min(100%,420px)!important;
-  margin:7vh auto 0!important;
-  padding:118px 22px 26px!important;
-  border-radius:30px!important;
-  overflow:visible!important;
-  color:#fff!important;
-  background:
-    linear-gradient(155deg,rgba(255,255,255,.14),rgba(255,255,255,.055)) padding-box!important;
-  border:1px solid rgba(255,255,255,.20)!important;
-  box-shadow:0 32px 80px rgba(0,0,0,.40)!important;
-  backdrop-filter:blur(22px)!important;
-  -webkit-backdrop-filter:blur(22px)!important;
-  animation:none!important;
-}
-body.staff-app-mode #staffLoginPopup .staff-login-box::before{
-  content:""!important;
-  position:absolute!important;
-  left:50%!important;
-  top:24px!important;
-  width:78px!important;
-  height:78px!important;
-  transform:translateX(-50%)!important;
-  border-radius:22px!important;
-  background:#fff url("staff-app-logo.png") center/contain no-repeat!important;
-  border:2px solid rgba(244,199,93,.9)!important;
-  box-shadow:0 12px 30px rgba(0,0,0,.28),0 0 0 7px rgba(255,255,255,.055)!important;
-  pointer-events:none!important;
-}
-body.staff-app-mode #staffLoginPopup .staff-login-box::after{
-  content:"SECURE STAFF ACCESS"!important;
-  position:absolute!important;
-  left:50%!important;
-  top:109px!important;
-  transform:translateX(-50%)!important;
-  width:max-content!important;
-  color:#91e4ff!important;
-  font-size:9px!important;
-  font-weight:950!important;
-  letter-spacing:1.45px!important;
-  text-shadow:none!important;
-  pointer-events:none!important;
-}
-body.staff-app-mode #staffLoginPopup h2{
-  margin:8px 0 8px!important;
-  color:#fff!important;
-  background:none!important;
-  -webkit-text-fill-color:initial!important;
-  -webkit-background-clip:initial!important;
-  background-clip:initial!important;
-  text-shadow:none!important;
-  animation:none!important;
-  font-size:26px!important;
-  font-weight:950!important;
-  letter-spacing:-.25px!important;
-}
-body.staff-app-mode #staffLoginPopup .staff-login-subtitle{
-  max-width:310px;
-  margin:0 auto 21px!important;
-  color:#c6d9e8!important;
-  font-size:11.5px!important;
-  line-height:1.6!important;
-}
-body.staff-app-mode #staffLoginPopup .staff-login-field label{
-  color:#dff2ff!important;
-  font-size:11px!important;
-  font-weight:850!important;
-  letter-spacing:.35px!important;
-}
-body.staff-app-mode #staffLoginPopup input{
-  min-height:52px!important;
-  padding:13px 14px!important;
-  color:#fff!important;
-  background:rgba(2,16,31,.38)!important;
-  border:1px solid rgba(154,207,239,.24)!important;
-  border-radius:14px!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important;
-}
-body.staff-app-mode #staffLoginPopup input:focus{
-  border-color:rgba(99,216,255,.72)!important;
-  box-shadow:0 0 0 4px rgba(99,216,255,.10)!important;
-}
-body.staff-app-mode #staffLoginPopup input::placeholder{
-  color:#7993a7!important;
-}
-body.staff-app-mode #staffLoginPopup .staff-login-submit{
-  min-height:53px!important;
-  margin-top:8px!important;
-  border-radius:15px!important;
-  color:#06233d!important;
-  background:linear-gradient(135deg,#ffffff,#dcf5ff 55%,#f7e4aa)!important;
-  border:1px solid rgba(255,255,255,.65)!important;
-  box-shadow:0 14px 30px rgba(0,0,0,.22)!important;
-  font-size:12px!important;
-  font-weight:950!important;
-  letter-spacing:.6px!important;
-}
-body.staff-app-mode #staffLoginPopup .staff-login-submit::after{
-  display:none!important;
-}
-
-/* ---- Installed-app Dashboard only ---- */
-body.staff-app-mode #staffDashboardPopup{
-  padding:0!important;
-  background:#eef4f8!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-box{
-  width:100%!important;
-  max-width:none!important;
-  min-height:100dvh!important;
-  max-height:100dvh!important;
-  margin:0!important;
-  border-radius:0!important;
-  overflow:auto!important;
-  overscroll-behavior:contain;
-  background:
-    linear-gradient(180deg,#f3f7fa 0%,#eef4f8 100%)!important;
-  box-shadow:none!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-hero{
-  position:sticky!important;
-  top:0!important;
-  z-index:30!important;
-  grid-template-columns:minmax(0,1fr) auto!important;
-  gap:12px!important;
-  padding:
-    max(18px,env(safe-area-inset-top))
-    18px
-    18px!important;
-  min-height:128px!important;
-  background:
-    radial-gradient(circle at 88% 8%,rgba(244,199,93,.24),transparent 30%),
-    linear-gradient(135deg,#06172b 0%,#08375e 62%,#0b5a87 100%)!important;
-  box-shadow:0 9px 28px rgba(4,28,52,.17)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-hero::before{
-  content:"";
-  position:absolute;
-  left:0;right:0;bottom:0;
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-hero::after{
-  width:180px!important;height:180px!important;
-  right:-95px!important;bottom:-115px!important;
-  border-color:rgba(255,255,255,.12)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-brand{
-  gap:12px!important;
-  align-items:center!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-logo{
-  width:58px!important;
-  height:58px!important;
-  border-radius:18px!important;
-  padding:3px!important;
-  object-fit:contain!important;
-  background:#fff!important;
-  border:2px solid rgba(244,199,93,.88)!important;
-  box-shadow:0 9px 24px rgba(0,0,0,.24)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-kicker{
-  margin-bottom:4px!important;
-  color:#9de5ff!important;
-  font-size:8px!important;
-  font-weight:950!important;
-  letter-spacing:1.25px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-hero h2{
-  font-size:20px!important;
-  font-weight:950!important;
-  letter-spacing:-.35px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-role{
-  margin-top:4px!important;
-  color:#d6e7f3!important;
-  font-size:10px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-clock{
-  min-width:86px!important;
-  padding:9px 10px!important;
-  border-radius:14px!important;
-  text-align:center!important;
-  background:rgba(255,255,255,.10)!important;
-  border:1px solid rgba(255,255,255,.14)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-time{
-  font-size:16px!important;
-  font-weight:950!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-date{
-  margin-top:2px!important;
-  font-size:7.5px!important;
-  line-height:1.3!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-content{
-  padding:15px 13px calc(28px + env(safe-area-inset-bottom))!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-shell{
-  margin:0 0 13px!important;
-  padding:14px!important;
-  border-radius:20px!important;
-  background:rgba(255,255,255,.91)!important;
-  border:1px solid rgba(194,211,223,.78)!important;
-  box-shadow:var(--sa-app-shadow)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-heading{
-  margin-bottom:11px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-heading p{
-  color:#0b5b88!important;
-  font-size:8px!important;
-  letter-spacing:1.25px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-heading h3{
-  margin-top:2px!important;
-  color:#0c2740!important;
-  font-size:14px!important;
-  font-weight:950!important;
-  letter-spacing:-.15px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-heading>span{
-  color:#62788b!important;
-  background:#eff5f8!important;
-  border:1px solid #dce8ef!important;
-  font-size:7px!important;
-  font-weight:950!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions{
-  grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  gap:9px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action,
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.marks{
-  position:relative!important;
-  min-height:92px!important;
-  padding:12px 10px!important;
-  border-radius:17px!important;
-  overflow:hidden!important;
-  align-items:flex-start!important;
-  gap:8px!important;
-  text-align:left!important;
-  color:#fff!important;
-  border:1px solid rgba(255,255,255,.15)!important;
-  box-shadow:0 9px 20px rgba(10,48,80,.12)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action::after{
-  content:"";
-  position:absolute;
-  width:70px;height:70px;
-  right:-31px;bottom:-35px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.15);
-  pointer-events:none;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.leave{
-  background:linear-gradient(145deg,#0d5a8e,#0875a2)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.approved{
-  background:linear-gradient(145deg,#08725c,#0b9873)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.plan{
-  background:linear-gradient(145deg,#5d3f8e,#785bb0)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.idea{
-  background:linear-gradient(145deg,#8a5c05,#bc8420)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.marks{
-  background:linear-gradient(145deg,#073d73,#0b5fa5)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.exam{
-  background:linear-gradient(145deg,#7c2546,#a63860)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.video{
-  background:linear-gradient(145deg,#34465b,#52677d)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.internal-evaluation{
-  background:linear-gradient(145deg,#225a65,#2d7684)!important;
-  color:#fff!important;
-  font-size:11px!important;
-  font-weight:900!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-icon{
-  flex:0 0 36px!important;
-  width:36px!important;
-  height:36px!important;
-  border-radius:11px!important;
-  background:rgba(255,255,255,.15)!important;
-  color:#fff!important;
-  border:1px solid rgba(255,255,255,.14)!important;
-  font-size:17px!important;
-  box-shadow:none!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-copy strong{
-  color:#fff!important;
-  font-size:11px!important;
-  font-weight:950!important;
-  line-height:1.18!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-copy small{
-  display:block!important;
-  margin-top:4px!important;
-  color:rgba(255,255,255,.72)!important;
-  font-size:8px!important;
-  line-height:1.35!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-arrow{
-  position:absolute!important;
-  right:10px!important;
-  bottom:8px!important;
-  color:rgba(255,255,255,.72)!important;
-  font-size:13px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-stats{
-  grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  gap:9px!important;
-  margin:0 0 13px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-stat{
-  min-height:72px!important;
-  padding:12px!important;
-  border-radius:17px!important;
-  background:#fff!important;
-  border:1px solid #dce7ee!important;
-  box-shadow:0 7px 18px rgba(18,60,105,.06)!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-stat-icon{
-  width:35px!important;height:35px!important;
-  border-radius:11px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-stat strong{
-  color:#0d2a43!important;
-  font-size:18px!important;
-  font-weight:950!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-stat div span{
-  color:#718293!important;
-  font-size:8.5px!important;
-  font-weight:800!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-grid{
-  grid-template-columns:1fr!important;
-  gap:12px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-card{
-  border-radius:19px!important;
-  border:1px solid #dbe6ed!important;
-  background:#fff!important;
-  box-shadow:0 10px 25px rgba(18,60,105,.07)!important;
-  overflow:hidden!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-head{
-  padding:13px 14px!important;
-  background:linear-gradient(180deg,#fff,#f8fbfd)!important;
-  border-bottom:1px solid #e6eef3!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-head h3{
-  color:#12344f!important;
-  font-size:12px!important;
-  font-weight:950!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-live-badge{
-  font-size:7px!important;
-  letter-spacing:.8px!important;
-}
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-body{
-  padding:12px!important;
-}
-
-/* Keep working modules functionally and visually independent.
-   Only their overlay gets a gentle app backdrop; module internals are untouched. */
-body.staff-app-mode .popup:not(#staffDashboardPopup):not(#staffLoginPopup):not(#staffDashboardWelcomePopup){
-  backdrop-filter:blur(4px);
-  -webkit-backdrop-filter:blur(4px);
-}
-
-/* No decorative close button in installed dashboard. Existing tool close buttons stay unchanged. */
-body.staff-app-mode #staffDashboardPopup .staff-dashboard-close{
-  display:none!important;
-}
-
-@media(max-width:390px){
-  body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions{
-    grid-template-columns:1fr!important;
-  }
-  body.staff-app-mode #staffDashboardPopup .staff-dashboard-action,
-  body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.marks{
-    min-height:68px!important;
-  }
-  body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-copy small{
-    display:block!important;
-  }
-}
-@media(min-width:700px){
-  body.staff-app-mode #staffDashboardPopup .staff-dashboard-content{
-    width:min(920px,100%);
-    margin:0 auto;
-    padding-left:20px!important;
-    padding-right:20px!important;
-  }
-  body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions{
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  }
-  body.staff-app-mode #staffDashboardPopup .staff-dashboard-stats{
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  }
-}
-@media(prefers-reduced-motion:reduce){
-  body.staff-app-mode *{scroll-behavior:auto!important}
-}
-</style>
-
-<script id="staff-installed-premium-2026-js">
-(function(){
-  function saInstalledStaffApp(){
-    return window.matchMedia?.('(display-mode: standalone)').matches ||
-           window.navigator.standalone===true ||
-           new URLSearchParams(location.search).get('staffapp')==='1';
-  }
-  function applyStaffAppVisualTheme(){
-    if(!saInstalledStaffApp()) return;
-    const theme=document.querySelector('meta[name="theme-color"]');
-    if(theme) theme.setAttribute('content','#06172b');
-    const shellLogo=document.querySelector('#staffAppShell .staff-app-shell-logo');
-    if(shellLogo) shellLogo.setAttribute('src','staff-app-logo.png');
-  }
-  document.addEventListener('DOMContentLoaded',applyStaffAppVisualTheme);
-  window.matchMedia?.('(display-mode: standalone)')?.addEventListener?.('change',applyStaffAppVisualTheme);
-})();
-</script>
-
-</body></html>`);w.document.close()}
+function examPrintCurrent(kind){if(!examCurrentPeriod){examMessage("Select Academic Year and Term first.");return}let title="Exam Routine",html="";if(kind==="routine")html=examPrintableRoutine();else if(kind==="tracker"){title="Question Submission & Printing Tracker";html=examPrintableTracker()}else{const cls=document.getElementById("examClasswiseSelect").value;if(!cls){examMessage("Select a Class first.");return}title=`${cls} — Exam Routine`;html=document.getElementById("examClasswiseHost").innerHTML}const p=examCurrentPeriod,w=window.open("","_blank","width=1200,height=800");if(!w){examMessage("Pop-up was blocked. Allow pop-ups to Print / PDF.");return}w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${examEscape(title)}</title><style>body{font-family:Arial,sans-serif;padding:24px}.exam-table,.exam-class-routine{width:100%;border-collapse:collapse;font-size:10px}.exam-table th,.exam-table td,.exam-class-routine th,.exam-class-routine td{border:1px solid #888;padding:6px;text-align:center;vertical-align:top}.exam-table th,.exam-class-routine th{background:#eee}.exam-info-line{margin:10px 0}.exam-info-chip{margin-right:8px;font-weight:bold}@page{size:landscape;margin:10mm}</style></head><body><h1>${examEscape(title)}</h1><p>${examEscape(p.academic_year)} • ${examEscape(p.term_name)}</p>${html}<script>window.onload=function(){window.print()}<\/script></body></html>`);w.document.close()}
 function examToggleCoordinatorPanel(force){if(!examIsCoreManager())return;const p=document.getElementById("examCoordinatorPanel"),show=typeof force==="boolean"?force:!p.classList.contains("show");p.classList.toggle("show",show);if(show)examLoadCoordinators()}
 async function examLoadCoordinators(){if(!examIsCoreManager())return;const host=document.getElementById("examCoordinatorList");host.innerHTML='<span class="exam-note">Loading...</span>';try{const {data,error}=await examDb().from("exam_coordinators").select("staff_id,staff_name,enabled,granted_by_name,granted_at").eq("enabled",true).order("staff_name");if(error)throw error;examCoordinatorRows=data||[];host.innerHTML=examCoordinatorRows.length?examCoordinatorRows.map(r=>`<span class="exam-coordinator-chip">${examEscape(r.staff_name||r.staff_id)} <button type="button" onclick="examRemoveCoordinator('${examEscape(r.staff_id)}')">REMOVE</button></span>`).join(""):'<span class="exam-note">No Exam Coordinator access is active.</span>'}catch(e){host.innerHTML=`<span class="exam-error">${examEscape(examDbError(e))}</span>`}}
 async function examGrantCoordinator(){if(!examIsCoreManager())return;const id=document.getElementById("examCoordinatorStaffSelect").value;if(!id){examMessage("Select a Staff member first.");return}const staff=typeof STAFF_LOGIN_DIRECTORY!=="undefined"?STAFF_LOGIN_DIRECTORY[id]:null;if(!staff){examMessage("Staff record not found.");return}try{const now=new Date().toISOString(),r=await examDb().from("exam_coordinators").upsert({staff_id:id,staff_name:staff.name,enabled:true,granted_by_role:examPortalRole,granted_by_name:examActorName(),granted_at:now,updated_at:now},{onConflict:"staff_id"});if(r.error)throw r.error;document.getElementById("examCoordinatorStaffSelect").value="";await examLoadCoordinators();examMessage(`${staff.name} now has Exam Coordinator full control.`,"success")}catch(e){examMessage(examDbError(e))}}
@@ -21939,10 +21311,10 @@ body.staff-app-mode #staffDashboardWelcomePopup{display:none!important}
 
 <div id="staffAppShell" aria-hidden="true">
   <div class="staff-app-shell-card">
-    <img src="logo.jpeg" class="staff-app-shell-logo" alt="St. Augustine logo">
+    <img src="staff-app-logo.png" class="staff-app-shell-logo" alt="St. Augustine logo">
     <div class="staff-app-shell-badge">🔒 SECURE STAFF APP</div>
-    <h1>St. Augustine <span>Digital Staff Workspace</span></h1>
-    <p>Staff, Teacher and Principal access only. Public website pages are not shown inside this installed app.</p>
+    <h1>St. Augustine <span>Premium Staff Workspace</span></h1>
+    <p>Your secure mobile workspace for Marks, Exam, Leave, Portfolio, Plans and Staff tools.</p>
     <div id="staffAppShellStatus" class="staff-app-shell-status">Checking your saved staff session...</div>
     <button id="staffAppShellOpen" class="staff-app-shell-open" type="button" onclick="staffAppOpenWorkspace()">OPEN STAFF WORKSPACE</button>
     <p class="staff-app-shell-note">This device stays signed in until you choose Log Out.</p>
@@ -22068,6 +21440,419 @@ body.staff-app-mode #staffDashboardWelcomePopup{display:none!important}
 })();
 </script>
 
+
+
+
+<!-- =========================================================
+     STAFF PWA MOBILE V3 — TRUE PHONE UI + VISIBLE APP LAUNCH
+     APP-ONLY OVERRIDES. Public website / browser Staff Login unchanged.
+     No Supabase queries, IDs, save/submit logic or workflows are changed.
+========================================================= -->
+<style id="staff-pwa-mobile-v3-css">
+body.staff-app-mode{
+  --sa3-navy:#04101f;
+  --sa3-blue:#07385f;
+  --sa3-cyan:#65dcff;
+  --sa3-gold:#f4c75d;
+  --sa3-ink:#102a43;
+  --sa3-line:#dbe7ef;
+  width:100%!important;
+  max-width:100vw!important;
+  min-height:100dvh!important;
+  margin:0!important;
+  overflow-x:hidden!important;
+  background:#eef4f8!important;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif!important;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+body.staff-app-mode *{box-sizing:border-box}
+
+/* Visible launch screen — stays above the older auto-open hooks until V3 unlocks it. */
+body.staff-app-mode #staffAppShell{
+  z-index:2147482000!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:100dvh!important;
+  overflow:auto!important;
+  padding:max(22px,env(safe-area-inset-top)) 16px max(22px,env(safe-area-inset-bottom))!important;
+  background:
+    radial-gradient(circle at 8% 8%,rgba(101,220,255,.20),transparent 31%),
+    radial-gradient(circle at 92% 84%,rgba(244,199,93,.16),transparent 30%),
+    linear-gradient(145deg,#020b15 0%,#05223c 50%,#0a4e79 100%)!important;
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transition:opacity .28s ease,visibility .28s ease,transform .28s ease;
+}
+body.staff-app-mode #staffAppShell::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;opacity:.22;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+body.staff-app-mode.staff-app-workspace-open #staffAppShell{
+  opacity:0!important;visibility:hidden!important;pointer-events:none!important;transform:scale(1.015);
+}
+body.staff-app-mode .staff-app-shell-card{
+  position:relative!important;
+  width:min(100%,420px)!important;
+  margin:auto!important;
+  padding:30px 22px 22px!important;
+  border-radius:30px!important;
+  color:#fff!important;
+  background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.055))!important;
+  border:1px solid rgba(255,255,255,.22)!important;
+  box-shadow:0 32px 90px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.18)!important;
+  backdrop-filter:blur(22px)!important;
+  -webkit-backdrop-filter:blur(22px)!important;
+  overflow:hidden!important;
+}
+body.staff-app-mode .staff-app-shell-card::before{
+  content:"";position:absolute;width:220px;height:220px;right:-120px;top:-130px;border-radius:50%;
+  background:radial-gradient(circle,rgba(101,220,255,.27),transparent 68%);pointer-events:none;
+}
+body.staff-app-mode .staff-app-shell-logo{
+  width:112px!important;height:112px!important;margin:0 auto 17px!important;padding:7px!important;
+  display:block!important;object-fit:contain!important;border-radius:29px!important;background:#fff!important;
+  border:2px solid rgba(244,199,93,.92)!important;
+  box-shadow:0 17px 40px rgba(0,0,0,.34),0 0 0 7px rgba(255,255,255,.055)!important;
+}
+body.staff-app-mode .staff-app-shell-badge{
+  padding:7px 11px!important;border-radius:999px!important;color:#dff8ff!important;
+  background:rgba(2,14,28,.34)!important;border:1px solid rgba(101,220,255,.24)!important;
+  font-size:9px!important;font-weight:950!important;letter-spacing:1.2px!important;
+}
+body.staff-app-mode .staff-app-shell-card h1{
+  margin:15px 0 7px!important;color:#fff!important;font-size:27px!important;font-weight:950!important;line-height:1.08!important;
+  letter-spacing:-.45px!important;text-shadow:0 3px 15px rgba(0,0,0,.22)!important;
+}
+body.staff-app-mode .staff-app-shell-card h1 span{
+  display:block!important;margin-top:7px!important;color:#96e8ff!important;font-size:15px!important;font-weight:800!important;
+}
+body.staff-app-mode .staff-app-shell-card>p:not(.staff-app-shell-note){
+  max-width:340px!important;margin:11px auto!important;color:#d5e7f5!important;font-size:12px!important;line-height:1.6!important;
+}
+body.staff-app-mode .staff-app-shell-status{
+  position:relative!important;margin:19px 0 11px!important;padding:13px 13px 13px 39px!important;border-radius:15px!important;
+  background:rgba(2,14,28,.34)!important;border:1px solid rgba(255,255,255,.11)!important;color:#e8f7ff!important;
+  text-align:left!important;font-size:11px!important;font-weight:850!important;
+}
+body.staff-app-mode .staff-app-shell-status::before{
+  content:"";position:absolute;left:15px;top:50%;width:9px;height:9px;transform:translateY(-50%);border-radius:50%;
+  background:#54e39b;box-shadow:0 0 0 5px rgba(84,227,155,.10),0 0 13px rgba(84,227,155,.7);
+}
+body.staff-app-mode .staff-app-shell-open{
+  min-height:54px!important;width:100%!important;padding:14px 16px!important;border:0!important;border-radius:15px!important;
+  color:#05223c!important;background:linear-gradient(135deg,#fff,#dff7ff 56%,#f8e6af)!important;
+  font-size:13px!important;font-weight:950!important;letter-spacing:.45px!important;box-shadow:0 14px 32px rgba(0,0,0,.24)!important;
+}
+body.staff-app-mode .staff-app-shell-note{margin:12px 0 0!important;color:#9fb9cb!important;font-size:10px!important;line-height:1.45!important}
+
+/* Installed-app login only. Browser login is untouched because every selector is staff-app-mode scoped. */
+body.staff-app-mode #staffLoginPopup{
+  z-index:2147481000!important;
+  width:100vw!important;max-width:100vw!important;min-height:100dvh!important;
+  padding:max(20px,env(safe-area-inset-top)) 15px max(20px,env(safe-area-inset-bottom))!important;
+  overflow:auto!important;
+  background:radial-gradient(circle at 10% 8%,rgba(101,220,255,.18),transparent 30%),radial-gradient(circle at 92% 86%,rgba(244,199,93,.12),transparent 30%),linear-gradient(145deg,#020b15,#05223c 56%,#0a4b75)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+body.staff-app-mode #staffLoginPopup::after{display:none!important}
+body.staff-app-mode #staffLoginPopup .staff-login-box{
+  width:min(100%,420px)!important;max-width:420px!important;margin:4vh auto!important;padding:116px 20px 24px!important;
+  border-radius:28px!important;background:linear-gradient(155deg,rgba(255,255,255,.14),rgba(255,255,255,.055))!important;
+  border:1px solid rgba(255,255,255,.20)!important;box-shadow:0 30px 80px rgba(0,0,0,.38)!important;
+  backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;color:#fff!important;overflow:visible!important;
+}
+body.staff-app-mode #staffLoginPopup .staff-login-box::before{
+  content:""!important;position:absolute!important;left:50%!important;top:22px!important;width:78px!important;height:78px!important;
+  transform:translateX(-50%)!important;border-radius:21px!important;background:#fff url("staff-app-logo.png") center/contain no-repeat!important;
+  border:2px solid rgba(244,199,93,.9)!important;box-shadow:0 12px 30px rgba(0,0,0,.28),0 0 0 7px rgba(255,255,255,.05)!important;
+}
+body.staff-app-mode #staffLoginPopup .staff-login-box::after{
+  content:"SECURE STAFF ACCESS"!important;position:absolute!important;left:50%!important;top:108px!important;transform:translateX(-50%)!important;
+  width:max-content!important;color:#96e8ff!important;font-size:9px!important;font-weight:950!important;letter-spacing:1.35px!important;
+}
+body.staff-app-mode #staffLoginPopup h2{margin:6px 0 7px!important;color:#fff!important;background:none!important;-webkit-text-fill-color:initial!important;font-size:25px!important;font-weight:950!important;animation:none!important}
+body.staff-app-mode #staffLoginPopup .staff-login-subtitle{max-width:310px;margin:0 auto 20px!important;color:#c6d9e8!important;font-size:12px!important;line-height:1.55!important}
+body.staff-app-mode #staffLoginPopup .staff-login-field label{color:#dff2ff!important;font-size:11px!important;font-weight:850!important}
+body.staff-app-mode #staffLoginPopup input{min-height:52px!important;padding:13px 14px!important;border-radius:14px!important;background:rgba(2,16,31,.38)!important;border:1px solid rgba(154,207,239,.25)!important;color:#fff!important;font-size:16px!important}
+body.staff-app-mode #staffLoginPopup .staff-login-submit{min-height:53px!important;margin-top:8px!important;border-radius:15px!important;color:#05223c!important;background:linear-gradient(135deg,#fff,#dff7ff 55%,#f7e4aa)!important;font-size:13px!important;font-weight:950!important;letter-spacing:.55px!important;box-shadow:0 13px 30px rgba(0,0,0,.22)!important}
+body.staff-app-mode #staffLoginPopup .staff-login-submit::after{display:none!important}
+body.staff-app-mode #staffLoginPopup .close-btn{display:none!important}
+
+/* TRUE PHONE DASHBOARD */
+body.staff-app-mode #staffDashboardPopup{
+  width:100vw!important;max-width:100vw!important;min-height:100dvh!important;padding:0!important;overflow:auto!important;background:#eef4f8!important;
+}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-box{
+  width:100%!important;max-width:none!important;min-width:0!important;min-height:100dvh!important;max-height:none!important;
+  margin:0!important;border-radius:0!important;overflow:visible!important;background:linear-gradient(180deg,#f3f7fa,#eef4f8)!important;box-shadow:none!important;
+}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-close{display:none!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-hero{
+  position:sticky!important;top:0!important;z-index:40!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px!important;
+  padding:max(17px,env(safe-area-inset-top)) 14px 15px!important;min-height:118px!important;
+  background:radial-gradient(circle at 90% 7%,rgba(244,199,93,.24),transparent 30%),linear-gradient(135deg,#04101f 0%,#07385f 64%,#0b5e8b 100%)!important;
+  box-shadow:0 8px 26px rgba(4,28,52,.18)!important;
+}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-brand{gap:10px!important;min-width:0!important;align-items:center!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-logo{width:54px!important;height:54px!important;flex:0 0 54px!important;border-radius:16px!important;padding:3px!important;object-fit:contain!important;background:#fff!important;border:2px solid rgba(244,199,93,.88)!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-kicker{font-size:8px!important;color:#9de9ff!important;letter-spacing:1.15px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-hero h2{font-size:18px!important;line-height:1.12!important;font-weight:950!important;overflow-wrap:anywhere!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-role{font-size:9.5px!important;line-height:1.35!important;color:#d5e6f2!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-clock{min-width:76px!important;padding:8px!important;border-radius:12px!important;text-align:center!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-time{font-size:15px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-date{font-size:7px!important;line-height:1.25!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-content{width:100%!important;max-width:100%!important;min-width:0!important;padding:13px 11px calc(24px + env(safe-area-inset-bottom))!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-shell{margin:0 0 12px!important;padding:12px!important;border-radius:18px!important;background:#fff!important;border:1px solid #dce7ee!important;box-shadow:0 10px 25px rgba(18,60,105,.07)!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-heading h3{font-size:14px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-heading p{font-size:8px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-heading>span{display:none!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-action,
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.marks{
+  min-width:0!important;min-height:86px!important;padding:10px!important;border-radius:15px!important;gap:8px!important;align-items:flex-start!important;text-align:left!important;
+}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-icon{width:34px!important;height:34px!important;flex:0 0 34px!important;border-radius:10px!important;font-size:16px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-copy{min-width:0!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-copy strong{font-size:10.5px!important;line-height:1.18!important;overflow-wrap:anywhere!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-copy small{display:block!important;margin-top:3px!important;font-size:7.5px!important;line-height:1.3!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-action-arrow{position:absolute!important;right:9px!important;bottom:7px!important;font-size:12px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-bottom:12px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-stat{min-width:0!important;min-height:68px!important;padding:10px!important;border-radius:15px!important;gap:8px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-stat-icon{width:33px!important;height:33px!important;flex:0 0 33px!important;border-radius:10px!important;font-size:15px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-stat strong{font-size:17px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-stat span:last-child{font-size:8px!important;line-height:1.25!important;overflow-wrap:anywhere!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-grid{grid-template-columns:1fr!important;gap:11px!important;min-width:0!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-card{min-width:0!important;border-radius:17px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-head{padding:12px 13px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-head h3{font-size:12px!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-body{padding:11px!important}
+
+/* Every work screen fits the phone viewport. Wide data tables scroll INSIDE their own card instead of widening the whole app. */
+@media(max-width:900px){
+  body.staff-app-mode .popup,
+  body.staff-app-mode .ctp-popup{
+    width:100vw!important;max-width:100vw!important;min-width:0!important;min-height:100dvh!important;
+    padding:0!important;overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+  }
+  body.staff-app-mode .staff-leave-box,
+  body.staff-app-mode .approved-leave-box,
+  body.staff-app-mode .upcoming-plan-box,
+  body.staff-app-mode .staff-idea-box,
+  body.staff-app-mode .video-tutorial-popup-box,
+  body.staff-app-mode .ume-box,
+  body.staff-app-mode .marks-entry-box,
+  body.staff-app-mode .marks-principal-box,
+  body.staff-app-mode .internal-box,
+  body.staff-app-mode .exam-mgmt-box,
+  body.staff-app-mode .announcement-read-status-box,
+  body.staff-app-mode .ctp-shell{
+    width:100%!important;max-width:100%!important;min-width:0!important;min-height:100dvh!important;max-height:none!important;
+    margin:0!important;border-radius:0!important;overflow-x:hidden!important;overflow-y:auto!important;box-shadow:none!important;
+  }
+  body.staff-app-mode .staff-leave-box,
+  body.staff-app-mode .approved-leave-box,
+  body.staff-app-mode .upcoming-plan-box,
+  body.staff-app-mode .staff-idea-box,
+  body.staff-app-mode .ume-box,
+  body.staff-app-mode .marks-entry-box,
+  body.staff-app-mode .marks-principal-box,
+  body.staff-app-mode .internal-box,
+  body.staff-app-mode .exam-mgmt-box,
+  body.staff-app-mode .announcement-read-status-box{padding:18px 12px calc(20px + env(safe-area-inset-bottom))!important}
+  body.staff-app-mode .video-tutorial-viewer-body{padding:14px 11px!important}
+  body.staff-app-mode .ctp-head{padding:max(16px,env(safe-area-inset-top)) 13px 14px!important}
+  body.staff-app-mode .ctp-body{padding:12px!important}
+
+  body.staff-app-mode .staff-leave-grid,
+  body.staff-app-mode .upcoming-plan-form-grid,
+  body.staff-app-mode .staff-idea-form-grid,
+  body.staff-app-mode .ume-grid,
+  body.staff-app-mode .ume-component-form,
+  body.staff-app-mode .ume-picker,
+  body.staff-app-mode .marks-form-grid,
+  body.staff-app-mode .marks-component-form,
+  body.staff-app-mode .marks-project-picker,
+  body.staff-app-mode .internal-form-grid,
+  body.staff-app-mode .internal-unit-form,
+  body.staff-app-mode .exam-context,
+  body.staff-app-mode .exam-create-form,
+  body.staff-app-mode .exam-coordinator-controls,
+  body.staff-app-mode .exam-filter-row,
+  body.staff-app-mode .ctp-toolbar,
+  body.staff-app-mode .ctp-form{grid-template-columns:1fr!important}
+
+  body.staff-app-mode input,
+  body.staff-app-mode select,
+  body.staff-app-mode textarea{max-width:100%!important;min-width:0!important;font-size:16px!important}
+
+  body.staff-app-mode .marks-table-wrap,
+  body.staff-app-mode .ume-table-wrap,
+  body.staff-app-mode .internal-table-wrap,
+  body.staff-app-mode .internal-summary-wrap,
+  body.staff-app-mode .exam-table-wrap{
+    display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
+    overflow-x:auto!important;overflow-y:visible!important;-webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-inline:contain!important;touch-action:pan-x pan-y!important;
+  }
+  body.staff-app-mode .marks-table,
+  body.staff-app-mode .ume-table,
+  body.staff-app-mode .internal-table,
+  body.staff-app-mode .internal-summary-table,
+  body.staff-app-mode .exam-table{max-width:none!important;margin:0!important}
+
+  body.staff-app-mode .ume-card,
+  body.staff-app-mode .marks-create-project,
+  body.staff-app-mode .marks-component-manager,
+  body.staff-app-mode .marks-project-panel,
+  body.staff-app-mode .internal-card,
+  body.staff-app-mode .exam-card,
+  body.staff-app-mode .ctp-edit,
+  body.staff-app-mode .ctp-student{min-width:0!important;max-width:100%!important}
+
+  body.staff-app-mode .ume-summary,
+  body.staff-app-mode .marks-project-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.staff-app-mode .ume-tabs,
+  body.staff-app-mode .internal-tabs,
+  body.staff-app-mode .exam-tabs{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important}
+  body.staff-app-mode .ume-tabs button,
+  body.staff-app-mode .internal-tab,
+  body.staff-app-mode .exam-tab-btn{width:100%!important;min-width:0!important}
+  body.staff-app-mode .exam-manager-bar.show,
+  body.staff-app-mode .exam-actions,
+  body.staff-app-mode .ume-actions,
+  body.staff-app-mode .marks-actions,
+  body.staff-app-mode .internal-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;width:100%!important}
+  body.staff-app-mode .exam-manager-bar.show .exam-btn,
+  body.staff-app-mode .exam-actions .exam-btn,
+  body.staff-app-mode .ume-actions .ume-btn,
+  body.staff-app-mode .marks-actions button,
+  body.staff-app-mode .internal-actions button{width:100%!important;min-width:0!important}
+}
+
+@media(max-width:380px){
+  body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions{grid-template-columns:1fr!important}
+  body.staff-app-mode #staffDashboardPopup .staff-dashboard-action,
+  body.staff-app-mode #staffDashboardPopup .staff-dashboard-action.marks{min-height:66px!important}
+  body.staff-app-mode .ume-tabs,
+  body.staff-app-mode .internal-tabs,
+  body.staff-app-mode .exam-tabs,
+  body.staff-app-mode .exam-manager-bar.show,
+  body.staff-app-mode .exam-actions,
+  body.staff-app-mode .ume-actions,
+  body.staff-app-mode .marks-actions,
+  body.staff-app-mode .internal-actions{grid-template-columns:1fr!important}
+}
+</style>
+
+<script id="staff-pwa-mobile-v3-js">
+(function(){
+  "use strict";
+  function isStaffApp(){
+    return window.matchMedia?.('(display-mode: standalone)').matches ||
+           window.navigator.standalone===true ||
+           new URLSearchParams(location.search).get('staffapp')==='1';
+  }
+  if(!isStaffApp()) return; // Normal website stays exactly as before.
+
+  document.body?.classList.add('staff-app-mode');
+  let launchUnlocked=false;
+  let pendingOpen=null;
+  const launchStarted=Date.now();
+
+  const realOpenDashboard=typeof window.openStaffDashboard==='function' ? window.openStaffDashboard : null;
+  const realOpenLogin=typeof window.openStaffLogin==='function' ? window.openStaffLogin : null;
+
+  function signedIn(){
+    return typeof window.loggedInStaff!=='undefined' && !!window.loggedInStaff &&
+           typeof window.staffAuthSession!=='undefined' && !!window.staffAuthSession;
+  }
+  function setShellStatus(){
+    const status=document.getElementById('staffAppShellStatus');
+    const btn=document.getElementById('staffAppShellOpen');
+    if(!status||!btn) return;
+    if(signedIn()){
+      status.textContent=`✓ Ready for ${window.loggedInStaff?.name || 'Staff'}`;
+      btn.textContent='OPEN MY DASHBOARD';
+    }else{
+      status.textContent='Secure staff login is ready.';
+      btn.textContent='STAFF LOGIN';
+    }
+  }
+  function showWorkspace(){
+    document.body.classList.add('staff-app-workspace-open');
+  }
+
+  /* Guard the two old auto-start timers in the existing code. They may request
+     Dashboard/Login at 450–500ms; V3 holds them behind the new visible splash. */
+  if(realOpenDashboard){
+    window.openStaffDashboard=async function(){
+      if(!launchUnlocked){ pendingOpen='dashboard'; setShellStatus(); return; }
+      showWorkspace();
+      return await realOpenDashboard.apply(this,arguments);
+    };
+  }
+  if(realOpenLogin){
+    window.openStaffLogin=function(){
+      if(!launchUnlocked){ pendingOpen='login'; setShellStatus(); return; }
+      showWorkspace();
+      return realOpenLogin.apply(this,arguments);
+    };
+  }
+
+  window.staffAppOpenWorkspace=async function(){
+    launchUnlocked=true;
+    setShellStatus();
+    showWorkspace();
+    if(signedIn() && realOpenDashboard) return await realOpenDashboard();
+    if(realOpenLogin) return realOpenLogin();
+  };
+
+  async function finishLaunch(){
+    document.body.classList.add('staff-app-mode');
+    const shell=document.getElementById('staffAppShell');
+    if(shell) shell.setAttribute('aria-hidden','false');
+    setShellStatus();
+
+    /* Let Supabase restore the remembered session, but keep the splash visible
+       for at least 1.25s so the installed app actually looks like an app. */
+    for(let i=0;i<18;i++){
+      if(signedIn()) break;
+      await new Promise(r=>setTimeout(r,100));
+    }
+    const remain=Math.max(0,1250-(Date.now()-launchStarted));
+    if(remain) await new Promise(r=>setTimeout(r,remain));
+    setShellStatus();
+    launchUnlocked=true;
+    showWorkspace();
+
+    if(signedIn() && realOpenDashboard) await realOpenDashboard();
+    else if(realOpenLogin) realOpenLogin();
+  }
+
+  /* Make installed-app updates pick up the newest worker without changing database behavior. */
+  if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
+    window.addEventListener('load',async()=>{
+      try{
+        const reg=await navigator.serviceWorker.register('./sw.js?v=3',{scope:'./',updateViaCache:'none'});
+        await reg.update();
+        if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
+      }catch(e){ console.warn('Staff PWA V3 update check:',e); }
+    },{once:true});
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.body.classList.add('staff-app-mode');
+    document.body.classList.remove('staff-app-workspace-open');
+    setShellStatus();
+    setTimeout(finishLaunch,80);
+  },{once:true});
+})();
+</script>
 
 </body>
 
