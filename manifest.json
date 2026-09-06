@@ -1,9 +1,9 @@
 {
   "id": "/?staffapp=1",
-  "name": "St. Augustine Staff",
-  "short_name": "SA Staff",
+  "name": "St. Staff",
+  "short_name": "St. Staff",
   "description": "Secure mobile staff workspace for St. Augustine Academic Foundation.",
-  "start_url": "/?staffapp=1&appv=3",
+  "start_url": "/?staffapp=1&appv=5",
   "scope": "/",
   "display": "standalone",
   "display_override": [

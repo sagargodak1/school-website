@@ -1,4 +1,4 @@
-/* St. Augustine Staff PWA V3 — online-first, fresh UI.
+/* St. Augustine Staff PWA V5 — online-first, fresh UI.
    Supabase/API data is never cached by this worker. */
 self.addEventListener("install",()=>self.skipWaiting());
 self.addEventListener("activate",event=>event.waitUntil(self.clients.claim()));

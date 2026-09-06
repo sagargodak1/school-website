@@ -16,9 +16,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="St. Augustine Staff">
-<link rel="manifest" href="manifest.json?v=3">
-<link rel="apple-touch-icon" href="pwa-icon-192-v3.png?v=3">
+<meta name="apple-mobile-web-app-title" content="St. Staff">
+<link rel="manifest" href="manifest.json?v=5">
+<link rel="apple-touch-icon" href="pwa-icon-192-v3.png?v=4">
 
 
 <style>
@@ -21153,7 +21153,7 @@ body.dark-mode #websiteAdminPanel .website-admin-tabs,body.dark-mode .saaf-syste
     if(!popup || !steps) return;
     if(kind==='ios'){
       if(intro) intro.textContent='On iPhone/iPad, add the Staff App from Safari:';
-      steps.innerHTML='<div class="staff-pwa-guide-step">Open this website in <strong>Safari</strong>.</div><div class="staff-pwa-guide-step">Tap the <strong>Share</strong> button (⬆).</div><div class="staff-pwa-guide-step">Choose <strong>Add to Home Screen</strong>.</div><div class="staff-pwa-guide-step">Tap <strong>Add</strong>. The St. Augustine Staff icon will appear on the Home Screen.</div>';
+      steps.innerHTML='<div class="staff-pwa-guide-step">Open this website in <strong>Safari</strong>.</div><div class="staff-pwa-guide-step">Tap the <strong>Share</strong> button (⬆).</div><div class="staff-pwa-guide-step">Choose <strong>Add to Home Screen</strong>.</div><div class="staff-pwa-guide-step">Tap <strong>Add</strong>. The St. Staff icon will appear on the Home Screen.</div>';
     }else{
       if(intro) intro.textContent='If the install popup does not appear automatically:';
       steps.innerHTML='<div class="staff-pwa-guide-step">Open this website in <strong>Chrome</strong>.</div><div class="staff-pwa-guide-step">Tap the browser menu <strong>⋮</strong>.</div><div class="staff-pwa-guide-step">Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</div><div class="staff-pwa-guide-step">Confirm <strong>Install</strong>.</div>';
@@ -21197,7 +21197,7 @@ body.dark-mode #websiteAdminPanel .website-admin-tabs,body.dark-mode .saaf-syste
   window.addEventListener('appinstalled',()=>{
     deferredStaffPwaPrompt=null;
     refreshStaffPwaButton();
-    if(typeof showStaffDashboardToast==='function') showStaffDashboardToast('✓ St. Augustine Staff App installed.');
+    if(typeof showStaffDashboardToast==='function') showStaffDashboardToast('✓ St. Staff App installed.');
   });
   window.matchMedia?.('(display-mode: standalone)')?.addEventListener?.('change',refreshStaffPwaButton);
   window.addEventListener('resize',refreshStaffPwaButton);
@@ -21838,7 +21838,7 @@ body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-body{padding:11px
   if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
     window.addEventListener('load',async()=>{
       try{
-        const reg=await navigator.serviceWorker.register('./sw.js?v=3',{scope:'./',updateViaCache:'none'});
+        const reg=await navigator.serviceWorker.register('./sw.js?v=5',{scope:'./',updateViaCache:'none'});
         await reg.update();
         if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
       }catch(e){ console.warn('Staff PWA V3 update check:',e); }
@@ -21851,6 +21851,292 @@ body.staff-app-mode #staffDashboardPopup .staff-dashboard-card-body{padding:11px
     setShellStatus();
     setTimeout(finishLaunch,80);
   },{once:true});
+})();
+</script>
+
+<!-- =========================================================
+     FINAL CLASS ATTENDANCE + MARKS PACKAGE INTEGRATION
+     Class Teacher can prepare Attendance before Subject files arrive.
+========================================================= -->
+<style id="ume-attendance-package-final-style">
+.ume-attendance-card{border:1px solid #b2ccff!important;background:linear-gradient(145deg,#f8fbff,#eef6ff)!important}
+.ume-attendance-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.ume-attendance-head h3{margin:0;color:#123c69}.ume-attendance-badge{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;background:#eef4ff;color:#175cd3;font-size:10px;font-weight:950;letter-spacing:.3px}
+.ume-attendance-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:end;margin-top:12px}
+.ume-attendance-editor{margin-top:14px}.ume-attendance-summary{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:10px;align-items:end;margin-bottom:12px}
+.ume-attendance-state{padding:10px 12px;border-radius:10px;background:#f2f4f7;color:#475467;font-size:11px;font-weight:850}
+.ume-attendance-state.ready{background:#ecfdf3;color:#067647}.ume-attendance-state.locked{background:#eef4ff;color:#175cd3}.ume-attendance-state.warn{background:#fff4e5;color:#934b00}
+.ume-attendance-table-wrap{overflow:auto;border:1px solid #d0d5dd;border-radius:12px;background:#fff}.ume-attendance-table{width:100%;min-width:620px;border-collapse:collapse}.ume-attendance-table th,.ume-attendance-table td{padding:9px 10px;border-bottom:1px solid #e4e7ec;text-align:left;font-size:11px}.ume-attendance-table th{background:#123c69;color:#fff;font-weight:950}.ume-attendance-table tr:last-child td{border-bottom:0}.ume-attendance-table input{width:110px;min-height:36px;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}.ume-attendance-table input:focus{outline:none;border-color:#175cd3;box-shadow:0 0 0 3px rgba(23,92,211,.10)}
+.ume-attendance-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.ume-attendance-message{display:none;margin-top:10px;padding:10px 12px;border-radius:9px;font-size:11px;font-weight:850}.ume-attendance-message.show{display:block}.ume-attendance-message.success{background:#ecfdf3;color:#067647}.ume-attendance-message.error{background:#fff1f0;color:#b42318}
+.ume-attendance-readonly{margin-top:14px}.ume-attendance-readonly h4{margin:0 0 10px;color:#123c69}.ume-attendance-package-status{margin-top:5px!important;font-weight:900!important}.ume-attendance-package-status.ready{color:#067647!important}.ume-attendance-package-status.missing{color:#b42318!important}.ume-attendance-package-status.draft{color:#934b00!important}
+body.dark-mode .ume-attendance-card{background:#1d2935!important;border-color:#405467!important}body.dark-mode .ume-attendance-head h3,body.dark-mode .ume-attendance-readonly h4{color:#8ecbff}body.dark-mode .ume-attendance-table-wrap{background:#1d2935;border-color:#405467}body.dark-mode .ume-attendance-table td{border-color:#405467;color:#eef2f6}body.dark-mode .ume-attendance-table input{background:#15212c;color:#fff;border-color:#526579}
+@media(max-width:900px){.ume-attendance-controls{grid-template-columns:1fr 1fr}.ume-attendance-summary{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.ume-attendance-controls,.ume-attendance-summary{grid-template-columns:1fr}.ume-attendance-actions .ume-btn{flex:1}.ume-attendance-table input{width:92px}}
+</style>
+<script id="ume-attendance-package-final-js">
+(function(){
+  let umeAttendanceBundle=null;
+  let umeAttendanceContext={className:"",term:"",session:""};
+
+  function attendanceDb(role="classTeacher"){return role==="admin"?umeAdminDb():umeStaffDb();}
+  function attendanceMessage(text,type="error"){
+    const box=document.getElementById("umeAttendanceMessage");if(!box)return;
+    box.textContent=text||"";box.className=`ume-attendance-message ${text?"show":""} ${type}`;
+  }
+  function currentSchoolYear(){return String(window.SAAF_CURRENT_ACADEMIC_YEAR||umeFinalFilters?.classTeacherYear||"").trim();}
+  function attendanceClassChoices(){return [...new Set((umeMyClassAssignments||[]).map(r=>r.class_name).filter(Boolean))];}
+
+  function ensureAttendanceCard(){
+    const panel=document.getElementById("umeClassTeacherPanel");if(!panel||document.getElementById("umeAttendancePrepCard"))return;
+    const card=document.createElement("div");card.id="umeAttendancePrepCard";card.className="ume-card ume-attendance-card";card.innerHTML=`
+      <div class="ume-attendance-head">
+        <div><h3>Student Attendance Preparation</h3><p class="ume-subtitle">Prepare Attendance anytime. You do not need to wait for Subject Teachers to submit Marks.</p></div>
+        <span class="ume-attendance-badge">CLASS TEACHER ONLY</span>
+      </div>
+      <div class="ume-attendance-controls">
+        <label class="ume-field">Academic Year / Session<input id="umeAttendanceSession" maxlength="40" placeholder="Example: 2083"></label>
+        <label class="ume-field">Assigned Class<select id="umeAttendanceClass"><option value="">— Select Class —</option></select></label>
+        <label class="ume-field">Term / Examination<input id="umeAttendanceTerm" list="umeAttendanceTermSuggestions" maxlength="100" placeholder="Example: Second Term"><datalist id="umeAttendanceTermSuggestions"></datalist></label>
+        <button type="button" class="ume-btn ume-primary" onclick="umeAttendanceLoadEditor()">LOAD / PREPARE</button>
+      </div>
+      <div id="umeAttendanceEditor" class="ume-attendance-editor"><div class="ume-filter-prompt">Choose Academic Year, Assigned Class and Term / Examination to prepare Attendance.</div></div>
+      <div id="umeAttendanceMessage" class="ume-attendance-message"></div>`;
+    panel.insertBefore(card,panel.firstElementChild);
+    populateAttendanceChoices();
+  }
+
+  function populateAttendanceChoices(){
+    ensureAttendanceCard();
+    const select=document.getElementById("umeAttendanceClass"),session=document.getElementById("umeAttendanceSession");if(!select)return;
+    const classes=attendanceClassChoices(),current=select.value;
+    select.innerHTML='<option value="">— Select Class —</option>'+classes.map(c=>`<option value="${umeEscape(c)}">${umeEscape(c)}</option>`).join("");
+    if(classes.includes(current))select.value=current;else if(classes.length===1)select.value=classes[0];
+    if(session&&!session.value)session.value=currentSchoolYear();
+    refreshAttendanceTermSuggestions();
+  }
+
+  function refreshAttendanceTermSuggestions(){
+    const list=document.getElementById("umeAttendanceTermSuggestions");if(!list)return;
+    const cls=document.getElementById("umeAttendanceClass")?.value||"",session=document.getElementById("umeAttendanceSession")?.value||"";
+    const terms=[...new Set((umeClassTeacherRows||[]).filter(r=>(!cls||r.class_name===cls)&&(!session||String(r.academic_session||"").trim()===String(session).trim())).map(r=>String(r.term_name||"").trim()).filter(Boolean))];
+    list.innerHTML=terms.map(t=>`<option value="${umeEscape(t)}"></option>`).join("");
+  }
+
+  async function fetchAttendance(role,group){
+    return await umeRpc(attendanceDb(role),"ume_get_attendance_bundle",{
+      p_class_name:group.className,
+      p_term_name:group.term,
+      p_academic_session:group.session
+    });
+  }
+
+  function attendanceEntryMap(bundle){return new Map((bundle?.entries||[]).map(e=>[String(e.student_id),e]));}
+  function attendanceIsLocked(bundle){return bundle?.header?.status==="submitted";}
+
+  function renderAttendanceEditor(bundle){
+    const host=document.getElementById("umeAttendanceEditor");if(!host)return;
+    const students=bundle?.students||[],entries=attendanceEntryMap(bundle),header=bundle?.header||null,locked=attendanceIsLocked(bundle);
+    const opening=header?.total_opening_days??"";
+    const stateClass=locked?"locked":bundle?.is_complete?"ready":header?"warn":"";
+    const stateText=locked?"Submitted with the Class package — Attendance is locked.":bundle?.is_complete?"Attendance is saved and ready to go with the Class package.":header?"Saved Attendance needs review before package submission.":"New Attendance sheet — enter all Present Days and save.";
+    host.innerHTML=`
+      <div class="ume-attendance-summary">
+        <label class="ume-field">Total School Opening Days<input id="umeAttendanceOpeningDays" type="number" min="1" max="366" step="1" inputmode="numeric" value="${umeEscape(opening)}" ${locked?"disabled":""} oninput="umeAttendanceOpeningChanged()"></label>
+        <div class="ume-attendance-state ${stateClass}">${umeEscape(stateText)}</div>
+      </div>
+      <div class="ume-attendance-table-wrap"><table class="ume-attendance-table"><thead><tr><th>S.N.</th><th>Student ID</th><th>Student Name</th><th>Present Days</th></tr></thead><tbody>
+      ${students.map((s,i)=>{const e=entries.get(String(s.student_id));return `<tr><td>${i+1}</td><td>${umeEscape(s.student_id)}</td><td><strong>${umeEscape(s.student_name||s.name||"")}</strong></td><td><input class="ume-attendance-present" data-student-id="${umeEscape(s.student_id)}" data-student-name="${umeEscape(s.student_name||s.name||"")}" type="number" min="0" max="${umeEscape(opening||366)}" step="1" inputmode="numeric" value="${e?.present_days??""}" ${locked?"disabled":""} oninput="umeAttendanceLimitPresent(this)"></td></tr>`;}).join("")||'<tr><td colspan="4">No students found in this Class.</td></tr>'}
+      </tbody></table></div>
+      <div class="ume-attendance-actions">
+        <button type="button" class="ume-btn ume-success" onclick="umeAttendanceSave()" ${locked||!students.length?"disabled":""}>SAVE ATTENDANCE</button>
+        ${header&&!locked?'<button type="button" class="ume-btn ume-danger" onclick="umeAttendanceDeleteDraft()">DELETE ATTENDANCE</button>':""}
+        <button type="button" class="ume-btn ume-secondary" onclick="umeAttendanceLoadEditor()">↻ REFRESH</button>
+      </div>`;
+  }
+
+  window.umeAttendanceOpeningChanged=function(){
+    const opening=Number(document.getElementById("umeAttendanceOpeningDays")?.value||0);
+    document.querySelectorAll(".ume-attendance-present").forEach(input=>{
+      input.max=opening>0?String(opening):"366";
+      if(opening>0&&input.value!==""&&Number(input.value)>opening)input.value=String(opening);
+    });
+  };
+  window.umeAttendanceLimitPresent=function(input){
+    const opening=Number(document.getElementById("umeAttendanceOpeningDays")?.value||0);if(input.value==="")return;
+    let n=Number(input.value);if(!Number.isFinite(n))return;
+    n=Math.trunc(n);if(n<0)n=0;if(opening>0&&n>opening)n=opening;input.value=String(n);
+  };
+
+  window.umeAttendanceLoadEditor=async function(){
+    ensureAttendanceCard();attendanceMessage("");
+    const className=document.getElementById("umeAttendanceClass")?.value||"";
+    const term=document.getElementById("umeAttendanceTerm")?.value.trim()||"";
+    const session=document.getElementById("umeAttendanceSession")?.value.trim()||"";
+    if(!className||!term||!session){attendanceMessage("Choose Academic Year, Assigned Class and Term / Examination first.");return;}
+    const host=document.getElementById("umeAttendanceEditor");host.innerHTML='<div class="ume-empty">Loading Attendance...</div>';
+    try{
+      umeAttendanceContext={className,term,session};
+      umeAttendanceBundle=await fetchAttendance("classTeacher",umeAttendanceContext);
+      renderAttendanceEditor(umeAttendanceBundle);
+    }catch(error){host.innerHTML='<div class="ume-filter-prompt">Attendance could not be loaded.</div>';attendanceMessage(error.message||"Unknown error");}
+  };
+
+  window.umeAttendanceSave=async function(){
+    attendanceMessage("");
+    const className=umeAttendanceContext.className||document.getElementById("umeAttendanceClass")?.value||"";
+    const term=umeAttendanceContext.term||document.getElementById("umeAttendanceTerm")?.value.trim()||"";
+    const session=umeAttendanceContext.session||document.getElementById("umeAttendanceSession")?.value.trim()||"";
+    const opening=Number(document.getElementById("umeAttendanceOpeningDays")?.value||0);
+    if(!Number.isInteger(opening)||opening<1||opening>366){attendanceMessage("Total School Opening Days must be a whole number between 1 and 366.");return;}
+    const inputs=[...document.querySelectorAll(".ume-attendance-present")];if(!inputs.length){attendanceMessage("No students were found for Attendance.");return;}
+    const entries=[];
+    for(const input of inputs){
+      if(input.value===""){attendanceMessage(`Enter Present Days for ${input.dataset.studentName||input.dataset.studentId}.`);input.focus();return;}
+      const present=Number(input.value);if(!Number.isInteger(present)||present<0||present>opening){attendanceMessage(`Present Days must be a whole number from 0 to ${opening}.`);input.focus();return;}
+      entries.push({student_id:input.dataset.studentId,present_days:present});
+    }
+    const button=document.querySelector("#umeAttendanceEditor .ume-btn.ume-success"),old=button?.textContent||"SAVE ATTENDANCE";if(button){button.disabled=true;button.textContent="SAVING...";}
+    try{
+      await umeRpc(umeStaffDb(),"ume_save_attendance",{p_class_name:className,p_term_name:term,p_academic_session:session,p_total_opening_days:opening,p_entries:entries});
+      umeAttendanceBundle=await fetchAttendance("classTeacher",{className,term,session});renderAttendanceEditor(umeAttendanceBundle);attendanceMessage("Attendance saved successfully. It is ready to go with the Class package.","success");
+      const host=document.getElementById("umeClassTeacherGroups");if(host)umeRenderGroupCards("classTeacher",umeRoleGroups("classTeacher"),host);
+    }catch(error){attendanceMessage("Attendance could not be saved: "+(error.message||"Unknown error"));}
+    finally{if(button&&document.body.contains(button)){button.disabled=false;button.textContent=old;}}
+  };
+
+  window.umeAttendanceDeleteDraft=async function(){
+    attendanceMessage("");
+    const className=umeAttendanceContext.className||document.getElementById("umeAttendanceClass")?.value||"";
+    const term=umeAttendanceContext.term||document.getElementById("umeAttendanceTerm")?.value.trim()||"";
+    const session=umeAttendanceContext.session||document.getElementById("umeAttendanceSession")?.value.trim()||"";
+    if(!className||!term||!session)return;
+    if(!confirm(`DELETE saved Attendance for ${className} — ${term}?\n\nThis is allowed only before the Class package is submitted. Marks files will not be deleted.`))return;
+    try{
+      await umeRpc(umeStaffDb(),"ume_delete_attendance_draft",{p_class_name:className,p_term_name:term,p_academic_session:session});
+      umeAttendanceBundle=await fetchAttendance("classTeacher",{className,term,session});
+      renderAttendanceEditor(umeAttendanceBundle);
+      attendanceMessage("Attendance deleted. You can prepare a new Attendance sheet anytime before package submission.","success");
+      const host=document.getElementById("umeClassTeacherGroups");if(host)umeRenderGroupCards("classTeacher",umeRoleGroups("classTeacher"),host);
+    }catch(error){attendanceMessage("Attendance could not be deleted: "+(error.message||"Unknown error"));}
+  };
+
+  window.umeAttendanceOpenForGroup=async function(index){
+    const group=umeRoleGroups("classTeacher")[index];if(!group)return;ensureAttendanceCard();
+    document.getElementById("umeAttendanceSession").value=group.session;
+    document.getElementById("umeAttendanceClass").value=group.className;
+    document.getElementById("umeAttendanceTerm").value=group.term;
+    refreshAttendanceTermSuggestions();
+    await window.umeAttendanceLoadEditor();
+    document.getElementById("umeAttendancePrepCard")?.scrollIntoView({behavior:"smooth",block:"start"});
+  };
+
+  function attendanceReadonlyHtml(bundle,group){
+    const h=bundle?.header;if(!h)return "";
+    const rows=(bundle.entries||[]).map((e,i)=>`<tr><td>${i+1}</td><td>${umeEscape(e.student_id)}</td><td><strong>${umeEscape(e.student_name)}</strong></td><td>${umeEscape(e.present_days)}</td></tr>`).join("");
+    return `<div class="ume-card ume-attendance-readonly"><div class="ume-group-head"><div><h4>Attendance</h4><div class="ume-meta">${umeEscape(group.className)} • ${umeEscape(group.term)} • Academic Session ${umeEscape(group.session)}</div></div><div class="ume-attendance-state ${h.status==="submitted"?"locked":"ready"}">Total School Opening Days: <strong>${umeEscape(h.total_opening_days)}</strong></div></div><div class="ume-attendance-table-wrap"><table class="ume-attendance-table"><thead><tr><th>S.N.</th><th>Student ID</th><th>Student Name</th><th>Present Days</th></tr></thead><tbody>${rows||'<tr><td colspan="4">No Attendance rows found.</td></tr>'}</tbody></table></div></div>`;
+  }
+
+  async function decoratePackageAttendance(role,groups,host){
+    if(!host||!groups?.length)return;const cards=[...host.children].filter(el=>el.classList?.contains("ume-group"));if(!cards.length)return;
+    const token=String(Date.now())+Math.random();host.dataset.attendanceToken=token;
+    await Promise.all(groups.map(async(group,index)=>{
+      const card=cards[index];if(!card)return;
+      try{
+        const bundle=await fetchAttendance(role,group);if(host.dataset.attendanceToken!==token)return;
+        const old=card.querySelector(".ume-attendance-package-status");old?.remove();
+        const target=card.querySelector(".ume-group-head > div:first-child")||card.querySelector(".ume-group-head");
+        let text="Attendance: NOT SAVED",cls="missing";
+        if(bundle?.header){if(bundle.header.status==="submitted"){text="Attendance: INCLUDED IN PACKAGE";cls="ready";}else if(bundle.is_complete){text="Attendance: READY";cls="ready";}else{text="Attendance: NEEDS REVIEW";cls="draft";}}
+        if(bundle?.header||role==="classTeacher")target?.insertAdjacentHTML("beforeend",`<div class="ume-meta ume-attendance-package-status ${cls}">${umeEscape(text)}</div>`);
+        if(role==="classTeacher"){
+          const actions=card.querySelector(".ume-group-actions");if(actions&&!actions.querySelector(".ume-attendance-open-btn"))actions.insertAdjacentHTML("beforeend",`<button type="button" class="ume-btn ume-secondary ume-attendance-open-btn" onclick="umeAttendanceOpenForGroup(${index})">ATTENDANCE</button>`);
+        }
+        if(role==="admin"&&bundle?.header){
+          const actions=card.querySelector(".ume-group-actions");if(actions&&!actions.querySelector(".ume-attendance-admin-delete-btn"))actions.insertAdjacentHTML("beforeend",`<button type="button" class="ume-btn ume-danger ume-attendance-admin-delete-btn" onclick="umeAdminDeleteAttendance(${index})">DELETE ATTENDANCE</button>`);
+        }
+      }catch(_error){}
+    }));
+  }
+
+  window.umeAdminDeleteAttendance=async function(index){
+    const group=umeRoleGroups("admin")[index];if(!group)return;
+    if(!confirm(`DELETE Attendance only for ${group.className} — ${group.term} — ${group.session}?\n\nThe submitted Marks package will remain. This removes Total School Opening Days and all Present Days from this package.`))return;
+    try{
+      await umeRpc(umeAdminDb(),"ume_admin_delete_attendance",{p_class_name:group.className,p_term_name:group.term,p_academic_session:group.session});
+      umeSelectedGroups.admin=null;
+      await renderAdminMarks();
+      alert("Attendance deleted successfully. The Marks package is unchanged.");
+    }catch(error){alert("Attendance could not be deleted: "+(error.message||"Unknown error"));}
+  };
+
+  const previousRenderGroupCards=umeRenderGroupCards;
+  umeRenderGroupCards=function(role,groups,host){const result=previousRenderGroupCards(role,groups,host);setTimeout(()=>decoratePackageAttendance(role,groups,host),0);return result;};
+
+  const previousLoadClassTeacherInbox=umeLoadClassTeacherInbox;
+  umeLoadClassTeacherInbox=async function(){ensureAttendanceCard();populateAttendanceChoices();const result=await previousLoadClassTeacherInbox();populateAttendanceChoices();refreshAttendanceTermSuggestions();return result;};
+
+  const previousClassTeacherFilterChanged=umeClassTeacherFilterChangedFinal;
+  umeClassTeacherFilterChangedFinal=function(){previousClassTeacherFilterChanged();const year=document.getElementById("umeClassTeacherYearSelect")?.value||"",cls=document.getElementById("umeClassTeacherClassSelect")?.value||"";if(year)document.getElementById("umeAttendanceSession").value=year;if(cls)document.getElementById("umeAttendanceClass").value=cls;refreshAttendanceTermSuggestions();};
+
+  const previousSubmitPackage=umeSubmitPackage;
+  umeSubmitPackage=async function(index){
+    const group=umeRoleGroups("classTeacher")[index];if(!group)return;
+    try{
+      const attendance=await fetchAttendance("classTeacher",group);
+      if(!attendance?.header||!attendance.is_complete){
+        document.getElementById("umeAttendanceSession").value=group.session;document.getElementById("umeAttendanceClass").value=group.className;document.getElementById("umeAttendanceTerm").value=group.term;
+        await window.umeAttendanceLoadEditor();document.getElementById("umeAttendancePrepCard")?.scrollIntoView({behavior:"smooth",block:"start"});
+        alert("Complete and SAVE Student Attendance before submitting this Class package.");return;
+      }
+    }catch(error){alert("Attendance check failed: "+(error.message||"Unknown error"));return;}
+    return await previousSubmitPackage(index);
+  };
+
+  umeViewCombined=async function(role,index){
+    const host=umeGroupDetailHost(role);host.innerHTML='<div class="ume-card"><div class="ume-empty">Loading combined Class package...</div></div>';
+    try{
+      const selected=await umeLoadGroupBundles(role,index);
+      const attendance=await fetchAttendance(role,selected.group);
+      host.innerHTML=umeCombinedTableHtml(selected.group,selected.bundles)+attendanceReadonlyHtml(attendance,selected.group);
+      host.scrollIntoView({behavior:"smooth",block:"start"});
+    }catch(error){host.innerHTML=`<div class="ume-card"><div class="ume-empty">Could not load combined package: ${umeEscape(error.message||"Unknown error")}</div></div>`;}
+  };
+
+  function writeWorkbookWithAttendance(group,bundles,attendance){
+    if(!window.XLSX)throw new Error("Excel export library is still loading. Try again in a moment.");
+    const {state,rows}=umeExcelState(group,bundles);if(!state.bundles.length)throw new Error("No Subject is available for Export.");
+    const book=XLSX.utils.book_new(),sheet=XLSX.utils.aoa_to_sheet(rows);
+    const lastCol=Math.max(2,2+state.bundles.reduce((sum,b)=>sum+b.components.length,0));
+    const merges=[{s:{r:0,c:0},e:{r:0,c:lastCol}},{s:{r:1,c:0},e:{r:1,c:lastCol}},{s:{r:4,c:0},e:{r:5,c:0}},{s:{r:4,c:1},e:{r:5,c:1}},{s:{r:4,c:2},e:{r:5,c:2}}];
+    let col=3;for(const b of state.bundles){const start=col,end=col+b.components.length-1;if(end>=start)merges.push({s:{r:4,c:start},e:{r:4,c:end}});col+=b.components.length;}
+    sheet["!merges"]=merges;sheet["!cols"]=[{wch:8},{wch:16},{wch:28},...Array.from({length:Math.max(0,lastCol-2)},()=>({wch:19}))];
+    XLSX.utils.book_append_sheet(book,sheet,"Combined Marks");
+
+    const h=attendance?.header;
+    if(h){
+      const attendanceRows=[
+        ["ST. AUGUSTINE ACADEMIC FOUNDATION"],
+        ["ATTENDANCE"],
+        ["Class",group.className,"Term / Examination",group.term,"Academic Session",group.session],
+        ["Total School Opening Days",h.total_opening_days],
+        [],
+        ["S.N.","Student ID","Student Name","Present Days"]
+      ];
+      (attendance?.entries||[]).forEach((e,i)=>attendanceRows.push([i+1,e.student_id,e.student_name,e.present_days]));
+      const attendanceSheet=XLSX.utils.aoa_to_sheet(attendanceRows);
+      attendanceSheet["!merges"]=[{s:{r:0,c:0},e:{r:0,c:3}},{s:{r:1,c:0},e:{r:1,c:3}}];
+      attendanceSheet["!cols"]=[{wch:8},{wch:16},{wch:30},{wch:18}];
+      XLSX.utils.book_append_sheet(book,attendanceSheet,"Attendance");
+    }
+    XLSX.writeFile(book,`${umeSafeFile(group.className)}_${umeSafeFile(group.term)}_${umeSafeFile(group.session)}_Combined_With_Attendance.xlsx`,{compression:true});
+  }
+
+  umeExportCombined=async function(role,index){
+    try{const selected=await umeLoadGroupBundles(role,index);const attendance=await fetchAttendance(role,selected.group);writeWorkbookWithAttendance(selected.group,selected.bundles,attendance);}
+    catch(error){alert("Excel could not be exported: "+(error.message||"Unknown error"));}
+  };
+
+  document.addEventListener("DOMContentLoaded",()=>{ensureAttendanceCard();populateAttendanceChoices();},{once:true});
 })();
 </script>
 
