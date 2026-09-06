@@ -21232,7 +21232,7 @@ body.dark-mode #websiteAdminPanel .website-admin-tabs,body.dark-mode .saaf-syste
   async function openStaffAppStart(){
     const launchedForStaff=new URLSearchParams(location.search).get('staffapp')==='1' || pwaIsStandalone();
     if(!launchedForStaff) return;
-    for(let i=0;i<16;i++){
+    for(let i=0;i<40;i++){
       if(typeof loggedInStaff!=='undefined' && loggedInStaff && typeof staffAuthSession!=='undefined' && staffAuthSession) break;
       await new Promise(resolve=>setTimeout(resolve,150));
     }
@@ -21251,6 +21251,195 @@ body.dark-mode #websiteAdminPanel .website-admin-tabs,body.dark-mode .saaf-syste
   });
 })();
 </script>
+
+
+<!-- =========================================================
+     STAFF APP MODE V2 — STAFF-ONLY INSTALLED EXPERIENCE
+     Browser website stays public/unchanged.
+     Installed PWA opens only Staff Login/Dashboard/work tools.
+     Supabase persists the staff session; password is never stored.
+========================================================= -->
+<style id="staff-app-mode-v2-css">
+#staffAppShell{display:none}
+body.staff-app-mode{
+    min-height:100vh!important;
+    background:#071b31!important;
+    overflow:hidden;
+}
+body.staff-app-mode #staffAppShell{
+    position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;
+    padding:22px;background:
+      radial-gradient(circle at 15% 12%,rgba(38,139,210,.22),transparent 34%),
+      radial-gradient(circle at 88% 86%,rgba(8,122,85,.18),transparent 34%),
+      linear-gradient(145deg,#06182c,#0c3154 58%,#102d46);
+    color:#fff;text-align:center;
+}
+.staff-app-shell-card{
+    width:min(430px,100%);padding:30px 24px 24px;border-radius:28px;
+    background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 30px 90px rgba(0,0,0,.34);backdrop-filter:blur(16px);
+}
+.staff-app-shell-logo{
+    width:88px;height:88px;border-radius:24px;object-fit:cover;background:#fff;padding:5px;
+    box-shadow:0 12px 35px rgba(0,0,0,.28);margin-bottom:16px;
+}
+.staff-app-shell-badge{
+    display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;
+    background:rgba(255,255,255,.13);font-size:11px;font-weight:900;letter-spacing:.08em;
+}
+.staff-app-shell-card h1{margin:14px 0 5px;font-size:25px;line-height:1.2;color:#fff}
+.staff-app-shell-card h1 span{display:block;color:#9ed8ff;font-size:16px;margin-top:5px}
+.staff-app-shell-card p{margin:10px auto;color:#d6e7f5;font-size:13px;line-height:1.6;max-width:330px}
+.staff-app-shell-status{
+    margin:18px 0 12px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.1);
+    font-size:12px;font-weight:800;color:#e8f4ff;
+}
+.staff-app-shell-open{
+    width:100%;border:0;border-radius:14px;padding:14px 16px;cursor:pointer;
+    background:#fff;color:#123c69;font-size:14px;font-weight:950;box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+.staff-app-shell-note{margin-top:13px!important;font-size:11px!important;color:#aec7da!important}
+body.staff-app-mode #staffDashboardPopup .staff-dashboard-close{display:none!important}
+body.staff-app-mode #staffLoginPopup .close-btn{display:none!important}
+body.staff-app-mode #staffDashboardWelcomePopup{display:none!important}
+@media(max-width:520px){
+  .staff-app-shell-card{padding:26px 18px 20px;border-radius:22px}
+  .staff-app-shell-logo{width:78px;height:78px;border-radius:21px}
+  .staff-app-shell-card h1{font-size:22px}
+}
+</style>
+
+<div id="staffAppShell" aria-hidden="true">
+  <div class="staff-app-shell-card">
+    <img src="logo.jpeg" class="staff-app-shell-logo" alt="St. Augustine logo">
+    <div class="staff-app-shell-badge">🔒 SECURE STAFF APP</div>
+    <h1>St. Augustine <span>Digital Staff Workspace</span></h1>
+    <p>Staff, Teacher and Principal access only. Public website pages are not shown inside this installed app.</p>
+    <div id="staffAppShellStatus" class="staff-app-shell-status">Checking your saved staff session...</div>
+    <button id="staffAppShellOpen" class="staff-app-shell-open" type="button" onclick="staffAppOpenWorkspace()">OPEN STAFF WORKSPACE</button>
+    <p class="staff-app-shell-note">This device stays signed in until you choose Log Out.</p>
+  </div>
+</div>
+
+<script id="staff-app-mode-v2-js">
+(function(){
+  function staffAppMode(){
+    return window.matchMedia?.('(display-mode: standalone)').matches ||
+           window.navigator.standalone===true ||
+           new URLSearchParams(location.search).get('staffapp')==='1';
+  }
+  window.isStaffInstalledApp=staffAppMode;
+
+  function staffAppSignedIn(){
+    return typeof loggedInStaff!=='undefined' && !!loggedInStaff &&
+           typeof staffAuthSession!=='undefined' && !!staffAuthSession;
+  }
+
+  function syncStaffAppShell(){
+    if(!staffAppMode()) return;
+    const status=document.getElementById('staffAppShellStatus');
+    const button=document.getElementById('staffAppShellOpen');
+    if(staffAppSignedIn()){
+      if(status) status.textContent=`✓ Signed in as ${loggedInStaff.name}`;
+      if(button) button.textContent='OPEN MY DASHBOARD';
+    }else{
+      if(status) status.textContent='Staff login required on this device.';
+      if(button) button.textContent='STAFF LOGIN';
+    }
+  }
+
+  window.staffAppOpenWorkspace=async function(){
+    if(!staffAppMode()) return;
+    syncStaffAppShell();
+    if(staffAppSignedIn()){
+      if(typeof openStaffDashboard==='function') await openStaffDashboard();
+    }else if(typeof openStaffLogin==='function'){
+      openStaffLogin();
+    }
+  };
+
+  /* In the installed app, skip the decorative welcome screen and go directly
+     to the working dashboard after login/session restore. Browser behavior is unchanged. */
+  const originalWelcome=window.showStaffDashboardWelcome;
+  if(typeof originalWelcome==='function'){
+    window.showStaffDashboardWelcome=function(){
+      if(staffAppMode()){
+        if(staffAppSignedIn()) return window.openStaffDashboard?.();
+        return window.openStaffLogin?.();
+      }
+      return originalWelcome.apply(this,arguments);
+    };
+  }
+
+  /* Keep the dashboard underneath work panels in app mode. Existing feature
+     functions call closeStaffDashboard() before opening their popup; here that
+     becomes a no-op only inside the installed app, so closing a work panel
+     naturally returns to the dashboard instead of the public website. */
+  const originalCloseDashboard=window.closeStaffDashboard;
+  if(typeof originalCloseDashboard==='function'){
+    window.closeStaffDashboard=function(){
+      if(staffAppMode() && staffAppSignedIn()) return;
+      return originalCloseDashboard.apply(this,arguments);
+    };
+  }
+
+  /* Explicit Log Out is the only action that clears the remembered Supabase session. */
+  const originalStaffLogout=window.staffLogout;
+  if(typeof originalStaffLogout==='function'){
+    window.staffLogout=async function(){
+      const result=await originalStaffLogout.apply(this,arguments);
+      if(staffAppMode()){
+        const dashboard=document.getElementById('staffDashboardPopup');
+        const welcome=document.getElementById('staffDashboardWelcomePopup');
+        if(dashboard) dashboard.style.display='none';
+        if(welcome) welcome.style.display='none';
+        document.body.style.overflow='auto';
+        syncStaffAppShell();
+        setTimeout(()=>window.openStaffLogin?.(),120);
+      }
+      return result;
+    };
+  }
+
+  /* Keep shell status synced whenever auth UI changes. */
+  const originalUpdateLoginUI=window.updateStaffLoginUI;
+  if(typeof originalUpdateLoginUI==='function'){
+    window.updateStaffLoginUI=function(){
+      const result=originalUpdateLoginUI.apply(this,arguments);
+      syncStaffAppShell();
+      return result;
+    };
+  }
+
+  async function bootStaffInstalledApp(){
+    if(!staffAppMode()) return;
+    document.body.classList.add('staff-app-mode');
+    document.getElementById('staffAppShell')?.setAttribute('aria-hidden','false');
+    syncStaffAppShell();
+
+    /* restoreStaffSession already uses Supabase persistSession:true.
+       Give it time to restore/refresh the session without ever storing password. */
+    for(let i=0;i<50;i++){
+      if(staffAppSignedIn()) break;
+      await new Promise(resolve=>setTimeout(resolve,120));
+    }
+    syncStaffAppShell();
+    if(staffAppSignedIn()){
+      await window.openStaffDashboard?.();
+    }else{
+      window.openStaffLogin?.();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    if(!staffAppMode()) return;
+    document.body.classList.add('staff-app-mode');
+    syncStaffAppShell();
+    setTimeout(bootStaffInstalledApp,500);
+  });
+})();
+</script>
+
 
 </body>
 
