@@ -4517,8 +4517,8 @@ async function loadPrincipalLeaveRequests(){
                     ${escapeHtml(formatLeaveValue(row.remarks))}
                 </div>` : ""}
 
-                ${pending ? `
                 <div class="principal-leave-actions">
+                    ${pending ? `
                     <button type="button" class="principal-approve-btn"
                             onclick="principalSetLeaveStatus(${Number(row.id)},'approved',this)">
                         ✓ APPROVE
@@ -4526,10 +4526,54 @@ async function loadPrincipalLeaveRequests(){
                     <button type="button" class="principal-reject-btn"
                             onclick="principalSetLeaveStatus(${Number(row.id)},'rejected',this)">
                         ✕ REJECT
+                    </button>` : ""}
+                    <button type="button" class="principal-reject-btn"
+                            onclick="principalDeleteLeaveApplication(${Number(row.id)},this)">
+                        🗑 DELETE
                     </button>
-                </div>` : ""}
+                </div>
             </div>`;
     }).join("");
+}
+
+async function principalDeleteLeaveApplication(id,button){
+    if(!loggedInStaff || loggedInStaff.username!==PRINCIPAL_STAFF_ID || !staffAuthSession?.user?.id){
+        alert("Principal login is required.");
+        return;
+    }
+    if(!confirm("Delete this leave application permanently?")) return;
+
+    const card=button?.closest(".principal-leave-card");
+    const buttons=card?.querySelectorAll("button")||[];
+    buttons.forEach(btn=>btn.disabled=true);
+    const oldText=button?.textContent||"DELETE";
+    if(button) button.textContent="Deleting...";
+
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {data,error}=await db
+            .from("leave_applications")
+            .delete()
+            .eq("id",Number(id))
+            .select("id");
+
+        if(error) throw error;
+        if(!data?.length) throw new Error("This Principal account does not currently have Supabase DELETE permission for leave applications.");
+
+        await Promise.all([
+            loadPrincipalLeaveRequests(),
+            loadApprovedStaffLeaves(),
+            loadStaffDashboardLeaves()
+        ]);
+        alert("Leave application deleted successfully.");
+    }catch(error){
+        console.error("Principal leave delete error:",error);
+        alert("Could not delete leave application: "+(error?.message||"Unknown error"));
+        buttons.forEach(btn=>btn.disabled=false);
+        if(button) button.textContent=oldText;
+    }
 }
 
 async function principalSetLeaveStatus(id,status,button){
@@ -4797,7 +4841,7 @@ async function loadUpcomingPlans(){
 
     const {data,error}=await db
         .from("upcoming_plans")
-        .select("plan_date_bs,information_date_bs,plan_name,incharge_name,remarks,created_at")
+        .select("id,plan_date_bs,information_date_bs,plan_name,incharge_name,remarks,created_at")
         .order("plan_date_bs",{ascending:true})
         .order("created_at",{ascending:false});
 
@@ -4819,9 +4863,49 @@ async function loadUpcomingPlans(){
             <span class="upcoming-plan-information-date">${escapeHtml(formatLeaveValue(row.information_date_bs))}</span>
             <span class="upcoming-plan-name">${escapeHtml(formatLeaveValue(row.plan_name,"Plan"))}</span>
             <span class="upcoming-plan-incharge">${escapeHtml(formatLeaveValue(row.incharge_name))}</span>
-            <span class="upcoming-plan-remarks">${escapeHtml(formatLeaveValue(row.remarks))}</span>
+            <span class="upcoming-plan-remarks">
+                ${escapeHtml(formatLeaveValue(row.remarks))}
+                ${loggedInStaff?.username===PRINCIPAL_STAFF_ID?`
+                    <button type="button" class="staff-dashboard-notice-delete"
+                            style="margin-left:8px;"
+                            onclick="principalDeleteUpcomingPlan(${Number(row.id)},this)">
+                        🗑 Delete
+                    </button>`:""}
+            </span>
         </div>
     `).join("");
+}
+
+async function principalDeleteUpcomingPlan(id,button){
+    if(!loggedInStaff || loggedInStaff.username!==PRINCIPAL_STAFF_ID || !staffAuthSession?.user?.id){
+        alert("Principal login is required.");
+        return;
+    }
+    if(!confirm("Delete this upcoming plan permanently?")) return;
+
+    const oldText=button?.textContent||"Delete";
+    if(button){button.disabled=true;button.textContent="Deleting...";}
+
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {data,error}=await db
+            .from("upcoming_plans")
+            .delete()
+            .eq("id",Number(id))
+            .select("id");
+
+        if(error) throw error;
+        if(!data?.length) throw new Error("This Principal account does not currently have Supabase DELETE permission for upcoming plans.");
+
+        await Promise.all([loadUpcomingPlans(),loadStaffDashboardPlans()]);
+        showUpcomingPlanMessage("Upcoming plan deleted successfully.","success");
+    }catch(error){
+        console.error("Principal upcoming plan delete error:",error);
+        alert("Could not delete upcoming plan: "+(error?.message||"Unknown error"));
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
 }
 
 async function submitUpcomingPlan(event){
@@ -6001,6 +6085,11 @@ async function loadStaffIdeas(){
                                 <option value="approved" ${status==="approved"?"selected":""}>Approved</option>
                                 <option value="completed" ${status==="completed"?"selected":""}>Completed</option>
                             </select>
+                            <button type="button" class="admin-leave-delete-btn"
+                                    style="margin-top:8px;"
+                                    onclick="principalDeleteStaffIdea(${Number(row.id)},this)">
+                                🗑 Delete Idea
+                            </button>
                         </div>`:""}
                 </article>`;
         }).join("");
@@ -6036,6 +6125,38 @@ async function supportStaffIdea(ideaId,button){
     }catch(error){
         console.error("Staff idea help error:",error);
         alert("Could not save your offer to help: "+(error?.message||"Unknown error"));
+        if(button){button.disabled=false;button.textContent=oldText;}
+    }
+}
+
+async function principalDeleteStaffIdea(ideaId,button){
+    if(!staffDashboardIsPrincipal() || !staffAuthSession?.user?.id){
+        alert("Principal login is required.");
+        return;
+    }
+    if(!confirm("Delete this staff idea permanently?")) return;
+
+    const oldText=button?.textContent||"Delete Idea";
+    if(button){button.disabled=true;button.textContent="Deleting...";}
+
+    try{
+        const db=initStaffSupabase();
+        if(!db) throw new Error("Connection unavailable");
+
+        const {data,error}=await db
+            .from("staff_ideas")
+            .delete()
+            .eq("id",Number(ideaId))
+            .select("id");
+
+        if(error) throw error;
+        if(!data?.length) throw new Error("This Principal account does not currently have Supabase DELETE permission for staff ideas.");
+
+        await Promise.all([loadStaffIdeas(),loadStaffDashboardIdeas()]);
+        showStaffIdeaMessage("Staff idea deleted successfully.","success");
+    }catch(error){
+        console.error("Principal staff idea delete error:",error);
+        alert("Could not delete staff idea: "+(error?.message||"Unknown error"));
         if(button){button.disabled=false;button.textContent=oldText;}
     }
 }
