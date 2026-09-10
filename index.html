@@ -1967,6 +1967,16 @@
             <button id="staffLogoutBtn" type="button" onclick="staffLogout()" style="display:none;background:#667085;">LOG OUT</button>
             <span id="staffLoginStatus" class="staff-login-status">Staff not logged in</span>
         </div>
+
+        <div id="founderLoginEntry" class="portal-access-entry founder-access-entry">
+            <button type="button" onclick="portalOpenLogin('founder')">🏛️ FOUNDER PORTAL</button>
+            <span>Founder Login</span>
+        </div>
+
+        <div id="parentLoginEntry" class="portal-access-entry parent-access-entry">
+            <button type="button" onclick="portalOpenLogin('parent')">👨‍👩‍👧 PARENT PORTAL</button>
+            <span>Parent Login</span>
+        </div>
     </div>
 </section>
 
@@ -3836,7 +3846,78 @@
 
 
 
-<script src="app.js?v=20260909-principal-delete"></script>
+
+<!-- =========================================================
+     FOUNDER + PARENT PORTALS — READ ONLY
+     Isolated add-on. Existing Staff/Admin/Marks workflows unchanged.
+========================================================= -->
+<div id="founderLoginPopup" class="popup portal-login-popup">
+  <div class="popup-box portal-login-box">
+    <button type="button" class="portal-x" onclick="portalClose('founderLoginPopup')" aria-label="Close">×</button>
+    <div class="portal-login-emblem">🏛️</div>
+    <div class="portal-kicker">BOARD ACCESS</div>
+    <h2>Founder Portal</h2>
+    <p class="portal-login-copy">Founder Login</p>
+    <label class="portal-field">Founder ID<input id="founderPortalId" autocomplete="username" placeholder="Founder ID"></label>
+    <label class="portal-field">Password<input id="founderPortalPassword" type="password" autocomplete="current-password" placeholder="Password"></label>
+    <button id="founderPortalLoginBtn" type="button" class="portal-main-btn founder" onclick="portalLogin('founder')">OPEN FOUNDER PORTAL</button>
+    <div id="founderPortalLoginMessage" class="portal-message" role="status"></div>
+  </div>
+</div>
+
+<div id="parentLoginPopup" class="popup portal-login-popup">
+  <div class="popup-box portal-login-box parent-theme">
+    <button type="button" class="portal-x" onclick="portalClose('parentLoginPopup')" aria-label="Close">×</button>
+    <div class="portal-login-emblem">👨‍👩‍👧</div>
+    <div class="portal-kicker">FAMILY ACCESS</div>
+    <h2>Parent Portal</h2>
+    <p class="portal-login-copy">Private read-only access to your child’s school information.</p>
+    <label class="portal-field">Parent Login ID<input id="parentPortalId" autocomplete="username" placeholder="Parent Login ID"></label>
+    <label class="portal-field">Password<input id="parentPortalPassword" type="password" autocomplete="current-password" placeholder="Password"></label>
+    <button id="parentPortalLoginBtn" type="button" class="portal-main-btn parent" onclick="portalLogin('parent')">OPEN PARENT PORTAL</button>
+    <div id="parentPortalLoginMessage" class="portal-message" role="status"></div>
+  </div>
+</div>
+
+<div id="founderPortalPopup" class="popup portal-dashboard-popup">
+  <div class="popup-box portal-dashboard-box founder-dashboard">
+    <button type="button" class="portal-x" onclick="portalLogout('founder')" aria-label="Log out">×</button>
+    <div class="portal-dashboard-hero">
+      <div><div class="portal-kicker">ST. AUGUSTINE • BOARD VIEW</div><h2>Founder Dashboard</h2><p>Whole-school monitoring • Read only • No individual student marks</p></div>
+      <div class="portal-readonly-badge">🔒 READ ONLY</div>
+    </div>
+    <div id="founderPortalSummary" class="portal-stat-grid"></div>
+    <div class="portal-tabbar">
+      <button class="active" data-founder-tab="overview" onclick="portalFounderTab('overview',this)">Overview</button>
+      <button data-founder-tab="announcements" onclick="portalFounderTab('announcements',this)">Announcements</button>
+      <button data-founder-tab="plans" onclick="portalFounderTab('plans',this)">Upcoming Plans</button>
+      <button data-founder-tab="marks" onclick="portalFounderTab('marks',this)">Class Marks</button>
+      <button data-founder-tab="exam" onclick="portalFounderTab('exam',this)">Exam Status</button>
+    </div>
+    <div id="founderPortalContent" class="portal-content"><div class="portal-loading">Loading Founder Dashboard…</div></div>
+    <div class="portal-bottom-actions"><button type="button" class="portal-ghost-btn" onclick="portalLoadFounder(true)">↻ Refresh</button><button type="button" class="portal-danger-btn" onclick="portalLogout('founder')">Log Out</button></div>
+  </div>
+</div>
+
+<div id="parentPortalPopup" class="popup portal-dashboard-popup">
+  <div class="popup-box portal-dashboard-box parent-dashboard">
+    <button type="button" class="portal-x" onclick="portalLogout('parent')" aria-label="Log out">×</button>
+    <div id="parentPortalHero" class="portal-parent-hero"><div class="portal-loading">Loading student profile…</div></div>
+    <div class="portal-tabbar parent-tabs">
+      <button class="active" data-parent-tab="home" onclick="portalParentTab('home',this)">Home</button>
+      <button data-parent-tab="result" onclick="portalParentTab('result',this)">My Result</button>
+      <button data-parent-tab="progress" onclick="portalParentTab('progress',this)">Monthly Progress</button>
+      <button data-parent-tab="attendance" onclick="portalParentTab('attendance',this)">Attendance</button>
+      <button data-parent-tab="routine" onclick="portalParentTab('routine',this)">Exam Routine</button>
+      <button data-parent-tab="notices" onclick="portalParentTab('notices',this)">Notices</button>
+    </div>
+    <div id="parentPortalContent" class="portal-content"><div class="portal-loading">Loading Parent Portal…</div></div>
+    <div class="portal-bottom-actions"><button type="button" class="portal-ghost-btn" onclick="portalLoadParent(true)">↻ Refresh</button><button type="button" class="portal-danger-btn" onclick="portalLogout('parent')">Log Out</button></div>
+  </div>
+</div>
+
+
+<script src="app.js?v=20260910-founder-parent-portal"></script>
 </body>
 
 </html>
