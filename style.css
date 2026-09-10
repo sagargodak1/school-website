@@ -7141,3 +7141,83 @@ body.staff-app-mode #founderLoginEntry,body.staff-app-mode #parentLoginEntry,bod
 body.dark-mode .portal-founder-create,body.dark-mode .portal-admin-founder{background:#172431!important;border-color:#34485a!important;color:#e9f0f5!important}body.dark-mode .portal-admin-founder input{background:#1d2d3b;color:#fff;border-color:#455c70}body.dark-mode .portal-founder-info>strong{color:#8dc9f3}body.dark-mode .portal-founder-count{background:#44391c;color:#ffe5a1;border-color:#6d5b2b}body.dark-mode .portal-delete-btn{background:#3f2227;color:#ffc2c2;border-color:#704047}
 @media(max-width:980px){.portal-admin-founder{grid-template-columns:1fr 1fr}.portal-founder-actions{justify-content:flex-start}.portal-founder-create{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.portal-founder-head{flex-direction:column}.portal-founder-create,.portal-admin-founder{grid-template-columns:1fr}.portal-founder-actions>*{flex:1 1 auto}}
+
+
+/* =========================================================
+   PERFORMANCE — GALLERY BATCH LOADING
+   Keeps the existing gallery design; only defers off-screen batches.
+========================================================= */
+#photoPopup .media-card.gallery-deferred-card{
+    display:none;
+}
+.gallery-load-more-btn{
+    border:none;
+    background:linear-gradient(135deg,#123c69,#1976b8);
+    color:#fff;
+    padding:13px 28px;
+    border-radius:28px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 5px 14px rgba(0,0,0,.18);
+    margin:26px auto 4px;
+    align-items:center;
+    justify-content:center;
+}
+.gallery-load-more-btn:hover{
+    transform:translateY(-2px);
+}
+body.dark-mode .gallery-load-more-btn{
+    background:linear-gradient(135deg,#0b3157,#125f96);
+}
+
+/* =========================================================
+   GALLERY LIGHTBOX — SMOOTH 3D PHOTO TURN
+   Decorative only: normal Gallery next/previous navigation.
+   ========================================================= */
+#photoLightbox #largePhoto{
+    transform-origin:center center;
+    will-change:transform,opacity,filter;
+    backface-visibility:hidden;
+}
+
+#photoLightbox #largePhoto.gallery-photo-out-next{
+    animation:galleryPhotoOutNext .13s ease-in both;
+}
+#photoLightbox #largePhoto.gallery-photo-out-prev{
+    animation:galleryPhotoOutPrev .13s ease-in both;
+}
+#photoLightbox #largePhoto.gallery-photo-in-next{
+    animation:galleryPhotoInNext .32s cubic-bezier(.18,.78,.22,1) both;
+}
+#photoLightbox #largePhoto.gallery-photo-in-prev{
+    animation:galleryPhotoInPrev .32s cubic-bezier(.18,.78,.22,1) both;
+}
+
+@keyframes galleryPhotoOutNext{
+    from{opacity:1;transform:perspective(1000px) translateX(0) rotateY(0deg) scale(1);filter:blur(0)}
+    to{opacity:.18;transform:perspective(1000px) translateX(-34px) rotateY(12deg) scale(.94);filter:blur(1px)}
+}
+@keyframes galleryPhotoOutPrev{
+    from{opacity:1;transform:perspective(1000px) translateX(0) rotateY(0deg) scale(1);filter:blur(0)}
+    to{opacity:.18;transform:perspective(1000px) translateX(34px) rotateY(-12deg) scale(.94);filter:blur(1px)}
+}
+@keyframes galleryPhotoInNext{
+    from{opacity:.18;transform:perspective(1000px) translateX(38px) rotateY(-13deg) rotateZ(.6deg) scale(.94);filter:blur(1px)}
+    70%{opacity:1;transform:perspective(1000px) translateX(-3px) rotateY(1.5deg) rotateZ(0deg) scale(1.008);filter:blur(0)}
+    to{opacity:1;transform:perspective(1000px) translateX(0) rotateY(0deg) rotateZ(0deg) scale(1);filter:blur(0)}
+}
+@keyframes galleryPhotoInPrev{
+    from{opacity:.18;transform:perspective(1000px) translateX(-38px) rotateY(13deg) rotateZ(-.6deg) scale(.94);filter:blur(1px)}
+    70%{opacity:1;transform:perspective(1000px) translateX(3px) rotateY(-1.5deg) rotateZ(0deg) scale(1.008);filter:blur(0)}
+    to{opacity:1;transform:perspective(1000px) translateX(0) rotateY(0deg) rotateZ(0deg) scale(1);filter:blur(0)}
+}
+
+@media (prefers-reduced-motion: reduce){
+    #photoLightbox #largePhoto.gallery-photo-out-next,
+    #photoLightbox #largePhoto.gallery-photo-out-prev,
+    #photoLightbox #largePhoto.gallery-photo-in-next,
+    #photoLightbox #largePhoto.gallery-photo-in-prev{
+        animation:none!important;
+    }
+}

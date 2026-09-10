@@ -49,6 +49,10 @@ let photoList = [];
 
 let currentPhotoIndex = 0;
 
+/* Gallery-only lightbox transition state. */
+let photoTransitionTimer = null;
+let photoTransitionToken = 0;
+
 
 /*
    Collect every image which already uses
@@ -65,10 +69,18 @@ function buildPhotoList(){
 
     images.forEach(function(img){
 
-        if(img.src){
+        const rawSrc =
+            img.currentSrc ||
+            img.getAttribute("src") ||
+            img.getAttribute("data-src") ||
+            "";
 
-            photoList.push(img.src);
-
+        if(rawSrc){
+            try{
+                photoList.push(new URL(rawSrc,document.baseURI).href);
+            }catch(error){
+                photoList.push(rawSrc);
+            }
         }
 
     });
@@ -102,24 +114,84 @@ function openPhoto(src){
 }
 
 
-function updatePhoto(){
+function updatePhoto(direction=""){
 
     if(photoList.length === 0){
         return;
     }
 
-    document.getElementById(
-        "largePhoto"
-    ).src = photoList[currentPhotoIndex];
+    const image=document.getElementById("largePhoto");
+    const counter=document.getElementById("photoCounter");
+    const lightbox=document.getElementById("photoLightbox");
+    const nextSrc=photoList[currentPhotoIndex];
 
+    if(counter){
+        counter.textContent =
+            (currentPhotoIndex + 1) +
+            " / " +
+            photoList.length;
+    }
 
-    document.getElementById(
-        "photoCounter"
-    ).textContent =
-        (currentPhotoIndex + 1) +
-        " / " +
-        photoList.length;
+    if(!image){
+        return;
+    }
 
+    /* Initial open, protected Student Portfolio photos, and reduced-motion
+       visitors keep the original instant behavior. The decorative 3D turn is
+       intentionally limited to normal Gallery next/previous navigation. */
+    const canAnimate =
+        (direction === "next" || direction === "prev") &&
+        lightbox &&
+        !lightbox.classList.contains("student-secure-lightbox") &&
+        !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+    if(!canAnimate){
+        if(photoTransitionTimer){
+            clearTimeout(photoTransitionTimer);
+            photoTransitionTimer=null;
+        }
+        photoTransitionToken++;
+        image.classList.remove(
+            "gallery-photo-out-next","gallery-photo-out-prev",
+            "gallery-photo-in-next","gallery-photo-in-prev"
+        );
+        image.src=nextSrc;
+        return;
+    }
+
+    const token=++photoTransitionToken;
+    if(photoTransitionTimer){
+        clearTimeout(photoTransitionTimer);
+        photoTransitionTimer=null;
+    }
+
+    image.classList.remove(
+        "gallery-photo-out-next","gallery-photo-out-prev",
+        "gallery-photo-in-next","gallery-photo-in-prev"
+    );
+
+    /* Start fetching the next image while the current photo turns away. */
+    try{ const preload=new Image(); preload.src=nextSrc; }catch(error){}
+
+    image.classList.add(direction === "next" ? "gallery-photo-out-next" : "gallery-photo-out-prev");
+
+    photoTransitionTimer=setTimeout(()=>{
+        if(token!==photoTransitionToken) return;
+
+        image.classList.remove("gallery-photo-out-next","gallery-photo-out-prev");
+        image.src=nextSrc;
+
+        /* Force the browser to register the source/class change before the
+           incoming turn animation begins. */
+        void image.offsetWidth;
+        image.classList.add(direction === "next" ? "gallery-photo-in-next" : "gallery-photo-in-prev");
+
+        photoTransitionTimer=setTimeout(()=>{
+            if(token!==photoTransitionToken) return;
+            image.classList.remove("gallery-photo-in-next","gallery-photo-in-prev");
+            photoTransitionTimer=null;
+        },320);
+    },130);
 }
 
 
@@ -137,7 +209,7 @@ function nextPhoto(){
 
     }
 
-    updatePhoto();
+    updatePhoto("next");
 
 }
 
@@ -157,7 +229,7 @@ function previousPhoto(){
 
     }
 
-    updatePhoto();
+    updatePhoto("prev");
 
 }
 
@@ -2268,7 +2340,7 @@ function initialGalleryFromPage(){
         items.push({
             id:`photo-${index+1}`,
             type:"photo",
-            src:img.getAttribute("src")||"",
+            src:img.getAttribute("src")||img.getAttribute("data-src")||"",
             title:title ? title.textContent.trim() : `Photo ${index+1}`,
             description:""
         });
@@ -2864,7 +2936,7 @@ function renderManagedStaffGrid(){
 
     grid.innerHTML=Object.entries(adminManagedStaff).map(([id,staff])=>`
         <div class="staff-card">
-            <img src="${escapeHtmlAttr(staff.photo||"")}" alt="${escapeHtmlAttr(staff.name||"Staff")}">
+            <img src="${escapeHtmlAttr(staff.photo||"")}" alt="${escapeHtmlAttr(staff.name||"Staff")}" loading="lazy" decoding="async">
             <h3>${escapeHtml(staff.name||"")}</h3>
             <p class="designation">${escapeHtml(staff.designation||"")}</p>
             ${staff.phone?`<p class="staff-phone">📞 ${escapeHtml(staff.phone)}</p>`:""}
@@ -2879,7 +2951,7 @@ function renderAdminStaffList(){
     if(!host) return;
     host.innerHTML=Object.entries(adminManagedStaff).map(([id,staff])=>`
         <div class="admin-manager-row">
-            <img src="${escapeHtmlAttr(staff.photo||"")}" alt="">
+            <img src="${escapeHtmlAttr(staff.photo||"")}" alt="" loading="lazy" decoding="async">
             <div>
                 <div class="admin-manager-title">${escapeHtml(staff.name||"")}</div>
                 <div class="admin-manager-meta">
@@ -3040,29 +3112,73 @@ showStaffDetails=function(staffId){
 
 /* ======================== GALLERY ======================== */
 
+const GALLERY_BATCH_SIZE=12;
+let galleryVisibleCount=GALLERY_BATCH_SIZE;
+
+function ensureGalleryLoadMoreButton(totalPhotos){
+    const grid=document.querySelector("#photoPopup .media-grid");
+    if(!grid) return;
+
+    let button=document.getElementById("galleryLoadMoreBtn");
+    if(!button){
+        button=document.createElement("button");
+        button.id="galleryLoadMoreBtn";
+        button.type="button";
+        button.className="gallery-load-more-btn";
+        button.textContent="LOAD MORE PHOTOS";
+        button.onclick=loadMoreGalleryPhotos;
+        grid.insertAdjacentElement("afterend",button);
+    }
+
+    button.style.display=galleryVisibleCount<totalPhotos?"inline-flex":"none";
+}
+
+function loadMoreGalleryPhotos(){
+    const cards=Array.from(document.querySelectorAll("#photoPopup .media-card.gallery-deferred-card"));
+    const nextCards=cards.slice(0,GALLERY_BATCH_SIZE);
+
+    nextCards.forEach(card=>{
+        const img=card.querySelector("img[data-src]");
+        if(img && !img.getAttribute("src")){
+            img.setAttribute("src",img.getAttribute("data-src")||"");
+        }
+        card.classList.remove("gallery-deferred-card");
+    });
+
+    galleryVisibleCount+=nextCards.length;
+    const totalPhotos=adminManagedGallery.filter(item=>item.type==="photo").length;
+    ensureGalleryLoadMoreButton(totalPhotos);
+}
+
 function renderManagedGallery(){
     const photoGrid=document.querySelector("#photoPopup .media-grid");
     const videoGrid=document.querySelector("#videoPopup .media-grid");
+    const photos=adminManagedGallery.filter(item=>item.type==="photo");
+    const videos=adminManagedGallery.filter(item=>item.type==="video");
 
     if(photoGrid){
-        photoGrid.innerHTML=adminManagedGallery
-            .filter(item=>item.type==="photo")
-            .map(item=>`
-                <div class="media-card">
-                    <img src="${escapeHtmlAttr(item.src||"")}" onclick="openPhoto(this.src)" alt="${escapeHtmlAttr(item.title||"Photo")}">
+        galleryVisibleCount=Math.max(GALLERY_BATCH_SIZE,Math.min(galleryVisibleCount,photos.length||GALLERY_BATCH_SIZE));
+        photoGrid.innerHTML=photos
+            .map((item,index)=>{
+                const isVisible=index<galleryVisibleCount;
+                const safeSrc=escapeHtmlAttr(item.src||"");
+                return `
+                <div class="media-card${isVisible?"":" gallery-deferred-card"}">
+                    <img ${isVisible?`src="${safeSrc}"`:`data-src="${safeSrc}"`} loading="lazy" decoding="async" onclick="openPhoto(this.src || this.dataset.src)" alt="${escapeHtmlAttr(item.title||"Photo")}">
                     <h3>${escapeHtml(item.title||"Photo")}</h3>
                     ${item.description?`<p class="gallery-description">${escapeHtml(item.description)}</p>`:""}
                     <button class="admin-inline-edit" onclick="openGalleryEditor('photo','${item.id}')">✏️ Edit</button>
                 </div>
-            `).join("");
+            `;
+            }).join("");
+        ensureGalleryLoadMoreButton(photos.length);
     }
 
     if(videoGrid){
-        videoGrid.innerHTML=adminManagedGallery
-            .filter(item=>item.type==="video")
+        videoGrid.innerHTML=videos
             .map(item=>`
                 <div class="media-card">
-                    <video controls src="${escapeHtmlAttr(item.src||"")}"></video>
+                    <video controls preload="none" src="${escapeHtmlAttr(item.src||"")}"></video>
                     <h3>${escapeHtml(item.title||"Video")}</h3>
                     ${item.description?`<p class="gallery-description">${escapeHtml(item.description)}</p>`:""}
                     <button class="admin-inline-edit" onclick="openGalleryEditor('video','${item.id}')">✏️ Edit</button>
@@ -3079,8 +3195,8 @@ function renderAdminGalleryList(){
         <div class="admin-manager-row">
             ${
                 item.type==="photo"
-                    ?`<img src="${escapeHtmlAttr(item.src||"")}" alt="">`
-                    :`<video src="${escapeHtmlAttr(item.src||"")}" muted></video>`
+                    ?`<img src="${escapeHtmlAttr(item.src||"")}" alt="" loading="lazy" decoding="async">`
+                    :`<video src="${escapeHtmlAttr(item.src||"")}" muted preload="none"></video>`
             }
             <div>
                 <div class="admin-manager-title">${item.type==="photo"?"📷":"🎥"} ${escapeHtml(item.title||"")}</div>
@@ -3207,7 +3323,7 @@ function renderAdminMonthlyReportManager(){
 
     host.innerHTML=month.photos.slice(0,3).map(photo=>`
         <div class="admin-manager-row">
-            <img src="${escapeHtmlAttr(photo.src||"")}" alt="" onerror="this.style.opacity='.35'">
+            <img src="${escapeHtmlAttr(photo.src||"")}" alt="" loading="lazy" decoding="async" onerror="this.style.opacity='.35'">
             <div>
                 <div class="admin-manager-title">${escapeHtml(month.label)} — Photo ${photo.slot}</div>
                 <div class="admin-manager-meta">${escapeHtml(photo.title||"")}</div>
@@ -7983,7 +8099,7 @@ function videoTutorialCard(row,isAdmin=false){
     const likeCount=Math.max(0,Number(row.like_count)||0);
     const likedByMe=row.liked_by_me===true;
     const media=row.signed_url
-        ?`<video controls controlsList="nodownload" disablePictureInPicture preload="metadata" playsinline onplay="pauseOtherTutorialVideos(this)">
+        ?`<video controls controlsList="nodownload" disablePictureInPicture preload="none" playsinline onplay="pauseOtherTutorialVideos(this)">
               <source src="${videoTutorialEscape(row.signed_url)}" type="${videoTutorialEscape(row.mime_type||"video/mp4")}">
               Your browser cannot play this video.
           </video>`

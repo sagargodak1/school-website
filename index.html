@@ -124,6 +124,8 @@
 
 
 
+<!-- PERFORMANCE: preload above-the-fold hero background -->
+<link rel="preload" as="image" href="school.jpeg" fetchpriority="high">
 <link rel="stylesheet" href="style.css?v=20260910-multi-founder-final">
 </head>
 
@@ -289,7 +291,7 @@
             <div class="explore-card">
                 <img src="ourschool.jpeg"
                      alt="Our School"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>Our School</h3>
                 <p>
                     Learn more about our school,
@@ -300,7 +302,7 @@
             <div class="explore-card">
                 <img src="ourstudents.jpeg"
                      alt="Our Students"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>Our Students</h3>
                 <p>
                     Our students, their talents,
@@ -311,7 +313,7 @@
             <div class="explore-card">
                 <img src="ouractivities.jpeg"
                      alt="School Activities"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>School Activities</h3>
                 <p>
                     Academic and extracurricular
@@ -322,7 +324,7 @@
             <div class="explore-card">
                 <img src="infrastructure.jpeg"
                      alt="School Infrastructure"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>School Infrastructure</h3>
                 <p>
                     Explore our classrooms,
@@ -333,7 +335,7 @@
             <div class="explore-card">
                 <img src="environmernt.jpeg"
                      alt="Learning Environment"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>Learning Environment</h3>
                 <p>
                     A safe, friendly and inspiring
@@ -344,7 +346,7 @@
             <div class="explore-card">
                 <img src="event.jpeg"
                      alt="School Events"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>School Events</h3>
                 <p>
                     Celebrations, programs and
@@ -355,7 +357,7 @@
             <div class="explore-card">
                 <img src="classroom.jpeg"
                      alt="Our Classrooms"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>Our Classrooms</h3>
                 <p>
                     Comfortable classrooms designed
@@ -366,7 +368,7 @@
             <div class="explore-card">
                 <img src="sports.jpeg"
                      alt="Sports and Activities"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>Sports & Activities</h3>
                 <p>
                     Sports, games and physical
@@ -377,7 +379,7 @@
             <div class="explore-card">
                 <img src="learning.jpeg"
                      alt="Creative Learning"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>Creative Learning</h3>
                 <p>
                     Art, creativity, teamwork and
@@ -388,7 +390,7 @@
             <div class="explore-card">
                 <img src="laibary.jpeg"
                      alt="School Library"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>School Library</h3>
                 <p>
                     A learning space for reading,
@@ -399,7 +401,7 @@
             <div class="explore-card">
                 <img src="assembly.jpeg"
                      alt="School Assembly"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>School Assembly</h3>
                 <p>
                     Morning assembly and important
@@ -410,7 +412,7 @@
             <div class="explore-card">
                 <img src="achievement.jpeg"
                      alt="Student Achievement"
-                     onclick="openPhoto(this.src)">
+                     onclick="openPhoto(this.src)" loading="lazy" decoding="async">
                 <h3>Student Achievement</h3>
                 <p>
                     Celebrating the success and
@@ -482,72 +484,72 @@
 
         <div class="media-grid">
 
-            <div class="media-card"><img src="photo1.jpeg" onclick="openPhoto(this.src)" alt="Photo 1"><h3>Grooming Tomorrow's Leaders</h3></div>
-            <div class="media-card"><img src="photo2.jpeg" onclick="openPhoto(this.src)" alt="Photo 2"><h3>Capacity Building</h3></div>
-            <div class="media-card"><img src="photo3.jpeg" onclick="openPhoto(this.src)" alt="Photo 3"><h3>Professional, Joyful and Proud</h3></div>
-            <div class="media-card"><img src="photo4.jpeg" onclick="openPhoto(this.src)" alt="Photo 4"><h3>Upcoming Leadership</h3></div>
-            <div class="media-card"><img src="photo5.jpeg" onclick="openPhoto(this.src)" alt="Photo 5"><h3>Unity in Diversity</h3></div>
-            <div class="media-card"><img src="photo6.jpeg" onclick="openPhoto(this.src)" alt="Photo 6"><h3>Big Achievement</h3></div>
-            <div class="media-card"><img src="photo7.jpeg" onclick="openPhoto(this.src)" alt="Photo 7"><h3>School Activity</h3></div>
-            <div class="media-card"><img src="photo8.jpeg" onclick="openPhoto(this.src)" alt="Photo 8"><h3>School Memories</h3></div>
-            <div class="media-card"><img src="photo9.jpeg" onclick="openPhoto(this.src)" alt="Photo 9"><h3>Learning Together</h3></div>
-            <div class="media-card"><img src="photo10.jpeg" onclick="openPhoto(this.src)" alt="Photo 10"><h3>Beautiful School Moment</h3></div>
-            <div class="media-card"><img src="photo11.jpeg" onclick="openPhoto(this.src)" alt="Photo 11"><h3>School Activity</h3></div>
-            <div class="media-card"><img src="photo12.jpeg" onclick="openPhoto(this.src)" alt="Photo 12"><h3>Student Activity</h3></div>
-            <div class="media-card"><img src="photo13.jpeg" onclick="openPhoto(this.src)" alt="Photo 13"><h3>photo 13</h3></div>
-            <div class="media-card"><img src="photo14.jpeg" onclick="openPhoto(this.src)" alt="Photo 14"><h3>photo 14</h3></div>
-            <div class="media-card"><img src="photo15.jpeg" onclick="openPhoto(this.src)" alt="Photo 15"><h3>photo 15</h3></div>
-            <div class="media-card"><img src="photo16.jpeg" onclick="openPhoto(this.src)" alt="Photo 16"><h3>photo 16</h3></div>
-            <div class="media-card"><img src="photo17.jpeg" onclick="openPhoto(this.src)" alt="Photo 17"><h3>photo 17</h3></div>
-            <div class="media-card"><img src="photo18.jpeg" onclick="openPhoto(this.src)" alt="Photo 18"><h3>photo 18</h3></div>
-            <div class="media-card"><img src="photo19.jpeg" onclick="openPhoto(this.src)" alt="Photo 19"><h3>photo 19</h3></div>
-            <div class="media-card"><img src="photo20.jpeg" onclick="openPhoto(this.src)" alt="Photo 20"><h3>photo 20</h3></div>
-            <div class="media-card"><img src="photo21.jpeg" onclick="openPhoto(this.src)" alt="Photo 21"><h3>photo 21</h3></div>
-            <div class="media-card"><img src="photo22.jpeg" onclick="openPhoto(this.src)" alt="Photo 22"><h3>photo 22</h3></div>
-            <div class="media-card"><img src="photo23.jpeg" onclick="openPhoto(this.src)" alt="Photo 23"><h3>photo 23</h3></div>
-            <div class="media-card"><img src="photo24.jpeg" onclick="openPhoto(this.src)" alt="Photo 24"><h3>photo 24</h3></div>
-            <div class="media-card"><img src="photo24.jpeg" onclick="openPhoto(this.src)" alt="Photo 28"><h3>photo 24</h3></div>
-            <div class="media-card"><img src="photo25.jpeg" onclick="openPhoto(this.src)" alt="Photo 25"><h3>photo 25</h3></div>
-            <div class="media-card"><img src="photo26.jpeg" onclick="openPhoto(this.src)" alt="Photo 26"><h3>photo 26</h3></div>
-            <div class="media-card"><img src="photo27.jpeg" onclick="openPhoto(this.src)" alt="Photo 27"><h3>photo 27</h3></div>
-            <div class="media-card"><img src="photo29.jpeg" onclick="openPhoto(this.src)" alt="Photo 29"><h3>photo 29</h3></div>
-            <div class="media-card"><img src="photo30.jpeg" onclick="openPhoto(this.src)" alt="Photo 30"><h3>photo 30</h3></div>
-            <div class="media-card"><img src="photo31.jpeg" onclick="openPhoto(this.src)" alt="Photo 31"><h3>photo 31</h3></div>
-            <div class="media-card"><img src="photo32.jpeg" onclick="openPhoto(this.src)" alt="Photo 32"><h3>photo 32</h3></div>
-            <div class="media-card"><img src="photo33.jpeg" onclick="openPhoto(this.src)" alt="Photo 33"><h3>photo 33</h3></div>
-            <div class="media-card"><img src="photo34.jpeg" onclick="openPhoto(this.src)" alt="Photo 34"><h3>photo 34</h3></div>
-            <div class="media-card"><img src="photo35.jpeg" onclick="openPhoto(this.src)" alt="Photo 35"><h3>photo 35</h3></div>
-            <div class="media-card"><img src="photo36.jpeg" onclick="openPhoto(this.src)" alt="Photo 36"><h3>photo 36</h3></div>
-            <div class="media-card"><img src="photo37.jpeg" onclick="openPhoto(this.src)" alt="Photo 37"><h3>photo 37</h3></div>
-            <div class="media-card"><img src="photo38.jpeg" onclick="openPhoto(this.src)" alt="Photo 38"><h3>photo 38</h3></div>
-            <div class="media-card"><img src="photo39.jpeg" onclick="openPhoto(this.src)" alt="Photo 39"><h3>photo 39</h3></div>
-            <div class="media-card"><img src="photo40.jpeg" onclick="openPhoto(this.src)" alt="Photo 40"><h3>photo 40</h3></div>
-            <div class="media-card"><img src="photo41.jpeg" onclick="openPhoto(this.src)" alt="Photo 41"><h3>photo 41</h3></div>
-            <div class="media-card"><img src="photo45.jpeg" onclick="openPhoto(this.src)" alt="Photo 45"><h3>photo 45</h3></div>
-            <div class="media-card"><img src="photo46.jpeg" onclick="openPhoto(this.src)" alt="Photo 46"><h3>photo 46</h3></div>
-            <div class="media-card"><img src="photo47.jpeg" onclick="openPhoto(this.src)" alt="Photo 47"><h3>photo 47</h3></div>
-            <div class="media-card"><img src="photo48.jpeg" onclick="openPhoto(this.src)" alt="Photo 48"><h3>photo 48</h3></div>
-            <div class="media-card"><img src="photo49.jpeg" onclick="openPhoto(this.src)" alt="Photo 49"><h3>photo 49</h3></div>
-            <div class="media-card"><img src="photo50.jpeg" onclick="openPhoto(this.src)" alt="Photo 50"><h3>photo 50</h3></div>
-            <div class="media-card"><img src="photo51.jpeg" onclick="openPhoto(this.src)" alt="Photo 51"><h3>photo 51</h3></div>
-            <div class="media-card"><img src="photo42.jpeg" onclick="openPhoto(this.src)" alt="Photo 42"><h3>photo 42</h3></div>
-            <div class="media-card"><img src="photo43.jpeg" onclick="openPhoto(this.src)" alt="Photo 43"><h3>photo 43</h3></div>
-            <div class="media-card"><img src="photo44.jpeg" onclick="openPhoto(this.src)" alt="Photo 44"><h3>photo 44</h3></div>
-            <div class="media-card"><img src="photo52.jpeg" onclick="openPhoto(this.src)" alt="Photo 52"><h3>photo 52</h3></div>
-            <div class="media-card"><img src="photo53.jpeg" onclick="openPhoto(this.src)" alt="Photo 53"><h3>photo 53</h3></div>
-            <div class="media-card"><img src="photo54.jpeg" onclick="openPhoto(this.src)" alt="Photo 54"><h3>photo 54</h3></div>
-            <div class="media-card"><img src="photo55.jpeg" onclick="openPhoto(this.src)" alt="Photo 55"><h3>photo 55</h3></div>
-            <div class="media-card"><img src="photo56.jpeg" onclick="openPhoto(this.src)" alt="Photo 56"><h3>photo 56</h3></div>
-            <div class="media-card"><img src="photo57.jpeg" onclick="openPhoto(this.src)" alt="Photo 57"><h3>photo 57</h3></div>
-            <div class="media-card"><img src="photo58.jpeg" onclick="openPhoto(this.src)" alt="Photo 58"><h3>photo 58</h3></div>
-            <div class="media-card"><img src="photo59.jpeg" onclick="openPhoto(this.src)" alt="Photo 59"><h3>photo 59</h3></div>
-            <div class="media-card"><img src="photo60.jpeg" onclick="openPhoto(this.src)" alt="Photo 60"><h3>photo 60</h3></div>
-            <div class="media-card"><img src="photo61.jpeg" onclick="openPhoto(this.src)" alt="Photo 61"><h3>photo 61</h3></div>
-            <div class="media-card"><img src="photo62.jpeg" onclick="openPhoto(this.src)" alt="Photo 62"><h3>photo 62</h3></div>
-            <div class="media-card"><img src="photo63.jpeg" onclick="openPhoto(this.src)" alt="Photo 63"><h3>photo 63</h3></div>
-            <div class="media-card"><img src="photo64.jpeg" onclick="openPhoto(this.src)" alt="Photo 64"><h3>photo 64</h3></div>
-            <div class="media-card"><img src="photo65.jpeg" onclick="openPhoto(this.src)" alt="Photo 65"><h3>photo 65</h3></div>
-            <div class="media-card"><img src="photo66.jpeg" onclick="openPhoto(this.src)" alt="Photo 66"><h3>photo 66</h3></div>
+            <div class="media-card"><img src="photo1.jpeg" onclick="openPhoto(this.src)" alt="Photo 1" loading="lazy" decoding="async"><h3>Grooming Tomorrow's Leaders</h3></div>
+            <div class="media-card"><img src="photo2.jpeg" onclick="openPhoto(this.src)" alt="Photo 2" loading="lazy" decoding="async"><h3>Capacity Building</h3></div>
+            <div class="media-card"><img src="photo3.jpeg" onclick="openPhoto(this.src)" alt="Photo 3" loading="lazy" decoding="async"><h3>Professional, Joyful and Proud</h3></div>
+            <div class="media-card"><img src="photo4.jpeg" onclick="openPhoto(this.src)" alt="Photo 4" loading="lazy" decoding="async"><h3>Upcoming Leadership</h3></div>
+            <div class="media-card"><img src="photo5.jpeg" onclick="openPhoto(this.src)" alt="Photo 5" loading="lazy" decoding="async"><h3>Unity in Diversity</h3></div>
+            <div class="media-card"><img src="photo6.jpeg" onclick="openPhoto(this.src)" alt="Photo 6" loading="lazy" decoding="async"><h3>Big Achievement</h3></div>
+            <div class="media-card"><img src="photo7.jpeg" onclick="openPhoto(this.src)" alt="Photo 7" loading="lazy" decoding="async"><h3>School Activity</h3></div>
+            <div class="media-card"><img src="photo8.jpeg" onclick="openPhoto(this.src)" alt="Photo 8" loading="lazy" decoding="async"><h3>School Memories</h3></div>
+            <div class="media-card"><img src="photo9.jpeg" onclick="openPhoto(this.src)" alt="Photo 9" loading="lazy" decoding="async"><h3>Learning Together</h3></div>
+            <div class="media-card"><img src="photo10.jpeg" onclick="openPhoto(this.src)" alt="Photo 10" loading="lazy" decoding="async"><h3>Beautiful School Moment</h3></div>
+            <div class="media-card"><img src="photo11.jpeg" onclick="openPhoto(this.src)" alt="Photo 11" loading="lazy" decoding="async"><h3>School Activity</h3></div>
+            <div class="media-card"><img src="photo12.jpeg" onclick="openPhoto(this.src)" alt="Photo 12" loading="lazy" decoding="async"><h3>Student Activity</h3></div>
+            <div class="media-card"><img data-src="photo13.jpeg" onclick="openPhoto(this.src)" alt="Photo 13" loading="lazy" decoding="async"><h3>photo 13</h3></div>
+            <div class="media-card"><img data-src="photo14.jpeg" onclick="openPhoto(this.src)" alt="Photo 14" loading="lazy" decoding="async"><h3>photo 14</h3></div>
+            <div class="media-card"><img data-src="photo15.jpeg" onclick="openPhoto(this.src)" alt="Photo 15" loading="lazy" decoding="async"><h3>photo 15</h3></div>
+            <div class="media-card"><img data-src="photo16.jpeg" onclick="openPhoto(this.src)" alt="Photo 16" loading="lazy" decoding="async"><h3>photo 16</h3></div>
+            <div class="media-card"><img data-src="photo17.jpeg" onclick="openPhoto(this.src)" alt="Photo 17" loading="lazy" decoding="async"><h3>photo 17</h3></div>
+            <div class="media-card"><img data-src="photo18.jpeg" onclick="openPhoto(this.src)" alt="Photo 18" loading="lazy" decoding="async"><h3>photo 18</h3></div>
+            <div class="media-card"><img data-src="photo19.jpeg" onclick="openPhoto(this.src)" alt="Photo 19" loading="lazy" decoding="async"><h3>photo 19</h3></div>
+            <div class="media-card"><img data-src="photo20.jpeg" onclick="openPhoto(this.src)" alt="Photo 20" loading="lazy" decoding="async"><h3>photo 20</h3></div>
+            <div class="media-card"><img data-src="photo21.jpeg" onclick="openPhoto(this.src)" alt="Photo 21" loading="lazy" decoding="async"><h3>photo 21</h3></div>
+            <div class="media-card"><img data-src="photo22.jpeg" onclick="openPhoto(this.src)" alt="Photo 22" loading="lazy" decoding="async"><h3>photo 22</h3></div>
+            <div class="media-card"><img data-src="photo23.jpeg" onclick="openPhoto(this.src)" alt="Photo 23" loading="lazy" decoding="async"><h3>photo 23</h3></div>
+            <div class="media-card"><img data-src="photo24.jpeg" onclick="openPhoto(this.src)" alt="Photo 24" loading="lazy" decoding="async"><h3>photo 24</h3></div>
+            <div class="media-card"><img data-src="photo24.jpeg" onclick="openPhoto(this.src)" alt="Photo 28" loading="lazy" decoding="async"><h3>photo 24</h3></div>
+            <div class="media-card"><img data-src="photo25.jpeg" onclick="openPhoto(this.src)" alt="Photo 25" loading="lazy" decoding="async"><h3>photo 25</h3></div>
+            <div class="media-card"><img data-src="photo26.jpeg" onclick="openPhoto(this.src)" alt="Photo 26" loading="lazy" decoding="async"><h3>photo 26</h3></div>
+            <div class="media-card"><img data-src="photo27.jpeg" onclick="openPhoto(this.src)" alt="Photo 27" loading="lazy" decoding="async"><h3>photo 27</h3></div>
+            <div class="media-card"><img data-src="photo29.jpeg" onclick="openPhoto(this.src)" alt="Photo 29" loading="lazy" decoding="async"><h3>photo 29</h3></div>
+            <div class="media-card"><img data-src="photo30.jpeg" onclick="openPhoto(this.src)" alt="Photo 30" loading="lazy" decoding="async"><h3>photo 30</h3></div>
+            <div class="media-card"><img data-src="photo31.jpeg" onclick="openPhoto(this.src)" alt="Photo 31" loading="lazy" decoding="async"><h3>photo 31</h3></div>
+            <div class="media-card"><img data-src="photo32.jpeg" onclick="openPhoto(this.src)" alt="Photo 32" loading="lazy" decoding="async"><h3>photo 32</h3></div>
+            <div class="media-card"><img data-src="photo33.jpeg" onclick="openPhoto(this.src)" alt="Photo 33" loading="lazy" decoding="async"><h3>photo 33</h3></div>
+            <div class="media-card"><img data-src="photo34.jpeg" onclick="openPhoto(this.src)" alt="Photo 34" loading="lazy" decoding="async"><h3>photo 34</h3></div>
+            <div class="media-card"><img data-src="photo35.jpeg" onclick="openPhoto(this.src)" alt="Photo 35" loading="lazy" decoding="async"><h3>photo 35</h3></div>
+            <div class="media-card"><img data-src="photo36.jpeg" onclick="openPhoto(this.src)" alt="Photo 36" loading="lazy" decoding="async"><h3>photo 36</h3></div>
+            <div class="media-card"><img data-src="photo37.jpeg" onclick="openPhoto(this.src)" alt="Photo 37" loading="lazy" decoding="async"><h3>photo 37</h3></div>
+            <div class="media-card"><img data-src="photo38.jpeg" onclick="openPhoto(this.src)" alt="Photo 38" loading="lazy" decoding="async"><h3>photo 38</h3></div>
+            <div class="media-card"><img data-src="photo39.jpeg" onclick="openPhoto(this.src)" alt="Photo 39" loading="lazy" decoding="async"><h3>photo 39</h3></div>
+            <div class="media-card"><img data-src="photo40.jpeg" onclick="openPhoto(this.src)" alt="Photo 40" loading="lazy" decoding="async"><h3>photo 40</h3></div>
+            <div class="media-card"><img data-src="photo41.jpeg" onclick="openPhoto(this.src)" alt="Photo 41" loading="lazy" decoding="async"><h3>photo 41</h3></div>
+            <div class="media-card"><img data-src="photo45.jpeg" onclick="openPhoto(this.src)" alt="Photo 45" loading="lazy" decoding="async"><h3>photo 45</h3></div>
+            <div class="media-card"><img data-src="photo46.jpeg" onclick="openPhoto(this.src)" alt="Photo 46" loading="lazy" decoding="async"><h3>photo 46</h3></div>
+            <div class="media-card"><img data-src="photo47.jpeg" onclick="openPhoto(this.src)" alt="Photo 47" loading="lazy" decoding="async"><h3>photo 47</h3></div>
+            <div class="media-card"><img data-src="photo48.jpeg" onclick="openPhoto(this.src)" alt="Photo 48" loading="lazy" decoding="async"><h3>photo 48</h3></div>
+            <div class="media-card"><img data-src="photo49.jpeg" onclick="openPhoto(this.src)" alt="Photo 49" loading="lazy" decoding="async"><h3>photo 49</h3></div>
+            <div class="media-card"><img data-src="photo50.jpeg" onclick="openPhoto(this.src)" alt="Photo 50" loading="lazy" decoding="async"><h3>photo 50</h3></div>
+            <div class="media-card"><img data-src="photo51.jpeg" onclick="openPhoto(this.src)" alt="Photo 51" loading="lazy" decoding="async"><h3>photo 51</h3></div>
+            <div class="media-card"><img data-src="photo42.jpeg" onclick="openPhoto(this.src)" alt="Photo 42" loading="lazy" decoding="async"><h3>photo 42</h3></div>
+            <div class="media-card"><img data-src="photo43.jpeg" onclick="openPhoto(this.src)" alt="Photo 43" loading="lazy" decoding="async"><h3>photo 43</h3></div>
+            <div class="media-card"><img data-src="photo44.jpeg" onclick="openPhoto(this.src)" alt="Photo 44" loading="lazy" decoding="async"><h3>photo 44</h3></div>
+            <div class="media-card"><img data-src="photo52.jpeg" onclick="openPhoto(this.src)" alt="Photo 52" loading="lazy" decoding="async"><h3>photo 52</h3></div>
+            <div class="media-card"><img data-src="photo53.jpeg" onclick="openPhoto(this.src)" alt="Photo 53" loading="lazy" decoding="async"><h3>photo 53</h3></div>
+            <div class="media-card"><img data-src="photo54.jpeg" onclick="openPhoto(this.src)" alt="Photo 54" loading="lazy" decoding="async"><h3>photo 54</h3></div>
+            <div class="media-card"><img data-src="photo55.jpeg" onclick="openPhoto(this.src)" alt="Photo 55" loading="lazy" decoding="async"><h3>photo 55</h3></div>
+            <div class="media-card"><img data-src="photo56.jpeg" onclick="openPhoto(this.src)" alt="Photo 56" loading="lazy" decoding="async"><h3>photo 56</h3></div>
+            <div class="media-card"><img data-src="photo57.jpeg" onclick="openPhoto(this.src)" alt="Photo 57" loading="lazy" decoding="async"><h3>photo 57</h3></div>
+            <div class="media-card"><img data-src="photo58.jpeg" onclick="openPhoto(this.src)" alt="Photo 58" loading="lazy" decoding="async"><h3>photo 58</h3></div>
+            <div class="media-card"><img data-src="photo59.jpeg" onclick="openPhoto(this.src)" alt="Photo 59" loading="lazy" decoding="async"><h3>photo 59</h3></div>
+            <div class="media-card"><img data-src="photo60.jpeg" onclick="openPhoto(this.src)" alt="Photo 60" loading="lazy" decoding="async"><h3>photo 60</h3></div>
+            <div class="media-card"><img data-src="photo61.jpeg" onclick="openPhoto(this.src)" alt="Photo 61" loading="lazy" decoding="async"><h3>photo 61</h3></div>
+            <div class="media-card"><img data-src="photo62.jpeg" onclick="openPhoto(this.src)" alt="Photo 62" loading="lazy" decoding="async"><h3>photo 62</h3></div>
+            <div class="media-card"><img data-src="photo63.jpeg" onclick="openPhoto(this.src)" alt="Photo 63" loading="lazy" decoding="async"><h3>photo 63</h3></div>
+            <div class="media-card"><img data-src="photo64.jpeg" onclick="openPhoto(this.src)" alt="Photo 64" loading="lazy" decoding="async"><h3>photo 64</h3></div>
+            <div class="media-card"><img data-src="photo65.jpeg" onclick="openPhoto(this.src)" alt="Photo 65" loading="lazy" decoding="async"><h3>photo 65</h3></div>
+            <div class="media-card"><img data-src="photo66.jpeg" onclick="openPhoto(this.src)" alt="Photo 66" loading="lazy" decoding="async"><h3>photo 66</h3></div>
 
         </div>
 
@@ -579,7 +581,7 @@
         <div class="media-grid">
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video1.mp4" type="video/mp4">
                 </video>
                 <h3>
@@ -589,63 +591,63 @@
             </div>
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video2.mp4" type="video/mp4">
                 </video>
                 <h3>Video 2</h3>
             </div>
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video3.mp4" type="video/mp4">
                 </video>
                 <h3>Video 3</h3>
             </div>
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video4.mp4" type="video/mp4">
                 </video>
                 <h3>Video 4</h3>
             </div>
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video5.mp4" type="video/mp4">
                 </video>
                 <h3>Video 5</h3>
             </div>
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video6.mp4" type="video/mp4">
                 </video>
                 <h3>Video 6</h3>
             </div>
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video7.mp4" type="video/mp4">
                 </video>
                 <h3>Video 7</h3>
             </div>
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video8.mp4" type="video/mp4">
                 </video>
                 <h3>Video 8</h3>
             </div>
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video9.mp4" type="video/mp4">
                 </video>
                 <h3>Video 9</h3>
             </div>
 
             <div class="media-card">
-                <video controls>
+                <video preload="none" controls>
                     <source src="video10.mp4" type="video/mp4">
                 </video>
                 <h3>Video 10</h3>
@@ -979,7 +981,7 @@
 
 
             <div class="staff-card">
-                <img src="ceo.jpeg" alt="Suresh Rai">
+                <img src="ceo.jpeg" alt="Suresh Rai" loading="lazy" decoding="async">
                 <h3>SURESH RAI</h3>
                 <p class="designation">Chief Executive Officer</p>
                 <p class="staff-phone">📞 9749206863</p>
@@ -988,7 +990,7 @@
 
 
             <div class="staff-card">
-                <img src="md.jpeg" alt="Sanjeev Rai">
+                <img src="md.jpeg" alt="Sanjeev Rai" loading="lazy" decoding="async">
                 <h3>SANJEEV RAI</h3>
                 <p class="designation">Managing Director</p>
                 <p class="staff-phone">📞 9864185122</p>
@@ -997,7 +999,7 @@
 
 
             <div class="staff-card">
-                <img src="principal.jpeg" alt="Joseph Shanker">
+                <img src="principal.jpeg" alt="Joseph Shanker" loading="lazy" decoding="async">
                 <h3>JOSEPH SHANKER</h3>
                 <p class="designation">Principal</p>
                 <p class="staff-phone">📞 9863983951</p>
@@ -1006,7 +1008,7 @@
 
 
             <div class="staff-card">
-                <img src="vice principal.jpeg" alt="Ranjana Rai">
+                <img src="vice principal.jpeg" alt="Ranjana Rai" loading="lazy" decoding="async">
                 <h3>RANJANA RAI</h3>
                 <p class="designation">Vice Principal</p>
                 <p class="staff-phone">📞 9767777438</p>
@@ -1018,7 +1020,7 @@
 
             <div class="staff-card">
 
-                <img src="accountant.jpeg" alt="Sagar Adhikari">
+                <img src="accountant.jpeg" alt="Sagar Adhikari" loading="lazy" decoding="async">
 
                 <h3>SAGAR ADHIKARI</h3>
 
@@ -1042,7 +1044,7 @@
 
 
             <div class="staff-card">
-                <img src="teacher1.jpeg" alt="Abhishek Kalikotay">
+                <img src="teacher1.jpeg" alt="Abhishek Kalikotay" loading="lazy" decoding="async">
                 <h3>ABHISHEK KALIKOTAY</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('abhishek')">More Details</button>
@@ -1050,7 +1052,7 @@
 
 
             <div class="staff-card">
-                <img src="sunyata.jpeg" alt="Sunyata Rai">
+                <img src="sunyata.jpeg" alt="Sunyata Rai" loading="lazy" decoding="async">
                 <h3>SUNYATA RAI</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('sunyata')">More Details</button>
@@ -1058,7 +1060,7 @@
 
 
             <div class="staff-card">
-                <img src="sushma.jpeg" alt="Sushma Rai">
+                <img src="sushma.jpeg" alt="Sushma Rai" loading="lazy" decoding="async">
                 <h3>SUSHMA RAI</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('sushma')">More Details</button>
@@ -1066,7 +1068,7 @@
 
 
             <div class="staff-card">
-                <img src="kritika.jpeg" alt="Kritika Magar">
+                <img src="kritika.jpeg" alt="Kritika Magar" loading="lazy" decoding="async">
                 <h3>KRITIKA MAGAR</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('kritika')">More Details</button>
@@ -1074,7 +1076,7 @@
 
 
             <div class="staff-card">
-                <img src="amisha.jpeg" alt="Amisha Rai">
+                <img src="amisha.jpeg" alt="Amisha Rai" loading="lazy" decoding="async">
                 <h3>AMISHA RAI</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('amisha')">More Details</button>
@@ -1082,7 +1084,7 @@
 
 
             <div class="staff-card">
-                <img src="swastika.jpeg" alt="Swastika Limbu">
+                <img src="swastika.jpeg" alt="Swastika Limbu" loading="lazy" decoding="async">
                 <h3>SWASTIKA LIMBU</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('swastika')">More Details</button>
@@ -1090,7 +1092,7 @@
 
 
             <div class="staff-card">
-                <img src="sanjaya.jpeg" alt="Sanjaya Rai">
+                <img src="sanjaya.jpeg" alt="Sanjaya Rai" loading="lazy" decoding="async">
                 <h3>SANJAYA RAI</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('sanjaya')">More Details</button>
@@ -1098,7 +1100,7 @@
 
 
             <div class="staff-card">
-                <img src="sujata.jpeg" alt="Sujata Rai">
+                <img src="sujata.jpeg" alt="Sujata Rai" loading="lazy" decoding="async">
                 <h3>SUJATA RAI</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('sujata')">More Details</button>
@@ -1106,7 +1108,7 @@
 
 
             <div class="staff-card">
-                <img src="shekhar.jpeg" alt="Shekhar Kumar Acharya">
+                <img src="shekhar.jpeg" alt="Shekhar Kumar Acharya" loading="lazy" decoding="async">
                 <h3>SHEKHAR KUMAR ACHARYA</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('shekhar')">More Details</button>
@@ -1114,7 +1116,7 @@
 
 
             <div class="staff-card">
-                <img src="padam.jpeg" alt="Padam Karki">
+                <img src="padam.jpeg" alt="Padam Karki" loading="lazy" decoding="async">
                 <h3>PADAM KARKI</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('padam')">More Details</button>
@@ -1122,7 +1124,7 @@
 
 
             <div class="staff-card">
-                <img src="rufina.jpeg" alt="Rufina Pradhan">
+                <img src="rufina.jpeg" alt="Rufina Pradhan" loading="lazy" decoding="async">
                 <h3>RUFINA PRADHAN</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('rufina')">More Details</button>
@@ -1130,7 +1132,7 @@
 
 
             <div class="staff-card">
-                <img src="liza.jpeg" alt="Liza Rai">
+                <img src="liza.jpeg" alt="Liza Rai" loading="lazy" decoding="async">
                 <h3>LIZA RAI</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('liza')">More Details</button>
@@ -1138,7 +1140,7 @@
 
 
             <div class="staff-card">
-                <img src="kalpana.jpeg" alt="Kalpana Rai">
+                <img src="kalpana.jpeg" alt="Kalpana Rai" loading="lazy" decoding="async">
                 <h3>KALPANA RAI</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('kalpana')">More Details</button>
@@ -1146,7 +1148,7 @@
 
 
             <div class="staff-card">
-                <img src="punita.jpeg" alt="Punita Rai">
+                <img src="punita.jpeg" alt="Punita Rai" loading="lazy" decoding="async">
                 <h3>PUNITA RAI</h3>
                 <p class="designation">Teacher</p>
                 <button class="more-details-btn" onclick="showStaffDetails('punita')">More Details</button>
@@ -1154,7 +1156,7 @@
 
 
             <div class="staff-card">
-                <img src="devi.jpeg" alt="Devi Maya Tamang">
+                <img src="devi.jpeg" alt="Devi Maya Tamang" loading="lazy" decoding="async">
                 <h3>DEVI MAYA TAMANG</h3>
                 <p class="designation">School Support Staff</p>
                 <button class="more-details-btn" onclick="showStaffDetails('devi')">More Details</button>
@@ -1162,7 +1164,7 @@
 
 
             <div class="staff-card">
-                <img src="lila.jpeg" alt="Lila Rai">
+                <img src="lila.jpeg" alt="Lila Rai" loading="lazy" decoding="async">
                 <h3>LILA RAI</h3>
                 <p class="designation">School Support Staff</p>
                 <button class="more-details-btn" onclick="showStaffDetails('lila')">More Details</button>
@@ -1170,7 +1172,7 @@
 
 
             <div class="staff-card">
-                <img src="sabina.jpeg" alt="Sabina Limbu">
+                <img src="sabina.jpeg" alt="Sabina Limbu" loading="lazy" decoding="async">
                 <h3>SABINA LIMBU</h3>
                 <p class="designation">School Support Staff</p>
                 <button class="more-details-btn" onclick="showStaffDetails('sabina')">More Details</button>
@@ -1178,7 +1180,7 @@
 
 
             <div class="staff-card">
-                <img src="amit.jpeg" alt="Amit Rai">
+                <img src="amit.jpeg" alt="Amit Rai" loading="lazy" decoding="async">
                 <h3>AMIT RAI</h3>
                 <p class="designation">Driver</p>
                 <button class="more-details-btn" onclick="showStaffDetails('amit')">More Details</button>
@@ -1186,7 +1188,7 @@
 
 
             <div class="staff-card">
-                <img src="bhupendra.jpeg" alt="Bhupendra Rai">
+                <img src="bhupendra.jpeg" alt="Bhupendra Rai" loading="lazy" decoding="async">
                 <h3>BHUPENDRA RAI</h3>
                 <p class="designation">Driver</p>
                 <button class="more-details-btn" onclick="showStaffDetails('bhupendra')">More Details</button>
@@ -1224,7 +1226,7 @@
                 id="staffDetailPhoto"
                 class="staff-details-photo"
                 src=""
-                alt="Staff Photo">
+                alt="Staff Photo" loading="lazy" decoding="async">
 
             <h1 id="staffDetailName"></h1>
 
@@ -2555,7 +2557,7 @@
         <div class="staff-dashboard-welcome-glow two"></div>
         <div class="staff-dashboard-welcome-content">
             <div class="staff-dashboard-welcome-logo-wrap">
-                <img id="staffDashboardWelcomePhoto" src="logo.jpeg" alt="Staff profile photo">
+                <img id="staffDashboardWelcomePhoto" src="logo.jpeg" alt="Staff profile photo" loading="lazy" decoding="async">
                 <span class="staff-dashboard-welcome-check" aria-hidden="true">✓</span>
             </div>
             <div class="staff-dashboard-welcome-badge">LOGIN SUCCESSFUL</div>
@@ -2591,7 +2593,7 @@
 
         <div class="staff-dashboard-hero">
             <div class="staff-dashboard-brand">
-                <img id="staffDashboardProfilePhoto" class="staff-dashboard-logo" src="logo.jpeg" alt="Staff profile photo">
+                <img id="staffDashboardProfilePhoto" class="staff-dashboard-logo" src="logo.jpeg" alt="Staff profile photo" loading="lazy" decoding="async">
                 <div>
                     <p class="staff-dashboard-kicker">St. Augustine Digital Staff Hub</p>
                     <h2 id="staffDashboardGreeting">Welcome</h2>
@@ -3804,7 +3806,7 @@
 
 <div id="staffAppShell" aria-hidden="true">
   <div class="staff-app-shell-card">
-    <img src="staff-app-logo.png" class="staff-app-shell-logo" alt="St. Augustine logo">
+    <img src="staff-app-logo.png" class="staff-app-shell-logo" alt="St. Augustine logo" loading="lazy" decoding="async">
     <div class="staff-app-shell-badge">🔒 SECURE STAFF APP</div>
     <h1>St. Augustine <span>Premium Staff Workspace</span></h1>
     <p>Your secure mobile workspace for Marks, Exam, Leave, Portfolio, Plans and Staff tools.</p>
