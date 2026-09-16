@@ -3438,9 +3438,15 @@ body.dark-mode .student-admin-state{color:#c5d0db}body.dark-mode .student-admin-
 }
 .admin-manager-actions .danger{background:#b42318}
 .admin-filter-row{
-    display:grid;grid-template-columns:auto minmax(150px,220px) minmax(180px,1fr);
+    display:grid;grid-template-columns:auto minmax(150px,220px) minmax(180px,1fr) auto;
     gap:10px;align-items:center;margin-bottom:15px
 }
+.admin-export-btn{
+    border:0;border-radius:10px;padding:11px 16px;background:#087443;color:#fff;
+    font-weight:800;cursor:pointer;white-space:nowrap;box-shadow:0 3px 10px rgba(8,116,67,.18)
+}
+.admin-export-btn:hover{transform:translateY(-1px);filter:brightness(.96)}
+.admin-export-btn:disabled{opacity:.65;cursor:wait;transform:none}
 .admin-filter-row select,.admin-filter-row input{
     padding:10px;border:1px solid #ccd8e4;border-radius:10px;font:inherit
 }

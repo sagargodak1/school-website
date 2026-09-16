@@ -126,7 +126,7 @@
 
 <!-- PERFORMANCE: preload above-the-fold hero background -->
 <link rel="preload" as="image" href="school.jpeg" fetchpriority="high">
-<link rel="stylesheet" href="style.css?v=20260910-multi-founder-final">
+<link rel="stylesheet" href="style.css?v=20260916-student-excel-export-v1">
 </head>
 
 
@@ -2372,6 +2372,7 @@
                     <option>Class 9</option><option>Class 10</option>
                 </select>
                 <input id="adminStudentSearch" type="search" placeholder="Search student..." oninput="renderAdminStudentList()">
+                <button id="adminStudentExcelExportBtn" type="button" class="admin-export-btn" onclick="exportAdminStudentsToExcel()">📊 EXPORT EXCEL</button>
             </div>
 
             <div id="adminStudentList" class="admin-manager-list"></div>
@@ -3918,7 +3919,7 @@
 </div>
 
 
-<script src="app.js?v=20260910-multi-founder-final"></script>
+<script src="app.js?v=20260916-student-excel-export-v1"></script>
 </body>
 
 </html>

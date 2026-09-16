@@ -9946,6 +9946,116 @@ renderAdminStudentList=function(){
   if(studentAdminSession?.access_token&&!umeAdminUpperStudentsLoaded&&!umeAdminUpperStudentsLoading)umeLoadAdminUpperStudents();
 };
 
+/* =========================================================
+   ADMIN STUDENTS — CLASS-WISE EXCEL EXPORT
+   Exports the selected Class (or All Classes) without passwords.
+   Roll No. follows the same visible class ordering: 1, 2, 3...
+   ========================================================= */
+async function exportAdminStudentsToExcel(){
+  if(!studentAdminSession?.access_token){
+    alert("Admin login is required.");
+    openStudentAdminLogin?.();
+    return;
+  }
+  if(typeof XLSX==="undefined"){
+    alert("Excel library is not available. Please refresh the page and try again.");
+    return;
+  }
+
+  const classFilter=document.getElementById("adminStudentClassFilter")?.value||"ALL";
+  const button=document.getElementById("adminStudentExcelExportBtn");
+  const oldText=button?.textContent||"📊 EXPORT EXCEL";
+
+  try{
+    if(button){button.disabled=true;button.textContent="PREPARING EXCEL…";}
+
+    const needsUpper=classFilter==="ALL"||UME_UPPER_CLASSES.includes(classFilter);
+    if(needsUpper&&!umeAdminUpperStudentsLoaded){
+      await umeLoadAdminUpperStudents();
+    }
+
+    const lower=(adminManagedStudents||[])
+      .filter(student=>!UME_UPPER_CLASSES.includes(student.className))
+      .map(student=>({
+        studentId:String(student.studentId||""),
+        name:String(student.name||""),
+        className:String(student.className||""),
+        dob:String(student.dob||""),
+        guardian:String(student.guardian||""),
+        performance:String(student.performance||""),
+        remarks:String(student.remarks||"")
+      }));
+
+    const upper=(umeAdminUpperStudents||[]).map(row=>({
+      studentId:String(row.student_id||""),
+      name:String(row.name||row.student_name||""),
+      className:String(row.class_name||""),
+      dob:String(row.dob||""),
+      guardian:String(row.guardian||""),
+      performance:String(row.performance||""),
+      remarks:String(row.remarks||"")
+    }));
+
+    const classOrder=(typeof UME_CLASSES!=="undefined"&&Array.isArray(UME_CLASSES))
+      ?UME_CLASSES
+      :["Nursery","LKG","UKG","Class 1","Class 2","Class 3","Class 4","Class 5","Class 6","Class 7","Class 8","Class 9","Class 10"];
+
+    const students=[...lower,...upper]
+      .filter(student=>classFilter==="ALL"||student.className===classFilter)
+      .filter(student=>student.studentId&&student.name&&student.className)
+      .sort((a,b)=>
+        classOrder.indexOf(a.className)-classOrder.indexOf(b.className)||
+        a.name.localeCompare(b.name,undefined,{sensitivity:"base"})||
+        a.studentId.localeCompare(b.studentId,undefined,{numeric:true,sensitivity:"base"})
+      );
+
+    if(!students.length){
+      alert(classFilter==="ALL"?"No students are available to export.":`No students found in ${classFilter}.`);
+      return;
+    }
+
+    const rollByClass=new Map();
+    const rows=students.map(student=>{
+      const roll=(rollByClass.get(student.className)||0)+1;
+      rollByClass.set(student.className,roll);
+      return {
+        "Roll No.":roll,
+        "Student ID":student.studentId,
+        "Student Name":student.name,
+        "Class":student.className,
+        "Date of Birth (B.S.)":student.dob,
+        "Parent / Guardian":student.guardian,
+        "Academic Performance":student.performance,
+        "Remarks":student.remarks
+      };
+    });
+
+    const sheet=XLSX.utils.json_to_sheet(rows,{
+      header:["Roll No.","Student ID","Student Name","Class","Date of Birth (B.S.)","Parent / Guardian","Academic Performance","Remarks"]
+    });
+    sheet["!cols"]=[
+      {wch:10},{wch:16},{wch:30},{wch:14},{wch:20},{wch:28},{wch:34},{wch:34}
+    ];
+    sheet["!autofilter"]={ref:`A1:H${rows.length+1}`};
+    sheet["!freeze"]={xSplit:0,ySplit:1,topLeftCell:"A2",activePane:"bottomLeft",state:"frozen"};
+
+    const book=XLSX.utils.book_new();
+    const sheetName=(classFilter==="ALL"?"All Students":classFilter).slice(0,31);
+    XLSX.utils.book_append_sheet(book,sheet,sheetName);
+
+    const safeName=String(classFilter==="ALL"?"All_Classes":classFilter)
+      .replace(/[\/:*?"<>|]+/g," ")
+      .trim()
+      .replace(/\s+/g,"_");
+    XLSX.writeFile(book,`St_Augustine_${safeName}_Students.xlsx`,{compression:true});
+  }catch(error){
+    console.error("Student Excel export error:",error);
+    alert("Student Excel could not be exported: "+(error?.message||"Unknown error"));
+  }finally{
+    if(button){button.disabled=false;button.textContent=oldText;}
+  }
+}
+
 /* Public Class 6-10 Portfolio: names only, with no clickable profile. */
 showUpperClassPublicRoster=async function(className){
   document.getElementById("studentClassView").style.display="none";
