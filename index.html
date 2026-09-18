@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!-- Final website: Staff Login Welcome + Premium Staff Dashboard -->
 <html lang="en">
 
@@ -3920,7 +3920,236 @@
 
 
 <script src="app.js?v=20260916-student-excel-export-v1"></script>
-  <script src="question-submission.js?v=20260918-qs-v1"></script>
+  <script src="question-submission.js?v=20260918-qs-v1_4_1-final"></script>
+
+  <!-- QUESTION SUBMISSION DASHBOARD BUTTON VISUAL FIX -->
+  <style>
+    /* Keep Question Submission visually identical to the other Staff Dashboard quick-action cards. */
+    .staff-dashboard-quick-actions .qs-question-action {
+      position: relative !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 14px !important;
+      width: 100% !important;
+      min-height: 96px !important;
+      padding: 16px 18px !important;
+      border: 0 !important;
+      border-radius: 18px !important;
+      overflow: hidden !important;
+      text-align: left !important;
+      cursor: pointer !important;
+      color: #fff !important;
+      background: linear-gradient(135deg, #159bd7 0%, #1178bd 100%) !important;
+      box-shadow: 0 9px 20px rgba(17, 120, 189, .20) !important;
+      isolation: isolate !important;
+    }
+
+    .staff-dashboard-quick-actions .qs-question-action:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 12px 24px rgba(17, 120, 189, .26) !important;
+    }
+
+    .staff-dashboard-quick-actions .qs-question-action .staff-dashboard-action-icon {
+      position: relative !important;
+      z-index: 2 !important;
+      flex: 0 0 54px !important;
+      width: 54px !important;
+      height: 54px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 14px !important;
+      background: rgba(255,255,255,.16) !important;
+      border: 1px solid rgba(255,255,255,.22) !important;
+      font-size: 25px !important;
+      line-height: 1 !important;
+      box-shadow: none !important;
+    }
+
+    .staff-dashboard-quick-actions .qs-question-action .staff-dashboard-action-copy {
+      position: relative !important;
+      z-index: 2 !important;
+      min-width: 0 !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 4px !important;
+      color: #fff !important;
+    }
+
+    .staff-dashboard-quick-actions .qs-question-action .staff-dashboard-action-copy strong {
+      color: #fff !important;
+      font-size: 18px !important;
+      font-weight: 800 !important;
+      line-height: 1.15 !important;
+      letter-spacing: 0 !important;
+    }
+
+    .staff-dashboard-quick-actions .qs-question-action .staff-dashboard-action-copy small {
+      color: rgba(255,255,255,.90) !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      line-height: 1.25 !important;
+      white-space: normal !important;
+    }
+
+    .staff-dashboard-quick-actions .qs-question-action .staff-dashboard-action-arrow {
+      position: relative !important;
+      z-index: 2 !important;
+      flex: 0 0 auto !important;
+      width: auto !important;
+      height: auto !important;
+      min-width: 0 !important;
+      padding: 0 !important;
+      margin-left: 4px !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      color: #fff !important;
+      font-size: 24px !important;
+      line-height: 1 !important;
+    }
+
+    .staff-dashboard-quick-actions .qs-question-action .qs-new-badge {
+      position: absolute !important;
+      z-index: 3 !important;
+      top: 8px !important;
+      right: 42px !important;
+      padding: 2px 7px !important;
+      border-radius: 999px !important;
+      background: #fff !important;
+      color: #0f6fae !important;
+      font-size: 9px !important;
+      font-weight: 900 !important;
+      line-height: 1.35 !important;
+      letter-spacing: .35px !important;
+      box-shadow: 0 2px 7px rgba(0,0,0,.10) !important;
+    }
+
+    /* Neutralize the oversized circle / overlay that the earlier Question Submission card produced. */
+    .staff-dashboard-quick-actions .qs-question-action::before,
+    .staff-dashboard-quick-actions .qs-question-action::after,
+    .staff-dashboard-quick-actions .qs-question-action .qs-big-circle,
+    .staff-dashboard-quick-actions .qs-question-action .question-submit-circle,
+    .staff-dashboard-quick-actions .qs-question-action .question-submission-circle {
+      content: none !important;
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .staff-dashboard-quick-actions .qs-question-action[disabled],
+    .staff-dashboard-quick-actions .qs-question-action.is-disabled {
+      opacity: .62 !important;
+      cursor: not-allowed !important;
+      transform: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .staff-dashboard-quick-actions .qs-question-action {
+        min-height: 88px !important;
+        padding: 14px !important;
+      }
+      .staff-dashboard-quick-actions .qs-question-action .staff-dashboard-action-icon {
+        flex-basis: 48px !important;
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 22px !important;
+      }
+      .staff-dashboard-quick-actions .qs-question-action .staff-dashboard-action-copy strong {
+        font-size: 16px !important;
+      }
+      .staff-dashboard-quick-actions .qs-question-action .qs-new-badge {
+        right: 36px !important;
+      }
+    }
+  </style>
+
+  <script>
+  (function () {
+    'use strict';
+
+    function fixQuestionSubmissionDashboardButton() {
+      var host = document.querySelector('.staff-dashboard-quick-actions');
+      if (!host) return false;
+
+      var candidates = host.querySelectorAll('button, a, [role="button"]');
+      var button = null;
+      for (var i = 0; i < candidates.length; i++) {
+        var label = (candidates[i].textContent || '').replace(/\s+/g, ' ').trim();
+        if (/question\s*submission/i.test(label)) {
+          button = candidates[i];
+          break;
+        }
+      }
+      if (!button) return false;
+
+      /* Keep the original element itself so its click handler and permission state stay intact. */
+      if (!button.classList.contains('staff-dashboard-action')) {
+        button.classList.add('staff-dashboard-action');
+      }
+      button.classList.add('qs-question-action');
+
+      if (button.getAttribute('data-qs-visual-fixed') !== '1') {
+        button.innerHTML =
+          '<span class="staff-dashboard-action-icon" aria-hidden="true">📄</span>' +
+          '<span class="staff-dashboard-action-copy">' +
+            '<strong>Question Submission</strong>' +
+            '<small>Submit Word questions • View submissions</small>' +
+          '</span>' +
+          '<span class="qs-new-badge">NEW</span>' +
+          '<span class="staff-dashboard-action-arrow" aria-hidden="true">→</span>';
+        button.setAttribute('data-qs-visual-fixed', '1');
+      }
+
+      /* Remove inline visual leftovers from the previous oversized-circle design only. */
+      button.style.setProperty('background', 'linear-gradient(135deg, #159bd7 0%, #1178bd 100%)', 'important');
+      button.style.setProperty('color', '#fff', 'important');
+      button.style.setProperty('border', '0', 'important');
+      button.style.setProperty('border-radius', '18px', 'important');
+      button.style.setProperty('overflow', 'hidden', 'important');
+      button.style.setProperty('position', 'relative', 'important');
+
+      return true;
+    }
+
+    function scheduleFix() {
+      fixQuestionSubmissionDashboardButton();
+      setTimeout(fixQuestionSubmissionDashboardButton, 150);
+      setTimeout(fixQuestionSubmissionDashboardButton, 500);
+      setTimeout(fixQuestionSubmissionDashboardButton, 1200);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', scheduleFix, { once: true });
+    } else {
+      scheduleFix();
+    }
+
+    var observer = new MutationObserver(function (mutations) {
+      var needsCheck = false;
+      for (var i = 0; i < mutations.length; i++) {
+        if (mutations[i].type === 'childList' && mutations[i].addedNodes.length) {
+          needsCheck = true;
+          break;
+        }
+      }
+      if (needsCheck) fixQuestionSubmissionDashboardButton();
+    });
+
+    function startObserver() {
+      if (document.body) {
+        observer.observe(document.body, { childList: true, subtree: true });
+      }
+    }
+    if (document.body) startObserver();
+    else document.addEventListener('DOMContentLoaded', startObserver, { once: true });
+  })();
+  </script>
+
 </body>
 
 </html>

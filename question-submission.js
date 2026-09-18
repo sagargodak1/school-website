@@ -1,7 +1,8 @@
 /* =========================================================
    ST. AUGUSTINE ACADEMIC FOUNDATION
-   QUESTION SUBMISSION WORKFLOW — ADD-ON V1.3
+   QUESTION SUBMISSION WORKFLOW — ADD-ON V1.4.1
    Safe overlay: does not replace existing Marks/Leave/Portfolio logic.
+   V1.4.1: fixes Website Admin manual Marks Submitted checkbox detection.
    ========================================================= */
 (function(){
   "use strict";
@@ -53,8 +54,10 @@
     .qs-review-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.qs-review-filters select{border:1px solid #cbd9e6;border-radius:9px;padding:9px;background:#fff}
     .qs-permission-row{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid #e5edf4;padding:10px 2px}.qs-permission-row:last-child{border-bottom:0}.qs-switch{display:flex;align-items:center;gap:8px;font-weight:800;font-size:12px}.qs-switch input{width:19px;height:19px}
     .qs-modal{position:fixed;inset:0;background:rgba(9,23,38,.58);display:none;align-items:center;justify-content:center;z-index:100800;padding:18px}.qs-modal.show{display:flex}.qs-modal-card{width:min(520px,96vw);background:#fff;border-radius:16px;padding:18px;box-shadow:0 20px 70px rgba(0,0,0,.28)}
-    #staffDashboardQuestionSubmissionAction{display:flex!important;border:2px solid #0d5f9f!important;box-shadow:0 8px 22px rgba(13,95,159,.16)!important;position:relative!important}
-    #staffDashboardQuestionSubmissionAction::after{content:"NEW";position:absolute;right:10px;top:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:999px;background:#0d5f9f;color:#fff;letter-spacing:.05em}
+    #staffDashboardQuestionSubmissionAction{display:flex!important;position:relative!important;overflow:hidden!important;background:linear-gradient(135deg,#0d7fb9,#0b5f9f)!important;border:0!important;color:#fff!important;box-shadow:0 9px 24px rgba(13,95,159,.24)!important}
+    #staffDashboardQuestionSubmissionAction::after{content:"NEW";position:absolute;right:10px;top:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:999px;background:#fff;color:#0b5f9f;letter-spacing:.05em;box-shadow:0 2px 8px rgba(0,0,0,.10)}
+    #staffDashboardQuestionSubmissionAction .staff-dashboard-action-icon{background:rgba(255,255,255,.16)!important;color:#fff!important;border:1px solid rgba(255,255,255,.22)!important}
+    #staffDashboardQuestionSubmissionAction .staff-dashboard-action-copy,#staffDashboardQuestionSubmissionAction .staff-dashboard-action-copy strong,#staffDashboardQuestionSubmissionAction .staff-dashboard-action-copy small,#staffDashboardQuestionSubmissionAction .staff-dashboard-action-arrow{color:#fff!important;opacity:1!important}
     #staffDashboardQuestionSubmissionAction .staff-dashboard-action-copy strong{font-size:15px!important}
     .qs-marks-line{margin-top:5px;font-size:11px;font-weight:900;color:#264863}.qs-marks-line.done{color:#146c43}
     @media(max-width:850px){.qs-grid,.qs-grid.two{grid-template-columns:1fr}.qs-hero{display:block}.qs-role{display:inline-flex;margin-top:10px}.qs-box{width:97vw;max-height:96vh}.qs-body{padding:12px}.qs-row-head{display:block}.qs-row-head .qs-status{margin-top:7px}#staffDashboardQuestionSubmissionAction{width:100%!important;min-height:72px!important}}
@@ -281,7 +284,7 @@
 
 
   /* =========================================================
-     V1.3 — EXAM TRACKER + UNIFIED MARKS FINAL-ACCEPT LINK
+     V1.4 — EXAM TRACKER + UNIFIED MARKS FINAL-ACCEPT + MANUAL TRACKER LINK
      Principal stays read-only. Only Website Admin can accept Marks.
      ========================================================= */
   const qsMarksContext=new Map();
@@ -306,6 +309,15 @@
     const db=typeof umeAdminDb==="function"?umeAdminDb():(typeof initStudentSupabase==="function"?initStudentSupabase():null);
     if(!db)throw new Error("Admin Supabase connection is unavailable.");
     const {data,error}=await db.rpc(name,args);if(error)throw error;return data;
+  }
+
+  function qsMarksTrackerAdmin(){
+    // The Exam Management portal role already identifies the Website Admin UI.
+    // Do not hide the manual Marks checkbox just because the separate
+    // studentAdminSession helper has not finished syncing yet.
+    // Server-side RPC qs_admin_set_marks_tracker() still enforces qs_is_admin(),
+    // so this UI relaxation does not weaken database security.
+    return typeof examPortalRole!=="undefined"&&examPortalRole==="admin";
   }
 
   async function qsFindExamEntryForMarks(ctx){
@@ -338,7 +350,7 @@
   async function qsAcceptedMarksIds(){
     const db=typeof initStudentSupabase==="function"?initStudentSupabase():null;
     if(!db)return new Set();
-    const {data,error}=await db.from("exam_question_status").select("marks_source_project_id,marks_submitted").eq("marks_submitted",true);
+    const {data,error}=await db.from("exam_question_status").select("marks_source_project_id").not("marks_source_project_id","is",null);
     if(error)throw error;
     return new Set((data||[]).map(r=>Number(r.marks_source_project_id)).filter(Number.isFinite));
   }
@@ -362,7 +374,7 @@
           if(acceptedNow){
             node.className="ume-status accepted_by_class_teacher";
             node.textContent="✅ MARKS ACCEPTED";
-            node.title="Accepted by Website Admin; Exam tracker shows Marks Submitted.";
+            node.title="Accepted by Website Admin. Marks Submitted tracker can also be changed manually by Website Admin.";
           }else if(row.status==="submitted_to_admin"){
             node.type="button";
             node.className="ume-btn ume-success";
@@ -381,7 +393,7 @@
         const note=document.createElement("div");
         note.className="ume-empty";
         note.style.marginBottom="10px";
-        note.textContent="Marks Submitted tracker update is not ready yet. Run QUESTION_SUBMISSION_UPDATE_V1_3.sql once in Supabase.";
+        note.textContent="Marks Submitted tracker update is not ready yet. Run QUESTION_SUBMISSION_UPDATE_V1_4.sql once in Supabase.";
         host.prepend(note);
       }
     }
@@ -447,6 +459,23 @@
     }catch(error){console.error("Marks tracker status load error",error);}
   }
 
+  window.qsSetMarksTracker=async function(entryId,checked,box){
+    if(!qsMarksTrackerAdmin()){
+      if(box)box.checked=!checked;
+      alert("Only Website Admin can change Marks Submitted manually.");
+      return;
+    }
+    if(box)box.disabled=true;
+    try{
+      await qsAdminDbRpc("qs_admin_set_marks_tracker",{p_entry_id:Number(entryId),p_checked:!!checked,p_admin_name:"Website Admin"});
+      await qsMergeMarksTrackerStatus();
+      if(typeof examRenderAll==="function")examRenderAll();
+    }catch(error){
+      if(box){box.checked=!checked;box.disabled=false;}
+      alert("Marks Submitted tracker could not be updated: "+qsFriendlyError(error));
+    }
+  };
+
   function installExamMarksTrackerIntegration(){
     if(typeof examLoadCurrentPeriodData==="function"&&!examLoadCurrentPeriodData.__qsMarksWrapped){
       const original=examLoadCurrentPeriodData;
@@ -463,8 +492,8 @@
         const e=examEntryFor(day.id,cls);
         if(!e||!examNormalize(e.activity_title))return '<td class="exam-tracker-cell"><span class="exam-special">—</span></td>';
         if(!e.question_required)return `<td class="exam-tracker-cell"><span class="exam-special">${examEscape(e.activity_title)}</span>${e.teacher_name?`<span class="exam-teacher">${examEscape(e.teacher_name)}</span>`:""}</td>`;
-        const s=examStatusFor(e.id)||{},submitted=!!s.submitted,printed=!!s.printed,marks=!!s.marks_submitted,m=examIsManager();
-        return `<td class="exam-tracker-cell"><span class="exam-subject">${examEscape(e.activity_title)}</span>${e.teacher_name?`<span class="exam-teacher">${examEscape(e.teacher_name)}</span>`:""}<div class="exam-status-stack"><label class="exam-status-line ${submitted?"active":""}"><span class="exam-bulb ${submitted?"on":""}">💡</span>${m?`<input type="checkbox" ${submitted?"checked":""} onchange="examSetStatus(${Number(e.id)},'submitted',this.checked)">`:submitted?"✅":"☐"}<span>${submitted?"Question Submitted":"Question Submit"}</span></label><label class="exam-status-line ${printed?"printed":""}">${m?`<input type="checkbox" ${printed?"checked":""} ${submitted?"":"disabled"} onchange="examSetStatus(${Number(e.id)},'printed',this.checked)">`:printed?"✅":"☐"}<span>🖨 ${printed?"Printed":"Print"}</span></label><div class="qs-marks-line ${marks?"done":""}">${marks?"✅":"☐"} 📊 ${marks?"Marks Submitted":"Marks Pending"}</div></div></td>`;
+        const s=examStatusFor(e.id)||{},submitted=!!s.submitted,printed=!!s.printed,marks=!!s.marks_submitted,m=examIsManager(),marksAdmin=qsMarksTrackerAdmin();
+        return `<td class="exam-tracker-cell"><span class="exam-subject">${examEscape(e.activity_title)}</span>${e.teacher_name?`<span class="exam-teacher">${examEscape(e.teacher_name)}</span>`:""}<div class="exam-status-stack"><label class="exam-status-line ${submitted?"active":""}"><span class="exam-bulb ${submitted?"on":""}">💡</span>${m?`<input type="checkbox" ${submitted?"checked":""} onchange="examSetStatus(${Number(e.id)},'submitted',this.checked)">`:submitted?"✅":"☐"}<span>${submitted?"Question Submitted":"Question Submit"}</span></label><label class="exam-status-line ${printed?"printed":""}">${m?`<input type="checkbox" ${printed?"checked":""} ${submitted?"":"disabled"} onchange="examSetStatus(${Number(e.id)},'printed',this.checked)">`:printed?"✅":"☐"}<span>🖨 ${printed?"Printed":"Print"}</span></label><label class="exam-status-line qs-marks-line ${marks?"done":""}">${marksAdmin?`<input type="checkbox" ${marks?"checked":""} onchange="qsSetMarksTracker(${Number(e.id)},this.checked,this)">`:marks?"✅":"☐"}<span>📊 ${marks?"Marks Submitted":"Marks Pending"}</span></label></div></td>`;
       };
       wrapped.__qsMarksWrapped=true;examTrackerCellHtml=wrapped;
     }
@@ -493,7 +522,7 @@
     if(heading&&/Question Submission/i.test(heading.textContent||""))heading.textContent="✅ Question, Printing & Marks Tracker";
   }
 
-  function installV13Integrations(){
+  function installV14Integrations(){
     ensureEntryButtons();
     installMarksAdminIntegration();
     installExamMarksTrackerIntegration();
@@ -504,7 +533,7 @@
     }
   }
 
-  function qsFriendlyError(e){const m=String(e?.message||e||"Unknown error");if(/question_submission_|question_reviewers|qs_/i.test(m)&&/does not exist|42P01|function/i.test(m))return "Question Submission database is not ready. Run QUESTION_SUBMISSION_UPDATE_V1_3.sql once in Supabase, then refresh.";if(/row-level security|permission denied|not allowed/i.test(m))return "This account does not have permission for that Question Submission action.";if(/duplicate key|question_submissions_entry_id_key/i.test(m))return "This Class + Subject has already been submitted and is locked.";if(/deadline|closed/i.test(m))return m;return m;}
+  function qsFriendlyError(e){const m=String(e?.message||e||"Unknown error");if(/question_submission_|question_reviewers|qs_/i.test(m)&&/does not exist|42P01|function/i.test(m))return "Question Submission database is not ready. Run QUESTION_SUBMISSION_UPDATE_V1_4.sql once in Supabase, then refresh.";if(/row-level security|permission denied|not allowed/i.test(m))return "This account does not have permission for that Question Submission action.";if(/duplicate key|question_submissions_entry_id_key/i.test(m))return "This Class + Subject has already been submitted and is locked.";if(/deadline|closed/i.test(m))return m;return m;}
 
   /* If Admin deletes an entire Exam Term from existing Exam Management, clean Question files first. */
   function hookExamDelete(){
@@ -532,5 +561,5 @@
     };wrapped.__qsWrapped=true;window.examDeleteCurrentPeriod=wrapped;
   }
 
-  document.addEventListener("DOMContentLoaded",()=>{injectStyles();ensurePopup();installV13Integrations();hookExamDelete();setTimeout(()=>{installV13Integrations();hookExamDelete();},1200);setTimeout(()=>{ensureEntryButtons();},3000);});
+  document.addEventListener("DOMContentLoaded",()=>{injectStyles();ensurePopup();installV14Integrations();hookExamDelete();setTimeout(()=>{installV14Integrations();hookExamDelete();},1200);setTimeout(()=>{ensureEntryButtons();},3000);});
 })();
