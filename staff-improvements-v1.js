@@ -201,6 +201,130 @@
       .pc-password-shell{width:min(520px,100%);background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 28px 70px rgba(0,0,0,.35)}.pc-password-body{padding:20px}.pc-password-note{font-size:12px;color:#617086;background:#f4f7fb;border-radius:12px;padding:11px;margin-bottom:14px}
       @media(max-width:800px){.pc-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-grid,.pc-check-grid{grid-template-columns:1fr}.pc-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-review-grid{grid-template-columns:1fr}.pc-body{padding:13px}.pc-head{padding:16px}.pc-head h2{font-size:18px}}
       @media(max-width:520px){.pc-filters{grid-template-columns:1fr}.pc-summary{grid-template-columns:1fr 1fr}.pc-card-head{flex-direction:column}.pc-badges{justify-content:flex-start}}
+
+      /* 2026-09-25 — MOBILE ONLY FIX
+         1) The final dashboard cards use the same compact size as the existing mobile cards.
+         2) Parent Concern checkbox labels always start immediately beside the checkbox.
+         Desktop/tablet styling remains unchanged. */
+      body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions #staffDashboardPortfolioAction,
+      body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card{
+        box-sizing:border-box!important;
+        width:100%!important;
+        height:86px!important;
+        min-height:86px!important;
+        max-height:86px!important;
+        padding:10px!important;
+        gap:8px!important;
+        border-radius:15px!important;
+        align-items:flex-start!important;
+      }
+      body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card .pc-action-icon{
+        flex:0 0 34px!important;
+        width:34px!important;
+        height:34px!important;
+        border-radius:10px!important;
+        font-size:16px!important;
+      }
+      body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card .pc-action-copy{
+        min-width:0!important;
+        flex:1 1 auto!important;
+        gap:3px!important;
+      }
+      body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card .pc-action-copy strong{
+        font-size:10.5px!important;
+        line-height:1.18!important;
+        overflow-wrap:anywhere!important;
+      }
+      body.staff-app-mode #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card .pc-action-copy span{
+        display:block!important;
+        margin-top:3px!important;
+        font-size:7.5px!important;
+        line-height:1.3!important;
+        overflow-wrap:anywhere!important;
+      }
+
+      body.staff-app-mode .pc-check{
+        display:grid!important;
+        grid-template-columns:22px minmax(0,1fr)!important;
+        align-items:start!important;
+        column-gap:9px!important;
+      }
+      body.staff-app-mode .pc-check input[type="checkbox"]{
+        box-sizing:border-box!important;
+        width:22px!important;
+        min-width:22px!important;
+        max-width:22px!important;
+        height:22px!important;
+        min-height:22px!important;
+        max-height:22px!important;
+        padding:0!important;
+        margin:0!important;
+        justify-self:start!important;
+      }
+      body.staff-app-mode .pc-check > span{
+        display:block!important;
+        width:auto!important;
+        min-width:0!important;
+        margin:0!important;
+        padding:1px 0 0!important;
+        text-align:left!important;
+      }
+
+      @media(max-width:700px){
+        body:not(.staff-app-mode) #staffDashboardPopup .staff-dashboard-quick-actions #staffDashboardPortfolioAction,
+        body:not(.staff-app-mode) #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card{
+          box-sizing:border-box!important;
+          width:100%!important;
+          height:72px!important;
+          min-height:72px!important;
+          max-height:72px!important;
+          padding:10px!important;
+          gap:8px!important;
+          border-radius:15px!important;
+          align-items:flex-start!important;
+        }
+        body:not(.staff-app-mode) #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card .pc-action-icon{
+          flex:0 0 36px!important;
+          width:36px!important;
+          height:36px!important;
+          border-radius:10px!important;
+          font-size:16px!important;
+        }
+        body:not(.staff-app-mode) #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card .pc-action-copy strong{
+          font-size:11px!important;
+          line-height:1.18!important;
+        }
+        body:not(.staff-app-mode) #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card .pc-action-copy span{
+          display:none!important;
+        }
+
+        body:not(.staff-app-mode) .pc-check{
+          display:grid!important;
+          grid-template-columns:22px minmax(0,1fr)!important;
+          align-items:start!important;
+          column-gap:9px!important;
+        }
+        body:not(.staff-app-mode) .pc-check input[type="checkbox"]{
+          box-sizing:border-box!important;
+          width:22px!important;
+          min-width:22px!important;
+          max-width:22px!important;
+          height:22px!important;
+          min-height:22px!important;
+          max-height:22px!important;
+          padding:0!important;
+          margin:0!important;
+          justify-self:start!important;
+        }
+        body:not(.staff-app-mode) .pc-check > span{
+          display:block!important;
+          width:auto!important;
+          min-width:0!important;
+          margin:0!important;
+          padding:1px 0 0!important;
+          text-align:left!important;
+        }
+      }
     `;
     document.head.appendChild(style);
   }
