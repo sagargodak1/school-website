@@ -271,6 +271,46 @@
         text-align:left!important;
       }
 
+      /* 2026-09-26 — PARENT CONCERN CHECKBOX + FONT ALIGNMENT FINAL FIX
+         Keep checkbox compact; keep text immediately beside it on desktop/mobile. */
+      .pc-check{
+        display:flex!important;
+        align-items:flex-start!important;
+        justify-content:flex-start!important;
+        gap:10px!important;
+        text-align:left!important;
+      }
+      .pc-check input[type="checkbox"]{
+        appearance:auto!important;
+        -webkit-appearance:checkbox!important;
+        box-sizing:border-box!important;
+        flex:0 0 18px!important;
+        width:18px!important;
+        min-width:18px!important;
+        max-width:18px!important;
+        height:18px!important;
+        min-height:18px!important;
+        max-height:18px!important;
+        margin:2px 0 0 0!important;
+        padding:0!important;
+      }
+      .pc-check > span{
+        display:block!important;
+        flex:1 1 auto!important;
+        width:auto!important;
+        min-width:0!important;
+        margin:0!important;
+        padding:0!important;
+        text-align:left!important;
+        font-family:Inter,Arial,"Segoe UI",sans-serif!important;
+        font-size:14px!important;
+        font-weight:600!important;
+        line-height:1.4!important;
+        letter-spacing:0!important;
+        text-transform:none!important;
+        color:#2d4058!important;
+      }
+
       @media(max-width:700px){
         body:not(.staff-app-mode) #staffDashboardPopup .staff-dashboard-quick-actions #staffDashboardPortfolioAction,
         body:not(.staff-app-mode) #staffDashboardPopup .staff-dashboard-quick-actions .pc-action-card{
@@ -326,6 +366,11 @@
           text-align:left!important;
         }
       }
+      /* FINAL OVERRIDE: prevent global input/label CSS from stretching concern checkboxes */
+      .pc-shell .pc-check{display:flex!important;grid-template-columns:none!important;align-items:flex-start!important;justify-content:flex-start!important;gap:10px!important;text-align:left!important}
+      .pc-shell .pc-check input[type="checkbox"]{appearance:auto!important;-webkit-appearance:checkbox!important;flex:0 0 18px!important;width:18px!important;min-width:18px!important;max-width:18px!important;height:18px!important;min-height:18px!important;max-height:18px!important;margin:2px 0 0!important;padding:0!important;justify-self:auto!important}
+      .pc-shell .pc-check>span{display:block!important;flex:1 1 auto!important;width:auto!important;min-width:0!important;margin:0!important;padding:0!important;text-align:left!important;font-family:Inter,Arial,"Segoe UI",sans-serif!important;font-size:14px!important;font-weight:600!important;line-height:1.4!important;letter-spacing:0!important;text-transform:none!important;color:#2d4058!important}
+
     `;
     document.head.appendChild(style);
   }

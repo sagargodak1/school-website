@@ -128,6 +128,7 @@
       .sat-banner{border-radius:15px;padding:12px 14px;margin-bottom:13px;font-weight:800}.sat-banner.holiday{background:#fff0e8;color:#a84300;border:1px solid #ffc69f}.sat-banner.work{background:#eaf8ef;color:#176b35;border:1px solid #bfe7cd}
       .sat-row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:12px}.sat-field{display:grid;gap:5px;min-width:150px;flex:1}.sat-field label,.sat-label{font-size:10px;font-weight:900;color:#5a7081;text-transform:uppercase}.sat-field input,.sat-field select{width:100%;border:1px solid #c9d9e6;border-radius:10px;padding:10px;background:#fff;font:inherit;color:#18384f}.sat-field.small{flex:0 0 145px}
       .sat-table-wrap{overflow:auto;background:#fff;border:1px solid #dbe8f3;border-radius:15px}.sat-table{width:100%;border-collapse:collapse;min-width:680px}.sat-table th,.sat-table td{padding:9px 10px;border-bottom:1px solid #e7eef5;text-align:left;font-size:12px}.sat-table th{background:#eff6fb;color:#31566f;position:sticky;top:0;z-index:1}
+      .sat-report-filters{align-items:end}.sat-report-summary{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.sat-report-mini{min-width:110px;padding:10px 12px;border:1px solid #dbe8f3;border-radius:12px;background:#f8fbfe}.sat-report-mini strong{display:block;font-size:18px;color:#15385f}.sat-report-mini span{font-size:10px;font-weight:800;color:#64788d;text-transform:uppercase}.sat-report-mini.present strong{color:#17864f}.sat-report-mini.absent strong{color:#ba2c35}.sat-matrix-table{min-width:max-content}.sat-matrix-table th,.sat-matrix-table td{white-space:nowrap}.sat-matrix-table th:nth-child(-n+3),.sat-matrix-table td:nth-child(-n+3){position:sticky;background:#fff;z-index:1}.sat-matrix-table th:nth-child(1),.sat-matrix-table td:nth-child(1){left:0}.sat-matrix-table th:nth-child(2),.sat-matrix-table td:nth-child(2){left:92px}.sat-matrix-table th:nth-child(3),.sat-matrix-table td:nth-child(3){left:250px}.sat-matrix-table thead th:nth-child(-n+3){z-index:3;background:#eff6fb}.sat-name-cell{min-width:150px;font-weight:700}.sat-date-col{min-width:90px}.sat-status-cell{text-align:center!important;font-weight:700}.sat-status-cell.present{background:#e8f7ef;color:#157a48}.sat-status-cell.absent{background:#fff0f1;color:#b42332}.sat-status-cell.late{background:#fff7dd;color:#8a6500}.sat-status-cell.holiday{background:#eef2f6;color:#607086}.sat-total-cell{text-align:center!important;font-weight:800}.sat-total-cell.present{color:#17864f}.sat-total-cell.absent{color:#ba2c35}
       .sat-chip{display:inline-block;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:900}.sat-chip.present{background:#e6f7ec;color:#16723a}.sat-chip.absent{background:#ffe8e8;color:#a62929}.sat-chip.holiday{background:#fff1d8;color:#925c00}.sat-chip.pending{background:#e9eff5;color:#576b7a}
       .sat-reader{position:relative;background:#061a2b;border-radius:17px;overflow:hidden;min-height:330px;display:flex;align-items:center;justify-content:center;color:#fff}.sat-reader video{width:100%!important;max-height:60dvh;object-fit:cover}.sat-reader-note{padding:20px;text-align:center}.sat-result{margin-top:12px;padding:17px;border-radius:16px;text-align:center;background:#edf4fa}.sat-result.ok{background:#dff7e8;border:2px solid #54b97a}.sat-result.already{background:#fff3d8;border:2px solid #e5ac39}.sat-result.fail{background:#ffe7e7;border:2px solid #dc7676}.sat-result h2{margin:0 0 6px;font-size:25px}.sat-result strong{font-size:20px}
       .sat-manual-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.sat-student{background:#fff;border:1px solid #dbe8f3;border-radius:13px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}.sat-student label{display:flex;align-items:center;gap:9px;font-weight:800}.sat-student input{width:20px;height:20px}.sat-muted{color:#6b7e8d;font-size:12px}
@@ -135,6 +136,7 @@
       .sat-qr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sat-qr-modal{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:16px}.sat-qr-box{background:#fff;border-radius:20px;padding:22px;text-align:center;max-width:360px;width:100%}.sat-qr-code{display:flex;justify-content:center;padding:12px}.sat-qr-value{font-size:10px;word-break:break-all;color:#697b89}
       .sat-permission{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px;border:1px solid #e0e9f1;border-radius:12px;margin-bottom:8px;background:#fff}
       .sat-mobile-more{display:none}
+      .sat-parent-today-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
       .sat-mobile-nav-btn span{display:block;font-size:17px;line-height:1}.sat-mobile-nav-btn small{display:block;font-size:9px;margin-top:4px;font-weight:900}
       #satFinalOverlay button,#satFinalOverlay input,#satFinalOverlay select{font-family:inherit}
       #satFinalOverlay .sat-shell,#satFinalOverlay .sat-main,#satFinalOverlay .sat-side{max-width:none!important}
@@ -152,6 +154,7 @@
         .sat-top{padding:10px 12px}
         .sat-content{padding:12px;overflow:auto}
         .sat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+        .sat-parent-today-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
         .sat-manual-list,.sat-qr-grid,.sat-face-list{grid-template-columns:1fr}
         .sat-row{align-items:stretch}
         .sat-field,.sat-field.small{min-width:100%;flex:1 1 100%}
@@ -175,7 +178,7 @@
         .sat-mobile-more button.active{background:rgba(255,255,255,.20)}
         .sat-top{padding:10px 12px}.sat-top h2{font-size:16px}.sat-meta{font-size:10px}
         .sat-content{padding:9px;overflow:auto}
-        .sat-grid{grid-template-columns:1fr}.sat-stat strong{font-size:24px}.sat-card{padding:12px;border-radius:14px}
+        .sat-grid{grid-template-columns:1fr}.sat-parent-today-grid{grid-template-columns:1fr!important}.sat-stat strong{font-size:24px}.sat-card{padding:12px;border-radius:14px}
         .sat-actions{gap:7px}.sat-btn{width:100%;min-height:43px}.sat-reader{min-height:42dvh}.sat-face-video{max-height:45dvh}.sat-table{min-width:620px}.sat-result h2{font-size:20px}
         .sat-manual-list,.sat-qr-grid,.sat-face-list{grid-template-columns:1fr}.sat-row{align-items:stretch}.sat-field,.sat-field.small{min-width:100%;flex:1 1 100%}
       }
@@ -217,14 +220,16 @@
   function navItems(){
     const a=[['dashboard','🏠 Dashboard'],['faceScan','🙂 Face Scanner']];
     if(ctx?.can_face_register)a.push(['faceRegister','📸 Face Registration']);
-    a.push(['qrScan','▣ QR Scanner'],['manual','✅ Manual Present'],['reports','📊 Reports']);
+    a.push(['qrScan','▣ QR Scanner'],['manual','✅ Manual Present']);
+    if(launchMode==='staff'&&!ctx?.is_admin)a.push(['myAttendance','🗓️ My Attendance']);
+    a.push(['reports','📊 Reports']);
     if(ctx?.is_admin)a.push(['qr','▣ QR Manager'],['people','👩‍🏫 Teacher / Staff'],['access','🔐 Full Access'],['faceAccess','🙂 Face Permission']);
     if(ctx?.is_admin||ctx?.is_full_access)a.push(['settings','⚙️ Settings']);
     return a;
   }
   let satMobileMoreOpen=false;
   function satMobileNavLabel(id){
-    const m={dashboard:['🏠','Home'],faceScan:['🙂','Face'],faceRegister:['📸','Register'],qrScan:['▣','QR'],manual:['✅','Manual'],reports:['📊','Reports'],qr:['▣','QR Manager'],people:['👩‍🏫','People'],access:['🔐','Access'],faceAccess:['🙂','Face Access'],settings:['⚙️','Settings']};
+    const m={dashboard:['🏠','Home'],faceScan:['🙂','Face'],faceRegister:['📸','Register'],qrScan:['▣','QR'],manual:['✅','Manual'],myAttendance:['🗓️','My Att.'],reports:['📊','Reports'],qr:['▣','QR Manager'],people:['👩‍🏫','People'],access:['🔐','Access'],faceAccess:['🙂','Face Access'],settings:['⚙️','Settings']};
     return m[id]||['•',id];
   }
   window.satToggleMobileMore=function(){
@@ -316,7 +321,7 @@
     satMobileMoreOpen=false;
     const mobileMore=byId('satMobileMore');if(mobileMore)mobileMore.classList.remove('open');
     currentView=v; renderNav();
-    const title={dashboard:'Dashboard',faceScan:'Face Scanner',faceRegister:'Face Registration',qrScan:'QR Scanner',manual:'Manual Student Present',reports:'Attendance Reports',qr:'QR Manager',people:'Teacher / Staff Control',access:'Full Access Management',faceAccess:'Face Registration Permission',settings:'Holiday & Settings'}[v]||'Smart Attendance';
+    const title={dashboard:'Dashboard',faceScan:'Face Scanner',faceRegister:'Face Registration',qrScan:'QR Scanner',manual:'Manual Student Present',reports:'Attendance Reports',qr:'QR Manager',people:'Teacher / Staff Control',access:'Full Access Management',faceAccess:'Face Registration Permission',myAttendance:'My Attendance',settings:'Holiday & Settings'}[v]||'Smart Attendance';
     const t=byId('satPageTitle');if(t)t.textContent=title;
     try{
       if(v==='dashboard')await renderDashboard();
@@ -325,6 +330,7 @@
       else if(v==='qrScan')await renderQrScanner();
       else if(v==='manual')await renderManual();
       else if(v==='reports')await renderReports();
+      else if(v==='myAttendance')await renderMyAttendance();
       else if(v==='qr')await renderQrManager();
       else if(v==='people')await renderPeople();
       else if(v==='access')await renderAccess();
@@ -349,6 +355,7 @@
       ${ctx.can_face_register?'<button class="sat-btn good" onclick="satFinalShow(\'faceRegister\')">📸 FACE REGISTRATION</button>':''}
       <button class="sat-btn primary" onclick="satFinalShow('qrScan')">▣ QR SCANNER</button>
       <button class="sat-btn good" onclick="satFinalShow('manual')">✅ MANUAL PRESENT</button>
+      ${launchMode==='staff'&&!ctx.is_admin?'<button class="sat-btn" onclick="satFinalShow(\'myAttendance\')">🗓️ MY ATTENDANCE</button>':''}
       <button class="sat-btn" onclick="satFinalShow('reports')">📊 REPORTS</button>
     </div><p class="sat-muted" style="margin-top:10px">Face matching uses registered face descriptors. It does not provide anti-spoof/liveness protection against a high-quality photo.</p></div>`;
   }
@@ -697,15 +704,136 @@
     successSound();toast(`${ok} student(s) marked Present.`,'ok');await satLoadManual();
   };
 
+  let myAttendanceRows=[];
+  let myAttendanceMatrix=null;
+  let myAttendanceType='staff';
+  let myAttendanceId='';
+  let myAttendanceName='';
+
+  function satLoggedInStaff(){
+    try{if(typeof loggedInStaff!=='undefined'&&loggedInStaff)return loggedInStaff;}catch(_){}
+    return window.loggedInStaff||null;
+  }
+  function satMyStaffId(){
+    const st=satLoggedInStaff();
+    return String(st?.username||st?.staff_id||'').trim().toLowerCase();
+  }
+  function satMyStaffName(){
+    const st=satLoggedInStaff();
+    return String(st?.name||st?.staff_name||satMyStaffId()||'Staff').trim();
+  }
+  function satMonthStartBS(v){
+    const a=String(v||'').split('-');
+    return a.length>=2?`${a[0]}-${a[1]}-01`:String(v||'');
+  }
+  async function satResolveMyAttendanceIdentity(){
+    const id=satMyStaffId();
+    if(!id)throw new Error('Staff login ID could not be identified. Please login again.');
+    const teacherRows=await rpc('sat_demo_people',{p_person_type:'teacher',p_class:null});
+    let me=(teacherRows||[]).find(x=>String(x.person_id||'').trim().toLowerCase()===id);
+    if(me)return {type:'teacher',id:String(me.person_id),name:me.person_name||satMyStaffName()};
+    const staffRows=await rpc('sat_demo_people',{p_person_type:'staff',p_class:null});
+    me=(staffRows||[]).find(x=>String(x.person_id||'').trim().toLowerCase()===id);
+    if(me)return {type:'staff',id:String(me.person_id),name:me.person_name||satMyStaffName()};
+    return {type:ctx?.class_name?'teacher':'staff',id,name:satMyStaffName()};
+  }
+  async function renderMyAttendance(){
+    await refreshCtx();
+    if(launchMode!=='staff'||ctx?.is_admin)throw new Error('My Attendance is available from Staff/Teacher login.');
+    const me=await satResolveMyAttendanceIdentity();
+    myAttendanceType=me.type;myAttendanceId=me.id;myAttendanceName=me.name;
+    const from=satMonthStartBS(ctx.today_bs),to=ctx.today_bs;
+    byId('satPage').innerHTML=`<div class="sat-card sat-report-card">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px">
+        <div><h3 class="sat-title" style="margin-bottom:4px">🗓️ My Attendance</h3><div class="sat-muted"><b>${esc(myAttendanceName)}</b> • ${esc(cap(myAttendanceType))} • ${esc(myAttendanceId)}</div></div>
+        <div class="sat-chip present">PRIVATE — ONLY MY RECORD</div>
+      </div>
+      <div class="sat-row sat-report-filters">
+        <div class="sat-field"><label>From Nepali Date</label><input id="satMyAttFrom" value="${esc(from)}"></div>
+        <div class="sat-field"><label>To Nepali Date</label><input id="satMyAttTo" value="${esc(to)}"></div>
+        <div class="sat-field"><label>View Format</label><select id="satMyAttFormat" onchange="satRenderMyAttendance()"><option value="matrix">Summary Matrix</option><option value="detail">Detailed Log</option></select></div>
+      </div>
+      <div class="sat-actions sat-report-actions"><button class="sat-btn primary" onclick="satRunMyAttendance()">VIEW MY ATTENDANCE</button><button class="sat-btn good" onclick="satExportMyAttendance()">📊 EXPORT MY EXCEL</button></div>
+      <div id="satMyAttSummary" class="sat-report-summary"></div>
+      <div id="satMyAttTable" style="margin-top:12px" class="sat-table-wrap sat-report-table-wrap"><div style="padding:18px" class="sat-muted">Loading your attendance…</div></div>
+    </div>`;
+    myAttendanceRows=[];myAttendanceMatrix=null;
+    await satRunMyAttendance();
+  }
+  window.satRunMyAttendance=async function(){
+    const from=byId('satMyAttFrom')?.value.trim(),to=byId('satMyAttTo')?.value.trim();
+    if(!from||!to)return toast('Enter Nepali From and To dates.','warn');
+    try{
+      myAttendanceRows=await rpc('sat_people_report',{p_person_type:myAttendanceType,p_from_bs:from,p_to_bs:to,p_person_id:myAttendanceId});
+      myAttendanceMatrix=buildReportMatrix(myAttendanceType,myAttendanceRows);
+      satRenderMyAttendance();
+    }catch(e){toast(e?.message||e,'err');}
+  };
+  window.satRenderMyAttendance=function(){
+    const fmt=byId('satMyAttFormat')?.value||'matrix',h=byId('satMyAttTable'),sum=byId('satMyAttSummary');
+    if(!h)return;
+    if(!myAttendanceRows?.length){h.innerHTML='<div style="padding:18px">No attendance records found in this date range.</div>';if(sum)sum.innerHTML='';return;}
+    if(fmt==='detail'){
+      if(sum)sum.innerHTML='';
+      h.innerHTML=`<table class="sat-table"><thead><tr><th>Nepali Date</th><th>Day</th><th>Status</th><th>Arrival Time</th><th>Source</th></tr></thead><tbody>${myAttendanceRows.map(r=>`<tr><td>${esc(r.date_bs)}</td><td>${esc(r.day_name||'')}</td><td><span class="sat-chip ${String(r.status||'').toLowerCase()}">${esc(reportStatus(r.status))}</span></td><td>${esc(r.time_in||'—')}</td><td>${esc(r.method==='face'?'Face Match':cap(r.method||'—'))}</td></tr>`).join('')}</tbody></table>`;
+      return;
+    }
+    const m=myAttendanceMatrix||buildReportMatrix(myAttendanceType,myAttendanceRows),p=m.people[0];
+    if(!p){h.innerHTML='<div style="padding:18px">No attendance records found.</div>';if(sum)sum.innerHTML='';return;}
+    const possible=p.open||0,pct=possible?((p.present/possible)*100).toFixed(1):'0.0';
+    if(sum)sum.innerHTML=`<div class="sat-report-mini"><strong>${p.open}</strong><span>School Open</span></div><div class="sat-report-mini present"><strong>${p.present}</strong><span>Present</span></div><div class="sat-report-mini absent"><strong>${p.absent}</strong><span>Absent</span></div>${p.late?`<div class="sat-report-mini"><strong>${p.late}</strong><span>Late</span></div>`:''}<div class="sat-report-mini"><strong>${pct}%</strong><span>Attendance</span></div>`;
+    const timeMap={};for(const r of myAttendanceRows){const d=String(r.date_bs||'');if(d&&!timeMap[d])timeMap[d]=r.time_in||'';}
+    h.innerHTML=`<table class="sat-table"><thead><tr><th>Nepali Date</th><th>Day</th><th>Status</th><th>Arrival Time</th><th>Source</th></tr></thead><tbody>${myAttendanceRows.map(r=>`<tr><td>${esc(r.date_bs)}</td><td>${esc(r.day_name||'')}</td><td><span class="sat-chip ${String(r.status||'').toLowerCase()}">${esc(reportStatus(r.status))}</span></td><td>${esc(r.time_in||'—')}</td><td>${esc(r.method==='face'?'Face Match':cap(r.method||'—'))}</td></tr>`).join('')}</tbody></table>`;
+  };
+  window.satExportMyAttendance=function(){
+    if(!myAttendanceRows.length)return toast('View your attendance first.','warn');
+    const fmt=byId('satMyAttFormat')?.value||'matrix';let html='';
+    if(fmt==='detail'){
+      const head='<tr><th>Nepali Date</th><th>Day</th><th>Name</th><th>Category</th><th>Status</th><th>Arrival Time</th><th>Source</th></tr>';
+      const body=myAttendanceRows.map(r=>`<tr><td>${esc(r.date_bs||'')}</td><td>${esc(r.day_name||'')}</td><td>${esc(myAttendanceName)}</td><td>${esc(cap(myAttendanceType))}</td><td>${esc(reportStatus(r.status))}</td><td>${esc(r.time_in||'')}</td><td>${esc(r.method==='face'?'Face Match':cap(r.method||''))}</td></tr>`).join('');
+      html=`<html><head><meta charset="utf-8"></head><body><table border="1">${head}${body}</table></body></html>`;
+    }else{
+      const m=myAttendanceMatrix||buildReportMatrix(myAttendanceType,myAttendanceRows),p=m.people[0];if(!p)return;
+      const head=`<tr><th>ID</th><th>Name</th><th>Category</th>${m.dates.map(d=>`<th>${esc(d.replaceAll('-','/'))}</th>`).join('')}<th>Total School Open</th><th>Total Present</th><th>Total Absent</th>${p.late?'<th>Total Late</th>':''}</tr>`;
+      const body=`<tr><td>${esc(myAttendanceId)}</td><td>${esc(myAttendanceName)}</td><td>${esc(cap(myAttendanceType))}</td>${m.dates.map(d=>`<td>${esc(p.byDate[d]||'—')}</td>`).join('')}<td>${p.open}</td><td>${p.present}</td><td>${p.absent}</td>${p.late?`<td>${p.late}</td>`:''}</tr>`;
+      html=`<html><head><meta charset="utf-8"></head><body><table border="1">${head}${body}</table></body></html>`;
+    }
+    const blob=new Blob([html],{type:'application/vnd.ms-excel'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`StAugustine_My_Attendance_${myAttendanceId}_${fmt}.xls`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  };
+
+  let reportMatrix=null;
   async function renderReports(){
     await refreshCtx();const cls=ctx.is_full_access?(ctx.class_name||CLASSES[0]):ctx.class_name;
-    byId('satPage').innerHTML=`<div class="sat-card"><div class="sat-row"><div class="sat-field"><label>Report Type</label><select id="satReportType" onchange="satReportTypeChange()"><option value="student">Student</option><option value="teacher">Teacher</option><option value="staff">Staff</option></select></div><div id="satReportClassWrap" class="sat-field"><label>Class</label><select id="satReportClass" ${ctx.is_full_access?'':'disabled'} onchange="satReportTypeChange()">${ctx.is_full_access?classOptions(cls):`<option>${esc(cls||'')}</option>`}</select></div><div class="sat-field"><label>From Nepali Date</label><input id="satReportFrom" value="${esc(ctx.today_bs)}"></div><div class="sat-field"><label>To Nepali Date</label><input id="satReportTo" value="${esc(ctx.today_bs)}"></div><div class="sat-field"><label>Person</label><select id="satReportPerson"><option value="">All</option></select></div></div><div class="sat-actions"><button class="sat-btn primary" onclick="satRunReport()">VIEW REPORT</button><button class="sat-btn good" onclick="satExportReport()">📊 EXPORT EXCEL</button></div><div id="satReportTable" style="margin-top:12px" class="sat-table-wrap"><div style="padding:18px" class="sat-muted">Choose filter and View Report.</div></div></div>`;
-    await satReportTypeChange();
+    byId('satPage').innerHTML=`<div class="sat-card sat-report-card"><div class="sat-row sat-report-filters"><div class="sat-field"><label>Report Type</label><select id="satReportType" onchange="satReportTypeChange()"><option value="student">Student</option><option value="teacher">Teacher</option><option value="staff">Staff</option></select></div><div id="satReportClassWrap" class="sat-field"><label>Class</label><select id="satReportClass" ${ctx.is_full_access?'':'disabled'} onchange="satReportTypeChange()">${ctx.is_full_access?classOptions(cls):`<option>${esc(cls||'')}</option>`}</select></div><div class="sat-field"><label>From Nepali Date</label><input id="satReportFrom" value="${esc(ctx.today_bs)}"></div><div class="sat-field"><label>To Nepali Date</label><input id="satReportTo" value="${esc(ctx.today_bs)}"></div><div class="sat-field"><label>Person</label><select id="satReportPerson"><option value="">All</option></select></div><div class="sat-field"><label>View Format</label><select id="satReportFormat" onchange="satRenderCurrentReport()"><option value="matrix">Student-wise / Person-wise Summary</option><option value="detail">Detailed Log</option></select></div></div><div class="sat-actions sat-report-actions"><button class="sat-btn primary" onclick="satRunReport()">VIEW REPORT</button><button class="sat-btn good" onclick="satExportReport()">📊 EXPORT EXCEL</button></div><div id="satReportSummary" class="sat-report-summary"></div><div id="satReportTable" style="margin-top:12px" class="sat-table-wrap sat-report-table-wrap"><div style="padding:18px" class="sat-muted">Choose filter and View Report.</div></div></div>`;
+    reportRows=[];reportMatrix=null;await satReportTypeChange();
   }
-  window.satReportTypeChange=async function(){const type=byId('satReportType')?.value||'student';const cw=byId('satReportClassWrap');if(cw)cw.style.display=type==='student'?'grid':'none';const sel=byId('satReportPerson');if(!sel)return;sel.innerHTML='<option value="">All</option>';try{if(type==='student'){const cls=byId('satReportClass')?.value||ctx.class_name;const rows=await rpc('sat_demo_people',{p_person_type:'student',p_class:cls});sel.innerHTML='<option value="">All Students</option>'+rows.map(x=>`<option value="${esc(x.person_id)}">${esc(x.person_name)}</option>`).join('');}else{const rows=await rpc('sat_demo_people',{p_person_type:type,p_class:null});sel.innerHTML='<option value="">All</option>'+rows.map(x=>`<option value="${esc(x.person_id)}">${esc(x.person_name)}</option>`).join('');}}catch(e){toast(e?.message||e,'err');}};
-  window.satRunReport=async function(){const type=byId('satReportType').value,from=byId('satReportFrom').value.trim(),to=byId('satReportTo').value.trim(),pid=byId('satReportPerson').value||null;if(!from||!to)return toast('Enter Nepali From and To dates.','warn');try{if(type==='student')reportRows=await rpc('sat_student_report',{p_from_bs:from,p_to_bs:to,p_class:byId('satReportClass').value,p_student_id:pid});else reportRows=await rpc('sat_people_report',{p_person_type:type,p_from_bs:from,p_to_bs:to,p_person_id:pid});renderReportTable(type,reportRows);}catch(e){toast(e?.message||e,'err');}};
-  function renderReportTable(type,rows){const h=byId('satReportTable');if(!h)return;if(!rows?.length){h.innerHTML='<div style="padding:18px">No records found.</div>';return;}h.innerHTML=`<table class="sat-table"><thead><tr><th>Nepali Date</th><th>Day</th><th>Name</th><th>${type==='student'?'Class':'Category'}</th><th>Status</th><th>Time</th><th>Source</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date_bs)}</td><td>${esc(r.day_name)}</td><td>${esc(type==='student'?r.student_name:r.person_name)}</td><td>${esc(type==='student'?r.class_name:r.category)}</td><td><span class="sat-chip ${String(r.status||'').toLowerCase()}">${esc(r.status)}</span></td><td>${esc(r.time_in)}</td><td>${esc(r.method==='face'?'Face Match':cap(r.method||''))}</td></tr>`).join('')}</tbody></table>`;}
-  window.satExportReport=function(){if(!reportRows.length)return toast('View a report first.','warn');const type=byId('satReportType')?.value||'attendance';const cols=type==='student'?['date_bs','day_name','student_id','student_name','class_name','status','time_in','method']:['date_bs','day_name','person_id','person_name','category','status','time_in','method'];const head=cols.map(x=>`<th>${esc(cap(x))}</th>`).join('');const body=reportRows.map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c]??'')}</td>`).join('')}</tr>`).join('');const html=`<html><head><meta charset="utf-8"></head><body><table border="1"><tr>${head}</tr>${body}</table></body></html>`;const blob=new Blob([html],{type:'application/vnd.ms-excel'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`StAugustine_${type}_Attendance.xls`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);};
+  window.satReportTypeChange=async function(){const type=byId('satReportType')?.value||'student';const cw=byId('satReportClassWrap');if(cw)cw.style.display=type==='student'?'grid':'none';const sel=byId('satReportPerson');if(!sel)return;sel.innerHTML='<option value="">All</option>';try{if(type==='student'){const cls=byId('satReportClass')?.value||ctx.class_name;const rows=await rpc('sat_demo_people',{p_person_type:'student',p_class:cls});sel.innerHTML='<option value="">All Students</option>'+rows.map(x=>`<option value="${esc(x.person_id)}">${esc(x.person_name)}</option>`).join('');}else{const rows=await rpc('sat_demo_people',{p_person_type:type,p_class:null});sel.innerHTML=`<option value="">All ${type==='teacher'?'Teachers':'Staff'}</option>`+rows.map(x=>`<option value="${esc(x.person_id)}">${esc(x.person_name)}</option>`).join('');}}catch(e){toast(e?.message||e,'err');}};
+  window.satRunReport=async function(){const type=byId('satReportType').value,from=byId('satReportFrom').value.trim(),to=byId('satReportTo').value.trim(),pid=byId('satReportPerson').value||null;if(!from||!to)return toast('Enter Nepali From and To dates.','warn');try{if(type==='student')reportRows=await rpc('sat_student_report',{p_from_bs:from,p_to_bs:to,p_class:byId('satReportClass').value,p_student_id:pid});else reportRows=await rpc('sat_people_report',{p_person_type:type,p_from_bs:from,p_to_bs:to,p_person_id:pid});reportMatrix=buildReportMatrix(type,reportRows);satRenderCurrentReport();}catch(e){toast(e?.message||e,'err');}};
+
+  function reportStatus(v){const s=String(v||'').trim().toLowerCase();if(s==='present')return 'Present';if(s==='absent')return 'Absent';if(s==='late')return 'Late';if(s==='holiday'||s==='school holiday')return 'Holiday';return v?cap(v):'—';}
+  function buildReportMatrix(type,rows){
+    rows=Array.isArray(rows)?rows:[];
+    const dates=[...new Set(rows.map(r=>String(r.date_bs||'').trim()).filter(Boolean))].sort();
+    const people=new Map();
+    for(const r of rows){
+      const id=String(type==='student'?(r.student_id||''):(r.person_id||''));
+      const name=String(type==='student'?(r.student_name||''):(r.person_name||''));
+      const key=id||name;if(!key)continue;
+      if(!people.has(key))people.set(key,{id,name,classOrCategory:type==='student'?(r.class_name||''):(r.category||cap(type)),byDate:{},present:0,absent:0,late:0,open:0});
+      const p=people.get(key),d=String(r.date_bs||'').trim(),st=reportStatus(r.status);
+      if(d)p.byDate[d]=st;
+    }
+    const list=[...people.values()];
+    for(const p of list){
+      for(const d of dates){const st=p.byDate[d]||'—';if(st!=='Holiday'&&st!=='—')p.open++;if(st==='Present')p.present++;else if(st==='Absent')p.absent++;else if(st==='Late'){p.late++;p.present++;}}
+    }
+    return {type,dates,people:list};
+  }
+  window.satRenderCurrentReport=function(){const type=byId('satReportType')?.value||'student',fmt=byId('satReportFormat')?.value||'matrix';if(!reportRows?.length){const h=byId('satReportTable');if(h)h.innerHTML='<div style="padding:18px">No records found.</div>';const s=byId('satReportSummary');if(s)s.innerHTML='';return;}if(fmt==='detail')renderDetailedReport(type,reportRows);else renderMatrixReport(type,reportMatrix||buildReportMatrix(type,reportRows));};
+  function renderReportSummary(matrix){const h=byId('satReportSummary');if(!h)return;const people=matrix?.people||[],open=matrix?.dates?.length||0,present=people.reduce((a,p)=>a+p.present,0),absent=people.reduce((a,p)=>a+p.absent,0),late=people.reduce((a,p)=>a+p.late,0),possible=people.reduce((a,p)=>a+p.open,0),pct=possible?((present/possible)*100).toFixed(1):'0.0';h.innerHTML=`<div class="sat-report-mini"><strong>${people.length}</strong><span>People</span></div><div class="sat-report-mini"><strong>${open}</strong><span>Date Columns</span></div><div class="sat-report-mini present"><strong>${present}</strong><span>Total Present</span></div><div class="sat-report-mini absent"><strong>${absent}</strong><span>Total Absent</span></div><div class="sat-report-mini"><strong>${pct}%</strong><span>Attendance</span></div>${late?`<div class="sat-report-mini"><strong>${late}</strong><span>Late</span></div>`:''}`;}
+  function renderMatrixReport(type,matrix){const h=byId('satReportTable');if(!h)return;if(!matrix?.people?.length){h.innerHTML='<div style="padding:18px">No records found.</div>';return;}renderReportSummary(matrix);const label=type==='student'?'Class':'Category';h.innerHTML=`<table class="sat-table sat-matrix-table"><thead><tr><th>${type==='student'?'Student ID':'ID'}</th><th>${type==='student'?'Student Name':'Name'}</th><th>${label}</th>${matrix.dates.map(d=>`<th class="sat-date-col">${esc(d.replaceAll('-','/'))}</th>`).join('')}<th>Total School Open</th><th>Total Present</th><th>Total Absent</th>${matrix.people.some(p=>p.late)?'<th>Total Late</th>':''}</tr></thead><tbody>${matrix.people.map(p=>`<tr><td>${esc(p.id)}</td><td class="sat-name-cell">${esc(p.name)}</td><td>${esc(p.classOrCategory)}</td>${matrix.dates.map(d=>{const st=p.byDate[d]||'—';return `<td class="sat-status-cell ${String(st).toLowerCase().replace(/\s+/g,'-')}">${esc(st)}</td>`;}).join('')}<td class="sat-total-cell">${p.open}</td><td class="sat-total-cell present">${p.present}</td><td class="sat-total-cell absent">${p.absent}</td>${matrix.people.some(x=>x.late)?`<td class="sat-total-cell">${p.late}</td>`:''}</tr>`).join('')}</tbody></table>`;}
+  function renderDetailedReport(type,rows){const h=byId('satReportTable');if(!h)return;const s=byId('satReportSummary');if(s)s.innerHTML='';h.innerHTML=`<table class="sat-table"><thead><tr><th>Nepali Date</th><th>Day</th><th>ID</th><th>Name</th><th>${type==='student'?'Class':'Category'}</th><th>Status</th><th>Time</th><th>Source</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date_bs)}</td><td>${esc(r.day_name)}</td><td>${esc(type==='student'?r.student_id:r.person_id)}</td><td>${esc(type==='student'?r.student_name:r.person_name)}</td><td>${esc(type==='student'?r.class_name:r.category)}</td><td><span class="sat-chip ${String(r.status||'').toLowerCase()}">${esc(reportStatus(r.status))}</span></td><td>${esc(r.time_in||'')}</td><td>${esc(r.method==='face'?'Face Match':cap(r.method||''))}</td></tr>`).join('')}</tbody></table>`;}
+  window.satExportReport=function(){if(!reportRows.length)return toast('View a report first.','warn');const type=byId('satReportType')?.value||'attendance',fmt=byId('satReportFormat')?.value||'matrix';let html='';if(fmt==='detail'){const cols=type==='student'?['date_bs','day_name','student_id','student_name','class_name','status','time_in','method']:['date_bs','day_name','person_id','person_name','category','status','time_in','method'];const head=cols.map(x=>`<th>${esc(cap(x))}</th>`).join(''),body=reportRows.map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c]??'')}</td>`).join('')}</tr>`).join('');html=`<html><head><meta charset="utf-8"></head><body><table border="1"><tr>${head}</tr>${body}</table></body></html>`;}else{const m=reportMatrix||buildReportMatrix(type,reportRows),hasLate=m.people.some(p=>p.late),head=`<tr><th>${type==='student'?'Student ID':'ID'}</th><th>${type==='student'?'Student Name':'Name'}</th><th>${type==='student'?'Class Name':'Category'}</th>${m.dates.map(d=>`<th>${esc(d.replaceAll('-','/'))}</th>`).join('')}<th>Total School Open</th><th>Total Present</th><th>Total Absent</th>${hasLate?'<th>Total Late</th>':''}</tr>`,body=m.people.map(p=>`<tr><td>${esc(p.id)}</td><td>${esc(p.name)}</td><td>${esc(p.classOrCategory)}</td>${m.dates.map(d=>`<td>${esc(p.byDate[d]||'—')}</td>`).join('')}<td>${p.open}</td><td>${p.present}</td><td>${p.absent}</td>${hasLate?`<td>${p.late}</td>`:''}</tr>`).join('');html=`<html><head><meta charset="utf-8"></head><body><table border="1">${head}${body}</table></body></html>`;}const blob=new Blob([html],{type:'application/vnd.ms-excel'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`StAugustine_${type}_Attendance_${fmt}.xls`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);};
 
   async function renderQrManager(){if(!ctx.is_admin)throw new Error('Admin access is required.');await ensureQrLibraries();byId('satPage').innerHTML=`<div class="sat-card"><h3 class="sat-title">Admin QR Manager</h3><div class="sat-row"><div class="sat-field"><label>Category</label><select id="satQrType" onchange="satLoadQrList()"><option value="student">Student</option><option value="teacher">Teacher</option><option value="staff">Staff</option></select></div><div id="satQrClassWrap" class="sat-field"><label>Class</label><select id="satQrClass" onchange="satLoadQrList()">${classOptions(CLASSES[0])}</select></div></div><div id="satQrList">Loading…</div></div>`;await satLoadQrList();}
   window.satLoadQrList=async function(){const t=byId('satQrType')?.value||'student';const w=byId('satQrClassWrap');if(w)w.style.display=t==='student'?'grid':'none';let rows=[];if(t==='student')rows=await rpc('sat_admin_students',{p_class:byId('satQrClass').value});else if(t==='teacher')rows=await rpc('sat_admin_teachers');else rows=await rpc('sat_admin_staff');const h=byId('satQrList');if(!h)return;h.innerHTML=`<div class="sat-qr-grid">${rows.map(r=>{const id=r.student_id||r.person_id,name=r.student_name||r.person_name,qr=r.qr_value||'';return `<div class="sat-person"><h4>${esc(name)}</h4><div class="sat-muted">${esc(id)}${r.class_name?' • '+esc(r.class_name):''}</div><div class="sat-actions"><button class="sat-btn primary" onclick="satGenerateQr('${esc(t)}','${esc(id)}',false)">${qr?'VIEW / REFRESH':'GENERATE QR'}</button>${qr?`<button class="sat-btn warn" onclick="satGenerateQr('${esc(t)}','${esc(id)}',true)">REGENERATE</button><button class="sat-btn" onclick='satShowQr(${JSON.stringify(qr)},${JSON.stringify(name)})'>VIEW QR</button>`:''}</div></div>`;}).join('')}</div>`;};
@@ -760,6 +888,39 @@
       window.portalParentTab=function(tab,button){const out=old.apply(this,arguments);if(tab==='attendance')setTimeout(()=>loadParentAttendance(),0);return out;};
     }
   }
+  let parentAttendanceRows=[];
+  let parentAttendanceToday='';
+  function parentAttendanceMethod(v){return v==='face'?'Face Match':v==='qr'?'QR Scan':v==='manual'?'Manual Present':'—';}
+  function parentAttendanceSummary(rows){
+    const out={Present:0,Absent:0,Late:0,Holiday:0,Pending:0};
+    (rows||[]).forEach(r=>{const k=String(r.status||'Pending');if(Object.prototype.hasOwnProperty.call(out,k))out[k]++;});
+    const open=out.Present+out.Absent+out.Late;
+    const attended=out.Present+out.Late;
+    return {...out,open,pct:open?((attended/open)*100).toFixed(1):'0.0'};
+  }
+  function parentAttendanceRowHtml(r){
+    if(!r)return '<tr><td colspan="5" class="sat-muted" style="text-align:center;padding:18px">No attendance record for today.</td></tr>';
+    return `<tr><td>${esc(r.date_bs)}</td><td>${esc(r.day_name)}</td><td><b>${esc(r.status)}</b></td><td>${esc(r.time_in||'—')}</td><td>${esc(parentAttendanceMethod(r.method))}</td></tr>`;
+  }
+  function parentMonthSummaryRows(rows){
+    const map=new Map();
+    (rows||[]).forEach(r=>{
+      const d=String(r.date_bs||''); const key=d.slice(0,7); if(key.length<7)return;
+      if(!map.has(key))map.set(key,[]); map.get(key).push(r);
+    });
+    return [...map.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([m,list])=>{
+      const s=parentAttendanceSummary(list);
+      return `<tr><td>${esc(m)}</td><td>${s.open}</td><td>${s.Present}</td><td>${s.Late}</td><td>${s.Absent}</td><td>${s.Holiday}</td><td>${s.pct}%</td></tr>`;
+    }).join('')||'<tr><td colspan="7" class="sat-muted" style="text-align:center;padding:16px">No monthly attendance yet.</td></tr>';
+  }
+  window.satParentShowRange=function(show=true){const box=byId('satParentRangeBox');if(box)box.style.display=show?'block':'none';};
+  window.satParentApplyRange=function(){
+    const from=String(byId('satParentFrom')?.value||'').trim(),to=String(byId('satParentTo')?.value||'').trim();
+    const rows=parentAttendanceRows.filter(r=>(!from||String(r.date_bs)>=from)&&(!to||String(r.date_bs)<=to));
+    const body=byId('satParentRangeBody'),stats=byId('satParentRangeStats');
+    if(body)body.innerHTML=rows.map(parentAttendanceRowHtml).join('')||'<tr><td colspan="5" class="sat-muted" style="text-align:center;padding:18px">No attendance in this date range.</td></tr>';
+    if(stats){const s=parentAttendanceSummary(rows);stats.innerHTML=`<b>School Open:</b> ${s.open} &nbsp; • &nbsp; <b>Present:</b> ${s.Present} &nbsp; • &nbsp; <b>Late:</b> ${s.Late} &nbsp; • &nbsp; <b>Absent:</b> ${s.Absent} &nbsp; • &nbsp; <b>Attendance:</b> ${s.pct}%`; }
+  };
   async function loadParentAttendance(){
     const host=byId('parentPortalContent');if(!host)return;
     const token=sessionStorage.getItem('saaf_parent_portal_token')||'';
@@ -767,9 +928,36 @@
     try{
       const c=adminDb(); if(!c)return;
       const {data,error}=await c.rpc('sat_parent_my_attendance',{p_token:token,p_from_bs:'2083-01-01',p_to_bs:'2083-12-30'});if(error)throw error;
-      const rows=Array.isArray(data?.rows)?data.rows:[];
-      host.innerHTML=`<div class="portal-card"><h3>📷 Smart Attendance</h3><div class="sat-table-wrap"><table class="sat-table"><thead><tr><th>Nepali Date</th><th>Day</th><th>Status</th><th>Time</th><th>Source</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date_bs)}</td><td>${esc(r.day_name)}</td><td>${esc(r.status)}</td><td>${esc(r.time_in||'—')}</td><td>${esc(r.method==='face'?'Face Match':r.method==='qr'?'QR Scan':r.method==='manual'?'Manual Present':'—')}</td></tr>`).join('')}</tbody></table></div></div>`;
-    }catch(_){}
+      parentAttendanceRows=Array.isArray(data?.rows)?data.rows:[];
+      parentAttendanceToday=String(data?.today_bs||parentAttendanceRows[0]?.date_bs||'');
+      const todayRow=parentAttendanceRows.find(r=>String(r.date_bs)===parentAttendanceToday)||null;
+      const monthStart=parentAttendanceToday&&parentAttendanceToday.length>=8?parentAttendanceToday.slice(0,8)+'01':'2083-01-01';
+      const todayStatus=todayRow?.status||'No Record';
+      host.innerHTML=`<div class="portal-card" style="display:grid;gap:16px">
+        <div><h3 style="margin:0">📷 Smart Attendance</h3><div class="sat-muted" style="margin-top:5px"><strong>${esc(data?.student_name||'Student')}</strong>${data?.class_name?' • '+esc(data.class_name):''}</div></div>
+        <div class="sat-parent-today-grid">
+          <div class="sat-card sat-stat"><span>TODAY</span><strong style="font-size:22px">${esc(todayStatus)}</strong></div>
+          <div class="sat-card sat-stat"><span>NEPALI DATE</span><strong style="font-size:20px">${esc(parentAttendanceToday||'—')}</strong></div>
+          <div class="sat-card sat-stat"><span>ARRIVAL</span><strong style="font-size:20px">${esc(todayRow?.time_in||'—')}</strong></div>
+        </div>
+        <div>
+          <h4 style="margin:0 0 8px">Today's Attendance</h4>
+          <div class="sat-table-wrap"><table class="sat-table"><thead><tr><th>Nepali Date</th><th>Day</th><th>Status</th><th>Time</th><th>Source</th></tr></thead><tbody>${parentAttendanceRowHtml(todayRow)}</tbody></table></div>
+        </div>
+        <div class="sat-actions" style="margin:0"><button class="sat-btn primary" type="button" onclick="satParentShowRange(true)">VIEW DATE RANGE</button></div>
+        <div id="satParentRangeBox" class="sat-card" style="display:none">
+          <h4 style="margin:0 0 10px">Attendance History</h4>
+          <div class="sat-row"><div class="sat-field"><label>From Nepali Date</label><input id="satParentFrom" value="${esc(monthStart)}" placeholder="2083-06-01"></div><div class="sat-field"><label>To Nepali Date</label><input id="satParentTo" value="${esc(parentAttendanceToday)}" placeholder="2083-06-30"></div></div>
+          <div class="sat-actions"><button class="sat-btn primary" type="button" onclick="satParentApplyRange()">VIEW REPORT</button><button class="sat-btn" type="button" onclick="satParentShowRange(false)">CLOSE</button></div>
+          <div id="satParentRangeStats" class="sat-muted" style="margin:10px 0"></div>
+          <div class="sat-table-wrap"><table class="sat-table"><thead><tr><th>Nepali Date</th><th>Day</th><th>Status</th><th>Time</th><th>Source</th></tr></thead><tbody id="satParentRangeBody"></tbody></table></div>
+        </div>
+        <div>
+          <h4 style="margin:0 0 8px">Month-wise Attendance Summary</h4>
+          <div class="sat-table-wrap"><table class="sat-table"><thead><tr><th>Month</th><th>School Open</th><th>Present</th><th>Late</th><th>Absent</th><th>Holiday</th><th>Attendance %</th></tr></thead><tbody>${parentMonthSummaryRows(parentAttendanceRows)}</tbody></table></div>
+        </div>
+      </div>`;
+    }catch(e){host.innerHTML=`<div class="portal-card"><h3>📷 Smart Attendance</h3><div class="sat-muted">${esc(e?.message||'Attendance could not be loaded.')}</div></div>`;}
   }
 
   function init(){
