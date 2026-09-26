@@ -24,6 +24,7 @@
   let ctx=null, currentView='dashboard', launchMode='staff';
   let qrScanner=null, qrRunning=false, qrBusy=false, qrFacing='environment';
   let faceStream=null, faceScanRunning=false, faceScanTimer=null, faceProfiles=[];
+  let faceProfilesLoadedScope=null,faceProfilesLoadedAt=0;
   let faceFacing='user', regFacing='user';
   let faceModelsReady=false, faceModelsLoading=null;
   let registrationSamples=[];
@@ -390,7 +391,7 @@
     await v.play();
     await waitForVideoReady(v,6000);
     // Enough for autofocus/exposure, but still fast for a queue of students.
-    await satSleep(satIsMobileDevice()?160:120);
+    await satSleep(satIsMobileDevice()?70:100);
     return v;
   }
 
@@ -466,33 +467,44 @@
     await refreshCtx();
     byId('satPage').innerHTML=`${holidayBanner()}<div class="sat-card" style="max-width:760px;margin:auto">
       <h3 class="sat-title">Real Face Attendance Scanner</h3>
-      <div class="sat-row"><div class="sat-field"><label>Scope</label><select id="satFaceScope" onchange="satFaceReloadProfiles()"><option value="all">All Registered Students / Staff</option>${ctx.class_name?`<option value="${esc(ctx.class_name)}">${esc(ctx.class_name)} only</option>`:''}</select></div></div>
+      <div class="sat-row"><div class="sat-field"><label>Scope</label><select id="satFaceScope" onchange="satFaceReloadProfiles(true)"><option value="all">All Registered Students / Staff</option>${ctx.class_name?`<option value="${esc(ctx.class_name)}">${esc(ctx.class_name)} only</option>`:''}</select></div></div>
       <div class="sat-face-stage"><video id="satFaceVideo" class="sat-face-video" playsinline muted autoplay></video><div class="sat-face-guide"></div></div>
       <div class="sat-actions" style="margin-top:10px"><button class="sat-btn primary" onclick="satStartFaceScanner()" ${attendanceLocked()?'disabled':''}>START FACE SCANNER</button><button class="sat-btn" onclick="satSwitchFaceCamera()">🔄 FRONT / BACK</button><button class="sat-btn" onclick="satStopFaceScanner()">STOP</button></div>
       <div id="satFaceScanStatus" class="sat-face-status">Press START FACE SCANNER. Keep one face clearly visible.</div>
       <div id="satFaceScanResult" class="sat-result"><b>No attendance recorded yet.</b></div>
       <p class="sat-muted">Fast mode: the scanner checks the clearest nearby frames and records a confident match automatically.</p>
     </div>`;
-    await satFaceReloadProfiles();
+    await satFaceReloadProfiles(true);
   }
-  window.satFaceReloadProfiles=async function(){
+  window.satFaceReloadProfiles=async function(force=false){
     const scope=byId('satFaceScope')?.value||'all';
+    // SPEED: avoid repeating the same Supabase profile download when START is pressed.
+    // Refresh explicitly on scope change or after 30 seconds.
+    if(!force && faceProfilesLoadedScope===scope && Array.isArray(faceProfiles) && faceProfiles.length && Date.now()-faceProfilesLoadedAt<30000){
+      const cached=byId('satFaceScanStatus'); if(cached)cached.textContent=`${faceProfiles.length} registered face profile(s) ready.`;
+      return faceProfiles;
+    }
     faceProfiles=await rpc('sat_face_scan_profiles',{p_class:scope==='all'?null:scope});
     if(!Array.isArray(faceProfiles))faceProfiles=[];
+    faceProfilesLoadedScope=scope;faceProfilesLoadedAt=Date.now();
     const st=byId('satFaceScanStatus'); if(st)st.textContent=`${faceProfiles.length} registered face profile(s) ready.`;
+    return faceProfiles;
   };
 
   let candidateId='',candidateHits=0,lastMarkedId='',lastMarkedAt=0;
   window.satStartFaceScanner=async function(){
     if(attendanceLocked())return toast('Holiday: attendance is locked. Admin can enable Test Mode for today.','warn');
     try{
-      await ensureFaceModels(); await satFaceReloadProfiles();
+      if(!faceProfiles.length)await satFaceReloadProfiles();
       if(!faceProfiles.length)throw new Error('No registered face profiles found.');
       await stopQr();
-      await satSleep(250);
-      const v=await startVideo('satFaceVideo',faceFacing);
+      const status=byId('satFaceScanStatus'); if(status)status.textContent='Starting camera and face engine…';
+      // SPEED: camera startup and model preparation happen together instead of one after another.
+      const modelPromise=ensureFaceModels();
+      const videoPromise=startVideo('satFaceVideo',faceFacing);
+      const [,v]=await Promise.all([modelPromise,videoPromise]);
       faceScanRunning=true; candidateId='';candidateHits=0;
-      const status=byId('satFaceScanStatus'); if(status)status.textContent=satIsMobileDevice()?'Mobile scanner ready — keep your face inside the frame.':'Scanner running — keep your face inside the frame.';
+      if(status)status.textContent=satIsMobileDevice()?'Mobile scanner ready — keep your face inside the frame.':'Scanner running — keep your face inside the frame.';
       faceScanLoop(v);
     }catch(e){toast(e?.message||e,'err');}
   };
@@ -546,7 +558,7 @@
     }catch(e){
       if(status)status.textContent='Scanner error: '+(e?.message||e);
     }
-    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),mobile?500:180);
+    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),mobile?180:160);
   }
 
   async function recordFaceMatch(p,distance){
@@ -588,7 +600,14 @@
     if(h)h.innerHTML=(rows||[]).map(x=>`<div class="sat-person"><h4>${esc(x.person_name)}</h4><div class="sat-muted">${esc(x.person_id)}${x.class_name?' • '+esc(x.class_name):''}</div><div class="${x.registered?'sat-registered':'sat-not-registered'}">${x.registered?'✓ Face Registered':'Not Registered'}</div>${x.registered?`<div class="sat-actions" style="margin-top:8px"><button class="sat-btn danger" onclick="satDeleteFaceProfile('${esc(t)}','${esc(x.person_id)}')">DELETE FACE</button></div>`:''}</div>`).join('');
   };
   window.satStartRegCamera=async function(){
-    try{await ensureFaceModels();await stopQr();await satSleep(250);await startVideo('satRegVideo',regFacing);const st=byId('satRegStatus');if(st)st.textContent='Camera ready. Keep one clear front-facing face inside the frame, then press CAPTURE & SAVE FACE.';toast('Camera ready.','ok');}catch(e){toast(e?.message||e,'err');}
+    try{
+      await stopQr();
+      const st=byId('satRegStatus');if(st)st.textContent='Starting camera and face engine…';
+      // SPEED: show/start the camera while models prepare in parallel.
+      await Promise.all([ensureFaceModels(),startVideo('satRegVideo',regFacing)]);
+      if(st)st.textContent='Camera ready. Keep one clear front-facing face inside the frame, then press CAPTURE & SAVE FACE.';
+      toast('Camera ready.','ok');
+    }catch(e){toast(e?.message||e,'err');}
   };
   window.satSwitchRegCamera=async function(){
     regFacing=regFacing==='user'?'environment':'user';
@@ -619,12 +638,13 @@
       if(st)st.textContent='Face captured. Saving securely…';
       const payload=[one.slice(),one.slice(),one.slice()];
       await rpc('sat_face_save_profile',{p_person_type:t,p_person_id:id,p_class:cls,p_descriptors:payload});
+      faceProfilesLoadedScope=null;faceProfilesLoadedAt=0;
       successSound();if(st)st.textContent='✓ Face registered successfully from 1 clear sample.';toast('Face registered successfully.','ok');
       registrationSamples=[];renderSampleChips();await satLoadRegPeople();
     }catch(e){if(st)st.textContent='Registration failed — '+(e?.message||e);toast(e?.message||e,'err');}
     finally{regCaptureBusy=false;if(btn)btn.disabled=false;}
   };
-  window.satDeleteFaceProfile=async function(t,id){if(!confirm('Delete this registered face profile?'))return;try{await rpc('sat_face_delete_profile',{p_person_type:t,p_person_id:id});toast('Face profile deleted.','ok');await satLoadRegPeople();}catch(e){toast(e?.message||e,'err');}};
+  window.satDeleteFaceProfile=async function(t,id){if(!confirm('Delete this registered face profile?'))return;try{await rpc('sat_face_delete_profile',{p_person_type:t,p_person_id:id});faceProfilesLoadedScope=null;faceProfilesLoadedAt=0;toast('Face profile deleted.','ok');await satLoadRegPeople();}catch(e){toast(e?.message||e,'err');}};
 
   async function renderQrScanner(){
     await refreshCtx();
