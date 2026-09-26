@@ -93,6 +93,15 @@
       toast('Loading face recognition model…','info');
       await loadScriptOnce(FACE_API_URL,()=>typeof window.faceapi!=='undefined');
       if(typeof faceapi==='undefined')throw new Error('Face recognition library did not load.');
+      // MOBILE COMPATIBILITY: some Android browsers stall indefinitely in the default WebGL
+      // inference path even though camera preview works. Use TensorFlow CPU backend on mobile.
+      // Desktop/laptop keeps its existing backend because it is already working well there.
+      if(satIsMobileDevice() && faceapi.tf){
+        try{
+          if(faceapi.tf.getBackend && faceapi.tf.getBackend()!=='cpu')await faceapi.tf.setBackend('cpu');
+          if(faceapi.tf.ready)await faceapi.tf.ready();
+        }catch(_){/* keep current backend if switching is unavailable */}
+      }
       await Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL),
         faceapi.nets.faceLandmark68Net.loadFromUri(FACE_MODEL_URL),
@@ -405,9 +414,9 @@
     const mobile=satIsMobileDevice();
     // On mobile, detect from a downscaled snapshot instead of the live high-resolution video element.
     // This is much more stable on Android/iPhone browsers and avoids long-running video tensor work.
-    const source=mobile?satSnapshotForDetection(video,opts.maxSide||480):video;
+    const source=mobile?satSnapshotForDetection(video,opts.maxSide||320):video;
     if(!source)return null;
-    const inputSize=opts.inputSize || (mobile ? 192 : 320);
+    const inputSize=opts.inputSize || (mobile ? 160 : 320);
     const scoreThreshold=opts.scoreThreshold ?? (mobile ? .10 : .40);
     let result=await faceapi.detectSingleFace(source,new faceapi.TinyFaceDetectorOptions({inputSize,scoreThreshold})).withFaceLandmarks().withFaceDescriptor();
     if(result){satMobileMisses=0;return result;}
@@ -415,7 +424,7 @@
       satMobileMisses++;
       if(satMobileMisses%4===0){
         const fallback=satSnapshotForDetection(video,640);
-        result=await faceapi.detectSingleFace(fallback,new faceapi.TinyFaceDetectorOptions({inputSize:288,scoreThreshold:.08})).withFaceLandmarks().withFaceDescriptor();
+        result=await faceapi.detectSingleFace(fallback,new faceapi.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:.08})).withFaceLandmarks().withFaceDescriptor();
         if(result){satMobileMisses=0;return result;}
       }
     }
@@ -425,7 +434,7 @@
     let best=null;
     const mobile=satIsMobileDevice();
     for(let i=0;i<attempts;i++){
-      const d=await detectDescriptor(video,{inputSize:mobile?192:320,scoreThreshold:mobile?.10:.38,allowFallback:i===attempts-1,maxSide:mobile?420:720});
+      const d=await detectDescriptor(video,{inputSize:mobile?160:320,scoreThreshold:mobile?.08:.38,allowFallback:i===attempts-1,maxSide:mobile?320:720});
       if(d && (!best || Number(d.detection?.score||0)>Number(best.detection?.score||0)))best=d;
       if(d && Number(d.detection?.score||0)>=(mobile?.28:.58))break;
       if(i<attempts-1)await satSleep(mobile?70:70);
@@ -505,7 +514,7 @@
     const status=byId('satFaceScanStatus');
     try{
       if(status)status.textContent='Scanning face…';
-      const d=mobile?await detectDescriptor(video,{inputSize:192,scoreThreshold:.10,allowFallback:true,maxSide:420}):await detectDescriptor(video);
+      const d=mobile?await detectDescriptor(video,{inputSize:160,scoreThreshold:.08,allowFallback:true,maxSide:320}):await detectDescriptor(video);
       if(!faceScanRunning)return;
       if(!d){
         candidateId='';candidateHits=0;
@@ -537,7 +546,7 @@
     }catch(e){
       if(status)status.textContent='Scanner error: '+(e?.message||e);
     }
-    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),mobile?260:180);
+    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),mobile?500:180);
   }
 
   async function recordFaceMatch(p,distance){
@@ -595,10 +604,14 @@
       const v=byId('satRegVideo');if(!v||!v.srcObject)throw new Error('Start camera first.');
       const t=byId('satRegType')?.value||'student',id=byId('satRegPerson')?.value||'',cls=t==='student'?(byId('satRegClass')?.value||ctx.class_name):null;
       if(!id)throw new Error('Select a person first.');
+      if(st)st.textContent='Camera frame ready check…';
       await waitForVideoReady(v);
-      if(st)st.textContent='Finding the clearest face frame… keep still.';
       const mobile=satIsMobileDevice();
-      const d=await detectBestDescriptor(v,mobile?4:5);
+      if(st)st.textContent=mobile?'Detecting face on mobile… please hold still for 1–3 seconds.':'Finding the clearest face frame… keep still.';
+      // Give the browser one paint frame before TensorFlow inference starts so the user
+      // always sees that the button press was accepted.
+      await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,20)));
+      const d=await detectBestDescriptor(v,mobile?2:5);
       if(!d)throw new Error('Face was not detected. Keep the full face inside the oval and try once more.');
       const minScore=mobile?.12:.52;
       if(Number(d.detection?.score||0)<minScore)throw new Error('Face found, but the frame is too unclear. Improve light and try again.');
