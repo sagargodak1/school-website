@@ -1,6 +1,6 @@
 /* ============================================================
    ST. AUGUSTINE ACADEMIC FOUNDATION
-   SMART ATTENDANCE FINAL V2 — FACE + QR + MANUAL + REPORTS
+   SMART ATTENDANCE FINAL V2 — FACE + QR + MANUAL + REPORTS — MOBILE FACE OPTIMIZED
    2026-09-26
 
    SAFE integration rules:
@@ -120,7 +120,7 @@
       .sat-chip{display:inline-block;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:900}.sat-chip.present{background:#e6f7ec;color:#16723a}.sat-chip.absent{background:#ffe8e8;color:#a62929}.sat-chip.holiday{background:#fff1d8;color:#925c00}.sat-chip.pending{background:#e9eff5;color:#576b7a}
       .sat-reader{position:relative;background:#061a2b;border-radius:17px;overflow:hidden;min-height:330px;display:flex;align-items:center;justify-content:center;color:#fff}.sat-reader video{width:100%!important;max-height:60dvh;object-fit:cover}.sat-reader-note{padding:20px;text-align:center}.sat-result{margin-top:12px;padding:17px;border-radius:16px;text-align:center;background:#edf4fa}.sat-result.ok{background:#dff7e8;border:2px solid #54b97a}.sat-result.already{background:#fff3d8;border:2px solid #e5ac39}.sat-result.fail{background:#ffe7e7;border:2px solid #dc7676}.sat-result h2{margin:0 0 6px;font-size:25px}.sat-result strong{font-size:20px}
       .sat-manual-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.sat-student{background:#fff;border:1px solid #dbe8f3;border-radius:13px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}.sat-student label{display:flex;align-items:center;gap:9px;font-weight:800}.sat-student input{width:20px;height:20px}.sat-muted{color:#6b7e8d;font-size:12px}
-      .sat-face-video{width:100%;max-height:58dvh;background:#061a2b;border-radius:16px;object-fit:cover;transform:scaleX(-1)}.sat-face-status{padding:10px 12px;border-radius:12px;background:#eef5fb;margin-top:10px;font-weight:800;color:#28516d}.sat-samples{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.sat-sample{padding:7px 10px;border-radius:999px;background:#e9f7ef;color:#18713b;font-size:11px;font-weight:900}.sat-face-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sat-person{background:#fff;border:1px solid #dbe8f3;border-radius:14px;padding:12px}.sat-person h4{margin:0 0 4px}.sat-registered{color:#13733d;font-weight:900}.sat-not-registered{color:#8a5b00;font-weight:900}
+      .sat-face-stage{position:relative;width:100%;overflow:hidden;border-radius:16px;background:#061a2b}.sat-face-video{display:block;width:100%;max-height:58dvh;background:#061a2b;border-radius:16px;object-fit:cover;transform:scaleX(-1)}.sat-face-guide{pointer-events:none;position:absolute;inset:0;display:grid;place-items:center}.sat-face-guide::before{content:'';display:block;width:min(58%,300px);aspect-ratio:3/4;border:3px solid rgba(255,255,255,.92);border-radius:46% 46% 42% 42%/36% 36% 48% 48%;box-shadow:0 0 0 999px rgba(0,0,0,.14),0 0 24px rgba(31,220,172,.38)}.sat-face-guide::after{content:'Keep face inside the frame';position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(4,24,43,.74);color:#fff;padding:7px 11px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}.sat-face-status{padding:10px 12px;border-radius:12px;background:#eef5fb;margin-top:10px;font-weight:800;color:#28516d}.sat-samples{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.sat-sample{padding:7px 10px;border-radius:999px;background:#e9f7ef;color:#18713b;font-size:11px;font-weight:900}.sat-face-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sat-person{background:#fff;border:1px solid #dbe8f3;border-radius:14px;padding:12px}.sat-person h4{margin:0 0 4px}.sat-registered{color:#13733d;font-weight:900}.sat-not-registered{color:#8a5b00;font-weight:900}
       .sat-qr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sat-qr-modal{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:16px}.sat-qr-box{background:#fff;border-radius:20px;padding:22px;text-align:center;max-width:360px;width:100%}.sat-qr-code{display:flex;justify-content:center;padding:12px}.sat-qr-value{font-size:10px;word-break:break-all;color:#697b89}
       .sat-permission{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px;border:1px solid #e0e9f1;border-radius:12px;margin-bottom:8px;background:#fff}
       #satFinalOverlay button,#satFinalOverlay input,#satFinalOverlay select{font-family:inherit}
@@ -296,17 +296,55 @@
     </div><p class="sat-muted" style="margin-top:10px">Face matching uses registered face descriptors. It does not provide anti-spoof/liveness protection against a high-quality photo.</p></div>`;
   }
 
+  function satIsMobileDevice(){
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent||'') || Math.min(window.innerWidth||9999,window.innerHeight||9999)<760;
+  }
+  function satSleep(ms){return new Promise(r=>setTimeout(r,ms));}
+  async function waitForVideoReady(v,timeout=5000){
+    const started=Date.now();
+    while(Date.now()-started<timeout){
+      if(v.readyState>=2 && v.videoWidth>0 && v.videoHeight>0)return true;
+      await satSleep(80);
+    }
+    throw new Error('Camera started but video frame is not ready. Please try START CAMERA again.');
+  }
   async function startVideo(id,facing='user'){
     const v=byId(id); if(!v)throw new Error('Camera view not ready.');
+    if(!navigator.mediaDevices?.getUserMedia)throw new Error('Camera is not supported in this browser.');
     if(faceStream)await stopFaceCamera();
-    faceStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:false});
-    v.srcObject=faceStream; await v.play(); return v;
+    const mobile=satIsMobileDevice();
+    const video={
+      facingMode:{ideal:facing},
+      width:{ideal:mobile?720:1280},
+      height:{ideal:mobile?1280:720}
+    };
+    faceStream=await navigator.mediaDevices.getUserMedia({video,audio:false});
+    v.setAttribute('playsinline',''); v.muted=true; v.autoplay=true;
+    v.srcObject=faceStream;
+    await v.play();
+    await waitForVideoReady(v);
+    // Mobile cameras often need a short exposure/focus settle time.
+    if(mobile)await satSleep(650); else await satSleep(180);
+    return v;
   }
 
-  async function detectDescriptor(video){
+  async function detectDescriptor(video,opts={}){
     await ensureFaceModels();
-    const result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:.55})).withFaceLandmarks().withFaceDescriptor();
+    if(!video||video.readyState<2||!video.videoWidth||!video.videoHeight)return null;
+    const mobile=satIsMobileDevice();
+    const inputSize=opts.inputSize || (mobile?416:320);
+    const scoreThreshold=opts.scoreThreshold ?? (mobile ? .42 : .50);
+    const result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize,scoreThreshold})).withFaceLandmarks().withFaceDescriptor();
     return result||null;
+  }
+  async function detectBestDescriptor(video,attempts=4){
+    let best=null;
+    for(let i=0;i<attempts;i++){
+      const d=await detectDescriptor(video,{inputSize:satIsMobileDevice()?416:320,scoreThreshold:satIsMobileDevice() ? .40 : .48});
+      if(d && (!best || Number(d.detection?.score||0)>Number(best.detection?.score||0)))best=d;
+      if(i<attempts-1)await satSleep(satIsMobileDevice()?160:110);
+    }
+    return best;
   }
   function dist(a,b){
     let s=0; for(let i=0;i<Math.min(a.length,b.length);i++){const d=Number(a[i])-Number(b[i]);s+=d*d;} return Math.sqrt(s);
@@ -331,7 +369,7 @@
     byId('satPage').innerHTML=`${holidayBanner()}<div class="sat-card" style="max-width:760px;margin:auto">
       <h3 class="sat-title">Real Face Attendance Scanner</h3>
       <div class="sat-row"><div class="sat-field"><label>Scope</label><select id="satFaceScope" onchange="satFaceReloadProfiles()"><option value="all">All Registered Students / Staff</option>${ctx.class_name?`<option value="${esc(ctx.class_name)}">${esc(ctx.class_name)} only</option>`:''}</select></div></div>
-      <video id="satFaceVideo" class="sat-face-video" playsinline muted></video>
+      <div class="sat-face-stage"><video id="satFaceVideo" class="sat-face-video" playsinline muted autoplay></video><div class="sat-face-guide"></div></div>
       <div class="sat-actions" style="margin-top:10px"><button class="sat-btn primary" onclick="satStartFaceScanner()" ${attendanceLocked()?'disabled':''}>START FACE SCANNER</button><button class="sat-btn" onclick="satStopFaceScanner()">STOP</button></div>
       <div id="satFaceScanStatus" class="sat-face-status">Press START FACE SCANNER. Keep one face clearly visible.</div>
       <div id="satFaceScanResult" class="sat-result"><b>No attendance recorded yet.</b></div>
@@ -354,7 +392,7 @@
       if(!faceProfiles.length)throw new Error('No registered face profiles found.');
       const v=await startVideo('satFaceVideo','user');
       faceScanRunning=true; candidateId='';candidateHits=0;
-      const status=byId('satFaceScanStatus'); if(status)status.textContent='Scanner running… look at the camera.';
+      const status=byId('satFaceScanStatus'); if(status)status.textContent=satIsMobileDevice()?'Mobile scanner ready — keep your face inside the frame.':'Scanner running — keep your face inside the frame.';
       faceScanLoop(v);
     }catch(e){toast(e?.message||e,'err');}
   };
@@ -367,12 +405,14 @@
       const status=byId('satFaceScanStatus');
       if(!d){
         candidateId='';candidateHits=0;
-        if(status)status.textContent='No clear face detected. Move closer and face the camera.';
+        if(status)status.textContent=satIsMobileDevice()?'Face not found yet — center your face in the frame and hold steady.':'No clear face detected — center your face in the frame.';
       }else{
         const m=bestFaceMatch(Array.from(d.descriptor));
-        if(!m||m.distance>0.48||m.margin<0.035){
+        const maxDistance=satIsMobileDevice()?0.52:0.48;
+        const minMargin=satIsMobileDevice()?0.025:0.035;
+        if(!m||m.distance>maxDistance||m.margin<minMargin){
           candidateId='';candidateHits=0;
-          if(status)status.textContent='Face not confidently matched. Try again with better light.';
+          if(status)status.textContent='Face detected, but not confidently matched. Hold steady with good light.';
         }else{
           const id=m.profile.person_type+':'+m.profile.person_id;
           if(candidateId===id)candidateHits++;else{candidateId=id;candidateHits=1;}
@@ -390,7 +430,7 @@
     }catch(e){
       const status=byId('satFaceScanStatus'); if(status)status.textContent='Scanner error: '+(e?.message||e);
     }
-    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),650);
+    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),satIsMobileDevice()?520:650);
   }
 
   async function recordFaceMatch(p,distance){
@@ -414,7 +454,7 @@
         <div id="satRegClassWrap" class="sat-field"><label>Class</label><select id="satRegClass" ${ctx.is_full_access?'':'disabled'} onchange="satLoadRegPeople()">${ctx.is_full_access?classOptions(cls):`<option>${esc(cls||'No class assigned')}</option>`}</select></div>
         <div class="sat-field"><label>Person</label><select id="satRegPerson"></select></div>
       </div>
-      <video id="satRegVideo" class="sat-face-video" playsinline muted></video>
+      <div class="sat-face-stage"><video id="satRegVideo" class="sat-face-video" playsinline muted autoplay></video><div class="sat-face-guide"></div></div>
       <div class="sat-actions" style="margin-top:10px"><button class="sat-btn primary" onclick="satStartRegCamera()">START CAMERA</button><button class="sat-btn good" onclick="satCaptureFaceSample()">CAPTURE SAMPLE</button><button class="sat-btn" onclick="satResetFaceSamples()">RESET SAMPLES</button><button class="sat-btn primary" onclick="satSaveFaceProfile()">SAVE / RE-REGISTER FACE</button></div>
       <div id="satRegSamples" class="sat-samples"></div>
       <div id="satRegStatus" class="sat-face-status">Capture 3 clear samples: front, slight left, slight right.</div>
@@ -431,19 +471,34 @@
     const h=byId('satRegPeopleList');
     if(h)h.innerHTML=(rows||[]).map(x=>`<div class="sat-person"><h4>${esc(x.person_name)}</h4><div class="sat-muted">${esc(x.person_id)}${x.class_name?' • '+esc(x.class_name):''}</div><div class="${x.registered?'sat-registered':'sat-not-registered'}">${x.registered?'✓ Face Registered':'Not Registered'}</div>${x.registered?`<div class="sat-actions" style="margin-top:8px"><button class="sat-btn danger" onclick="satDeleteFaceProfile('${esc(t)}','${esc(x.person_id)}')">DELETE FACE</button></div>`:''}</div>`).join('');
   };
-  window.satStartRegCamera=async function(){try{await ensureFaceModels();await startVideo('satRegVideo','user');toast('Camera ready.','ok');}catch(e){toast(e?.message||e,'err');}};
+  window.satStartRegCamera=async function(){try{await ensureFaceModels();await startVideo('satRegVideo','user');const st=byId('satRegStatus');if(st)st.textContent='Camera ready. Keep face inside the frame. Capture FRONT, slight LEFT, slight RIGHT.';toast('Camera ready.','ok');}catch(e){toast(e?.message||e,'err');}};
+  let regCaptureBusy=false;
   window.satCaptureFaceSample=async function(){
+    if(regCaptureBusy)return;
+    regCaptureBusy=true;
+    const st=byId('satRegStatus');
     try{
       const v=byId('satRegVideo');if(!v||!v.srcObject)throw new Error('Start camera first.');
-      const d=await detectDescriptor(v);if(!d)throw new Error('Exactly one clear face is required.');
-      if(d.detection?.score<0.65)throw new Error('Face quality is too low. Improve lighting and try again.');
+      await waitForVideoReady(v);
+      if(st)st.textContent='Scanning face… hold still for a moment.';
+      const d=await detectBestDescriptor(v,satIsMobileDevice()?5:3);
+      if(!d)throw new Error('Face not detected. Keep your full face inside the frame and try again.');
+      const minScore=satIsMobileDevice()?0.50:0.58;
+      if(Number(d.detection?.score||0)<minScore)throw new Error('Face found but image is not clear enough. Improve light and keep still.');
       registrationSamples.push(Array.from(d.descriptor));
       if(registrationSamples.length>3)registrationSamples=registrationSamples.slice(-3);
-      renderSampleChips(); byId('satRegStatus').textContent=`${registrationSamples.length}/3 sample(s) captured.`;
-    }catch(e){toast(e?.message||e,'err');}
+      renderSampleChips();
+      const n=registrationSamples.length;
+      const next=n===1?'Now turn slightly LEFT.':n===2?'Now turn slightly RIGHT.':'All 3 samples captured. Press SAVE / RE-REGISTER FACE.';
+      if(st)st.textContent=`✓ Sample ${n}/3 captured. ${next}`;
+      if(n<3)successSound();
+    }catch(e){
+      if(st)st.textContent='Capture failed — '+(e?.message||e);
+      toast(e?.message||e,'err');
+    }finally{regCaptureBusy=false;}
   };
   function renderSampleChips(){const h=byId('satRegSamples');if(h)h.innerHTML=registrationSamples.map((_,i)=>`<span class="sat-sample">✓ Sample ${i+1}</span>`).join('');}
-  window.satResetFaceSamples=()=>{registrationSamples=[];renderSampleChips();const s=byId('satRegStatus');if(s)s.textContent='Samples reset. Capture 3 new clear samples.';};
+  window.satResetFaceSamples=()=>{registrationSamples=[];regCaptureBusy=false;renderSampleChips();const s=byId('satRegStatus');if(s)s.textContent='Samples reset. Keep face inside the frame and capture FRONT, slight LEFT, slight RIGHT.';};
   window.satSaveFaceProfile=async function(){
     if(registrationSamples.length<3)return toast('Capture 3 clear face samples first.','warn');
     const t=byId('satRegType').value,id=byId('satRegPerson').value,cls=t==='student'?(byId('satRegClass')?.value||ctx.class_name):null;
