@@ -245,8 +245,12 @@
     ['satFaceVideo','satRegVideo'].forEach(id=>{const v=byId(id);if(v)v.srcObject=null;});
   }
   async function stopQr(){
-    if(qrScanner&&qrRunning){try{await qrScanner.stop();}catch(_){}}
+    if(qrScanner){
+      try{if(qrRunning)await qrScanner.stop();}catch(_){}
+      try{await qrScanner.clear();}catch(_){}
+    }
     qrRunning=false; qrScanner=null; qrBusy=false;
+    await satSleep(280);
   }
   async function stopActive(){
     await stopQr(); await stopFaceCamera(); await stopManualClock();
@@ -332,26 +336,35 @@
     return v;
   }
 
+  let satMobileMisses=0;
   async function detectDescriptor(video,opts={}){
     await ensureFaceModels();
     if(!video||video.readyState<2||!video.videoWidth||!video.videoHeight)return null;
     const mobile=satIsMobileDevice();
-    // 320 is substantially faster on phones; 416 is used only as a fallback when needed.
-    const inputSize=opts.inputSize || 320;
-    const scoreThreshold=opts.scoreThreshold ?? (mobile ? .34 : .44);
+    // iPhone/Android: use a very small detector pass first. A face that fills the guide
+    // does not need a heavy 320/416 pass on every frame. This avoids multi-second stalls.
+    const inputSize=opts.inputSize || (mobile ? 160 : 320);
+    const scoreThreshold=opts.scoreThreshold ?? (mobile ? .24 : .42);
     let result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize,scoreThreshold})).withFaceLandmarks().withFaceDescriptor();
-    if(!result && mobile && opts.allowFallback!==false){
-      result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:.30})).withFaceLandmarks().withFaceDescriptor();
+    if(result){satMobileMisses=0;return result;}
+    if(mobile && opts.allowFallback!==false){
+      satMobileMisses++;
+      // Only do the heavier pass occasionally, not on every missed frame.
+      if(satMobileMisses%4===0){
+        result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:.20})).withFaceLandmarks().withFaceDescriptor();
+        if(result){satMobileMisses=0;return result;}
+      }
     }
-    return result||null;
+    return null;
   }
   async function detectBestDescriptor(video,attempts=4){
     let best=null;
+    const mobile=satIsMobileDevice();
     for(let i=0;i<attempts;i++){
-      const d=await detectDescriptor(video,{inputSize:320,scoreThreshold:satIsMobileDevice()?.32:.42});
+      const d=await detectDescriptor(video,{inputSize:mobile?224:320,scoreThreshold:mobile?.22:.40,allowFallback:false});
       if(d && (!best || Number(d.detection?.score||0)>Number(best.detection?.score||0)))best=d;
-      if(d && Number(d.detection?.score||0)>=.68)break;
-      if(i<attempts-1)await satSleep(satIsMobileDevice()?90:70);
+      if(d && Number(d.detection?.score||0)>=.62)break;
+      if(i<attempts-1)await satSleep(mobile?70:70);
     }
     return best;
   }
@@ -399,6 +412,8 @@
     try{
       await ensureFaceModels(); await satFaceReloadProfiles();
       if(!faceProfiles.length)throw new Error('No registered face profiles found.');
+      await stopQr();
+      await satSleep(250);
       const v=await startVideo('satFaceVideo',faceFacing);
       faceScanRunning=true; candidateId='';candidateHits=0;
       const status=byId('satFaceScanStatus'); if(status)status.textContent=satIsMobileDevice()?'Mobile scanner ready — keep your face inside the frame.':'Scanner running — keep your face inside the frame.';
@@ -419,28 +434,32 @@
 
   async function faceScanLoop(video){
     if(!faceScanRunning)return;
+    const mobile=satIsMobileDevice();
+    const status=byId('satFaceScanStatus');
     try{
+      if(status)status.textContent='Scanning face…';
       const d=await detectDescriptor(video);
-      const status=byId('satFaceScanStatus');
+      if(!faceScanRunning)return;
       if(!d){
         candidateId='';candidateHits=0;
-        if(status)status.textContent=satIsMobileDevice()?'Face not found yet — center your face in the frame and hold steady.':'No clear face detected — center your face in the frame.';
+        if(status)status.textContent=mobile?'Looking for face — keep face inside the oval.':'No clear face detected — center your face in the frame.';
       }else{
+        if(status)status.textContent='Face found — matching…';
         const m=bestFaceMatch(Array.from(d.descriptor));
-        const maxDistance=satIsMobileDevice()?0.54:0.50;
-        const minMargin=satIsMobileDevice()?0.018:0.025;
+        const maxDistance=mobile?0.56:0.50;
+        const minMargin=mobile?0.012:0.025;
         if(!m||m.distance>maxDistance||m.margin<minMargin){
           candidateId='';candidateHits=0;
-          if(status)status.textContent='Face detected — checking identity…';
+          if(status)status.textContent='Face found — not confidently matched yet.';
         }else{
           const id=m.profile.person_type+':'+m.profile.person_id;
-          const instantStrong=(m.distance<=0.44 && m.margin>=0.045);
+          const instantStrong=mobile?(m.distance<=0.47 && m.margin>=0.025):(m.distance<=0.44 && m.margin>=0.045);
           if(candidateId===id)candidateHits++;else{candidateId=id;candidateHits=1;}
           const need=instantStrong?1:2;
           if(status)status.textContent=`${instantStrong?'Recognized':'Matching'} ${m.profile.person_name}… ${candidateHits}/${need}`;
           if(candidateHits>=need){
             const now=Date.now();
-            if(lastMarkedId!==id||now-lastMarkedAt>5000){
+            if(lastMarkedId!==id||now-lastMarkedAt>3500){
               await recordFaceMatch(m.profile,m.distance);
               lastMarkedId=id;lastMarkedAt=now;
             }
@@ -449,9 +468,9 @@
         }
       }
     }catch(e){
-      const status=byId('satFaceScanStatus'); if(status)status.textContent='Scanner error: '+(e?.message||e);
+      if(status)status.textContent='Scanner error: '+(e?.message||e);
     }
-    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),satIsMobileDevice()?180:240);
+    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),mobile?90:180);
   }
 
   async function recordFaceMatch(p,distance){
@@ -492,7 +511,7 @@
     const h=byId('satRegPeopleList');
     if(h)h.innerHTML=(rows||[]).map(x=>`<div class="sat-person"><h4>${esc(x.person_name)}</h4><div class="sat-muted">${esc(x.person_id)}${x.class_name?' • '+esc(x.class_name):''}</div><div class="${x.registered?'sat-registered':'sat-not-registered'}">${x.registered?'✓ Face Registered':'Not Registered'}</div>${x.registered?`<div class="sat-actions" style="margin-top:8px"><button class="sat-btn danger" onclick="satDeleteFaceProfile('${esc(t)}','${esc(x.person_id)}')">DELETE FACE</button></div>`:''}</div>`).join('');
   };
-  window.satStartRegCamera=async function(){try{await ensureFaceModels();await startVideo('satRegVideo',regFacing);const st=byId('satRegStatus');if(st)st.textContent='Camera ready. For fastest setup, press AUTO CAPTURE 3 and keep face in frame.';toast('Camera ready.','ok');}catch(e){toast(e?.message||e,'err');}};
+  window.satStartRegCamera=async function(){try{await ensureFaceModels();await stopQr();await satSleep(250);await startVideo('satRegVideo',regFacing);const st=byId('satRegStatus');if(st)st.textContent='Camera ready. For fastest setup, press AUTO CAPTURE 3 and keep face in frame.';toast('Camera ready.','ok');}catch(e){toast(e?.message||e,'err');}};
   window.satSwitchRegCamera=async function(){
     regFacing=regFacing==='user'?'environment':'user';
     try{await startVideo('satRegVideo',regFacing);const st=byId('satRegStatus');if(st)st.textContent=(regFacing==='user'?'Front':'Back')+' camera ready.';}catch(e){toast('Camera switch failed: '+(e?.message||e),'err');}
@@ -568,8 +587,11 @@
     if(qrRunning)return;
     try{
       await ensureQrLibraries();
+      await stopFaceCamera();
+      await satSleep(350);
       qrScanner=new Html5Qrcode('satQrReader');
-      await qrScanner.start({facingMode:{ideal:qrFacing}},{fps:satIsMobileDevice()?18:14,qrbox:{width:Math.min(280,Math.max(210,Math.floor((window.innerWidth||360)*0.68))),height:Math.min(280,Math.max(210,Math.floor((window.innerWidth||360)*0.68)))},aspectRatio:1.0},async text=>{
+      // html5-qrcode accepts a facingMode string (or {exact:...}); {ideal:...} breaks on some mobile browsers.
+      await qrScanner.start({facingMode:qrFacing},{fps:satIsMobileDevice()?20:14,qrbox:{width:Math.min(280,Math.max(210,Math.floor((window.innerWidth||360)*0.68))),height:Math.min(280,Math.max(210,Math.floor((window.innerWidth||360)*0.68)))},aspectRatio:1.0},async text=>{
         if(qrBusy)return;qrBusy=true;
         try{const r=await rpc('sat_scan_qr',{p_qr_value:text,p_method:'qr'});showQrScanResult(r);}catch(e){showQrScanError(e?.message||e);}
         finally{setTimeout(()=>qrBusy=false,1500);}
@@ -582,6 +604,7 @@
     qrFacing=qrFacing==='environment'?'user':'environment';
     try{
       await stopQr();
+      await satSleep(250);
       await satStartQr();
       toast((qrFacing==='environment'?'Back':'Front')+' camera selected.','ok');
     }catch(e){toast('QR camera switch failed: '+(e?.message||e),'err');}
