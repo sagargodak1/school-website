@@ -1,6 +1,6 @@
 /* ============================================================
    ST. AUGUSTINE ACADEMIC FOUNDATION
-   SMART ATTENDANCE FINAL V2 — FACE + QR + MANUAL + REPORTS — MOBILE FACE OPTIMIZED
+   SMART ATTENDANCE FINAL V2 — FAST FACE + QR — MOBILE + LAPTOP CAMERA SWITCH
    2026-09-26
 
    SAFE integration rules:
@@ -22,8 +22,9 @@
   const QRCODE_URL='https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
 
   let ctx=null, currentView='dashboard', launchMode='staff';
-  let qrScanner=null, qrRunning=false, qrBusy=false;
+  let qrScanner=null, qrRunning=false, qrBusy=false, qrFacing='environment';
   let faceStream=null, faceScanRunning=false, faceScanTimer=null, faceProfiles=[];
+  let faceFacing='user', regFacing='user';
   let faceModelsReady=false, faceModelsLoading=null;
   let registrationSamples=[];
   let reportRows=[];
@@ -308,23 +309,26 @@
     }
     throw new Error('Camera started but video frame is not ready. Please try START CAMERA again.');
   }
+  async function getCameraStream(facing){
+    const mobile=satIsMobileDevice();
+    const base={width:{ideal:mobile?960:1280},height:{ideal:mobile?1280:720},frameRate:{ideal:30,min:15}};
+    try{
+      return await navigator.mediaDevices.getUserMedia({video:{...base,facingMode:{exact:facing}},audio:false});
+    }catch(_){
+      return await navigator.mediaDevices.getUserMedia({video:{...base,facingMode:{ideal:facing}},audio:false});
+    }
+  }
   async function startVideo(id,facing='user'){
     const v=byId(id); if(!v)throw new Error('Camera view not ready.');
     if(!navigator.mediaDevices?.getUserMedia)throw new Error('Camera is not supported in this browser.');
-    if(faceStream)await stopFaceCamera();
-    const mobile=satIsMobileDevice();
-    const video={
-      facingMode:{ideal:facing},
-      width:{ideal:mobile?720:1280},
-      height:{ideal:mobile?1280:720}
-    };
-    faceStream=await navigator.mediaDevices.getUserMedia({video,audio:false});
+    if(faceStream){faceStream.getTracks().forEach(t=>t.stop());faceStream=null;}
+    faceStream=await getCameraStream(facing);
     v.setAttribute('playsinline',''); v.muted=true; v.autoplay=true;
     v.srcObject=faceStream;
     await v.play();
-    await waitForVideoReady(v);
-    // Mobile cameras often need a short exposure/focus settle time.
-    if(mobile)await satSleep(650); else await satSleep(180);
+    await waitForVideoReady(v,6000);
+    // Enough for autofocus/exposure, but still fast for a queue of students.
+    await satSleep(satIsMobileDevice()?280:120);
     return v;
   }
 
@@ -332,17 +336,22 @@
     await ensureFaceModels();
     if(!video||video.readyState<2||!video.videoWidth||!video.videoHeight)return null;
     const mobile=satIsMobileDevice();
-    const inputSize=opts.inputSize || (mobile?416:320);
-    const scoreThreshold=opts.scoreThreshold ?? (mobile ? .42 : .50);
-    const result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize,scoreThreshold})).withFaceLandmarks().withFaceDescriptor();
+    // 320 is substantially faster on phones; 416 is used only as a fallback when needed.
+    const inputSize=opts.inputSize || 320;
+    const scoreThreshold=opts.scoreThreshold ?? (mobile ? .34 : .44);
+    let result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize,scoreThreshold})).withFaceLandmarks().withFaceDescriptor();
+    if(!result && mobile && opts.allowFallback!==false){
+      result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:.30})).withFaceLandmarks().withFaceDescriptor();
+    }
     return result||null;
   }
   async function detectBestDescriptor(video,attempts=4){
     let best=null;
     for(let i=0;i<attempts;i++){
-      const d=await detectDescriptor(video,{inputSize:satIsMobileDevice()?416:320,scoreThreshold:satIsMobileDevice() ? .40 : .48});
+      const d=await detectDescriptor(video,{inputSize:320,scoreThreshold:satIsMobileDevice()?.32:.42});
       if(d && (!best || Number(d.detection?.score||0)>Number(best.detection?.score||0)))best=d;
-      if(i<attempts-1)await satSleep(satIsMobileDevice()?160:110);
+      if(d && Number(d.detection?.score||0)>=.68)break;
+      if(i<attempts-1)await satSleep(satIsMobileDevice()?90:70);
     }
     return best;
   }
@@ -370,7 +379,7 @@
       <h3 class="sat-title">Real Face Attendance Scanner</h3>
       <div class="sat-row"><div class="sat-field"><label>Scope</label><select id="satFaceScope" onchange="satFaceReloadProfiles()"><option value="all">All Registered Students / Staff</option>${ctx.class_name?`<option value="${esc(ctx.class_name)}">${esc(ctx.class_name)} only</option>`:''}</select></div></div>
       <div class="sat-face-stage"><video id="satFaceVideo" class="sat-face-video" playsinline muted autoplay></video><div class="sat-face-guide"></div></div>
-      <div class="sat-actions" style="margin-top:10px"><button class="sat-btn primary" onclick="satStartFaceScanner()" ${attendanceLocked()?'disabled':''}>START FACE SCANNER</button><button class="sat-btn" onclick="satStopFaceScanner()">STOP</button></div>
+      <div class="sat-actions" style="margin-top:10px"><button class="sat-btn primary" onclick="satStartFaceScanner()" ${attendanceLocked()?'disabled':''}>START FACE SCANNER</button><button class="sat-btn" onclick="satSwitchFaceCamera()">🔄 FRONT / BACK</button><button class="sat-btn" onclick="satStopFaceScanner()">STOP</button></div>
       <div id="satFaceScanStatus" class="sat-face-status">Press START FACE SCANNER. Keep one face clearly visible.</div>
       <div id="satFaceScanResult" class="sat-result"><b>No attendance recorded yet.</b></div>
       <p class="sat-muted">Match threshold: strict. Two consecutive matching frames are required before attendance is recorded.</p>
@@ -390,13 +399,23 @@
     try{
       await ensureFaceModels(); await satFaceReloadProfiles();
       if(!faceProfiles.length)throw new Error('No registered face profiles found.');
-      const v=await startVideo('satFaceVideo','user');
+      const v=await startVideo('satFaceVideo',faceFacing);
       faceScanRunning=true; candidateId='';candidateHits=0;
       const status=byId('satFaceScanStatus'); if(status)status.textContent=satIsMobileDevice()?'Mobile scanner ready — keep your face inside the frame.':'Scanner running — keep your face inside the frame.';
       faceScanLoop(v);
     }catch(e){toast(e?.message||e,'err');}
   };
   window.satStopFaceScanner=()=>stopFaceCamera();
+  window.satSwitchFaceCamera=async function(){
+    faceFacing=faceFacing==='user'?'environment':'user';
+    const wasRunning=faceScanRunning;
+    try{
+      await stopFaceCamera();
+      const v=await startVideo('satFaceVideo',faceFacing);
+      const st=byId('satFaceScanStatus');if(st)st.textContent=(faceFacing==='user'?'Front':'Back')+' camera ready.';
+      if(wasRunning){faceScanRunning=true;candidateId='';candidateHits=0;faceScanLoop(v);}
+    }catch(e){toast('Camera switch failed: '+(e?.message||e),'err');}
+  };
 
   async function faceScanLoop(video){
     if(!faceScanRunning)return;
@@ -408,18 +427,20 @@
         if(status)status.textContent=satIsMobileDevice()?'Face not found yet — center your face in the frame and hold steady.':'No clear face detected — center your face in the frame.';
       }else{
         const m=bestFaceMatch(Array.from(d.descriptor));
-        const maxDistance=satIsMobileDevice()?0.52:0.48;
-        const minMargin=satIsMobileDevice()?0.025:0.035;
+        const maxDistance=satIsMobileDevice()?0.54:0.50;
+        const minMargin=satIsMobileDevice()?0.018:0.025;
         if(!m||m.distance>maxDistance||m.margin<minMargin){
           candidateId='';candidateHits=0;
-          if(status)status.textContent='Face detected, but not confidently matched. Hold steady with good light.';
+          if(status)status.textContent='Face detected — checking identity…';
         }else{
           const id=m.profile.person_type+':'+m.profile.person_id;
+          const instantStrong=(m.distance<=0.44 && m.margin>=0.045);
           if(candidateId===id)candidateHits++;else{candidateId=id;candidateHits=1;}
-          if(status)status.textContent=`Matching ${m.profile.person_name}… ${candidateHits}/2 • distance ${m.distance.toFixed(3)}`;
-          if(candidateHits>=2){
+          const need=instantStrong?1:2;
+          if(status)status.textContent=`${instantStrong?'Recognized':'Matching'} ${m.profile.person_name}… ${candidateHits}/${need}`;
+          if(candidateHits>=need){
             const now=Date.now();
-            if(lastMarkedId!==id||now-lastMarkedAt>8000){
+            if(lastMarkedId!==id||now-lastMarkedAt>5000){
               await recordFaceMatch(m.profile,m.distance);
               lastMarkedId=id;lastMarkedAt=now;
             }
@@ -430,7 +451,7 @@
     }catch(e){
       const status=byId('satFaceScanStatus'); if(status)status.textContent='Scanner error: '+(e?.message||e);
     }
-    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),satIsMobileDevice()?520:650);
+    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),satIsMobileDevice()?180:240);
   }
 
   async function recordFaceMatch(p,distance){
@@ -455,7 +476,7 @@
         <div class="sat-field"><label>Person</label><select id="satRegPerson"></select></div>
       </div>
       <div class="sat-face-stage"><video id="satRegVideo" class="sat-face-video" playsinline muted autoplay></video><div class="sat-face-guide"></div></div>
-      <div class="sat-actions" style="margin-top:10px"><button class="sat-btn primary" onclick="satStartRegCamera()">START CAMERA</button><button class="sat-btn good" onclick="satCaptureFaceSample()">CAPTURE SAMPLE</button><button class="sat-btn" onclick="satResetFaceSamples()">RESET SAMPLES</button><button class="sat-btn primary" onclick="satSaveFaceProfile()">SAVE / RE-REGISTER FACE</button></div>
+      <div class="sat-actions" style="margin-top:10px"><button class="sat-btn primary" onclick="satStartRegCamera()">START CAMERA</button><button class="sat-btn" onclick="satSwitchRegCamera()">🔄 FRONT / BACK</button><button class="sat-btn good" onclick="satAutoCaptureFaceSamples()">⚡ AUTO CAPTURE 3</button><button class="sat-btn good" onclick="satCaptureFaceSample()">CAPTURE ONE</button><button class="sat-btn" onclick="satResetFaceSamples()">RESET</button><button class="sat-btn primary" onclick="satSaveFaceProfile()">SAVE / RE-REGISTER FACE</button></div>
       <div id="satRegSamples" class="sat-samples"></div>
       <div id="satRegStatus" class="sat-face-status">Capture 3 clear samples: front, slight left, slight right.</div>
       <div id="satRegPeopleList" class="sat-face-list" style="margin-top:12px"></div>
@@ -471,7 +492,11 @@
     const h=byId('satRegPeopleList');
     if(h)h.innerHTML=(rows||[]).map(x=>`<div class="sat-person"><h4>${esc(x.person_name)}</h4><div class="sat-muted">${esc(x.person_id)}${x.class_name?' • '+esc(x.class_name):''}</div><div class="${x.registered?'sat-registered':'sat-not-registered'}">${x.registered?'✓ Face Registered':'Not Registered'}</div>${x.registered?`<div class="sat-actions" style="margin-top:8px"><button class="sat-btn danger" onclick="satDeleteFaceProfile('${esc(t)}','${esc(x.person_id)}')">DELETE FACE</button></div>`:''}</div>`).join('');
   };
-  window.satStartRegCamera=async function(){try{await ensureFaceModels();await startVideo('satRegVideo','user');const st=byId('satRegStatus');if(st)st.textContent='Camera ready. Keep face inside the frame. Capture FRONT, slight LEFT, slight RIGHT.';toast('Camera ready.','ok');}catch(e){toast(e?.message||e,'err');}};
+  window.satStartRegCamera=async function(){try{await ensureFaceModels();await startVideo('satRegVideo',regFacing);const st=byId('satRegStatus');if(st)st.textContent='Camera ready. For fastest setup, press AUTO CAPTURE 3 and keep face in frame.';toast('Camera ready.','ok');}catch(e){toast(e?.message||e,'err');}};
+  window.satSwitchRegCamera=async function(){
+    regFacing=regFacing==='user'?'environment':'user';
+    try{await startVideo('satRegVideo',regFacing);const st=byId('satRegStatus');if(st)st.textContent=(regFacing==='user'?'Front':'Back')+' camera ready.';}catch(e){toast('Camera switch failed: '+(e?.message||e),'err');}
+  };
   let regCaptureBusy=false;
   window.satCaptureFaceSample=async function(){
     if(regCaptureBusy)return;
@@ -497,6 +522,30 @@
       toast(e?.message||e,'err');
     }finally{regCaptureBusy=false;}
   };
+  window.satAutoCaptureFaceSamples=async function(){
+    if(regCaptureBusy)return;
+    regCaptureBusy=true;
+    const st=byId('satRegStatus');
+    try{
+      const v=byId('satRegVideo');if(!v||!v.srcObject)throw new Error('Start camera first.');
+      await waitForVideoReady(v);
+      registrationSamples=[];renderSampleChips();
+      const labels=['FRONT','SLIGHT LEFT','SLIGHT RIGHT'];
+      for(let i=0;i<3;i++){
+        if(st)st.textContent=`Auto capture ${i+1}/3 — ${labels[i]}. Keep face clearly inside the frame.`;
+        if(i>0)await satSleep(420);
+        let d=await detectBestDescriptor(v,satIsMobileDevice()?4:3);
+        if(!d)throw new Error(`Sample ${i+1}: face not detected. Keep face visible and try Auto Capture again.`);
+        if(Number(d.detection?.score||0)<(satIsMobileDevice()?.42:.50))throw new Error(`Sample ${i+1}: image is not clear enough.`);
+        registrationSamples.push(Array.from(d.descriptor));renderSampleChips();successSound();
+        await satSleep(160);
+      }
+      if(st)st.textContent='✓ 3/3 samples captured. Press SAVE / RE-REGISTER FACE.';
+    }catch(e){
+      if(st)st.textContent='Auto capture stopped — '+(e?.message||e);
+      toast(e?.message||e,'err');
+    }finally{regCaptureBusy=false;}
+  };
   function renderSampleChips(){const h=byId('satRegSamples');if(h)h.innerHTML=registrationSamples.map((_,i)=>`<span class="sat-sample">✓ Sample ${i+1}</span>`).join('');}
   window.satResetFaceSamples=()=>{registrationSamples=[];regCaptureBusy=false;renderSampleChips();const s=byId('satRegStatus');if(s)s.textContent='Samples reset. Keep face inside the frame and capture FRONT, slight LEFT, slight RIGHT.';};
   window.satSaveFaceProfile=async function(){
@@ -512,7 +561,7 @@
 
   async function renderQrScanner(){
     await refreshCtx();
-    byId('satPage').innerHTML=`${holidayBanner()}<div class="sat-card" style="max-width:760px;margin:auto"><h3 class="sat-title">QR Attendance Scanner</h3><div id="satQrReader" class="sat-reader"><div class="sat-reader-note">Press START CAMERA.<br><span class="sat-muted">Allow camera permission when asked.</span></div></div><div class="sat-actions" style="margin-top:10px"><button class="sat-btn primary" onclick="satStartQr()" ${attendanceLocked()?'disabled':''}>START CAMERA</button><button class="sat-btn" onclick="satStopQr()">STOP</button></div><div id="satQrResult" class="sat-result"><b>Show a St. Augustine attendance QR to the camera.</b></div></div>`;
+    byId('satPage').innerHTML=`${holidayBanner()}<div class="sat-card" style="max-width:760px;margin:auto"><h3 class="sat-title">QR Attendance Scanner</h3><div id="satQrReader" class="sat-reader"><div class="sat-reader-note">Press START CAMERA.<br><span class="sat-muted">Back camera is default on mobile.</span></div></div><div class="sat-actions" style="margin-top:10px"><button class="sat-btn primary" onclick="satStartQr()" ${attendanceLocked()?'disabled':''}>START CAMERA</button><button class="sat-btn" onclick="satSwitchQrCamera()">🔄 FRONT / BACK</button><button class="sat-btn" onclick="satStopQr()">STOP</button></div><div id="satQrResult" class="sat-result"><b>Show a St. Augustine attendance QR to the camera.</b></div></div>`;
   }
   window.satStartQr=async function(){
     if(attendanceLocked())return toast('Holiday: attendance scanning is locked. Admin can enable Test Mode for today.','warn');
@@ -520,7 +569,7 @@
     try{
       await ensureQrLibraries();
       qrScanner=new Html5Qrcode('satQrReader');
-      await qrScanner.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:250}},async text=>{
+      await qrScanner.start({facingMode:{ideal:qrFacing}},{fps:satIsMobileDevice()?18:14,qrbox:{width:Math.min(280,Math.max(210,Math.floor((window.innerWidth||360)*0.68))),height:Math.min(280,Math.max(210,Math.floor((window.innerWidth||360)*0.68)))},aspectRatio:1.0},async text=>{
         if(qrBusy)return;qrBusy=true;
         try{const r=await rpc('sat_scan_qr',{p_qr_value:text,p_method:'qr'});showQrScanResult(r);}catch(e){showQrScanError(e?.message||e);}
         finally{setTimeout(()=>qrBusy=false,1500);}
@@ -529,6 +578,14 @@
     }catch(e){toast('Camera/QR could not start: '+(e?.message||e),'err');}
   };
   window.satStopQr=()=>stopQr();
+  window.satSwitchQrCamera=async function(){
+    qrFacing=qrFacing==='environment'?'user':'environment';
+    try{
+      await stopQr();
+      await satStartQr();
+      toast((qrFacing==='environment'?'Back':'Front')+' camera selected.','ok');
+    }catch(e){toast('QR camera switch failed: '+(e?.message||e),'err');}
+  };
   function showQrScanResult(r){const e=byId('satQrResult');if(!e)return;e.className='sat-result '+(r.already_present?'already':'ok');e.innerHTML=`<h2>${r.already_present?'ALREADY PRESENT':'✓ PRESENT RECORDED'}</h2><strong>${esc(r.name)}</strong><div>${esc(cap(r.person_type))}${r.class_name?' • '+esc(r.class_name):''}</div><div>${esc(r.time)}</div>`;r.already_present?alreadySound():successSound();}
   function showQrScanError(m){const e=byId('satQrResult');if(!e)return;e.className='sat-result fail';e.innerHTML=`<h2>NOT RECORDED</h2><div>${esc(m)}</div>`;alreadySound();}
 
