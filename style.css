@@ -7227,3 +7227,179 @@ body.dark-mode .gallery-load-more-btn{
         animation:none!important;
     }
 }
+/* =========================================
+   SMART ATTENDANCE CARD — DESKTOP + MOBILE FIX
+========================================= */
+
+/* Main Smart Attendance action card */
+#staffDashboardSmartAttendanceAction,
+#staffDashboardSmartAttendanceSafeAction,
+[data-smart-attendance-action="1"],
+.smart-attendance-action-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  width: 100% !important;
+  min-height: 96px !important;
+  padding: 16px 18px !important;
+  border: 0 !important;
+  border-radius: 20px !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background: linear-gradient(135deg, #0f5e8c 0%, #1d8acb 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(13, 59, 102, 0.18) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden !important;
+  position: relative;
+}
+
+#staffDashboardSmartAttendanceAction:hover,
+#staffDashboardSmartAttendanceSafeAction:hover,
+[data-smart-attendance-action="1"]:hover,
+.smart-attendance-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(13, 59, 102, 0.24) !important;
+}
+
+#staffDashboardSmartAttendanceAction::before,
+#staffDashboardSmartAttendanceSafeAction::before,
+[data-smart-attendance-action="1"]::before,
+.smart-attendance-action-card::before {
+  content: "";
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  width: 110px;
+  height: 110px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+
+/* icon */
+#staffDashboardSmartAttendanceAction .staff-dashboard-action-icon,
+#staffDashboardSmartAttendanceSafeAction .staff-dashboard-action-icon,
+[data-smart-attendance-action="1"] .staff-dashboard-action-icon,
+.smart-attendance-action-card .staff-dashboard-action-icon {
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  border-radius: 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255,255,255,0.16) !important;
+  border: 1px solid rgba(255,255,255,0.20) !important;
+  font-size: 26px !important;
+  color: #fff !important;
+}
+
+/* text area */
+#staffDashboardSmartAttendanceAction .staff-dashboard-action-copy,
+#staffDashboardSmartAttendanceSafeAction .staff-dashboard-action-copy,
+[data-smart-attendance-action="1"] .staff-dashboard-action-copy,
+.smart-attendance-action-card .staff-dashboard-action-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+#staffDashboardSmartAttendanceAction .staff-dashboard-action-copy strong,
+#staffDashboardSmartAttendanceSafeAction .staff-dashboard-action-copy strong,
+[data-smart-attendance-action="1"] .staff-dashboard-action-copy strong,
+.smart-attendance-action-card .staff-dashboard-action-copy strong {
+  font-size: 21px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  line-height: 1.2 !important;
+}
+
+#staffDashboardSmartAttendanceAction .staff-dashboard-action-copy small,
+#staffDashboardSmartAttendanceSafeAction .staff-dashboard-action-copy small,
+[data-smart-attendance-action="1"] .staff-dashboard-action-copy small,
+.smart-attendance-action-card .staff-dashboard-action-copy small {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: rgba(255,255,255,0.92) !important;
+  line-height: 1.35 !important;
+}
+
+/* arrow */
+#staffDashboardSmartAttendanceAction .staff-dashboard-action-arrow,
+#staffDashboardSmartAttendanceSafeAction .staff-dashboard-action-arrow,
+[data-smart-attendance-action="1"] .staff-dashboard-action-arrow,
+.smart-attendance-action-card .staff-dashboard-action-arrow {
+  font-size: 24px !important;
+  color: #ffffff !important;
+  opacity: 0.95 !important;
+  margin-left: auto !important;
+}
+
+/* put cards in a proper grid if needed */
+.staff-dashboard-quick-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px !important;
+  align-items: stretch !important;
+}
+
+/* if only one column is needed on smaller tablets */
+@media (max-width: 1100px) {
+  .staff-dashboard-quick-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* MOBILE + TAB FIX */
+@media (max-width: 768px) {
+  .staff-dashboard-quick-actions {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  #staffDashboardSmartAttendanceAction,
+  #staffDashboardSmartAttendanceSafeAction,
+  [data-smart-attendance-action="1"],
+  .smart-attendance-action-card {
+    min-height: 84px !important;
+    padding: 12px 14px !important;
+    border-radius: 16px !important;
+    gap: 10px !important;
+  }
+
+  #staffDashboardSmartAttendanceAction .staff-dashboard-action-icon,
+  #staffDashboardSmartAttendanceSafeAction .staff-dashboard-action-icon,
+  [data-smart-attendance-action="1"] .staff-dashboard-action-icon,
+  .smart-attendance-action-card .staff-dashboard-action-icon {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    font-size: 22px !important;
+    border-radius: 14px !important;
+  }
+
+  #staffDashboardSmartAttendanceAction .staff-dashboard-action-copy strong,
+  #staffDashboardSmartAttendanceSafeAction .staff-dashboard-action-copy strong,
+  [data-smart-attendance-action="1"] .staff-dashboard-action-copy strong,
+  .smart-attendance-action-card .staff-dashboard-action-copy strong {
+    font-size: 17px !important;
+  }
+
+  #staffDashboardSmartAttendanceAction .staff-dashboard-action-copy small,
+  #staffDashboardSmartAttendanceSafeAction .staff-dashboard-action-copy small,
+  [data-smart-attendance-action="1"] .staff-dashboard-action-copy small,
+  .smart-attendance-action-card .staff-dashboard-action-copy small {
+    font-size: 11.5px !important;
+  }
+
+  #staffDashboardSmartAttendanceAction .staff-dashboard-action-arrow,
+  #staffDashboardSmartAttendanceSafeAction .staff-dashboard-action-arrow,
+  [data-smart-attendance-action="1"] .staff-dashboard-action-arrow,
+  .smart-attendance-action-card .staff-dashboard-action-arrow {
+    font-size: 20px !important;
+  }
+}
