@@ -315,12 +315,19 @@
   }
   async function getCameraStream(facing){
     const mobile=satIsMobileDevice();
-    const base={width:{ideal:mobile?960:1280},height:{ideal:mobile?1280:720},frameRate:{ideal:30,min:15}};
-    try{
-      return await navigator.mediaDevices.getUserMedia({video:{...base,facingMode:{exact:facing}},audio:false});
-    }catch(_){
-      return await navigator.mediaDevices.getUserMedia({video:{...base,facingMode:{ideal:facing}},audio:false});
+    // Face recognition does not need the phone camera's full native resolution.
+    // 640x480 is substantially faster on Android/iPhone while keeping enough detail for descriptors.
+    const base={width:{ideal:mobile?640:960},height:{ideal:mobile?480:720},frameRate:{ideal:mobile?24:30,min:12}};
+    const attempts=[
+      {video:{...base,facingMode:{ideal:facing}},audio:false},
+      {video:{facingMode:facing,width:{ideal:640},height:{ideal:480}},audio:false},
+      {video:true,audio:false}
+    ];
+    let lastErr=null;
+    for(const c of attempts){
+      try{return await navigator.mediaDevices.getUserMedia(c);}catch(e){lastErr=e;}
     }
+    throw lastErr||new Error('Camera could not start.');
   }
   async function startVideo(id,facing='user'){
     const v=byId(id); if(!v)throw new Error('Camera view not ready.');
@@ -337,34 +344,49 @@
   }
 
   let satMobileMisses=0;
+  let satDetectCanvas=null;
+  function satSnapshotForDetection(video,maxSide){
+    if(!video||video.readyState<2||!video.videoWidth||!video.videoHeight)return null;
+    const vw=video.videoWidth,vh=video.videoHeight;
+    const scale=Math.min(1,(maxSide||480)/Math.max(vw,vh));
+    const w=Math.max(160,Math.round(vw*scale)),h=Math.max(160,Math.round(vh*scale));
+    if(!satDetectCanvas)satDetectCanvas=document.createElement('canvas');
+    if(satDetectCanvas.width!==w)satDetectCanvas.width=w;
+    if(satDetectCanvas.height!==h)satDetectCanvas.height=h;
+    const c=satDetectCanvas.getContext('2d',{alpha:false,willReadFrequently:false});
+    c.drawImage(video,0,0,w,h);
+    return satDetectCanvas;
+  }
   async function detectDescriptor(video,opts={}){
     await ensureFaceModels();
     if(!video||video.readyState<2||!video.videoWidth||!video.videoHeight)return null;
     const mobile=satIsMobileDevice();
-    // iPhone/Android: use a very small detector pass first. A face that fills the guide
-    // does not need a heavy 320/416 pass on every frame. This avoids multi-second stalls.
-    const inputSize=opts.inputSize || (mobile ? 160 : 320);
-    const scoreThreshold=opts.scoreThreshold ?? (mobile ? .24 : .42);
-    let result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize,scoreThreshold})).withFaceLandmarks().withFaceDescriptor();
+    // On mobile, detect from a downscaled snapshot instead of the live high-resolution video element.
+    // This is much more stable on Android/iPhone browsers and avoids long-running video tensor work.
+    const source=mobile?satSnapshotForDetection(video,opts.maxSide||480):video;
+    if(!source)return null;
+    const inputSize=opts.inputSize || (mobile ? 224 : 320);
+    const scoreThreshold=opts.scoreThreshold ?? (mobile ? .16 : .40);
+    let result=await faceapi.detectSingleFace(source,new faceapi.TinyFaceDetectorOptions({inputSize,scoreThreshold})).withFaceLandmarks().withFaceDescriptor();
     if(result){satMobileMisses=0;return result;}
     if(mobile && opts.allowFallback!==false){
       satMobileMisses++;
-      // Only do the heavier pass occasionally, not on every missed frame.
-      if(satMobileMisses%4===0){
-        result=await faceapi.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:.20})).withFaceLandmarks().withFaceDescriptor();
+      if(satMobileMisses%3===0){
+        const fallback=satSnapshotForDetection(video,640);
+        result=await faceapi.detectSingleFace(fallback,new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:.12})).withFaceLandmarks().withFaceDescriptor();
         if(result){satMobileMisses=0;return result;}
       }
     }
     return null;
   }
-  async function detectBestDescriptor(video,attempts=4){
+  async function detectBestDescriptor(video,attempts=8){
     let best=null;
     const mobile=satIsMobileDevice();
     for(let i=0;i<attempts;i++){
-      const d=await detectDescriptor(video,{inputSize:mobile?224:320,scoreThreshold:mobile?.22:.40,allowFallback:false});
+      const d=await detectDescriptor(video,{inputSize:mobile?224:320,scoreThreshold:mobile?.14:.38,allowFallback:i===attempts-1,maxSide:mobile?520:720});
       if(d && (!best || Number(d.detection?.score||0)>Number(best.detection?.score||0)))best=d;
-      if(d && Number(d.detection?.score||0)>=.62)break;
-      if(i<attempts-1)await satSleep(mobile?70:70);
+      if(d && Number(d.detection?.score||0)>=(mobile?.42:.58))break;
+      if(i<attempts-1)await satSleep(mobile?110:70);
     }
     return best;
   }
@@ -442,7 +464,7 @@
       if(!faceScanRunning)return;
       if(!d){
         candidateId='';candidateHits=0;
-        if(status)status.textContent=mobile?'Looking for face — keep face inside the oval.':'No clear face detected — center your face in the frame.';
+        if(status)status.textContent=mobile?'Looking for face — keep your full face steady inside the oval; no need to move closer.':'No clear face detected — center your face in the frame.';
       }else{
         if(status)status.textContent='Face found — matching…';
         const m=bestFaceMatch(Array.from(d.descriptor));
@@ -470,7 +492,7 @@
     }catch(e){
       if(status)status.textContent='Scanner error: '+(e?.message||e);
     }
-    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),mobile?90:180);
+    if(faceScanRunning)faceScanTimer=setTimeout(()=>faceScanLoop(video),mobile?140:180);
   }
 
   async function recordFaceMatch(p,distance){
@@ -525,9 +547,9 @@
       const v=byId('satRegVideo');if(!v||!v.srcObject)throw new Error('Start camera first.');
       await waitForVideoReady(v);
       if(st)st.textContent='Scanning face… hold still for a moment.';
-      const d=await detectBestDescriptor(v,satIsMobileDevice()?5:3);
+      const d=await detectBestDescriptor(v,satIsMobileDevice()?10:3);
       if(!d)throw new Error('Face not detected. Keep your full face inside the frame and try again.');
-      const minScore=satIsMobileDevice()?0.50:0.58;
+      const minScore=satIsMobileDevice()?0.28:0.58;
       if(Number(d.detection?.score||0)<minScore)throw new Error('Face found but image is not clear enough. Improve light and keep still.');
       registrationSamples.push(Array.from(d.descriptor));
       if(registrationSamples.length>3)registrationSamples=registrationSamples.slice(-3);
@@ -553,9 +575,9 @@
       for(let i=0;i<3;i++){
         if(st)st.textContent=`Auto capture ${i+1}/3 — ${labels[i]}. Keep face clearly inside the frame.`;
         if(i>0)await satSleep(420);
-        let d=await detectBestDescriptor(v,satIsMobileDevice()?4:3);
+        let d=await detectBestDescriptor(v,satIsMobileDevice()?10:3);
         if(!d)throw new Error(`Sample ${i+1}: face not detected. Keep face visible and try Auto Capture again.`);
-        if(Number(d.detection?.score||0)<(satIsMobileDevice()?.42:.50))throw new Error(`Sample ${i+1}: image is not clear enough.`);
+        if(Number(d.detection?.score||0)<(satIsMobileDevice()?.24:.50))throw new Error(`Sample ${i+1}: image is not clear enough.`);
         registrationSamples.push(Array.from(d.descriptor));renderSampleChips();successSound();
         await satSleep(160);
       }
