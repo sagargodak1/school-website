@@ -6,7 +6,7 @@
 (function(){
   "use strict";
 
-  const VAPID_PUBLIC_KEY="BGbm-SZQjbtKpAtIIqIqxVdOYq8NbRXj6pVwYDCVHg5REBzEpNxLUwSd5GgeX4o6KUZIcrOEO4sYwzp5trZ30ns";
+  const VAPID_PUBLIC_KEY="BEwBJeacvvXqRp1mRoE-g6nHtCz6NG2VgLKrkO-g7Ro5SaLfu7VXgch04kXFllHCoiKcj1hUGayer2_ww9CzKSE";
   const POLL_MS=60000;
   let activeClient=null;
   let activeSession=null;
