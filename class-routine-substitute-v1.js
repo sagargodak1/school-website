@@ -1,8 +1,8 @@
 /* ============================================================
    ST. AUGUSTINE ACADEMIC FOUNDATION
-   CLASS ROUTINE + DAILY SUBSTITUTE ROUTINE V1.5 FINAL
+   CLASS ROUTINE + DAILY SUBSTITUTE ROUTINE V1.6 FINAL
    2026-09-29
-   FINAL TAB FLOW + NAV ISOLATION + RESPONSIVE + PERIOD ADD/REMOVE + PERMANENT UNPUBLISH
+   V1.5 FEATURES + TEACHER DIRECTORY FIX (ALL ELIGIBLE STAFF FROM EXISTING DIRECTORY)
 
    Additive module: does not replace app.js, Exam Management,
    Smart Attendance, Marks, Leave, Notifications or Parent Portal.
@@ -11,6 +11,7 @@
   'use strict';
 
   const MOD_ID='crtOverlayV1';
+  window.CLASS_ROUTINE_SUBSTITUTE_VERSION='1.6-final-teacher-directory-fix';
   const STYLE_ID='crtStyleV1';
   const CLASSES=['Nursery','LKG','UKG','Class 1','Class 2','Class 3','Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10'];
   const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
@@ -278,8 +279,11 @@
     const dir=staffDirectory();
     return Object.entries(dir).filter(([id,s])=>{
       const d=lower(s?.designation);
-      if(d.includes('driver')||d.includes('support staff')||d.includes('chief executive')||d.includes('managing director'))return false;
-      return id!=='suresh'&&id!=='sanjeev';
+      // Use the website's existing Staff/Teacher directory as the single source.
+      // Management staff may also teach, so CEO/MD/Principal/Vice Principal and
+      // other staff remain selectable. Only clearly non-teaching support roles
+      // are excluded from Class Routine teacher assignment.
+      return !(d.includes('driver')||d.includes('support staff'));
     }).map(([id,s])=>({id,name:s.name||id,designation:s.designation||'Staff'})).sort((a,b)=>a.name.localeCompare(b.name));
   }
   function teachersInTodayRoutine(data){
