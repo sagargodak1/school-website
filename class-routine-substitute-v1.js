@@ -1,8 +1,8 @@
 /* ============================================================
    ST. AUGUSTINE ACADEMIC FOUNDATION
-   CLASS ROUTINE + DAILY SUBSTITUTE ROUTINE V1.6 FINAL
+   CLASS ROUTINE + DAILY SUBSTITUTE ROUTINE V1.7 ONE-YEAR ROUTINE
    2026-09-29
-   V1.5 FEATURES + TEACHER DIRECTORY FIX (ALL ELIGIBLE STAFF FROM EXISTING DIRECTORY)
+   V1.6 FEATURES + SINGLE PERMANENT ROUTINE FOR THE WHOLE ACADEMIC YEAR
 
    Additive module: does not replace app.js, Exam Management,
    Smart Attendance, Marks, Leave, Notifications or Parent Portal.
@@ -11,10 +11,9 @@
   'use strict';
 
   const MOD_ID='crtOverlayV1';
-  window.CLASS_ROUTINE_SUBSTITUTE_VERSION='1.6-final-teacher-directory-fix';
+  window.CLASS_ROUTINE_SUBSTITUTE_VERSION='1.7-one-year-permanent-routine';
   const STYLE_ID='crtStyleV1';
   const CLASSES=['Nursery','LKG','UKG','Class 1','Class 2','Class 3','Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10'];
-  const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
   const SUBJECTS=['NEPALI','ENGLISH','MATH','SCIENCE','SEROPHERO','SURYODAYA','SOCIAL','HEALTH','COMPUTER','MORAL','G.K.','ACCOUNT','ECONOMICS','OPT. MATH','REVISION'];
 
   let launchMode='staff';
@@ -22,7 +21,7 @@
   let activeView='daily';
   let todayData=null;
   let manageData=null;
-  let classState={year:'2083',day:'Sunday',data:null,editable:false,entries:[],periodCount:8};
+  let classState={year:'2083',data:null,editable:false,entries:[],periodCount:8};
 
   function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
   function byId(id){return document.getElementById(id);}
@@ -178,7 +177,6 @@
     try{
       ctx=await rpc('routine_context');
       classState.year=ctx.academic_year||'2083';
-      classState.day=DAYS.includes(ctx.day_key)?ctx.day_key:'Sunday';
       activeView='daily';renderNav();setMeta();await renderDailyTab();
     }catch(e){byId('crtPage').innerHTML=`<div class="crt-card"><div class="crt-empty">${esc(errText(e))}</div></div>`;}
   };
@@ -242,7 +240,7 @@
     const data=await loadTodayPublic();
     byId('crtPage').innerHTML=`${managerQuickActions()}
       <section class="crt-card crt-today-section crt-section-daily">
-        <div class="crt-section-banner"><div><h3>📅 Daily Class Routine</h3><div class="crt-note">${esc(data.today_bs)} • ${esc(data.day_key)} • Permanent published routine</div></div><span class="crt-badge published">PERMANENT ROUTINE</span></div>
+        <div class="crt-section-banner"><div><h3>📅 Daily Class Routine</h3><div class="crt-note">${esc(data.today_bs)} • ${esc(data.day_key)} • Same permanent routine for the whole academic year</div></div><span class="crt-badge published">PERMANENT ROUTINE</span></div>
         <div class="crt-section-body">${dailyRoutineHtml(data)}</div>
       </section>`;
   }
@@ -360,29 +358,38 @@
     if(cur&&!rows.some(s=>lower(s.id)===cur))rows=[{id:selected,name:extraName||selected,designation:'Staff'},...rows];
     return `<option value="">— Teacher —</option>${rows.map(s=>`<option value="${esc(s.id)}" ${lower(s.id)===cur?'selected':''}>${esc(s.name)} — ${esc(s.designation)}</option>`).join('')}`;
   }
+  function normalizePermanentEntries(entries=[]){
+    const rows=Array.isArray(entries)?entries:[];
+    if(!rows.length)return [];
+    const counts=new Map();
+    rows.forEach(e=>{const d=normal(e.day_key)||'Sunday';counts.set(d,(counts.get(d)||0)+1);});
+    const priority=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const master=[...counts.keys()].sort((a,b)=>(counts.get(b)-counts.get(a))+(priority.indexOf(a)-priority.indexOf(b))/1000)[0]||'Sunday';
+    return rows.filter(e=>(normal(e.day_key)||'Sunday')===master).map(e=>({...e,day_key:'Sunday'}));
+  }
   function capturePermanentGrid(){
     if(!classState.editable)return;
     const page=byId('crtPage');if(!page)return;
-    const existing=new Map(classState.entries.map(e=>[`${e.day_key}|${key(e.class_name,Number(e.period_no))}`,{...e}]));
-    page.querySelectorAll('.crt-edit-cell[data-day]').forEach(cell=>{
-      const day=cell.dataset.day,cls=cell.dataset.className,period=Number(cell.dataset.period);
+    const existing=new Map(classState.entries.map(e=>[key(e.class_name,Number(e.period_no)),{...e,day_key:'Sunday'}]));
+    page.querySelectorAll('.crt-edit-cell[data-class-name]').forEach(cell=>{
+      const cls=cell.dataset.className,period=Number(cell.dataset.period);
       const subject=normal(cell.querySelector('.crt-subject-input')?.value),teacherId=normal(cell.querySelector('.crt-teacher-select')?.value),teacher=staffDirectory()[teacherId];
-      const k=`${day}|${key(cls,period)}`;
-      if(subject||teacherId)existing.set(k,{day_key:day,class_name:cls,period_no:period,subject_name:subject||null,teacher_staff_id:teacherId||null,teacher_name:teacherId?(teacher?.name||teacherId):null});
+      const k=key(cls,period);
+      if(subject||teacherId)existing.set(k,{day_key:'Sunday',class_name:cls,period_no:period,subject_name:subject||null,teacher_staff_id:teacherId||null,teacher_name:teacherId?(teacher?.name||teacherId):null});
       else existing.delete(k);
     });
     classState.entries=[...existing.values()];
   }
-  function classEntry(day,cls,period){return classState.entries.find(e=>e.day_key===day&&e.class_name===cls&&Number(e.period_no)===Number(period));}
+  function classEntry(cls,period){return classState.entries.find(e=>e.class_name===cls&&Number(e.period_no)===Number(period));}
   function permanentGridHtml(){
-    const count=Number(classState.periodCount||8),editable=classState.editable,day=classState.day;
+    const count=Number(classState.periodCount||8),editable=classState.editable;
     const head=Array.from({length:count},(_,i)=>`<th>Period ${i+1}</th>`).join('');
-    const body=CLASSES.map(cls=>`<tr><td><strong>${esc(cls)}</strong></td>${Array.from({length:count},(_,i)=>{const p=i+1,e=classEntry(day,cls,p)||{};if(!editable)return `<td><div class="crt-read-cell">${e.subject_name?`<div class="crt-cell-subject">${esc(e.subject_name)}</div>`:'<span class="crt-small">—</span>'}${e.teacher_name?`<div class="crt-cell-teacher">${esc(e.teacher_name)}</div>`:''}</div></td>`;return `<td><div class="crt-edit-cell" data-day="${esc(day)}" data-class-name="${esc(cls)}" data-period="${p}"><input class="crt-subject-input" list="crtSubjectList" value="${esc(e.subject_name||'')}" placeholder="Subject"><select class="crt-teacher-select">${directoryOptions(e.teacher_staff_id||'',e.teacher_name||'')}</select></div></td>`;}).join('')}</tr>`).join('');
+    const body=CLASSES.map(cls=>`<tr><td><strong>${esc(cls)}</strong></td>${Array.from({length:count},(_,i)=>{const p=i+1,e=classEntry(cls,p)||{};if(!editable)return `<td><div class="crt-read-cell">${e.subject_name?`<div class="crt-cell-subject">${esc(e.subject_name)}</div>`:'<span class="crt-small">—</span>'}${e.teacher_name?`<div class="crt-cell-teacher">${esc(e.teacher_name)}</div>`:''}</div></td>`;return `<td><div class="crt-edit-cell" data-class-name="${esc(cls)}" data-period="${p}"><input class="crt-subject-input" list="crtSubjectList" value="${esc(e.subject_name||'')}" placeholder="Subject"><select class="crt-teacher-select">${directoryOptions(e.teacher_staff_id||'',e.teacher_name||'')}</select></div></td>`;}).join('')}</tr>`).join('');
     return `<div class="crt-table-wrap"><table class="crt-table crt-edit-table"><thead><tr><th>Class</th>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
   function detectClassConflicts(entries){
     const seen=new Map(),conf=[];
-    entries.forEach(e=>{if(!e.teacher_staff_id)return;const k=`${e.day_key}|${e.period_no}|${lower(e.teacher_staff_id)}`;if(seen.has(k))conf.push(`${e.day_key} Period ${e.period_no}: ${e.teacher_name||e.teacher_staff_id} — ${seen.get(k)} & ${e.class_name}`);else seen.set(k,e.class_name);});
+    entries.forEach(e=>{if(!e.teacher_staff_id)return;const k=`${e.period_no}|${lower(e.teacher_staff_id)}`;if(seen.has(k))conf.push(`Period ${e.period_no}: ${e.teacher_name||e.teacher_staff_id} — ${seen.get(k)} & ${e.class_name}`);else seen.set(k,e.class_name);});
     return conf;
   }
   function permanentHeader(current,draft){
@@ -402,8 +409,7 @@
     const current=await rpc('routine_get_current',{p_academic_year:clean});
     const draft=await rpc('routine_get_draft',{p_academic_year:clean});
     const h=permanentHeader(current,draft),active=h.active||{};
-    classState.data={current,draft};classState.editable=h.editable;classState.entries=[...(active.entries||[])];classState.periodCount=Number(active.period_count||8);
-    if(!DAYS.includes(classState.day))classState.day='Sunday';
+    classState.data={current,draft};classState.editable=h.editable;classState.entries=normalizePermanentEntries(active.entries||[]);classState.periodCount=Number(active.period_count||8);
     renderPermanentRoutine(h);
   }
   function renderPermanentRoutine(headerInfo){
@@ -413,10 +419,10 @@
       <div class="crt-flow">
         <div class="crt-flow-step"><span class="n">1</span><strong>Select Academic Year</strong><small>Load the year you want to manage.</small></div>
         <div class="crt-flow-step"><span class="n">2</span><strong>Set Periods</strong><small>Edit mode allows + Add Period or − Remove Last Period.</small></div>
-        <div class="crt-flow-step"><span class="n">3</span><strong>Fill Day-wise Routine</strong><small>Select day, subject and teacher. Conflicts are checked before save.</small></div>
+        <div class="crt-flow-step"><span class="n">3</span><strong>Fill Routine Once</strong><small>Enter subject and teacher once. The same routine runs every school day.</small></div>
         <div class="crt-flow-step"><span class="n">4</span><strong>Save & Publish</strong><small>Staff view changes only after Publish. Permanent routine can also be Unpublished.</small></div>
       </div>
-      <div class="crt-card"><div class="crt-section-head"><div><h3>🗓 Permanent Class Routine</h3><div class="crt-note">Permanent routine stays unchanged by daily substitutes. Staff sees only the currently published version.</div></div><div class="crt-actions">${h.actions}</div></div>
+      <div class="crt-card"><div class="crt-section-head"><div><h3>🗓 Permanent Class Routine</h3><div class="crt-note">One routine applies to the whole academic year. Daily substitutes do not change the permanent routine.</div></div><div class="crt-actions">${h.actions}</div></div>
         <div class="crt-routine-controls">
           <div class="crt-field"><label>Academic Year</label><input id="crtAcademicYear" value="${esc(classState.year)}" ${edit?'disabled':''}></div>
           <div class="crt-field"><label>Periods Per Day</label>${edit?`<div class="crt-period-box"><button class="crt-btn danger" type="button" onclick="crtRemovePeriod()">− REMOVE</button><span class="crt-period-count"><strong>${Number(classState.periodCount)}</strong><small>Periods</small></span><button class="crt-btn good" type="button" onclick="crtAddPeriod()">+ ADD</button></div>`:`<div class="crt-period-box"><span class="crt-period-count"><strong>${Number(classState.periodCount)}</strong><small>Published Periods</small></span></div>`}</div>
@@ -425,14 +431,13 @@
         <div style="margin-top:10px" class="crt-status-line">${h.status}${classState.data?.current?.exists?`<span class="crt-small">Published version ${Number(classState.data.current.version_no||0)}</span>`:''}</div>
         ${!classState.data?.current?.exists&&edit?'<div class="crt-danger-note" style="margin-top:10px">No permanent routine is currently published. Staff will not see a Daily Class Routine until you publish this draft.</div>':''}
       </div>
-      <div class="crt-card"><div class="crt-section-head"><div><h3>Day-wise Routine</h3><div class="crt-note">Choose a day, then enter Subject and Teacher for each Class / Period.</div></div></div><div class="crt-day-tabs">${DAYS.map(d=>`<button type="button" class="${d===classState.day?'active':''}" onclick="crtChangeRoutineDay('${d}')">${d}</button>`).join('')}</div><div class="crt-mobile-scroll-note">↔ On mobile/tablet, swipe the routine table left/right to see all periods.</div>${permanentGridHtml()}</div>`;
+      <div class="crt-card"><div class="crt-section-head"><div><h3>Whole-Year Routine</h3><div class="crt-note">Enter one Class Routine only. This same published routine is used every school day for the selected academic year.</div></div><span class="crt-badge published">ONE ROUTINE • WHOLE YEAR</span></div><div class="crt-mobile-scroll-note">↔ On mobile/tablet, swipe the routine table left/right to see all periods.</div>${permanentGridHtml()}</div>`;
   }
   window.crtLoadAcademicYear=async function(){const y=byId('crtAcademicYear')?.value||classState.year;try{await loadPermanentRoutine(y);}catch(e){toast(errText(e),'err');}};
   window.crtOpenClassDraft=async function(){
     const y=normal(byId('crtAcademicYear')?.value)||classState.year||'2083';
     try{await rpc('routine_open_class_draft',{p_academic_year:y});toast('Editable Class Routine draft created. Staff still sees the old published routine.','ok');await loadPermanentRoutine(y);}catch(e){toast(errText(e),'err');}
   };
-  window.crtChangeRoutineDay=function(day){capturePermanentGrid();classState.day=day;renderPermanentRoutine();};
   window.crtPeriodCountChanged=function(value){capturePermanentGrid();classState.periodCount=Math.max(1,Math.min(10,Number(value)||8));classState.entries=classState.entries.filter(e=>Number(e.period_no)<=classState.periodCount);renderPermanentRoutine();};
   window.crtAddPeriod=function(){
     if(!classState.editable){toast('Click Edit Class Routine first.','warn');return;}
@@ -450,7 +455,7 @@
   };
   async function saveClassDraftCore(showToast=true){
     capturePermanentGrid();
-    const entries=classState.entries.filter(e=>Number(e.period_no)<=classState.periodCount&&(e.subject_name||e.teacher_staff_id));
+    const entries=classState.entries.filter(e=>Number(e.period_no)<=classState.periodCount&&(e.subject_name||e.teacher_staff_id)).map(e=>({...e,day_key:'Sunday'}));
     const conflicts=detectClassConflicts(entries);if(conflicts.length)throw new Error('Teacher conflict: '+conflicts[0]);
     await rpc('routine_save_class_draft',{p_academic_year:classState.year,p_period_count:Number(classState.periodCount),p_entries:entries});
     if(showToast)toast('Class Routine draft saved. Staff view is unchanged until Publish.','ok');
