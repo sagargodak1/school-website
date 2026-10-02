@@ -1,6 +1,6 @@
 /* ============================================================
    ST. AUGUSTINE ACADEMIC FOUNDATION
-   CLASS ROUTINE + DAILY SUBSTITUTE ROUTINE V1.7 ONE-YEAR ROUTINE
+   CLASS ROUTINE + DAILY SUBSTITUTE ROUTINE V1.8 AUTO APPROVED LEAVE
    2026-09-29
    V1.6 FEATURES + SINGLE PERMANENT ROUTINE FOR THE WHOLE ACADEMIC YEAR
 
@@ -11,7 +11,7 @@
   'use strict';
 
   const MOD_ID='crtOverlayV1';
-  window.CLASS_ROUTINE_SUBSTITUTE_VERSION='1.7-one-year-permanent-routine';
+  window.CLASS_ROUTINE_SUBSTITUTE_VERSION='1.8-one-year-auto-approved-leave-manual-absent';
   const STYLE_ID='crtStyleV1';
   const CLASSES=['Nursery','LKG','UKG','Class 1','Class 2','Class 3','Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10'];
   const SUBJECTS=['NEPALI','ENGLISH','MATH','SCIENCE','SEROPHERO','SURYODAYA','SOCIAL','HEALTH','COMPUTER','MORAL','G.K.','ACCOUNT','ECONOMICS','OPT. MATH','REVISION'];
@@ -74,7 +74,7 @@
       .crt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.crt-mini{background:#f8fbfd;border:1px solid #deebf3;border-radius:13px;padding:11px}.crt-mini strong{display:block;color:#174e75;margin-bottom:3px}.crt-field{display:grid;gap:5px;min-width:150px}.crt-field label{font-size:10px;text-transform:uppercase;font-weight:900;color:#637a8c}.crt-field input,.crt-field select{width:100%;border:1px solid #c9d9e4;border-radius:10px;padding:9px;background:#fff;color:#17384f;font:inherit}.crt-row{display:flex;gap:9px;align-items:end;flex-wrap:wrap}.crt-row .crt-field{flex:1}
       .crt-table-wrap{overflow:auto;border:1px solid #dce8f0;border-radius:14px;background:#fff}.crt-table{width:100%;border-collapse:collapse;min-width:820px}.crt-table th,.crt-table td{border-bottom:1px solid #e6eef4;border-right:1px solid #eef3f6;padding:8px;text-align:left;font-size:11px;vertical-align:top}.crt-table th{background:#edf5fa;color:#36586f;position:sticky;top:0;z-index:2}.crt-table th:first-child,.crt-table td:first-child{position:sticky;left:0;background:#f8fbfd;z-index:1}.crt-table th:first-child{z-index:3}.crt-cell-subject{font-weight:900;color:#143f61}.crt-cell-teacher{font-size:10px;color:#687d8c;margin-top:4px}.crt-empty{padding:18px;text-align:center;color:#6d7f8d;background:#f8fbfd;border:1px dashed #cfdee8;border-radius:13px}
       .crt-absent-list{display:flex;gap:8px;flex-wrap:wrap}.crt-absent-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:#ffe7e7;color:#9f2727;font-weight:900;font-size:11px}.crt-sub-table tr.crt-sub-highlight td{background:#fff2a9!important;border-top:2px solid #e1b700;border-bottom:2px solid #e1b700}.crt-sub-table tr.crt-my-sub td{background:#dff6e8!important;border-color:#35a867}.crt-my-alert{background:linear-gradient(135deg,#e7fff0,#dff3ff);border:2px solid #50ad78;border-radius:15px;padding:13px 15px;margin-bottom:12px;font-weight:850;color:#155a35}
-      .crt-check-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.crt-check{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid #dce7ef;border-radius:12px;background:#fff;font-size:11px;font-weight:850}.crt-check.absent{background:#ffe9e9;border-color:#efb1b1;color:#922}.crt-check input{width:18px;height:18px}.crt-vacant td{background:#fffaf0}.crt-vacant select{min-width:190px;border:1px solid #c9d9e4;border-radius:8px;padding:7px;background:#fff}.crt-conflict{font-size:10px;color:#a42b2b;font-weight:800}
+      .crt-check-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.crt-check{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid #dce7ef;border-radius:12px;background:#fff;font-size:11px;font-weight:850}.crt-check.absent{background:#ffe9e9;border-color:#efb1b1;color:#922}.crt-check input{width:18px;height:18px}.crt-check.approved-leave{background:#eaf8ef;border-color:#8fd0a6;color:#155f35}.crt-check-copy{display:grid;gap:2px}.crt-absence-reason{font-size:9px;font-weight:900;color:#176b4d;text-transform:uppercase;letter-spacing:.25px}.crt-absent-chip.approved-leave{background:#e7f7ed;color:#176b4d}.crt-absent-chip .crt-absence-reason{margin-left:3px;color:inherit}.crt-vacant td{background:#fffaf0}.crt-vacant select{min-width:190px;border:1px solid #c9d9e4;border-radius:8px;padding:7px;background:#fff}.crt-conflict{font-size:10px;color:#a42b2b;font-weight:800}
       .crt-day-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.crt-day-tabs button{border:1px solid #cbdbe6;background:#fff;color:#34576e;border-radius:999px;padding:8px 12px;font-weight:850;cursor:pointer}.crt-day-tabs button.active{background:#0c70b2;color:#fff;border-color:#0c70b2}.crt-edit-table td{min-width:190px}.crt-edit-cell{display:grid;gap:5px}.crt-edit-cell input,.crt-edit-cell select{width:100%;border:1px solid #cbdbe5;border-radius:8px;padding:7px;font-size:10px;background:#fff}.crt-edit-cell input{font-weight:850}.crt-read-cell{min-height:42px}.crt-manager-list{display:grid;gap:8px}.crt-manager{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #dbe7ef;border-radius:12px;padding:10px}.crt-status-line{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.crt-small{font-size:10px;color:#6b7f8f}
       .crt-control-center{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:13px}.crt-control-tile{border:0;border-radius:16px;padding:14px 15px;text-align:left;color:#fff;cursor:pointer;min-height:92px;display:flex;align-items:center;gap:12px;box-shadow:0 10px 22px rgba(18,66,100,.13)}.crt-control-tile .ico{font-size:26px;line-height:1}.crt-control-tile strong{display:block;font-size:14px;margin-bottom:4px}.crt-control-tile small{display:block;font-size:10px;opacity:.9;line-height:1.4}.crt-control-tile.sub{background:linear-gradient(135deg,#7a4cc5,#4f6edb)}.crt-control-tile.perm{background:linear-gradient(135deg,#0b72b8,#1397b8)}.crt-control-tile.access{background:linear-gradient(135deg,#0f7b69,#14947d)}
       .crt-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 12px}.crt-flow-step{background:#f7fbfe;border:1px solid #dce8f0;border-radius:13px;padding:10px 11px;min-height:70px}.crt-flow-step .n{display:inline-flex;width:23px;height:23px;border-radius:50%;align-items:center;justify-content:center;background:#0b72b8;color:#fff;font-size:11px;font-weight:900;margin-bottom:6px}.crt-flow-step strong{display:block;color:#174e75;font-size:11px}.crt-flow-step small{display:block;color:#6a7e8e;font-size:9px;margin-top:3px;line-height:1.35}
@@ -208,8 +208,8 @@
     return `<div class="crt-table-wrap"><table class="crt-table"><thead><tr><th>Class</th>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
   function absencesHtml(rows=[]){
-    if(!rows.length)return '<div class="crt-empty">No absent teacher has been published for today.</div>';
-    return `<div class="crt-absent-list">${rows.map(r=>`<span class="crt-absent-chip">● ${esc(r.staff_name)}</span>`).join('')}</div>`;
+    if(!rows.length)return '<div class="crt-empty">No absent teacher is recorded for today.</div>';
+    return `<div class="crt-absent-list">${rows.map(r=>{const approved=r.absence_source==='approved_leave';return `<span class="crt-absent-chip ${approved?'approved-leave':''}">● ${esc(r.staff_name)}${approved?'<small class="crt-absence-reason">Absent — Approved Leave</small>':''}</span>`;}).join('')}</div>`;
   }
   function todaySubstitutionsHtml(rows=[]){
     if(!rows.length)return '<div class="crt-empty">No substitute period has been published for today.</div>';
@@ -309,9 +309,9 @@
     return `<button class="crt-btn good" type="button" onclick="crtPublishToday()">📢 PUBLISH TODAY</button>${data.has_published?'<span class="crt-note">Published version remains visible to Staff until you Publish this draft.</span>':''}`;
   }
   function absentCheckboxes(data){
-    const listed=teachersInTodayRoutine(data),abs=new Set((data.absences||[]).map(a=>lower(a.staff_id))),editable=data.run_status==='draft';
+    const listed=teachersInTodayRoutine(data),absMap=new Map((data.absences||[]).map(a=>[lower(a.staff_id),a])),editable=data.run_status==='draft';
     if(!listed.length)return '<div class="crt-empty">Publish the permanent Class Routine first. Today’s teaching list will then appear here automatically.</div>';
-    return `<div class="crt-check-grid">${listed.map(t=>`<label class="crt-check ${abs.has(t.id)?'absent':''}"><input type="checkbox" ${abs.has(t.id)?'checked':''} ${editable?'':'disabled'} onchange="crtToggleAbsent('${esc(t.id)}','${esc(t.name)}',this.checked)"><span>${esc(t.name)}</span></label>`).join('')}</div>`;
+    return `<div class="crt-check-grid">${listed.map(t=>{const a=absMap.get(t.id),isAbsent=!!a,approved=a?.absence_source==='approved_leave';return `<label class="crt-check ${isAbsent?'absent':''} ${approved?'approved-leave':''}"><input type="checkbox" ${isAbsent?'checked':''} ${(approved||!editable)?'disabled':''} onchange="crtToggleAbsent('${esc(t.id)}','${esc(t.name)}',this.checked)"><span class="crt-check-copy"><span>${esc(t.name)}</span>${approved?'<small class="crt-absence-reason">Absent — Approved Leave</small>':''}</span></label>`;}).join('')}</div>`;
   }
   function vacantRows(data){
     const absentMap=new Map((data.absences||[]).map(a=>[lower(a.staff_id),a]));
@@ -327,7 +327,7 @@
     manageData=await rpc('routine_get_today',{p_manage:true});
     byId('crtPage').innerHTML=`
       <div class="crt-card"><div class="crt-section-head"><div><h3>🔁 Today — ${esc(manageData.today_bs)} • ${esc(manageData.day_key)}</h3><div class="crt-note">Daily substitute is temporary. Permanent Class Routine stays unchanged.</div></div><div class="crt-actions">${managementControls(manageData)}</div></div><div class="crt-status-line">${publishedStatus(manageData)}${manageData.has_published&&manageData.run_status==='draft'?'<span class="crt-badge published">OLD PUBLISHED VERSION STILL LIVE</span>':''}</div></div>
-      <div class="crt-card"><div class="crt-section-head"><div><h3>1. Mark Absent Teacher</h3><div class="crt-note">Only teachers who have a Class in today’s published routine are listed.</div></div></div>${absentCheckboxes(manageData)}</div>
+      <div class="crt-card"><div class="crt-section-head"><div><h3>1. Mark Absent Teacher</h3><div class="crt-note">Approved leave is marked automatically as <strong>Absent — Approved Leave</strong>. Other absences can still be marked manually.</div></div></div>${absentCheckboxes(manageData)}</div>
       <div class="crt-card"><div class="crt-section-head"><div><h3>2. Assign Substitute Teacher</h3><div class="crt-note">Busy teachers and teachers already assigned another substitute in the same Period are automatically removed from the list.</div></div></div>${vacantRows(manageData)}</div>
       <div class="crt-card"><div class="crt-section-head"><div><h3>3. Current Draft / Published Changes</h3><div class="crt-note">Admin/Principal can see who was assigned and whether the assigned teacher acknowledged the published class.</div></div></div>${substitutionsHtml(manageData.substitutions||[])}</div>`;
   }
