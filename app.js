@@ -9591,6 +9591,12 @@ function umeToggleAbsent(checkbox){
 function umeHandleFullMarksInput(input){
   const value=Number(input.value),valid=input.value.trim()!==""&&Number.isFinite(value)&&value>=0&&value<=1200;
   input.classList.toggle("ume-invalid",!valid);
+  // Keep the on-screen header in sync with the teacher's unsaved Full Marks input.
+  document.querySelectorAll('#umeMarksTableHost .ume-full-marks-label').forEach(label=>{
+    if(label.dataset.componentId===input.dataset.componentId){
+      label.textContent=`Full Marks: ${valid?umeNumber(value):"—"}`;
+    }
+  });
   document.querySelectorAll(`#umeMarksTableHost .ume-obtained[data-component-id="${input.dataset.componentId}"]`).forEach(mark=>umeValidateObtainedInput(mark));
 }
 function umeRenderTeacherMarksTable(){
@@ -9599,7 +9605,7 @@ function umeRenderTeacherMarksTable(){
   if(!students.length){host.innerHTML='<div class="ume-card"><div class="ume-empty">No students were found in this Class roster.</div></div>';return;}
   if(!components.length){host.innerHTML="";return;}
   const map=umeEntryMap(bundle);
-  const headers=components.map(c=>`<th>${umeEscape(c.component_name)} OM<br><small>Full Marks: ${umeEscape(umeNumber(c.full_marks))}</small></th>`).join("");
+  const headers=components.map(c=>`<th>${umeEscape(c.component_name)} OM<br><small class="ume-full-marks-label" data-component-id="${Number(c.id)}">Full Marks: ${umeEscape(umeNumber(c.full_marks))}</small></th>`).join("");
   const body=students.map((s,index)=>`<tr><td>${index+1}</td><td>${umeEscape(s.student_id)}</td><td class="ume-student">${umeEscape(s.student_name)}</td>${components.map(c=>{
     const entry=map.get(`${c.id}|${s.student_id}`),absent=umeEntryIsAbsent(entry);return `<td><div class="ume-mark-cell ${absent?"is-absent":""}"><input class="ume-obtained" data-component-id="${Number(c.id)}" data-student-id="${umeEscape(s.student_id)}" data-student-name="${umeEscape(s.student_name)}" type="number" min="0" max="${umeEscape(umeNumber(c.full_marks))}" step="0.01" value="${absent?"":umeEscape(umeNumber(entry?.obtained_marks))}" oninput="umeValidateObtainedInput(this)" ${editable&&!absent?"":"disabled"}><span class="ume-abs-badge">ABS</span><label class="ume-absent-label"><input class="ume-absent" type="checkbox" onchange="umeToggleAbsent(this)" ${absent?"checked":""} ${editable?"":"disabled"}> ABSENT</label></div></td>`;
   }).join("")}</tr>`).join("");
@@ -9642,7 +9648,15 @@ async function umeSaveDraft(showSuccess=false){
   try{
     const payload=umeCollectTeacherData();
     await umeRpc(umeStaffDb(),"ume_save_project",{p_project_id:Number(umeActiveBundle.project.id),p_components:payload.components,p_entries:payload.entries});
-    const id=umeActiveBundle.project.id;await umeLoadProject(id);if(showSuccess)umeShowMessage("Draft saved successfully.","success");return true;
+    const id=umeActiveBundle.project.id;await umeLoadProject(id);
+    const saved=umeActiveBundle?.project?.id===id?umeActiveBundle.components:[];
+    const savedById=new Map(saved.map(c=>[String(c.id),Number(c.full_marks)]));
+    const notConfirmed=payload.components.filter(c=>savedById.get(String(c.component_id))!==Number(c.full_marks));
+    if(notConfirmed.length){
+      umeShowMessage("Save verification failed: Full Marks did not match after reloading from Supabase. Do not submit this file; contact Admin.");
+      return false;
+    }
+    if(showSuccess)umeShowMessage("Draft saved and Full Marks verified successfully.","success");return true;
   }catch(error){umeShowMessage("Could not save Draft: "+(error.message||"Unknown error"));return false;}
 }
 async function umeSubmitProject(){
@@ -9767,7 +9781,8 @@ function umeExcelState(group,bundles){
     ["Class",group.className,"Term / Examination",group.term,"Academic Session",group.session],
     [],
     ["Roll No.","Student ID","Student Name",...state.bundles.flatMap(b=>b.components.map((_c,i)=>i===0?b.project.subject_name:""))],
-    ["","","",...state.bundles.flatMap(b=>b.components.map(c=>`${c.component_name} (${umeNumber(c.full_marks)})`))]
+    ["","","",...state.bundles.flatMap(b=>b.components.map(c=>`${c.component_name} (${umeNumber(c.full_marks)})`))],
+    ["FULL MARKS","","",...state.bundles.flatMap(b=>b.components.map(c=>Number(c.full_marks)))]
   ];
   const entryMaps=new Map(state.bundles.map(b=>[String(b.project.id),umeEntryMap(b)]));
   for(const [index,s] of state.students.entries()){
