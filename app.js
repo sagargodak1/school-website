@@ -10173,17 +10173,48 @@ openDashboardFeature=function(feature){
 staffLogin=async function(){
   const username=normalizeStaffId(document.getElementById("staffUsername")?.value||"");
   const password=document.getElementById("staffPassword")?.value||"";
+  if(staffSecureBusy)return;
   if(!username||!password){showStaffMessage("Enter your Staff ID and password.");return;}
+  const block=staffSecureLockRemaining(username);
+  if(block>0){staffSecureShowLock(username);return;}
+  if(!staffSecureValidateCaptcha()){showStaffMessage("Incorrect security code. A new code has been generated. Please try again.");return;}
   const client=initStaffSupabase();if(!client){showStaffMessage("Supabase connection is unavailable.");return;}
+  staffSecureBusy=true;
+  const submit=document.querySelector("#staffLoginPopup .staff-login-submit");
+  if(submit)submit.disabled=true;
   showStaffMessage("Signing in...","success");
-  const {data,error}=await client.auth.signInWithPassword({email:staffInternalEmail(username),password});
-  if(error||!data?.session){showStaffMessage("Login failed. Check Staff ID and password.");return;}
-  const sessionUsername=normalizeStaffId((data.user?.email||"").split("@")[0]);
-  const profile=sessionUsername===username?await umeResolveStaffLoginProfile(sessionUsername):null;
-  if(!profile){await client.auth.signOut();showStaffMessage("This account is not authorized for staff access.");return;}
-  staffAuthSession=data.session;loggedInStaff={username:sessionUsername,...profile};
-  const passwordBox=document.getElementById("staffPassword");if(passwordBox)passwordBox.value="";
-  updateStaffLoginUI();closeStaffLogin();showStaffDashboardWelcome();
+  try {
+    // This test uses a four-character browser-only visual check. It is NOT server-side CAPTCHA protection.
+    // Leave Supabase Auth CAPTCHA DISABLED for this test; enabling it would reject this login.
+    const {data,error}=await client.auth.signInWithPassword({
+      email:staffInternalEmail(username),password
+    });
+    if(error||!data?.session){
+      // Only count confirmed invalid credentials; connectivity/CAPTCHA failures
+      // must not penalize a teacher's password-attempt counter.
+      const msg=String(error?.message||"");
+      const invalid=/invalid login credentials|invalid credentials|invalid email or password|invalid password/i.test(msg);
+      if(invalid){
+        const state=staffSecureRecordFailure(username);
+        if(state.locked)staffSecureShowLock(username);
+        else showStaffMessage(`Login failed. ${state.remaining} attempt(s) remaining.`);
+      }else showStaffMessage("Login could not be completed. Check your connection and try again.");
+      return;
+    }
+    const sessionUsername=normalizeStaffId((data.user?.email||"").split("@")[0]);
+    const profile=sessionUsername===username?await umeResolveStaffLoginProfile(sessionUsername):null;
+    if(!profile){await client.auth.signOut();showStaffMessage("This account is not authorized for staff access.");return;}
+    staffSecureClearFailures(username);
+    staffAuthSession=data.session;loggedInStaff={username:sessionUsername,...profile};
+    const passwordBox=document.getElementById("staffPassword");if(passwordBox)passwordBox.value="";
+    updateStaffLoginUI();closeStaffLogin();showStaffDashboardWelcome();
+  }catch(error){
+    console.error("Staff sign-in unavailable:",error);
+    showStaffMessage("Login service is temporarily unavailable. Please retry.");
+  }finally{
+    staffSecureBusy=false;if(submit)submit.disabled=false;
+    staffSecureResetCaptcha();
+  }
 };
 restoreStaffSession=async function(){
   const client=initStaffSupabase();if(!client)return;
@@ -12040,3 +12071,73 @@ document.addEventListener("DOMContentLoaded",()=>{examPopulateDatalists();const 
     document.getElementById("parentPortalPassword")?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();portalLogin("parent");}});
   });
 })();
+
+
+/* ===== STAFF LOGIN SECURITY TEST PATCH (only staff login) =====
+ * NOTE: Attempt counting here is per browser/device, not server-enforced.
+ * Do not describe this as protection against switching browsers/devices.
+ * To protect all devices, route ALL password attempts through a secured backend.
+ */
+let staffSecureCaptchaAnswer="";
+function staffSecureNewCaptcha(){
+  const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code="";
+  const random=new Uint32Array(4);
+  if(window.crypto?.getRandomValues){window.crypto.getRandomValues(random);}
+  else {for(let i=0;i<4;i++)random[i]=Math.floor(Math.random()*0xffffffff);}
+  for(let i=0;i<4;i++)code+=alphabet[random[i]%alphabet.length];
+  staffSecureCaptchaAnswer=code;
+  const display=document.getElementById("staffSecureCaptchaCode");
+  const field=document.getElementById("staffSecureCaptchaInput");
+  if(display)display.textContent=code;
+  if(field)field.value="";
+}
+function staffSecureValidateCaptcha(){
+  const field=document.getElementById("staffSecureCaptchaInput");
+  const provided=(field?.value||"").trim().toUpperCase();
+  const valid=!!staffSecureCaptchaAnswer && provided===staffSecureCaptchaAnswer;
+  if(!valid)staffSecureNewCaptcha();
+  return valid;
+}
+let staffSecureBusy=false;
+let staffSecureCountdown=null;
+const STAFF_LOGIN_LOCK_KEY="staug_staff_login_locks_v1";
+function staffSecureRead(){
+  try {return JSON.parse(localStorage.getItem(STAFF_LOGIN_LOCK_KEY)||"{}")||{};}
+  catch(_){return {};}
+}
+function staffSecureWrite(data){try{localStorage.setItem(STAFF_LOGIN_LOCK_KEY,JSON.stringify(data));}catch(_){}}
+function staffSecureGet(username){return staffSecureRead()[username]||{failures:0,level:0,until:0};}
+function staffSecureLockRemaining(username){return Math.max(0,staffSecureGet(username).until-Date.now());}
+function staffSecureRecordFailure(username){
+  const all=staffSecureRead(),s=all[username]||{failures:0,level:0,until:0};
+  s.failures=Number(s.failures||0)+1;
+  let locked=false;
+  if(s.failures>=3){
+    s.level=Math.min(3,Number(s.level||0)+1);
+    s.until=Date.now()+([0,60000,600000,1800000][s.level]);
+    s.failures=0;locked=true;
+  }
+  all[username]=s;staffSecureWrite(all);
+  return {locked,remaining:Math.max(0,3-s.failures)};
+}
+function staffSecureClearFailures(username){const all=staffSecureRead();delete all[username];staffSecureWrite(all);}
+function staffSecureShowLock(username){
+  if(staffSecureCountdown)clearInterval(staffSecureCountdown);
+  const display=()=>{
+    const ms=staffSecureLockRemaining(username);
+    if(ms<=0){clearInterval(staffSecureCountdown);staffSecureCountdown=null;showStaffMessage("Lock expired. Please verify CAPTCHA and try again.");return;}
+    const seconds=Math.ceil(ms/1000);
+    showStaffMessage(`Too many incorrect passwords. Try again in ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,"0")}.`);
+  };
+  display();staffSecureCountdown=setInterval(display,1000);
+}
+function staffSecureResetCaptcha(){staffSecureNewCaptcha();}
+const staffSecureOldOpenLogin=openStaffLogin;
+openStaffLogin=function(){staffSecureOldOpenLogin();staffSecureNewCaptcha();};
+document.addEventListener("DOMContentLoaded",()=>{
+  const el=document.getElementById("staffUsername");
+  if(el)el.addEventListener("input",()=>{if(staffSecureCountdown){clearInterval(staffSecureCountdown);staffSecureCountdown=null;}});
+  const popup=document.getElementById("staffLoginPopup");
+  if(popup && popup.style.display==="block")staffSecureNewCaptcha();
+});
