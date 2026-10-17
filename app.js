@@ -9742,7 +9742,13 @@ function umeRoleGroups(role){
 function umeRoleDb(role){return role==="admin"?umeAdminDb():umeStaffDb();}
 async function umeLoadGroupBundles(role,index){
   const group=umeRoleGroups(role)[index];if(!group)throw new Error("Class package was not found.");
-  const bundles=await Promise.all(umeSortSubjectRows(group.rows).map(r=>umeRpc(umeRoleDb(role),"ume_get_project_bundle",{p_project_id:Number(r.id)})));
+  // Class Teacher: retain returned Subjects in the package status/notice list,
+  // but exclude their marks from Combined View and Combined Excel only.
+  // This is read-only filtering: no marks, project status, or database rows are changed.
+  const combinedRows=role==="classTeacher"
+    ? group.rows.filter(r=>r.status!=="returned_to_subject_teacher")
+    : group.rows;
+  const bundles=await Promise.all(umeSortSubjectRows(combinedRows).map(r=>umeRpc(umeRoleDb(role),"ume_get_project_bundle",{p_project_id:Number(r.id)})));
   const selected={index,group,bundles};umeSelectedGroups[role]=selected;return selected;
 }
 function umeGroupDetailHost(role){return document.getElementById(role==="classTeacher"?"umeClassTeacherDetail":role==="principal"?"umePrincipalDetail":"umeAdminDetail");}
