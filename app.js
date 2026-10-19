@@ -9672,9 +9672,28 @@ async function umeDeleteProject(){
   catch(error){alert("Could not delete Marks file: "+(error.message||"Unknown error"));}
 }
 
+// Display/grouping normalization only; original Supabase term_name is preserved.
+// Recognizes common short labels and exam/terminal variants (case insensitive).
+function umeCanonicalTermName(value){
+  const raw=String(value??"").trim().replace(/\s+/g," ");
+  const normalized=raw.toLowerCase().replace(/[_\-]+/g," ").replace(/\s+/g," ").trim();
+  if(/\b(first|1st)\b/.test(normalized))return "First Term";
+  if(/\b(second|2nd|seocnd|secound)\b/.test(normalized))return "Second Term";
+  if(/\b(third|3rd)\b/.test(normalized))return "Third Term";
+  if(/\b(final|fourth|4th)\b/.test(normalized))return "Final Term";
+  return raw;
+}
+function umeGroupRawTerms(group){
+  return [...new Set((group?.rows||[]).map(r=>String(r.term_name??"").trim()).filter(Boolean))];
+}
 function umeGroupRows(rows){
   const map=new Map();
-  for(const row of rows||[]){const key=[row.class_name,String(row.academic_session).trim().toLowerCase(),String(row.term_name).trim().toLowerCase()].join("|");if(!map.has(key))map.set(key,{key,className:row.class_name,session:row.academic_session,term:row.term_name,rows:[]});map.get(key).rows.push(row);}
+  for(const row of rows||[]){
+    const term=umeCanonicalTermName(row.term_name);
+    const key=[String(row.class_name).trim().toLowerCase(),String(row.academic_session).trim().toLowerCase(),term.toLowerCase()].join("|");
+    if(!map.has(key))map.set(key,{key,className:row.class_name,session:row.academic_session,term,rows:[]});
+    map.get(key).rows.push(row);
+  }
   return [...map.values()].sort((a,b)=>{const timeB=Math.max(...b.rows.map(r=>new Date(r.updated_at).getTime()||0)),timeA=Math.max(...a.rows.map(r=>new Date(r.updated_at).getTime()||0));return timeB-timeA||UME_CLASSES.indexOf(a.className)-UME_CLASSES.indexOf(b.className);});
 }
 function umeSubjectRank(name){const n=String(name||"").trim().toLowerCase();const order=["नेपाली","nepali","english","अंग्रेजी","mathematics","math","गणित","science","विज्ञान","social studies","social","computer","health","moral","g.k.","gk"];const i=order.indexOf(n);return i<0?100:i;}
@@ -9776,8 +9795,27 @@ async function umeAcceptProject(id){if(!confirm("Accept this Subject Marks file?
 async function umeReturnProject(id){const note=prompt("Write the correction note for the Subject Teacher:","Please check the entered Marks.");if(note===null)return;try{await umeRpc(umeStaffDb(),"ume_return_to_subject_teacher",{p_project_id:Number(id),p_note:note});await umeLoadClassTeacherInbox();alert("Returned to the Subject Teacher for correction.");}catch(error){alert("Could not return: "+(error.message||"Unknown error"));}}
 async function umeSubmitPackage(index){
   const group=umeRoleGroups("classTeacher")[index];if(!group)return;
-  if(!confirm(`Submit all accepted Subjects of ${group.className} — ${group.term} to Admin?\n\nThe Principal will receive the same package as Read Only.`))return;
-  try{const count=await umeRpc(umeStaffDb(),"ume_submit_class_package",{p_class_name:group.className,p_term_name:group.term,p_academic_session:group.session});await umeLoadClassTeacherInbox();alert(`${count} Subject(s) sent to Admin successfully.`);}catch(error){alert("Could not submit Class package: "+(error.message||"Unknown error"));}
+  const blocked=group.rows.some(r=>["submitted_to_class_teacher","returned_to_subject_teacher","returned_by_admin"].includes(r.status));
+  if(blocked){alert("Finish all pending or returned Subjects before submitting this Class package.");return;}
+  const accepted=group.rows.filter(r=>r.status==="accepted_by_class_teacher");
+  if(!accepted.length){alert("No accepted Subject is ready to submit.");return;}
+  // Existing Supabase RPC matches the ORIGINAL term_name. Submit each existing
+  // spelling separately; never change marks or project term_name in the database.
+  const terms=[...new Set(accepted.map(r=>String(r.term_name??"").trim()))].filter(Boolean);
+  if(!confirm(`Submit ${accepted.length} accepted Subject(s) of ${group.className} — ${group.term} to Admin?\n\n${terms.length>1?`Existing term labels: ${terms.join(", ")}\nEach label will be submitted using its original database name.\n\n`:""}The Principal will receive submitted packages as Read Only.`))return;
+  let total=0;const completed=[];
+  for(const term of terms){
+    try{
+      const count=await umeRpc(umeStaffDb(),"ume_submit_class_package",{p_class_name:group.className,p_term_name:term,p_academic_session:group.session});
+      total+=Number(count)||0;completed.push(term);
+    }catch(error){
+      await umeLoadClassTeacherInbox();
+      alert(`Package submission stopped at '${term}'.\n\nAlready submitted: ${completed.join(", ")||"None"}\nSubmitted Subjects: ${total}\n\nReason: ${error.message||"Unknown error"}\n\nDo not repeat completed submissions. Check attendance/server term matching before retrying.`);
+      return;
+    }
+  }
+  await umeLoadClassTeacherInbox();
+  alert(`${total} Subject(s) sent to Admin successfully under ${group.term}.`);
 }
 
 function umeExcelState(group,bundles){
@@ -9871,14 +9909,16 @@ renderAdminMarks=async function(){
 };
 async function umeAdminReturnPackage(index){
   const group=umeRoleGroups("admin")[index];if(!group)return;
+  if(umeGroupRawTerms(group).length>1){alert("This combined package contains multiple original Term Names. Admin Return/Delete is disabled for safety until the database terms are unified. No Marks have been changed.");return;}
   const note=prompt("Write the problem/correction note for the Class Teacher:","Please check this Class package and return the affected Subject to the Subject Teacher.");if(note===null)return;
-  try{const count=await umeRpc(umeAdminDb(),"ume_admin_return_package",{p_class_name:group.className,p_term_name:group.term,p_academic_session:group.session,p_note:note});await renderAdminMarks();alert(`${count} Subject(s) returned to the Class Teacher.`);}catch(error){alert("Package could not be returned: "+(error.message||"Unknown error"));}
+  try{const count=await umeRpc(umeAdminDb(),"ume_admin_return_package",{p_class_name:group.className,p_term_name:umeGroupRawTerms(group)[0]||group.term,p_academic_session:group.session,p_note:note});await renderAdminMarks();alert(`${count} Subject(s) returned to the Class Teacher.`);}catch(error){alert("Package could not be returned: "+(error.message||"Unknown error"));}
 }
 async function umeAdminDeletePackage(index){
   const group=umeRoleGroups("admin")[index];if(!group)return;
+  if(umeGroupRawTerms(group).length>1){alert("This combined package contains multiple original Term Names. Admin Return/Delete is disabled for safety until the database terms are unified. No Marks have been changed.");return;}
   if(!confirm(`PERMANENTLY DELETE ${group.className} — ${group.term} — ${group.session}?\n\nAll submitted Subjects, Components and student Marks in this package will be deleted. This cannot be undone.`))return;
   if(!confirm("Final confirmation: Delete this complete Class package now?"))return;
-  try{const count=await umeRpc(umeAdminDb(),"ume_admin_delete_package",{p_class_name:group.className,p_term_name:group.term,p_academic_session:group.session});await renderAdminMarks();alert(`${count} Subject file(s) deleted permanently.`);}catch(error){alert("Package could not be deleted: "+(error.message||"Unknown error"));}
+  try{const count=await umeRpc(umeAdminDb(),"ume_admin_delete_package",{p_class_name:group.className,p_term_name:umeGroupRawTerms(group)[0]||group.term,p_academic_session:group.session});await renderAdminMarks();alert(`${count} Subject file(s) deleted permanently.`);}catch(error){alert("Package could not be deleted: "+(error.message||"Unknown error"));}
 }
 
 /* Class 6-10 roster management is added below the unchanged Nursery-Class 5
