@@ -5224,7 +5224,18 @@ function staffDashboardGreeting(){
     return "Good Evening";
 }
 
+// Shared notice window in Nepal time; never resets on login.
+function updateStaffMarksDeadlineNotice(){
+    const notice=document.getElementById("staffMarksDeadlineNotice");
+    if(!notice) return;
+    const now=Date.now();
+    const startsAt=Date.parse("2026-10-19T17:30:00+05:45");
+    const expiresAt=Date.parse("2026-10-20T17:30:00+05:45");
+    notice.hidden=!(now>=startsAt && now<expiresAt);
+}
+
 function updateStaffDashboardClock(){
+    updateStaffMarksDeadlineNotice();
     const now=new Date();
     const time=document.getElementById("staffDashboardTime");
     const date=document.getElementById("staffDashboardDate");

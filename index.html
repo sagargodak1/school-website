@@ -2589,6 +2589,22 @@
 <!-- =========================================================
      SMART STAFF DASHBOARD — ALL LOGGED-IN STAFF
 ========================================================= -->
+<style id="staff-marks-deadline-style">
+#staffMarksDeadlineNotice {
+    margin:0 0 18px; padding:14px 18px; border:1px solid #fecaca;
+    border-left:4px solid #dc2626; border-radius:12px;
+    background:#fff1f2; color:#b91c1c; font-size:16px; font-weight:800;
+    line-height:1.5; text-align:center; overflow-wrap:break-word;
+}
+#staffMarksDeadlineNotice[hidden] { display:none !important; }
+#staffMarksDeadlineNotice:not([hidden]) span {
+    display:inline-block; animation:staffMarksDeadlinePulse 2s ease-in-out infinite;
+}
+@keyframes staffMarksDeadlinePulse { 0%,100% { opacity:1; } 50% { opacity:.55; } }
+@media (prefers-reduced-motion:reduce) {
+    #staffMarksDeadlineNotice:not([hidden]) span { animation:none; }
+}
+</style>
 <div id="staffDashboardPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="staffDashboardGreeting">
     <div class="staff-dashboard-box">
         <span class="close-btn staff-dashboard-close" onclick="closeStaffDashboard()" aria-label="Close dashboard">&times;</span>
@@ -2609,6 +2625,7 @@
         </div>
 
         <div class="staff-dashboard-content">
+            <div id="staffMarksDeadlineNotice" hidden role="status"><span>Dear Teachers, the deadline for marks submission has passed.</span></div>
             <div id="staffDashboardToast" class="staff-dashboard-toast" role="status"></div>
 
             <section class="staff-dashboard-quick-shell" aria-label="Staff dashboard quick access">
@@ -3928,7 +3945,7 @@
 </div>
 
 
-<script src="app.js?v=20261017-staff-login-4-char-test-v2"></script>
+<script src="app.js?v=20261019-marks-deadline-24h"></script>
   <script src="question-submission.js?v=20260918-qs-v1_4_1-final"></script>
   <script src="exam-marks-progress.js?v=20261008-safe-v5"></script>
   <script src="student-absence.js?v=20260919-student-absence-v1-1"></script>
