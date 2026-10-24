@@ -23,17 +23,17 @@
 
 
 
-<!-- CSS moved to style.css: inline-style-1 -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: inline-style-1 -->
 
 
 
 
-<!-- CSS moved to style.css: saaf-final-polish -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: saaf-final-polish -->
 
 
 
 
-<!-- CSS moved to style.css: hero-clear-final-override -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: hero-clear-final-override -->
 
 
 
@@ -41,93 +41,93 @@
 
 
 
-<!-- CSS moved to style.css: student-portfolio-admin-upload-styles -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: student-portfolio-admin-upload-styles -->
 
 
 
 
-<!-- CSS moved to style.css: student-photo-fullscreen-fix -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: student-photo-fullscreen-fix -->
 
 
 
 
-<!-- CSS moved to style.css: website-admin-management-styles -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: website-admin-management-styles -->
 
 
 
 
-<!-- CSS moved to style.css: notice-monthly-admin-visibility-fix -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: notice-monthly-admin-visibility-fix -->
 
 
 
 
-<!-- CSS moved to style.css: staff-login-leave-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: staff-login-leave-css -->
 
 
 
 
-<!-- CSS moved to style.css: admin-staff-login-layout-tweak -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: admin-staff-login-layout-tweak -->
 
 
 
 
-<!-- CSS moved to style.css: final-admin-staff-login-row -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: final-admin-staff-login-row -->
 
 
 
 
-<!-- CSS moved to style.css: final-access-footer-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: final-access-footer-css -->
 
 
 
 
-<!-- CSS moved to style.css: staff-accounts-admin-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: staff-accounts-admin-css -->
 
 
 
 
-<!-- CSS moved to style.css: leave-approval-workflow-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: leave-approval-workflow-css -->
 
 
 
 
-<!-- CSS moved to style.css: approved-staff-leave-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: approved-staff-leave-css -->
 
 
 
 
-<!-- CSS moved to style.css: upcoming-plan-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: upcoming-plan-css -->
 
 
 
 
-<!-- CSS moved to style.css: smart-staff-dashboard-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: smart-staff-dashboard-css -->
 
 
 
 
-<!-- CSS moved to style.css: staff-idea-hub-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: staff-idea-hub-css -->
 
 
 
 
-<!-- CSS moved to style.css: admin-leave-delete-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: admin-leave-delete-css -->
 
 
 
 
-<!-- CSS moved to style.css: leave-success-professional-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: leave-success-professional-css -->
 
 
 
 
-<!-- CSS moved to style.css: premium-login-wow-final -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: premium-login-wow-final -->
 
 
 
 <!-- PERFORMANCE: preload above-the-fold hero background -->
 <link rel="preload" as="image" href="school.jpeg" fetchpriority="high">
-<link rel="stylesheet" href="style.css?v=20260916-student-excel-export-v1">
+<link rel="stylesheet" href="style.css?v=20261024-birthday-admin-v2">
 </head>
 
 
@@ -2091,6 +2091,7 @@
     <div class="popup-box website-admin-panel-box">
         <span class="close-btn" onclick="closeWebsiteAdminPanel()">&times;</span>
         <h2>⚙️ Website Admin Control Center</h2>
+        <div id="adminBirthdayNotice" hidden role="status"></div>
 
         <div class="admin-local-mode-note">
             <strong>Supabase Connected:</strong>
@@ -2431,6 +2432,7 @@
             <input type="hidden" id="staffEditId">
             <div class="admin-form-grid">
                 <label>Name<input id="staffEditName" required></label>
+                <label>Date of Birth (B.S.) — Admin only<input id="staffEditDobBS" placeholder="2045-07-07" inputmode="numeric" maxlength="10" autocomplete="off"><small id="staffBirthdayAdminStatus">Optional. Never displayed on the public website.</small></label>
                 <label>Post / Designation<input id="staffEditDesignation" required></label>
                 <label>Phone<input id="staffEditPhone"></label>
                 <label>Experience<input id="staffEditExperience"></label>
@@ -2626,6 +2628,7 @@
 
         <div class="staff-dashboard-content">
             <div id="staffMarksDeadlineNotice" hidden role="status"><span>Dear Teachers, the deadline for marks submission has passed.</span></div>
+            <section id="staffBirthdayHost" hidden aria-label="Staff birthdays"></section>
             <div id="staffDashboardToast" class="staff-dashboard-toast" role="status"></div>
 
             <section class="staff-dashboard-quick-shell" aria-label="Staff dashboard quick access">
@@ -3207,7 +3210,7 @@
      SECURE MARKS ENTRY — TEACHER + WEBSITE ADMIN
 ========================================================= -->
 
-<!-- CSS moved to style.css: secure-marks-entry-styles -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: secure-marks-entry-styles -->
 
 
 <div id="marksEntryPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="marksEntryTitle">
@@ -3334,7 +3337,7 @@
      Website Admin: view, upload and delete
 ========================================================= -->
 
-<!-- CSS moved to style.css: video-tutorials-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: video-tutorials-css -->
 
 
 <div id="videoTutorialPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="videoTutorialHeading">
@@ -3373,7 +3376,7 @@
      INTERNAL EVALUATION + EXAM — NURSERY TO CLASS 10
 ========================================================= -->
 
-<!-- CSS moved to style.css: internal-evaluation-styles -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: internal-evaluation-styles -->
 
 
 <div id="internalEvaluationPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="internalEvaluationTitle">
@@ -3496,11 +3499,11 @@
      This final layer replaces the visible old Marks / Internal Evaluation UI.
 ========================================================= -->
 
-<!-- CSS moved to style.css: unified-marks-entry-final-styles -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: unified-marks-entry-final-styles -->
 
 
 
-<!-- CSS moved to style.css: staff-dashboard-premium-final-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: staff-dashboard-premium-final-css -->
 
 
 <div id="umeStaffPopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="umeStaffTitle">
@@ -3596,7 +3599,7 @@
 
 
 
-<!-- CSS moved to style.css: ume-roster-grid-final-style -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: ume-roster-grid-final-style -->
 
 
 
@@ -3609,7 +3612,7 @@
      edit existing student details and upload/replace photos only.
      ========================================================= -->
 
-<!-- CSS moved to style.css: class-teacher-portfolio-final-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: class-teacher-portfolio-final-css -->
 
 
 <div id="ctpTeacherPopup" class="ctp-popup" role="dialog" aria-modal="true" aria-labelledby="ctpTeacherTitle">
@@ -3630,7 +3633,7 @@
 
 
 
-<!-- CSS moved to style.css: ctp-standard-list-countdown-override -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: ctp-standard-list-countdown-override -->
 
 
 <!-- JS moved to app.js: ctp-standard-list-countdown-js -->
@@ -3649,7 +3652,7 @@
 
 <!-- FINAL DRAFT PHOTO WORKFLOW: nothing uploads before Save -->
 
-<!-- CSS moved to style.css: ctp-draft-save-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: ctp-draft-save-css -->
 
 
 <!-- JS moved to app.js: ctp-draft-save-js -->
@@ -3663,7 +3666,7 @@
      This layer makes screenshots traceable and discourages misuse.
      ========================================================= -->
 
-<!-- CSS moved to style.css: student-portfolio-privacy-style -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: student-portfolio-privacy-style -->
 
 
 
@@ -3680,7 +3683,7 @@
      - Single ST. AUGUSTINE watermark only
 ========================================================= -->
 
-<!-- CSS moved to style.css: marks-grade-view-final-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: marks-grade-view-final-css -->
 
 
 <!-- JS moved to app.js: marks-grade-view-final-js -->
@@ -3692,11 +3695,11 @@
      FINAL EXAM MANAGEMENT MODULE V2 — COORDINATOR + PUBLISH FLOW
 ========================================================= -->
 
-<!-- CSS moved to style.css: exam-management-final-styles -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: exam-management-final-styles -->
 
 
 
-<!-- CSS moved to style.css: exam-management-premium-theme -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: exam-management-premium-theme -->
 
 
 
@@ -3785,7 +3788,7 @@
      Adds Admin long-term control, safe archives and academic-year defaults.
 ========================================================= -->
 
-<!-- CSS moved to style.css: saaf-final-stability-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: saaf-final-stability-css -->
 
 
 <!-- JS moved to app.js: saaf-final-stability-js -->
@@ -3799,7 +3802,7 @@
      remains the same. No API/data requests are cached here.
 ========================================================= -->
 
-<!-- CSS moved to style.css: staff-pwa-install-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: staff-pwa-install-css -->
 
 
 <div id="staffPwaGuide" class="staff-pwa-guide" role="dialog" aria-modal="true" aria-labelledby="staffPwaGuideTitle">
@@ -3828,7 +3831,7 @@
      Supabase persists the staff session; password is never stored.
 ========================================================= -->
 
-<!-- CSS moved to style.css: staff-app-mode-v2-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: staff-app-mode-v2-css -->
 
 
 <div id="staffAppShell" aria-hidden="true">
@@ -3856,7 +3859,7 @@
      No Supabase queries, IDs, save/submit logic or workflows are changed.
 ========================================================= -->
 
-<!-- CSS moved to style.css: staff-pwa-mobile-v3-css -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: staff-pwa-mobile-v3-css -->
 
 
 
@@ -3868,7 +3871,7 @@
      Class Teacher can prepare Attendance before Subject files arrive.
 ========================================================= -->
 
-<!-- CSS moved to style.css: ume-attendance-package-final-style -->
+<!-- CSS moved to style.css?v=20261024-birthday-admin-v2: ume-attendance-package-final-style -->
 
 
 <!-- JS moved to app.js: ume-attendance-package-final-js -->
@@ -3945,7 +3948,7 @@
 </div>
 
 
-<script src="app.js?v=20261019-marks-deadline-24h"></script>
+<script src="app.js?v=20261024-birthday-admin-v2"></script>
   <script src="question-submission.js?v=20260918-qs-v1_4_1-final"></script>
   <script src="exam-marks-progress.js?v=20261008-safe-v5"></script>
   <script src="student-absence.js?v=20260919-student-absence-v1-1"></script>

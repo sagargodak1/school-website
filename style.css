@@ -7403,3 +7403,22 @@ body.dark-mode .gallery-load-more-btn{
     font-size: 20px !important;
   }
 }
+/* Private staff birthdays — dashboard only */
+#staffBirthdayHost[hidden]{display:none!important}
+.sa-birthday{margin:0 0 22px;border:1px solid #dfc484;border-radius:24px;overflow:hidden;background:#fffaf1;box-shadow:0 14px 36px #122f5724;color:#18314d}
+.sa-birthday-hero{position:relative;isolation:isolate;display:flex;align-items:center;gap:36px;padding:40px 55px 36px 34px;background:radial-gradient(ellipse at 15% 30%,#315b88 0,transparent 55%),linear-gradient(125deg,#102d50,#101e3b 80%);color:#fff;overflow:hidden}
+.sa-birthday-stars{position:absolute;inset:18px 20px auto;text-align:center;font-size:27px;color:#f4d58b;letter-spacing:14px;opacity:.55;pointer-events:none;animation:saBirthdayTwinkle 4s ease-in-out infinite}
+.sa-birthday-photo{position:relative;flex:0 0 195px;width:195px;height:230px;margin:20px 0;border:5px solid #e8c778;border-radius:100px 100px 36px 36px;padding:5px;box-shadow:0 0 0 8px #e8c77818,0 15px 35px #0004;background:#fff2}
+.sa-birthday-photo img{width:100%;height:100%;object-fit:cover;border-radius:90px 90px 27px 27px;display:block}
+.sa-birthday-photo>span{position:absolute;bottom:-22px;right:-14px;font-size:48px;filter:drop-shadow(0 5px 8px #0004)}
+.sa-birthday-copy{position:relative;z-index:1;flex:1}.sa-birthday-eyebrow{font-size:10px;font-weight:800;letter-spacing:2.4px;color:#f0d397;margin-bottom:14px}
+.sa-birthday-copy h2{font-size:clamp(24px,3vw,38px);line-height:1.18;margin:0 0 14px;color:white}.sa-birthday-copy h2 span{color:#ffda8c}.sa-birthday-celebrate{font-size:18px!important;color:#ffdb98!important;font-weight:700}
+.sa-birthday-copy h3{font-size:22px;line-height:1.4;margin:20px 0 10px;color:#fff}.sa-birthday-copy p{font-size:14px;line-height:1.7;color:#dae6f5;margin:8px 0}.sa-birthday-school{margin-top:20px;font-size:12px;color:#f3dba9;font-weight:700}
+.sa-birthday-balloons{position:absolute;right:6px;top:35px;font-size:38px;opacity:.5;transform:rotate(-10deg);pointer-events:none;animation:saBirthdayFloat 5s ease-in-out infinite}
+.sa-birthday-bottom{padding:22px 26px}.sa-birthday-bottom h4{margin:0 0 15px;font-size:17px;color:#18314d}.sa-birthday-count{font-size:13px;color:#6e7681}.sa-birthday-form{display:flex;align-items:flex-end;gap:12px}.sa-birthday-form label{display:grid;gap:7px;flex:1;font-size:12px;font-weight:700;color:#41546b}.sa-birthday-form textarea{width:100%;box-sizing:border-box;resize:vertical;border:1px solid #d5dbe3;border-radius:12px;background:white;color:#18314d;padding:13px;font:inherit;font-size:14px;min-height:68px}.sa-birthday-form button{border:0;border-radius:12px;padding:16px 20px;background:#163b66;color:white;font-weight:800;cursor:pointer;min-height:50px}.sa-birthday-form button:disabled{opacity:.6;cursor:wait}.sa-birthday-form textarea:focus-visible,.sa-birthday-form button:focus-visible{outline:3px solid #cc9d39;outline-offset:2px}.sa-birthday-status{font-size:12px;color:#365a6b;overflow-wrap:anywhere}.sa-birthday-wishes{max-height:310px;overflow:auto;display:grid;gap:10px;font-size:13px}.sa-birthday-wish{border:1px solid #e9e2d5;border-radius:12px;background:#fff;padding:12px 15px}.sa-birthday-wish strong{color:#183b64}.sa-birthday-wish p{margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;color:#435264;line-height:1.5}
+@keyframes saBirthdayTwinkle{50%{opacity:.2;transform:translateY(5px)}}@keyframes saBirthdayFloat{50%{transform:translateY(12px) rotate(-6deg)}}
+@media(max-width:600px){.sa-birthday-hero{flex-direction:column;gap:18px;padding:30px 22px;text-align:center}.sa-birthday-photo{flex-basis:auto;width:150px;height:170px;margin:10px 0}.sa-birthday-copy h2{font-size:28px}.sa-birthday-eyebrow{font-size:9px}.sa-birthday-bottom{padding:18px}.sa-birthday-form{flex-direction:column;align-items:stretch}.sa-birthday-copy h3{font-size:20px}}
+@media(prefers-reduced-motion:reduce){.sa-birthday-stars,.sa-birthday-balloons{animation:none}}
+#adminBirthdayNotice[hidden]{display:none!important}
+#adminBirthdayNotice{margin:12px 0 18px;padding:13px 18px;border:1px solid #e7c77c;border-radius:12px;background:linear-gradient(100deg,#fff4d8,#fffaf0);color:#183b64;font-size:16px;font-weight:800;line-height:1.6}
+#adminBirthdayNotice>div+div{margin-top:5px}

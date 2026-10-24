@@ -2989,6 +2989,7 @@ function openStaffEditor(id=""){
 
     document.getElementById("staffEditId").value=id;
     document.getElementById("staffEditName").value=staff?.name||"";
+    birthdayLoadAdminDob(id);
     document.getElementById("staffEditDesignation").value=staff?.designation||"";
     document.getElementById("staffEditPhone").value=staff?.phone||"";
     document.getElementById("staffEditExperience").value=staff?.experience||"";
@@ -3826,6 +3827,10 @@ saveStaffEdit=async function(event){
     event.preventDefault();
     if(!studentAdminSession){openStudentAdminLogin();return;}
 
+    const dobInput=document.getElementById("staffEditDobBS");
+    if(dobInput?.disabled){alert("Wait for the private birth date to load before saving.");return;}
+    const birthdayDob=birthdayNormalizeBS(dobInput?.value||"");
+    if(birthdayDob&&!birthdayValidBS(birthdayDob)){alert("Enter a valid B.S. date as YYYY-MM-DD (1975–2100), or leave it blank.");return;}
     const db=contentDb();
     let key=document.getElementById("staffEditId").value;
     const isNew=!key;
@@ -3858,6 +3863,11 @@ saveStaffEdit=async function(event){
         : await db.from("staff").insert(payload).select().single();
 
     if(result.error){alert("Staff save failed: "+result.error.message);return;}
+    document.getElementById("staffEditId").value=key;
+    // Keep the newly saved record identity if the separate private DOB write fails.
+    adminManagedStaff[key]={...current,dbId:result.data.id,staffKey:key,name};
+    try{await birthdayRpc(db,"birthday_admin_save",{p_staff_key:key,p_dob_bs:birthdayDob||null});}
+    catch(error){alert("Staff details saved, but the PRIVATE birth date was NOT saved. Run birthday_setup.sql, then retry Save.\n"+error.message);return;}
     closeAdminEditor("staffEditorPopup");
     await loadAllManagedContentFromSupabase();
 };
@@ -12192,3 +12202,90 @@ document.addEventListener("DOMContentLoaded",()=>{
   const popup=document.getElementById("staffLoginPopup");
   if(popup && popup.style.display==="block")staffSecureNewCaptcha();
 });
+
+/* Staff birthdays: DOB is never included in public staff data. */
+const BIRTHDAY_BS_MONTHS={"1975":[31,31,32,32,31,30,30,29,30,29,30,30],"1976":[31,32,31,32,31,30,30,30,29,29,30,31],"1977":[30,32,31,32,31,30,30,30,29,30,29,31],"1978":[31,31,32,31,31,31,30,29,30,29,30,30],"1979":[31,31,32,32,31,30,30,29,30,29,30,30],"1980":[31,32,31,32,31,30,30,30,29,29,30,31],"1981":[31,31,31,32,31,31,29,30,30,29,30,30],"1982":[31,31,32,31,31,31,30,29,30,29,30,30],"1983":[31,31,32,32,31,30,30,29,30,29,30,30],"1984":[31,32,31,32,31,30,30,30,29,29,30,31],"1985":[31,31,31,32,31,31,29,30,30,29,30,30],"1986":[31,31,32,31,31,31,30,29,30,29,30,30],"1987":[31,32,31,32,31,30,30,29,30,29,30,30],"1988":[31,32,31,32,31,30,30,30,29,29,30,31],"1989":[31,31,31,32,31,31,29,30,30,29,30,30],"1990":[31,31,32,31,31,31,30,29,30,29,30,30],"1991":[31,32,31,32,31,30,30,30,29,29,30,30],"1992":[31,32,31,32,31,30,30,30,29,30,29,31],"1993":[31,31,32,31,31,31,30,29,30,29,30,30],"1994":[31,31,32,31,31,31,30,29,30,29,30,30],"1995":[31,32,31,32,31,30,30,30,29,29,30,30],"1996":[31,32,31,32,31,30,30,30,29,30,29,31],"1997":[31,31,32,31,31,31,30,29,30,29,30,30],"1998":[31,31,32,31,31,31,30,29,30,29,30,30],"1999":[31,32,31,32,31,30,30,30,29,29,30,31],"2000":[30,32,31,32,31,30,30,30,29,30,29,31],"2001":[31,31,32,31,31,31,30,29,30,29,30,30],"2002":[31,31,32,32,31,30,30,29,30,29,30,30],"2003":[31,32,31,32,31,30,30,30,29,29,30,31],"2004":[30,32,31,32,31,30,30,30,29,30,29,31],"2005":[31,31,32,31,31,31,30,29,30,29,30,30],"2006":[31,31,32,32,31,30,30,29,30,29,30,30],"2007":[31,32,31,32,31,30,30,30,29,29,30,31],"2008":[31,31,31,32,31,31,29,30,30,29,29,31],"2009":[31,31,32,31,31,31,30,29,30,29,30,30],"2010":[31,31,32,32,31,30,30,29,30,29,30,30],"2011":[31,32,31,32,31,30,30,30,29,29,30,31],"2012":[31,31,31,32,31,31,29,30,30,29,30,30],"2013":[31,31,32,31,31,31,30,29,30,29,30,30],"2014":[31,31,32,32,31,30,30,29,30,29,30,30],"2015":[31,32,31,32,31,30,30,30,29,29,30,31],"2016":[31,31,31,32,31,31,29,30,30,29,30,30],"2017":[31,31,32,31,31,31,30,29,30,29,30,30],"2018":[31,32,31,32,31,30,30,29,30,29,30,30],"2019":[31,32,31,32,31,30,30,30,29,30,29,31],"2020":[31,31,31,32,31,31,30,29,30,29,30,30],"2021":[31,31,32,31,31,31,30,29,30,29,30,30],"2022":[31,32,31,32,31,30,30,30,29,29,30,30],"2023":[31,32,31,32,31,30,30,30,29,30,29,31],"2024":[31,31,31,32,31,31,30,29,30,29,30,30],"2025":[31,31,32,31,31,31,30,29,30,29,30,30],"2026":[31,32,31,32,31,30,30,30,29,29,30,31],"2027":[30,32,31,32,31,30,30,30,29,30,29,31],"2028":[31,31,32,31,31,31,30,29,30,29,30,30],"2029":[31,31,32,31,32,30,30,29,30,29,30,30],"2030":[31,32,31,32,31,30,30,30,29,29,30,31],"2031":[30,32,31,32,31,30,30,30,29,30,29,31],"2032":[31,31,32,31,31,31,30,29,30,29,30,30],"2033":[31,31,32,32,31,30,30,29,30,29,30,30],"2034":[31,32,31,32,31,30,30,30,29,29,30,31],"2035":[30,32,31,32,31,31,29,30,30,29,29,31],"2036":[31,31,32,31,31,31,30,29,30,29,30,30],"2037":[31,31,32,32,31,30,30,29,30,29,30,30],"2038":[31,32,31,32,31,30,30,30,29,29,30,31],"2039":[31,31,31,32,31,31,29,30,30,29,30,30],"2040":[31,31,32,31,31,31,30,29,30,29,30,30],"2041":[31,31,32,32,31,30,30,29,30,29,30,30],"2042":[31,32,31,32,31,30,30,30,29,29,30,31],"2043":[31,31,31,32,31,31,29,30,30,29,30,30],"2044":[31,31,32,31,31,31,30,29,30,29,30,30],"2045":[31,32,31,32,31,30,30,29,30,29,30,30],"2046":[31,32,31,32,31,30,30,30,29,29,30,31],"2047":[31,31,31,32,31,31,30,29,30,29,30,30],"2048":[31,31,32,31,31,31,30,29,30,29,30,30],"2049":[31,32,31,32,31,30,30,30,29,29,30,30],"2050":[31,32,31,32,31,30,30,30,29,30,29,31],"2051":[31,31,31,32,31,31,30,29,30,29,30,30],"2052":[31,31,32,31,31,31,30,29,30,29,30,30],"2053":[31,32,31,32,31,30,30,30,29,29,30,30],"2054":[31,32,31,32,31,30,30,30,29,30,29,31],"2055":[31,31,32,31,31,31,30,29,30,29,30,30],"2056":[31,31,32,31,32,30,30,29,30,29,30,30],"2057":[31,32,31,32,31,30,30,30,29,29,30,31],"2058":[30,32,31,32,31,30,30,30,29,30,29,31],"2059":[31,31,32,31,31,31,30,29,30,29,30,30],"2060":[31,31,32,32,31,30,30,29,30,29,30,30],"2061":[31,32,31,32,31,30,30,30,29,29,30,31],"2062":[31,31,31,32,31,31,29,30,29,30,29,31],"2063":[31,31,32,31,31,31,30,29,30,29,30,30],"2064":[31,31,32,32,31,30,30,29,30,29,30,30],"2065":[31,32,31,32,31,30,30,30,29,29,30,31],"2066":[31,31,31,32,31,31,29,30,30,29,29,31],"2067":[31,31,32,31,31,31,30,29,30,29,30,30],"2068":[31,31,32,32,31,30,30,29,30,29,30,30],"2069":[31,32,31,32,31,30,30,30,29,29,30,31],"2070":[31,31,31,32,31,31,29,30,30,29,30,30],"2071":[31,31,32,31,31,31,30,29,30,29,30,30],"2072":[31,32,31,32,31,30,30,29,30,29,30,30],"2073":[31,32,31,32,31,30,30,30,29,29,30,31],"2074":[31,31,31,32,31,31,30,29,30,29,30,30],"2075":[31,31,32,31,31,31,30,29,30,29,30,30],"2076":[31,32,31,32,31,30,30,30,29,29,30,30],"2077":[31,32,31,32,31,30,30,30,29,30,29,31],"2078":[31,31,31,32,31,31,30,29,30,29,30,30],"2079":[31,31,32,31,31,31,30,29,30,29,30,30],"2080":[31,32,31,32,31,30,30,30,29,29,30,30],"2081":[31,32,31,32,31,30,30,30,29,30,29,31],"2082":[31,31,32,31,31,31,30,29,30,29,30,30],"2083":[31,31,32,31,31,31,30,29,30,29,30,30],"2084":[31,31,32,31,31,30,30,30,29,30,30,30],"2085":[31,32,31,32,30,31,30,30,29,30,30,30],"2086":[30,32,31,32,31,30,30,30,29,30,30,30],"2087":[31,31,32,31,31,31,30,29,30,30,30,30],"2088":[30,31,32,32,30,31,30,30,29,30,30,30],"2089":[30,32,31,32,31,30,30,30,29,30,30,30],"2090":[30,32,31,32,31,30,30,30,29,30,30,30],"2091":[31,31,32,31,31,31,30,30,29,30,30,30],"2092":[30,31,32,32,31,30,30,30,29,30,30,30],"2093":[30,32,31,32,31,30,30,30,29,30,30,30],"2094":[31,31,32,31,31,30,30,30,29,30,30,30],"2095":[31,31,32,31,31,31,30,29,30,30,30,30],"2096":[30,31,32,32,31,30,30,29,30,29,30,30],"2097":[31,32,31,32,31,30,30,30,29,30,30,30],"2098":[31,31,32,31,31,31,29,30,29,30,29,31],"2099":[31,31,32,31,31,31,30,29,29,30,30,30],"2100":[31,32,31,32,30,31,30,29,30,29,30,30]};
+function birthdayNormalizeBS(value){return String(value||'').trim().replace(/[०-९]/g,c=>'०१२३४५६७८९'.indexOf(c)).replace(/\//g,'-');}
+function birthdayValidBS(value){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(value);return !!m&&!!BIRTHDAY_BS_MONTHS[m[1]]&&+m[2]>=1&&+m[2]<=12&&+m[3]>=1&&+m[3]<=BIRTHDAY_BS_MONTHS[m[1]][+m[2]-1];}
+async function birthdayRpc(db,name,args={}){if(!db)throw new Error('Connection unavailable.');const {data,error}=await db.rpc(name,args);if(error)throw error;return data;}
+let birthdayAdminLoadToken=0;
+async function birthdayLoadAdminDob(key){
+ const input=document.getElementById('staffEditDobBS'),status=document.getElementById('staffBirthdayAdminStatus');if(!input)return;
+ const token=++birthdayAdminLoadToken;input.value='';input.disabled=true;status.textContent='Loading private birth date…';
+ try{const value=key?await birthdayRpc(contentDb(),'birthday_admin_get',{p_staff_key:key}):null;if(token!==birthdayAdminLoadToken)return;input.value=value||'';input.disabled=false;status.textContent='Optional · Admin only · B.S. YYYY-MM-DD';}
+ catch(e){if(token!==birthdayAdminLoadToken)return;status.textContent='Private date unavailable. Run birthday_setup.sql and reopen Edit. '+e.message;}
+}
+let birthdayCards=[],birthdayBusy=false,birthdayLastFetch=0,birthdayDay='',birthdayGeneration=0;
+function birthdayIsOpen(){const p=document.getElementById('staffDashboardPopup');return !!loggedInStaff&&!!staffAuthSession&&!!p&&p.style.display==='block';}
+function birthdayNepalDay(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kathmandu',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
+function birthdaySafePhoto(value){const s=String(value||'');return /^(https?:\/\/|data:image\/(png|jpe?g|webp|gif);base64,)/i.test(s)||(/^[\w./ ()-]+\.(png|jpe?g|webp|gif)$/i.test(s)&&!s.startsWith('//'))?s:'logo.jpeg';}
+function birthdayTitle(name){return String(name||'Staff Member').toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());}
+function birthdayRender(rows){
+ const host=document.getElementById('staffBirthdayHost');if(!host)return;
+ const signature=JSON.stringify(rows.map(r=>[r.staff_key,r.name,r.photo_url,r.day_bs]));
+ if(host.dataset.signature===signature)return;host.dataset.signature=signature;host.replaceChildren();host.hidden=!rows.length;
+ for(const row of rows){
+  const full=birthdayTitle(row.name),first=full.split(/\s+/)[0],card=document.createElement('article');card.className='sa-birthday';card.dataset.key=row.staff_key;
+  const e=escapeHtml;
+  card.innerHTML=`<div class="sa-birthday-hero"><div class="sa-birthday-stars" aria-hidden="true">✦　•　✧　　✦　•　✧</div><div class="sa-birthday-photo"><img alt="${e(full)}" loading="lazy"><span aria-hidden="true">🎂</span></div><div class="sa-birthday-copy"><div class="sa-birthday-eyebrow">A SPECIAL DAY · OUR SCHOOL FAMILY</div><h2>Today is <span>${e(full)}’s</span> Birthday!</h2><p class="sa-birthday-celebrate">Let’s Celebrate ${e(first)}’s Birthday!</p><h3>Happy Birthday to You,<br>${e(full)}!</h3><p>Wishing you happiness, good health, and a wonderful year ahead!</p><div class="sa-birthday-school">With love, St. Augustine School Family 💙</div></div><div class="sa-birthday-balloons" aria-hidden="true">🎈<br>🎈</div></div><div class="sa-birthday-bottom"><h4>💌 Birthday Wishes <span class="sa-birthday-count"></span></h4><form class="sa-birthday-form"><label>Write your birthday wish<textarea maxlength="500" rows="2" required placeholder="Make their day a little brighter…"></textarea></label><button type="submit">Send Wish ✨</button></form><p class="sa-birthday-status" role="status"></p><div class="sa-birthday-wishes" aria-live="polite"></div></div>`;
+  const img=card.querySelector('img');img.onerror=()=>{img.onerror=null;img.src='logo.jpeg';};img.src=birthdaySafePhoto(row.photo_url);
+  card.querySelector('form').addEventListener('submit',event=>birthdaySendWish(event,row,card));host.appendChild(card);birthdayLoadWishes(row,card);
+ }
+}
+async function birthdayLoadWishes(row,card){
+ try{const wishes=await birthdayRpc(initStaffSupabase(),'birthday_list_wishes',{p_staff_key:row.staff_key});if(!card.isConnected)return;
+ const host=card.querySelector('.sa-birthday-wishes');host.replaceChildren();card.querySelector('.sa-birthday-count').textContent=`(${wishes.length})`;
+ if(!wishes.length){host.textContent='Be the first to send a birthday wish!';return;}
+ for(const wish of wishes){const item=document.createElement('div');item.className='sa-birthday-wish';const name=document.createElement('strong'),body=document.createElement('p');name.textContent=wish.author_name;body.textContent=wish.message;item.append(name,body);host.appendChild(item);}
+ }catch(e){if(card.isConnected)card.querySelector('.sa-birthday-status').textContent='Wishes could not be loaded. '+e.message;}
+}
+async function birthdaySendWish(event,row,card){
+ event.preventDefault();const input=card.querySelector('textarea'),button=card.querySelector('button'),status=card.querySelector('.sa-birthday-status'),message=input.value.trim();if(!message)return;
+ button.disabled=true;status.textContent='Sending…';
+ try{await birthdayRpc(initStaffSupabase(),'birthday_send_wish',{p_staff_key:row.staff_key,p_day_bs:row.day_bs,p_message:message});input.value='';status.textContent='Your birthday wish has been saved!';await birthdayLoadWishes(row,card);}
+ catch(e){status.textContent='Wish was not saved: '+e.message;}
+ finally{button.disabled=false;}
+}
+async function birthdayRefresh(force=false){
+ if(!birthdayIsOpen())return;const now=Date.now();if(birthdayBusy||(!force&&now-birthdayLastFetch<30000))return;
+ birthdayBusy=true;birthdayLastFetch=now;const generation=birthdayGeneration;
+ try{const rows=await birthdayRpc(initStaffSupabase(),'birthday_today');if(generation!==birthdayGeneration||!birthdayIsOpen())return;birthdayCards=rows||[];birthdayRender(birthdayCards);for(const card of document.querySelectorAll('#staffBirthdayHost .sa-birthday')){const row=birthdayCards.find(r=>r.staff_key===card.dataset.key);if(row)birthdayLoadWishes(row,card);}}
+ catch(e){console.warn('Birthday cards unavailable:',e.message);const host=document.getElementById('staffBirthdayHost');if(host&&!host.hidden){host.replaceChildren();host.hidden=true;delete host.dataset.signature;}}
+ finally{birthdayBusy=false;}
+}
+// Read-only refresh does not disturb draft wishes. Date rollover clears yesterday immediately.
+function birthdayTick(){
+ if(!birthdayIsOpen()){birthdayLastFetch=0;return;}
+ const today=birthdayNepalDay();if(today!==birthdayDay){birthdayDay=today;birthdayGeneration++;birthdayLastFetch=0;birthdayCards=[];const host=document.getElementById('staffBirthdayHost');if(host){host.replaceChildren();host.hidden=true;delete host.dataset.signature;}}
+ birthdayRefresh();
+}
+document.addEventListener('DOMContentLoaded',()=>{setInterval(birthdayTick,1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){birthdayLastFetch=0;birthdayTick();}});window.addEventListener('focus',()=>{birthdayLastFetch=0;birthdayTick();});});
+// Do not leave a private DOB in the DOM after the administrator closes the editor.
+const birthdayPreviousCloseEditor=closeAdminEditor;
+closeAdminEditor=function(id){if(id==='staffEditorPopup'){birthdayAdminLoadToken++;const input=document.getElementById('staffEditDobBS');if(input){input.value='';input.disabled=true;}}return birthdayPreviousCloseEditor.apply(this,arguments);};
+const birthdayPreviousAdminLogout=studentAdminLogout;
+studentAdminLogout=async function(){birthdayAdminLoadToken++;const input=document.getElementById('staffEditDobBS');if(input){input.value='';input.disabled=true;}return birthdayPreviousAdminLogout.apply(this,arguments);};
+
+/* Admin gets a compact name-only birthday notice, without wishes. */
+let birthdayAdminNoticeBusy=false,birthdayAdminNoticeFetch=0,birthdayAdminNoticeDay='';
+async function birthdayAdminNoticeTick(force=false){
+ const host=document.getElementById('adminBirthdayNotice'),panel=document.getElementById('websiteAdminPanel');
+ if(!host)return;
+ if(!studentAdminSession||!panel||panel.style.display!=='block'){host.hidden=true;host.replaceChildren();birthdayAdminNoticeFetch=0;return;}
+ const day=birthdayNepalDay();
+ if(day!==birthdayAdminNoticeDay){birthdayAdminNoticeDay=day;birthdayAdminNoticeFetch=0;host.hidden=true;host.replaceChildren();}
+ if(birthdayAdminNoticeBusy||(!force&&Date.now()-birthdayAdminNoticeFetch<30000))return;
+ birthdayAdminNoticeBusy=true;birthdayAdminNoticeFetch=Date.now();
+ const adminId=studentAdminSession.user?.id;
+ try{
+  const rows=await birthdayRpc(contentDb(),'birthday_admin_today');
+  if(!studentAdminSession||studentAdminSession.user?.id!==adminId||panel.style.display!=='block'||birthdayNepalDay()!==day)return;
+  host.replaceChildren();
+  for(const row of rows||[]){const line=document.createElement('div');line.textContent=`🎂 Today is ${birthdayTitle(row.name)}’s Birthday!`;host.appendChild(line);}
+  host.hidden=!rows?.length;
+ }catch(e){host.hidden=true;host.replaceChildren();console.warn('Admin birthday notice unavailable:',e.message);}
+ finally{birthdayAdminNoticeBusy=false;}
+}
+const birthdayPreviousOpenAdminPanel=openWebsiteAdminPanel;
+openWebsiteAdminPanel=function(){const result=birthdayPreviousOpenAdminPanel.apply(this,arguments);birthdayAdminNoticeTick(true);return result;};
+document.addEventListener('DOMContentLoaded',()=>{setInterval(birthdayAdminNoticeTick,1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)birthdayAdminNoticeTick(true);});});
