@@ -9577,10 +9577,21 @@ function umeRenderTeacherProject(){
   if(p.admin_note)notes+=`<div class="ume-note"><strong>Admin Return Note:</strong><br>${umeEscape(p.admin_note)}</div>`;
   if(p.class_teacher_note)notes+=`<div class="ume-note"><strong>Class Teacher Note:</strong><br>${umeEscape(p.class_teacher_note)}</div>`;
   document.getElementById("umeProjectNotes").innerHTML=notes;
+  // Only returned projects may change identifiers; existing marks/components stay linked by ID.
+  const details=document.getElementById("umeReturnedMetadataEditor");
+  if(details){
+    details.style.display=p.status==="returned_to_subject_teacher"?"block":"none";
+    if(p.status==="returned_to_subject_teacher"){
+      document.getElementById("umeEditSubjectName").value=p.subject_name||"";
+      document.getElementById("umeEditTermName").value=p.term_name||"";
+    }
+  }
+
   document.getElementById("umeUpperComponentCard").style.display=!lower&&editable?"block":"none";
   document.getElementById("umeComponentHeading").textContent=lower?`${p.subject_name}: Evaluation and Exam Full Marks`:`${p.subject_name}: Components and Common Full Marks`;
   document.getElementById("umeComponentList").innerHTML=bundle.components.length?bundle.components.map(c=>`
     <div class="ume-component"><strong>${umeEscape(p.subject_name)} — ${umeEscape(c.component_name)}</strong>
+      ${p.status==="returned_to_subject_teacher"?`<label class="ume-field">Edit Component Name<input class="ume-edit-component-name" data-component-id="${Number(c.id)}" maxlength="100" value="${umeEscape(c.component_name)}" aria-label="Edit ${umeEscape(c.component_name)} name"></label>`:""}
       <div class="ume-component-controls"><input class="ume-full-marks" data-component-id="${Number(c.id)}" type="number" min="0" max="1200" step="0.01" value="${umeEscape(umeNumber(c.full_marks))}" oninput="umeHandleFullMarksInput(this)" ${editable?"":"disabled"} aria-label="Full Marks for ${umeEscape(c.component_name)}">
       ${!lower&&editable?`<button type="button" class="ume-btn ume-danger" onclick="umeDeleteComponent(${Number(c.id)})">DELETE</button>`:""}</div>
     </div>`).join(""):'<div class="ume-empty">Add the first Component to open the Marks table.</div>';
@@ -9588,6 +9599,35 @@ function umeRenderTeacherProject(){
   document.getElementById("umeTeacherActions").innerHTML=`
     <button type="button" class="ume-btn ume-secondary" onclick="umeExportActiveSubject()">EXPORT SUBJECT EXCEL</button>
     ${editable?`<button type="button" class="ume-btn ume-primary" onclick="umeSaveDraft(true)">SAVE DRAFT</button><button type="button" class="ume-btn ume-success" onclick="umeSubmitProject()">SUBMIT TO CLASS TEACHER</button><button type="button" class="ume-btn ume-danger" onclick="umeDeleteProject()">DELETE</button>`:""}`;
+}
+
+// Metadata updates are separate from Marks saves. Never delete/recreate a component.
+async function umeSaveReturnedMetadata(){
+  const bundle=umeActiveBundle;
+  if(!bundle||bundle.project?.status!=="returned_to_subject_teacher")return;
+  const id=Number(bundle.project.id);
+  const subject=String(document.getElementById("umeEditSubjectName")?.value||"").trim();
+  const term=String(document.getElementById("umeEditTermName")?.value||"").trim();
+  const components=[...document.querySelectorAll("#umeComponentList .ume-edit-component-name")].map(el=>({component_id:Number(el.dataset.componentId),component_name:el.value.trim()}));
+  if(!subject||!term||components.some(c=>!c.component_name)){
+    umeShowMessage("Subject, Term and Component Names cannot be empty.");return;
+  }
+  if(subject.length>100||term.length>100||components.some(c=>c.component_name.length>100)){
+    umeShowMessage("Names must be 100 characters or less.");return;
+  }
+  const oldComponentNames=new Map((bundle.components||[]).map(c=>[Number(c.id),String(c.component_name)]));
+  const unchanged=subject===bundle.project.subject_name&&term===bundle.project.term_name&&components.every(c=>oldComponentNames.get(c.component_id)===c.component_name);
+  if(unchanged){umeShowMessage("No name changes to save.","success");return;}
+  if(!confirm("Save Subject, Exam Term and Component names? Existing Marks and Component IDs will be preserved. Save any pending Marks or Full Marks separately first."))return;
+  const btn=document.getElementById("umeEditMetadataSave");if(btn)btn.disabled=true;
+  try{
+    await umeRpc(umeStaffDb(),"ume_edit_returned_project_metadata",{p_project_id:id,p_subject_name:subject,p_term_name:term,p_components:components});
+    await umeLoadMyProjects(id);
+    const refreshed=umeActiveBundle;
+    const updated=refreshed?.project?.id===id&&refreshed.project.subject_name===subject&&refreshed.project.term_name===term&&components.every(c=>(refreshed.components||[]).some(row=>Number(row.id)===c.component_id&&row.component_name===c.component_name));
+    umeShowMessage(updated?"Subject, Term and Component names saved and verified. Marks and IDs preserved.":"Save response received, but verification did not match. Refresh and contact Admin before resubmitting.",updated?"success":"error");
+  }catch(error){umeShowMessage("Could not save names: "+(error.message||"Unknown error")+". SQL function installation may be required.");}
+  finally{if(btn)btn.disabled=false;}
 }
 
 function umeEntryMap(bundle){return new Map((bundle.entries||[]).map(e=>[`${e.component_id}|${e.student_id}`,e]));}
