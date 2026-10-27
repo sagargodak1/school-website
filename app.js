@@ -9741,7 +9741,7 @@ function umeCanonicalTermName(value){
   if(/\b(first|1st)\b/.test(normalized))return "First Term";
   if(/\b(second|2nd|seocnd|secound)\b/.test(normalized))return "Second Term";
   if(/\b(third|3rd)\b/.test(normalized))return "Third Term";
-  if(/\b(final|fourth|4th)\b/.test(normalized))return "Final Term";
+  if(/\b(final|finals)\b/.test(normalized))return "Final Term";
   return raw;
 }
 function umeGroupRawTerms(group){
@@ -9767,11 +9767,11 @@ async function umeLoadClassTeacherInbox(){
 }
 async function umeLoadPrincipalPackages(){
   const host=document.getElementById("umePrincipalGroups"),detail=document.getElementById("umePrincipalDetail");host.innerHTML='<div class="ume-empty">Loading submitted packages...</div>';detail.innerHTML="";
-  try{umePrincipalRows=await umeRpc(umeStaffDb(),"ume_list_final_projects");umeRenderPackageClassFilter("principal");umeRenderGroupCards("principal",umeRoleGroups("principal"),host);}
+  try{umePrincipalRows=(await umeRpc(umeStaffDb(),"ume_list_final_projects")).filter(row=>row.status==="submitted_to_admin");umeRenderPackageClassFilter("principal");umeRenderGroupCards("principal",umeRoleGroups("principal"),host);}
   catch(error){host.innerHTML=`<div class="ume-empty">Could not load Principal view: ${umeEscape(error.message||"Unknown error")}</div>`;}
 }
 
-function umePackageRoleRows(role){return role==="principal"?umePrincipalRows:role==="admin"?umeAdminRows:umeClassTeacherRows;}
+function umePackageRoleRows(role){const rows=role==="principal"?umePrincipalRows:role==="admin"?umeAdminRows:umeClassTeacherRows;return (role==="principal"||role==="admin")?rows.filter(r=>r.status==="submitted_to_admin"):rows;}
 function umeRenderPackageClassFilter(role){
   const host=document.getElementById(role==="principal"?"umePrincipalClassFilter":"umeAdminClassFilter");if(!host)return;
   const groups=umeGroupRows(umePackageRoleRows(role)),selected=umePackageClassFilter[role]||UME_ALL_CLASSES_FILTER;
@@ -9791,7 +9791,7 @@ function umeSetPackageClassFilter(role,className){
 function umeRenderGroupCards(role,groups,host){
   if(!groups.length){const selected=umePackageClassFilter[role];host.innerHTML=`<div class="ume-empty">${selected&&selected!==UME_ALL_CLASSES_FILTER?`No Marks package has been received for ${umeEscape(selected)}.`:"No Marks package is available."}</div>`;return;}
   host.innerHTML=groups.map((g,index)=>{
-    const rows=umeSortSubjectRows(g.rows);
+    const rows=umeSortSubjectRows(role==="classTeacher"?g.rows.filter(r=>r.status!=="returned_to_subject_teacher"):g.rows);
     const submittedRow=rows.find(row=>row.submitted_to_admin_at);
     const subjectRows=rows.map(row=>{
       let actions="";
@@ -9803,9 +9803,8 @@ function umeRenderGroupCards(role,groups,host){
     let groupActions=`<button type="button" class="ume-btn ume-primary" onclick="umeViewCombined('${role}',${index})">VIEW COMBINED</button>`;
     groupActions+=`<button type="button" class="ume-btn ume-secondary" onclick="umeExportCombined('${role}',${index})">EXPORT ONE EXCEL</button>`;
     if(role==="classTeacher"){
-      const blocked=rows.some(r=>["submitted_to_class_teacher","returned_to_subject_teacher","returned_by_admin"].includes(r.status));
       const ready=rows.some(r=>r.status==="accepted_by_class_teacher");
-      if(ready)groupActions+=`<button type="button" class="ume-btn ume-success" onclick="umeSubmitPackage(${index})" ${blocked?'disabled title="Finish every pending or returned Subject first"':""}>SUBMIT PACKAGE TO ADMIN</button>`;
+      if(ready)groupActions+=`<button type="button" class="ume-btn ume-success" onclick="umeSubmitPackage(${index})">SUBMIT ACCEPTED TO ADMIN</button>`;
     }
     if(role==="admin"){
       if(rows.some(r=>r.status==="submitted_to_admin"))groupActions+=`<button type="button" class="ume-btn ume-warning" onclick="umeAdminReturnPackage(${index})">RETURN TO CLASS TEACHER</button>`;
@@ -9826,8 +9825,8 @@ async function umeLoadGroupBundles(role,index){
   // but exclude their marks from Combined View and Combined Excel only.
   // This is read-only filtering: no marks, project status, or database rows are changed.
   const combinedRows=role==="classTeacher"
-    ? group.rows.filter(r=>r.status!=="returned_to_subject_teacher")
-    : group.rows;
+    ? group.rows.filter(r=>["accepted_by_class_teacher","submitted_to_admin"].includes(r.status))
+    : group.rows.filter(r=>r.status==="submitted_to_admin");
   const bundles=await Promise.all(umeSortSubjectRows(combinedRows).map(r=>umeRpc(umeRoleDb(role),"ume_get_project_bundle",{p_project_id:Number(r.id)})));
   const selected={index,group,bundles};umeSelectedGroups[role]=selected;return selected;
 }
@@ -9856,27 +9855,22 @@ async function umeAcceptProject(id){if(!confirm("Accept this Subject Marks file?
 async function umeReturnProject(id){const note=prompt("Write the correction note for the Subject Teacher:","Please check the entered Marks.");if(note===null)return;try{await umeRpc(umeStaffDb(),"ume_return_to_subject_teacher",{p_project_id:Number(id),p_note:note});await umeLoadClassTeacherInbox();alert("Returned to the Subject Teacher for correction.");}catch(error){alert("Could not return: "+(error.message||"Unknown error"));}}
 async function umeSubmitPackage(index){
   const group=umeRoleGroups("classTeacher")[index];if(!group)return;
-  const blocked=group.rows.some(r=>["submitted_to_class_teacher","returned_to_subject_teacher","returned_by_admin"].includes(r.status));
-  if(blocked){alert("Finish all pending or returned Subjects before submitting this Class package.");return;}
+  // Partial and repeat submissions intentionally ignore pending/returned subjects.
+  // Only newly accepted project rows may be sent in this batch.
   const accepted=group.rows.filter(r=>r.status==="accepted_by_class_teacher");
   if(!accepted.length){alert("No accepted Subject is ready to submit.");return;}
-  // Existing Supabase RPC matches the ORIGINAL term_name. Submit each existing
-  // spelling separately; never change marks or project term_name in the database.
-  const terms=[...new Set(accepted.map(r=>String(r.term_name??"").trim()))].filter(Boolean);
-  if(!confirm(`Submit ${accepted.length} accepted Subject(s) of ${group.className} — ${group.term} to Admin?\n\n${terms.length>1?`Existing term labels: ${terms.join(", ")}\nEach label will be submitted using its original database name.\n\n`:""}The Principal will receive submitted packages as Read Only.`))return;
-  let total=0;const completed=[];
-  for(const term of terms){
-    try{
-      const count=await umeRpc(umeStaffDb(),"ume_submit_class_package",{p_class_name:group.className,p_term_name:term,p_academic_session:group.session});
-      total+=Number(count)||0;completed.push(term);
-    }catch(error){
-      await umeLoadClassTeacherInbox();
-      alert(`Package submission stopped at '${term}'.\n\nAlready submitted: ${completed.join(", ")||"None"}\nSubmitted Subjects: ${total}\n\nReason: ${error.message||"Unknown error"}\n\nDo not repeat completed submissions. Check attendance/server term matching before retrying.`);
-      return;
-    }
+  // One atomic server-side submission across all spellings of this term.
+  // The server validates attendance and Marks before updating accepted projects.
+  if(!confirm(`Submit ${accepted.length} newly accepted Subject(s) of ${group.className} — ${group.term} to Admin?\n\nAlready submitted subjects will remain unchanged. Pending/returned subjects will stay pending.`))return;
+  try{
+    const count=Number(await umeRpc(umeStaffDb(),"ume_submit_class_package",{p_class_name:group.className,p_term_name:group.term,p_academic_session:group.session}))||0;
+    await umeLoadClassTeacherInbox();
+    if(count!==accepted.length){alert(`Submission completed for ${count} Subject(s); expected ${accepted.length}. Refresh and verify project statuses.`);return;}
+    alert(`${count} newly accepted Subject(s) sent to Admin. Previously submitted Subjects remain unchanged.`);
+  }catch(error){
+    await umeLoadClassTeacherInbox();
+    alert(`No new package was confirmed. Please check the issue before retrying.\n\n${error.message||"Unknown error"}`);
   }
-  await umeLoadClassTeacherInbox();
-  alert(`${total} Subject(s) sent to Admin successfully under ${group.term}.`);
 }
 
 function umeExcelState(group,bundles){
@@ -9965,7 +9959,7 @@ renderAdminMarks=async function(){
   try{
     const [teachers,rows]=await Promise.all([umeRpc(umeAdminDb(),"ume_get_class_teachers"),umeRpc(umeAdminDb(),"ume_list_final_projects")]);
     umeAdminClassTeachers=teachers;umeRenderAdminClassTeacherMap();
-    umeAdminRows=rows;umeRenderPackageClassFilter("admin");umeRenderGroupCards("admin",umeRoleGroups("admin"),host);
+    umeAdminRows=(rows||[]).filter(row=>row.status==="submitted_to_admin");umeRenderPackageClassFilter("admin");umeRenderGroupCards("admin",umeRoleGroups("admin"),host);
   }catch(error){host.innerHTML=`<div class="ume-empty">Could not load Unified Marks: ${umeEscape(error.message||"Unknown error")}. Run the supplied final SQL first.</div>`;}
 };
 async function umeAdminReturnPackage(index){
@@ -11087,7 +11081,10 @@ function umePackageFilterChangedFinal(role,type,value){umeFinalFilters[role+(typ
 umeRenderPackageClassFilter=function(role){if(role==="principal"||role==="admin")umeRenderYearClassFilterFinal(role);};
 const umeOriginalRoleGroupsFinal=umeRoleGroups;
 umeRoleGroups=function(role){
-  const groups=umeGroupRows(umePackageRoleRows(role));
+  const visibleRows=role==="classTeacher"
+    ? umePackageRoleRows(role).filter(r=>r.status!=="returned_to_subject_teacher")
+    : umePackageRoleRows(role);
+  const groups=umeGroupRows(visibleRows);
   if(role==="classTeacher")return groups.filter(g=>umeFinalFilters.classTeacherYear&&umeFinalFilters.classTeacherClass&&String(g.session).trim()===umeFinalFilters.classTeacherYear&&g.className===umeFinalFilters.classTeacherClass);
   if(role==="principal"||role==="admin"){
     const year=umeFinalFilters[role+"Year"],cls=umeFinalFilters[role+"Class"];if(!year)return [];
