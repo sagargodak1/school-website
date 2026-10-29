@@ -9795,6 +9795,7 @@ function umeRenderGroupCards(role,groups,host){
     const submittedRow=rows.find(row=>row.submitted_to_admin_at);
     const subjectRows=rows.map(row=>{
       let actions="";
+      if(role==="admin"&&row.status==="submitted_to_admin")actions+=`<button type="button" class="ume-btn ume-warning" onclick="umeAdminReturnOneSubject(${Number(row.id)})">RETURN SUBJECT</button>`;
       if(role==="classTeacher"&&row.status==="submitted_to_class_teacher")actions+=`<button type="button" class="ume-btn ume-success" onclick="umeAcceptProject(${Number(row.id)})">ACCEPT</button><button type="button" class="ume-btn ume-warning" onclick="umeReturnProject(${Number(row.id)})">RETURN</button>`;
       if(role==="classTeacher"&&row.status==="accepted_by_class_teacher")actions+=`<button type="button" class="ume-btn ume-warning" onclick="umeReturnProject(${Number(row.id)})">RETURN</button>`;
       if(role==="classTeacher"&&row.status==="returned_by_admin")actions+=`<button type="button" class="ume-btn ume-success" onclick="umeAcceptProject(${Number(row.id)})">ACCEPT AGAIN</button><button type="button" class="ume-btn ume-warning" onclick="umeReturnProject(${Number(row.id)})">RETURN TO SUBJECT TEACHER</button>`;
@@ -9962,6 +9963,21 @@ renderAdminMarks=async function(){
     umeAdminRows=(rows||[]).filter(row=>row.status==="submitted_to_admin");umeRenderPackageClassFilter("admin");umeRenderGroupCards("admin",umeRoleGroups("admin"),host);
   }catch(error){host.innerHTML=`<div class="ume-empty">Could not load Unified Marks: ${umeEscape(error.message||"Unknown error")}. Run the supplied final SQL first.</div>`;}
 };
+async function umeAdminReturnOneSubject(projectId){
+  if(!studentAdminSession?.access_token)return;
+  const project=umeAdminRows.find(row=>Number(row.id)===Number(projectId)&&row.status==="submitted_to_admin");
+  if(!project){alert("This Subject is no longer in the Admin inbox. Refresh the packages.");return;}
+  const note=prompt(`Return ONLY ${project.subject_name} of ${project.class_name} to the Class Teacher?\n\nCorrection/return reason:`,"This Subject is not required for the main result. Please review it.");
+  if(note===null)return;
+  if(!note.trim()){alert("A return reason is required.");return;}
+  if(!confirm(`Return only ${project.subject_name} (${project.class_name}, ${project.term_name})?\n\nThe other Subjects in this package will stay submitted to Admin. No student Marks will be deleted.`))return;
+  try{
+    const changed=await umeRpc(umeAdminDb(),"ume_admin_return_one_subject",{p_project_id:Number(project.id),p_note:note.trim()});
+    if(Number(changed)!==1)throw new Error("Return was not confirmed by the database.");
+    await renderAdminMarks();
+    alert(`${project.subject_name} returned to the Class Teacher. Other Subjects remain unchanged.`);
+  }catch(error){alert("Subject was not returned: "+(error.message||"Unknown error")+"\n\nThe separate Supabase Subject Return SQL must be installed first.");}
+}
 async function umeAdminReturnPackage(index){
   const group=umeRoleGroups("admin")[index];if(!group)return;
   if(umeGroupRawTerms(group).length>1){alert("This combined package contains multiple original Term Names. Admin Return/Delete is disabled for safety until the database terms are unified. No Marks have been changed.");return;}
@@ -11012,7 +11028,7 @@ umeRenderTeacherProject=function(){
 /* ---------- Clean Teacher project list: choose Academic Year first ---------- */
 function umeEnsureTeacherYearFilterFinal(){
   const picker=document.querySelector("#umeTeacherPanel .ume-picker");if(!picker||document.getElementById("umeTeacherYearFilter"))return;
-  const wrap=document.createElement("div");wrap.id="umeTeacherYearFilter";wrap.className="ume-filter-bar ume-project-year-wrap";wrap.innerHTML='<label class="ume-field">Academic Year / Session<select id="umeTeacherYearSelect" onchange="umeTeacherYearChangedFinal(this.value)"><option value="">— Select Year —</option></select></label>';picker.parentElement.insertBefore(wrap,picker);
+  const wrap=document.createElement("div");wrap.id="umeTeacherYearFilter";wrap.className="ume-filter-bar ume-project-year-wrap";wrap.innerHTML='<label class="ume-field">Academic Year / Session<select id="umeTeacherYearSelect" onchange="umeTeacherYearChangedFinal(this.value)"><option value="">— Select Year —</option></select></label><div class="ume-subtitle">Choose a year first. Only your Marks files from that year will appear.</div>';picker.parentElement.insertBefore(wrap,picker);
 }
 function umeTeacherYearChangedFinal(value){umeFinalFilters.teacherYear=String(value||"");umeRenderTeacherProjectOptionsFinal();}
 function umeRenderTeacherProjectOptionsFinal(preferredId=""){

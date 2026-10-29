@@ -1,0 +1,199 @@
+.sard-overlay{position:fixed;inset:0;z-index:2147483000;background:rgba(11,20,35,.83);display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;color:#192b45}.sard-shell{width:min(98vw,1510px);height:min(96vh,980px);background:#f1f5fa;border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 22px 80px #0006}.sard-top{padding:13px 18px;background:white;display:flex;gap:14px;align-items:center;justify-content:space-between;border-bottom:1px solid #dce4ee}.sard-top strong{display:block;font-size:17px;color:#174c83}.sard-top small{color:#69798e}.sard-buttons{display:flex;gap:7px;flex-wrap:wrap}.sard-overlay button{font:inherit;cursor:pointer;border:1px solid #ccd7e6;border-radius:7px;padding:9px 11px;background:white;color:#243751}.sard-overlay button:hover{background:#e9f1fc}.sard-overlay .sard-primary{background:#17558d;color:white}.sard-body{display:grid;grid-template-columns:285px minmax(0,1fr);min-height:0;flex:1}.sard-tools{background:white;overflow:auto;padding:17px;border-right:1px solid #dce4ee}.sard-tools h3{font-size:14px;margin:9px 0}.sard-tools>button{display:block;width:100%;margin:6px 0;text-align:left}.sard-tools p,.sard-note{font-size:12px;line-height:1.45;color:#69798e}.sard-note{padding:11px;background:#fff6e5;border:1px solid #eadbb5;border-radius:7px;margin:14px 0}.sard-tools label{display:block;font-size:12px;font-weight:600;margin:9px 0}.sard-tools label input:not([type=checkbox]),.sard-tools select,.sard-tools textarea{margin-top:4px;box-sizing:border-box;width:100%;padding:7px;border:1px solid #c6d2e2;border-radius:5px;font:inherit}.sard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sard-tools .sard-inline{display:flex;gap:8px;align-items:center}.sard-preview{overflow:auto;padding:30px;background:#e6edf6}.sard-sheet-wrap{width:718px;margin:0 auto}.sard-paper{position:relative;width:718px;height:1019px;background:white;box-shadow:0 3px 25px #15315234;overflow:hidden}.sard-obj{position:absolute;box-sizing:border-box;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25;cursor:move;touch-action:none;border:1px solid transparent;overflow:visible}.sard-obj:hover{outline:1px dotted #1781e5}.sard-obj.sard-selected{outline:2px solid #267cfa;background:#3980ec0c}.sard-table{border-collapse:collapse;width:100%;font-size:inherit;color:#142942;text-align:center}.sard-table td,.sard-table th{border:1px solid #22344b;padding:8px 6px}.sard-table td:first-child{text-align:left}.sard-table th{background:#e9eef5;font-size:.86em}@media(max-width:850px){.sard-shell{width:100vw;height:100dvh;border-radius:0}.sard-top{align-items:flex-start;flex-direction:column;padding:10px}.sard-body{grid-template-columns:1fr;grid-template-rows:215px minmax(0,1fr)}.sard-tools{border-right:0;border-bottom:1px solid #ccc;padding:9px}.sard-tools>button{display:inline-block;width:auto}.sard-preview{padding:12px}.sard-sheet-wrap{margin:0}}@media print{body:has(> #saResultOverlay):not(:has(> #sardResultPrint)) > *:not(#saResultOverlay){display:none!important}@page{size:A4;margin:0}.sard-overlay{position:static;display:block;background:white}.sard-shell,.sard-body,.sard-preview,.sard-sheet-wrap{display:block;width:auto;height:auto;overflow:visible;background:white;box-shadow:none;padding:0;margin:0}.sard-top,.sard-tools{display:none!important}.sard-paper{transform:scale(1.109);transform-origin:top left;margin:0;box-shadow:none;page-break-after:avoid}.sard-obj.sard-selected{outline:0;background:transparent}}
+
+.sard-handle{position:absolute;right:-7px;bottom:-7px;width:15px;height:15px;border:2px solid white;background:#1768c4;border-radius:3px;cursor:nwse-resize;touch-action:none;z-index:15;box-shadow:0 0 0 1px #1768c4}.sard-gpa-row td{padding:9px 6px!important;background:#f4f7fc;font-size:1.02em}.sard-legend{border:1px solid #31435b;padding:8px;line-height:1.6}.sard-obj img{display:block}@media print{.sard-handle{display:none!important}}
+
+/* Stage 3: two-row subjects, editable table sizing, independent attendance/legend blocks */
+.sard-table{table-layout:fixed;line-height:1.08;width:100%;height:100%;font-size:inherit}.sard-table td,.sard-table th{padding:2px 3px;overflow-wrap:normal}.sard-table tbody tr:not(.sard-gpa-row){height:var(--sard-row)}.sard-table .sard-subject-name{text-align:left}.sard-gpa-row td:first-child{text-align:left}.sard-attendance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:100%;align-items:center;text-align:center;gap:5px}.sard-attendance div{display:flex;flex-direction:column;gap:10px}.sard-attendance span{font-size:.85em}.sard-attendance strong{font-size:1.15em}.sard-legend{display:grid;grid-template-columns:1fr 1fr;gap:15px;height:100%;box-sizing:border-box;line-height:1.45;align-items:center}.sard-obj:has(.sard-table){z-index:2}.sard-obj.sard-selected{z-index:5}.sard-obj:has(.sard-table){overflow:visible}
+
+/* Stage 4: print a single true-size A4 sheet; hide editor chrome completely. */
+@media print {
+ @page {size:A4 portrait;margin:0;}
+ html,body{margin:0!important;padding:0!important;width:210mm!important;height:297mm!important;overflow:hidden!important;}
+ body:has(> #saResultOverlay):not(:has(> #sardResultPrint)) > *:not(#saResultOverlay){display:none!important;}
+ #saResultOverlay{position:absolute!important;inset:0 auto auto 0!important;width:210mm!important;height:297mm!important;background:#fff!important;margin:0!important;padding:0!important;overflow:hidden!important;}
+ #saResultOverlay .sard-shell,#saResultOverlay .sard-body,#saResultOverlay .sard-preview,#saResultOverlay .sard-sheet-wrap{display:block!important;position:static!important;width:718px!important;height:1019px!important;min-height:0!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:white!important;}
+ #saResultOverlay .sard-paper{width:718px!important;height:1019px!important;transform:none!important;margin:0!important;box-shadow:none!important;page-break-inside:avoid!important;break-inside:avoid!important;page-break-after:avoid!important;}
+ #saResultOverlay .sard-top,#saResultOverlay .sard-tools,#saResultOverlay .sard-handle{display:none!important;}
+ #saResultOverlay .sard-obj{outline:none!important;border-color:transparent!important;}
+ #saResultOverlay .sard-obj.sard-selected{outline:none!important;background:transparent!important;}
+}
+.sard-table{color:inherit}.sard-table th{color:inherit}
+
+/* Stage 6: actual SVG watermark renders behind content in preview and PDF/print. */
+.sard-paper>.sard-watermark-svg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden}.sard-obj{z-index:1}.sard-obj:has(>.sard-watermark-svg){overflow:hidden}.sard-obj>.sard-watermark-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}.sard-obj.sard-selected{z-index:6}.sard-tools [data-wm]{max-width:100%}@media print{.sard-paper>.sard-watermark-svg,.sard-obj>.sard-watermark-svg{display:block!important;visibility:visible!important}}
+
+/* Stage 7: background pattern remains behind every editable object. */
+.sard-paper>.sard-watermark-svg{z-index:0!important}.sard-paper>.sard-obj{z-index:1}
+@media print{.sard-paper svg.sard-watermark-svg{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+/* Stage 8: watermark remains visible through ALL subject cells and the GPA row. */
+.sard-table,.sard-table thead,.sard-table tbody,.sard-table tr,
+.sard-table td,.sard-table th,.sard-gpa-row td{
+ background:transparent!important;
+}
+/* Do not stretch GPA into a huge blank cell when the object is resized. */
+.sard-table{height:auto!important;min-height:0!important;}
+.sard-table tr.sard-gpa-row{height:34px!important;}
+.sard-table tr.sard-gpa-row td{height:34px!important;padding:4px 6px!important;}
+/* Print with near full-bleed A4 width, matching the designer's aspect ratio. */
+@media print{
+ @page{size:210mm 297mm;margin:0;}
+ html,body{width:210mm!important;height:297mm!important;margin:0!important;padding:0!important;overflow:hidden!important;}
+ #saResultOverlay{position:absolute!important;inset:0!important;width:210mm!important;height:297mm!important;overflow:hidden!important;}
+ #saResultOverlay .sard-shell,#saResultOverlay .sard-body,#saResultOverlay .sard-preview,
+ #saResultOverlay .sard-sheet-wrap{width:210mm!important;height:297mm!important;overflow:hidden!important;}
+ #saResultOverlay .sard-paper{
+  width:718px!important;height:1019px!important;
+  transform:scale(1.1)!important;transform-origin:0 0!important;
+  margin:0!important;padding:0!important;
+ }
+ #saResultOverlay .sard-paper,.sard-table,.sard-table td,.sard-table th{
+  -webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;
+ }
+}
+
+
+/* Stage 12: Result Studio-inspired dashboard, isolated from grade sheet printing */
+.sard-dashboard{position:fixed;inset:0;z-index:2147482999;background:#f5f3ee;color:#173553;font-family:Arial,Helvetica,sans-serif;overflow:auto}
+.sard-dash-app{min-height:100vh;display:grid;grid-template-columns:255px minmax(0,1fr)}.sard-dash-side{background:linear-gradient(#173b5e,#0e2743);color:white;padding:20px 12px}.sard-dash-brand{display:flex;align-items:center;gap:12px;padding-bottom:25px;border-bottom:1px solid #ffffff25}.sard-dash-brand>b{background:#edc875;color:#123452;padding:14px 10px;border-radius:12px}.sard-dash-brand strong,.sard-dash-brand small{display:block}.sard-dash-brand small{font-size:10px;margin-top:5px;letter-spacing:1px}.sard-dash-side label{font-size:12px;display:block;margin:25px 4px}.sard-dash-side select{display:block;background:#244c6c;color:white;border:1px solid #6184a0;padding:12px;width:100%;margin-top:9px;border-radius:7px}.sard-dash-menu button{width:100%;border:0;background:transparent;color:white;text-align:left;padding:15px 14px;border-radius:9px;margin:4px 0;cursor:pointer;font-weight:bold}.sard-dash-menu button:hover,.sard-dash-menu button.on{background:#356890}.sard-dash-side p{padding:12px;font-size:11px;color:#b5c4d3;line-height:1.5}.sard-dash-main{padding:22px 32px 50px;min-width:0}.sard-dash-head{display:flex;justify-content:space-between;align-items:center}.sard-dash-head small{font-weight:bold;letter-spacing:2px;color:#557292}.sard-dash-head h1{font-size:34px;margin:9px 0 20px}.sard-dash-head button,.sard-dash-main button{cursor:pointer;padding:10px 14px;border:1px solid #becbd7;border-radius:7px;color:#173553;background:white;font-weight:bold}.sard-dash-main button.primary{background:#235d92;color:white}.sard-dash-hero{background:#193e60;color:white;border-radius:20px;padding:28px;display:flex;gap:30px;justify-content:space-between;align-items:center}.sard-dash-hero h2{font-size:28px;margin:10px 0}.sard-dash-hero small{color:#edc875;letter-spacing:1px}.sard-dash-hero p{margin:0}.sard-dash-filters{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.sard-dash-filters label{font-size:12px;font-weight:bold}.sard-dash-filters select{display:block;margin-top:8px;padding:12px;border:0;border-radius:7px;min-width:140px;max-width:260px}.sard-dash-status,#sardDashStatus{margin:18px 0;font-size:13px;color:#486579}.sard-dash-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.sard-dash-stats article,.sard-dash-card{background:white;border:1px solid #d9e0e5;border-radius:15px;padding:24px;box-shadow:0 4px 12px #15315209}.sard-dash-stats article{border-top:4px solid #397fb2}.sard-dash-stats article:nth-child(2){border-color:#cb9b48}.sard-dash-stats article:nth-child(3){border-color:#50998e}.sard-dash-stats article:nth-child(4){border-color:#8293be}.sard-dash-stats small,.sard-dash-stats span{display:block;font-size:12px;color:#60738a}.sard-dash-stats strong{display:block;font-size:41px;margin:18px 0}.sard-dash-columns{display:grid;grid-template-columns:1fr 1.3fr;gap:18px;margin-top:20px}.sard-dash-card h2{margin-top:0;font-size:21px}.sard-dash-card p{color:#60738a;font-size:13px}.sard-dash-progress{border:13px solid #2d75ab;border-radius:50%;width:165px;height:165px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:25px auto}.sard-dash-progress strong{font-size:39px}.sard-dash-progress span{font-size:10px;text-align:center}.sard-dash-bars{display:flex;gap:5px;height:220px;align-items:end;overflow:auto}.sard-dash-bars div{height:100%;min-width:35px;display:flex;flex-direction:column;align-items:center;justify-content:end;font-size:10px}.sard-dash-bars i{display:block;background:#4e9b92;width:80%;min-height:10px}.sard-dash-bars .active i{background:#2369a4}.sard-dash-bars small{margin-top:5px}.sard-dash-table{overflow:auto;margin:18px 0}.sard-dash-table table{width:100%;border-collapse:collapse;font-size:13px}.sard-dash-table th{background:#e8eef4;text-align:left}.sard-dash-table th,.sard-dash-table td{padding:11px 12px;border-bottom:1px solid #dfe4ea}.sard-dash-table input{width:90px;max-width:100%;padding:8px;border:1px solid #b9c8d9;border-radius:5px}.sard-dash-actions{display:flex;flex-wrap:wrap;gap:10px;margin:15px 0}#sardDashStudentDetail{margin-top:25px}
+@media(max-width:950px){.sard-dash-app{grid-template-columns:1fr}.sard-dash-side{padding:10px}.sard-dash-menu{display:flex;overflow:auto}.sard-dash-menu button{min-width:max-content;width:auto}.sard-dash-main{padding:14px}.sard-dash-hero{flex-direction:column;align-items:start}.sard-dash-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.sard-dash-columns{grid-template-columns:1fr}}
+@media print{.sard-dashboard{display:none!important}}
+
+/* Stage 12 layout fix: avoid site-wide nav selectors overriding sidebar. */
+#sardDashboard .sard-dash-menu{position:static!important;inset:auto!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;float:none!important;transform:none!important;z-index:auto!important;width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;display:flex!important;flex-direction:column!important;overflow:visible!important;margin:0!important;padding:0!important;box-sizing:border-box!important;background:transparent!important;box-shadow:none!important;border:0!important}
+#sardDashboard .sard-dash-menu button{position:static!important;transform:none!important;display:block!important;float:none!important;width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important;flex:none!important;text-align:left!important}
+#sardDashboard .sard-dash-side{position:relative!important;grid-column:1!important;grid-row:1!important;min-width:0!important;width:auto!important;max-width:none!important;overflow:visible!important}
+#sardDashboard .sard-dash-main{grid-column:2!important;grid-row:1!important;position:relative!important;min-width:0!important}
+@media(max-width:950px){#sardDashboard .sard-dash-side{grid-column:1!important;grid-row:1!important}#sardDashboard .sard-dash-main{grid-column:1!important;grid-row:2!important}#sardDashboard .sard-dash-menu{flex-direction:row!important;overflow:auto!important}#sardDashboard .sard-dash-menu button{width:auto!important;min-width:max-content!important}}
+
+/* Stage 13: keep Result Dashboard mounted while child panels are open.
+   Scope inner content to avoid generic website styles leaking into tabs. */
+#sardDashboard,#sardDashboard *{box-sizing:border-box}
+#sardDashboard .sard-dash-app{display:grid!important;grid-template-columns:255px minmax(0,1fr)!important;min-height:100vh!important}
+#sardDashboard .sard-dash-main{display:block!important;background:#f5f3ee!important;color:#173553!important;overflow:visible!important}
+#sardDashboard #sardDashContent{display:block!important;position:static!important;width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important;background:transparent!important;color:#173553!important}
+#sardDashboard .sard-dash-card{display:block!important;position:relative!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;color:#173553!important;background:white!important}
+#sardDashboard .sard-dash-table{display:block!important;overflow-x:auto!important;max-width:100%!important}
+#sardDashboard .sard-dash-table table{display:table!important;width:100%!important}
+#sardDashboard .sard-dash-table tr{display:table-row!important}
+#sardDashboard .sard-dash-table td,#sardDashboard .sard-dash-table th{display:table-cell!important}
+@media(max-width:950px){#sardDashboard .sard-dash-app{grid-template-columns:minmax(0,1fr)!important}}
+@media print{#sardDashboard{display:none!important}}
+
+/* Stage 14: original marks inspector is its OWN read-only modal, not a designer overlay. */
+#sardDashboard #sardLiveInspector.sard-live-mask,
+#saResultOverlay #sardLiveInspector.sard-live-mask{
+ position:fixed!important;inset:0!important;z-index:2147483005!important;
+ background:rgba(7,22,41,.72)!important;display:flex!important;
+ align-items:center!important;justify-content:center!important;
+ padding:18px!important;overflow:auto!important;box-sizing:border-box!important;
+}
+#sardLiveInspector .sard-live-card{display:block!important;position:relative!important;
+ width:min(1080px,96vw)!important;max-height:94vh!important;min-width:0!important;
+ padding:22px!important;overflow:auto!important;background:#fff!important;
+ color:#173553!important;border-radius:14px!important;
+ box-shadow:0 22px 65px #0007!important;box-sizing:border-box!important;
+ font:14px/1.55 Arial,Helvetica,sans-serif!important;}
+#sardLiveInspector .sard-live-card>header{display:flex!important;position:static!important;
+ align-items:center!important;justify-content:space-between!important;flex-wrap:wrap!important;
+ gap:12px!important;padding:0 0 14px!important;border-bottom:1px solid #d8e0e9!important;
+ background:#fff!important;color:#173553!important;}
+#sardLiveInspector .sard-live-card>header strong{font-size:18px!important;color:#173553!important;}
+#sardLiveInspector button{cursor:pointer;padding:9px 13px;background:#f5f8fb;color:#173553;border:1px solid #bed0df;border-radius:7px;}
+#sardLiveInspector .sard-live-filters{display:flex!important;gap:15px!important;
+ flex-wrap:wrap!important;margin:16px 0!important;align-items:end!important;}
+#sardLiveInspector .sard-live-filters label{display:block!important;font-weight:bold!important;min-width:175px!important;}
+#sardLiveInspector .sard-live-filters select{display:block!important;margin-top:5px!important;
+ width:100%!important;max-width:360px!important;padding:10px!important;
+ border:1px solid #b6c9db!important;border-radius:6px!important;background:#fff!important;color:#173553!important;}
+#sardLiveInspector .sard-live-table{max-width:100%!important;overflow:auto!important;margin:15px 0!important;}
+#sardLiveInspector table{width:100%!important;border-collapse:collapse!important;display:table!important;}
+#sardLiveInspector tr{display:table-row!important;}
+#sardLiveInspector th,#sardLiveInspector td{display:table-cell!important;
+ padding:8px 10px!important;border:1px solid #dee5ed!important;text-align:left!important;}
+#sardLiveInspector th{background:#e9eff6!important;color:#173553!important;}
+#sardLiveInspector input[type=number]{max-width:90px!important;padding:6px!important;}
+@media(max-width:600px){#sardLiveInspector .sard-live-card{width:100%!important;max-height:97vh!important;padding:12px!important}}
+@media print{#sardLiveInspector{display:none!important}}
+
+/* Result Register: compact scrollable table, readable paired subject columns */
+.sard-register-table{overflow:auto;max-height:65vh}.sard-register-table table{border-collapse:collapse;white-space:nowrap;min-width:max-content}.sard-register-table th,.sard-register-table td{border:1px solid #d9dfe8;padding:7px 11px;user-select:text;-webkit-user-select:text}.sard-register-table thead{position:sticky;top:0;z-index:3}.sard-register-table tbody th{background:#fff;position:sticky;left:0;z-index:2;text-align:left}.sard-register-table th small{display:block;font-weight:400;opacity:.7}.sard-dash-table input[data-name]{min-width:150px}.sard-dash-table input[data-in],.sard-dash-table input[data-th]{max-width:78px}
+
+/* Student grade sheet: editor-free A4 print */
+.sard-result-print{position:fixed;inset:0;z-index:2147483400;background:#e5ebf2;overflow:auto;font-family:Arial,sans-serif}
+.sard-result-actions{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:12px 20px;background:#fff;box-shadow:0 2px 8px #0002}
+.sard-result-actions button{padding:9px 16px;border:1px solid #b8c6d6;border-radius:7px;background:#fff;cursor:pointer}
+.sard-result-actions #sardSheetPrint{background:#165a92;color:white}
+.sard-result-scroll{width:max-content;min-width:718px;margin:24px auto 50px}.sard-result-print .sard-paper{margin:auto}
+.sard-result-print .sard-obj{cursor:default;touch-action:auto}.sard-result-print .sard-obj:hover{outline:none}
+@media print{body:has(> #sardResultPrint) > *:not(#sardResultPrint){display:none!important}#sardResultPrint{position:static!important;display:block!important;background:white!important;overflow:visible!important}#sardResultPrint .sard-result-actions{display:none!important}#sardResultPrint .sard-result-scroll{width:718px!important;min-width:0!important;margin:0!important;padding:0!important}#sardResultPrint .sard-paper{width:718px!important;height:1019px!important;transform:scale(1.10)!important;transform-origin:top left!important;box-shadow:none!important;overflow:hidden!important;break-inside:avoid!important} @page{size:A4;margin:0}}
+
+@media print{body > #sardResultPrint{display:block!important;visibility:visible!important}#sardResultPrint .sard-paper{page-break-after:avoid!important}}
+
+/* Stage 20: isolated print paper and consecutive A4 pages. */
+.sard-result-print .sard-result-scroll{width:min-content;min-width:0;margin:20px auto 35px}
+.sard-result-page{width:718px;height:1019px;position:relative;margin:0 auto 20px;background:white;box-shadow:0 6px 20px #0002;overflow:hidden}
+.sard-result-page .sard-paper{position:relative;left:0;top:0;margin:0;box-shadow:none}
+@media print{
+ #sardResultPrint .sard-result-scroll{display:block!important;width:210mm!important;min-width:0!important;margin:0!important;padding:0!important}
+ #sardResultPrint .sard-result-page{display:block!important;width:210mm!important;height:297mm!important;max-height:297mm!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;overflow:hidden!important;break-after:page!important;page-break-after:always!important}
+ #sardResultPrint .sard-result-page:last-child{break-after:auto!important;page-break-after:auto!important}
+ #sardResultPrint .sard-result-page .sard-paper{width:718px!important;height:1019px!important;transform:scale(1.105)!important;transform-origin:top left!important}
+}
+
+/* Grade Sheet window: fixed A4 canvas, isolated from the surrounding dashboard. */
+#sardResultPrint .sard-result-page{display:block!important;box-sizing:border-box;min-height:1019px;}
+#sardResultPrint .sard-result-page>.sard-paper{display:block!important;position:relative!important;width:718px!important;height:1019px!important;background:#fff!important;visibility:visible!important;opacity:1!important;}
+#sardResultPrint .sard-result-page>.sard-paper>.sard-obj{display:block;visibility:visible;opacity:1;}
+#sardResultPrint .sard-sheet-error{box-sizing:border-box;width:min(680px,92vw);padding:22px;margin:30px auto;background:#fff;border:1px solid #d2dae5;border-radius:8px;color:#8b1e2b;font-weight:600;white-space:normal;}
+#sardResultPrint .sard-result-actions button:disabled{opacity:.5;cursor:not-allowed;}
+@media print{#sardResultPrint .sard-sheet-error{display:none!important;}#sardResultPrint .sard-result-page{min-height:0!important;} }
+
+/* Grade Sheet student selection — scoped to Result Management. */
+#sardDashContent [data-sheet-select]{width:17px;height:17px;cursor:pointer;accent-color:#17558d;}
+#sardDashContent [data-sheet-select]:disabled{cursor:not-allowed;opacity:.35;}
+#sardDashContent .sard-sheet-select-actions{align-items:center;flex-wrap:wrap;gap:9px;margin:12px 0;}
+#sardDashContent #sardSelectedSheetsCount{font-weight:600;color:#40546d;}
+#sardDashContent #sardPrintSelectedSheets:disabled{opacity:.5;cursor:not-allowed;}
+
+/* Stage 29 permanent dashboard positioning repair. Scoped to Result Management. */
+@media screen {
+  body > #sardDashboard.sard-dashboard {
+    position: fixed !important;
+    inset: 0 !important;
+    display: block !important;
+    visibility: visible !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-width: none !important;
+    max-height: none !important;
+    z-index: 2147482999 !important;
+    overflow: auto !important;
+    box-sizing: border-box !important;
+    background: #f5f3ee !important;
+  }
+  body > #sardDashboard .sard-dash-app {
+    min-height: 100%;
+  }
+}
+
+/* Stage 29: print only the selected student's real A4 sheet(s). */
+@media print {
+  html, body { margin:0!important; padding:0!important; width:210mm!important; min-height:0!important; height:auto!important; overflow:visible!important; background:#fff!important; }
+  body:has(> #sardResultPrint) > :not(#sardResultPrint) {display:none!important;}
+  body > #sardResultPrint.sard-result-print {
+    display:block!important; position:static!important; inset:auto!important;
+    z-index:auto!important; visibility:visible!important; overflow:visible!important;
+    width:210mm!important; height:auto!important; margin:0!important; padding:0!important;
+    background:white!important;
+  }
+  #sardResultPrint .sard-result-actions {display:none!important;}
+  #sardResultPrint .sard-result-scroll {display:block!important;width:210mm!important;min-width:0!important;margin:0!important;padding:0!important;overflow:visible!important;}
+  #sardResultPrint .sard-result-page {display:block!important;position:relative!important;width:210mm!important;height:297mm!important;min-height:0!important;max-height:297mm!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;overflow:hidden!important;break-inside:avoid!important;page-break-inside:avoid!important;break-after:page!important;page-break-after:always!important;}
+  #sardResultPrint .sard-result-page:last-child {break-after:auto!important;page-break-after:auto!important;}
+  #sardResultPrint .sard-result-page > .sard-paper {display:block!important;position:relative!important;left:0!important;top:0!important;width:718px!important;height:1019px!important;transform:scale(1.105)!important;transform-origin:top left!important;visibility:visible!important;opacity:1!important;background:#fff!important;box-shadow:none!important;overflow:hidden!important;}
+  #sardResultPrint .sard-result-page .sard-obj {visibility:visible!important;opacity:1!important;}
+  #sardResultPrint .sard-result-page .sard-watermark-svg {visibility:visible!important;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+  @page { size:A4 portrait; margin:0; }
+}
