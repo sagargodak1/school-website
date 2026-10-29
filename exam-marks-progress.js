@@ -79,11 +79,15 @@
             if (old) old.remove();
             return;
           }
-          const row = records.get(keyFor(entry.class_name, entry.activity_title));
+          // A combined exam slot (e.g. Moral / Computer) must not inherit
+          // an individual subject's automatic state; use Admin manual Marks tick.
+          const combined = /[\/\+&,]/.test(String(entry.activity_title || ''));
+          const row = combined ? null : records.get(keyFor(entry.class_name, entry.activity_title));
           const adminAccepted = !!row?.admin_accepted;
           let label, style = '';
           if (errorMessage) { label = 'Marks Progress: Unavailable'; style = 'unavailable'; }
           else if (requestedPeriod !== String(period.id)) { label = 'Marks Progress: Loading...'; }
+          else if (combined) { label = 'Marks Progress: Manual Tracking'; style = 'none'; }
           else if (!row) { label = 'Marks Progress: No Marks File'; style = 'none'; }
           else if (adminAccepted) { label = 'Marks Progress: Admin Accepted ✓'; style = 'accepted'; }
           else {

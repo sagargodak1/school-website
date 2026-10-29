@@ -23,7 +23,7 @@
 
   const state={
     source:"staff",monitor:false,assignment:null,roster:[],history:[],statuses:[],
-    teacherTab:"today",historyDate:"",monitorDate:"",monitorClass:"",todayBs:""
+    teacherTab:"today",historyDate:"",monitorDate:"",monitorClass:"",todayBs:"",adminTab:"monitor",assignments:[],staffChoices:[]
   };
 
   function id(v){return document.getElementById(v);}
@@ -166,7 +166,7 @@
   function renderTabs(){
     const t=id("saTabs");if(!t)return;
     if(state.monitor){
-      t.innerHTML='<button class="sa-tab active" type="button">📊 Absence Monitor</button><button class="sa-tab close" type="button" onclick="closeStudentAbsence()">✕ Close</button>';
+      t.innerHTML=state.source==='admin'?`<button class="sa-tab ${state.adminTab==='monitor'?'active':''}" type="button" onclick="saAdminTab('monitor')">📊 Absence Monitor</button><button class="sa-tab ${state.adminTab==='assignment'?'active':''}" type="button" onclick="saAdminTab('assignment')">👩‍🏫 Teacher Assignment</button><button class="sa-tab close" type="button" onclick="closeStudentAbsence()">✕ Close</button>`:'<button class="sa-tab active" type="button">📊 Absence Monitor</button><button class="sa-tab close" type="button" onclick="closeStudentAbsence()">✕ Close</button>';
     }else if(state.assignment){
       t.innerHTML=`<button id="saTabToday" class="sa-tab ${state.teacherTab==="today"?"active":""}" type="button" onclick="saShowTeacherTab('today')">☑ Take Today&apos;s Absence</button><button id="saTabHistory" class="sa-tab ${state.teacherTab==="history"?"active":""}" type="button" onclick="saShowTeacherTab('history')">📅 Absence History</button><button class="sa-tab close" type="button" onclick="closeStudentAbsence()">✕ Close</button>`;
     }else{
@@ -185,7 +185,7 @@
     if(state.source!=="admin"&&!staffReady()){if(typeof openStaffLogin==="function")openStaffLogin();return;}
 
     state.monitor=state.source==="admin"||principalReady();
-    state.historyDate="";state.monitorDate="";state.monitorClass="";state.teacherTab="today";state.todayBs="";
+    state.historyDate="";state.monitorDate="";state.monitorClass="";state.teacherTab="today";state.todayBs="";state.adminTab="monitor";
 
     injectStyles();ensurePopup();ensureEntryButtons();
     if(state.source==="admin"&&typeof closeWebsiteAdminPanel==="function")closeWebsiteAdminPanel();
@@ -360,6 +360,45 @@
     const n=normalizeBs(v);
     if(!n){msg("Enter Nepali date as YYYY-MM-DD. Example: 2083-06-03.","error");return;}
     state.historyDate=n;await renderTeacherHistory();
+  };
+
+  window.saAdminTab=async function(tab){
+    if(state.source!=="admin"||!adminReady())return;
+    state.adminTab=tab==="assignment"?"assignment":"monitor";
+    renderTabs();
+    if(state.adminTab==="assignment")await renderTeacherAssignments();
+    else await renderMonitor();
+  };
+
+  async function renderTeacherAssignments(selectedClass="Class 10"){
+    if(state.source!=="admin"||!adminReady())return;
+    id("saContent").innerHTML='<div class="sa-empty">Loading Class Teacher assignments…</div>';
+    try{
+      const payload=await rpc("sa_admin_absence_assignments",{});
+      state.assignments=Array.isArray(payload?.assignments)?payload.assignments:[];
+      state.staffChoices=Array.isArray(payload?.staff)?payload.staff:[];
+      const selected=SA_CLASSES.includes(selectedClass)?selectedClass:"Class 10";
+      const current=state.assignments.find(a=>a.class_name===selected&&a.enabled);
+      const options=state.staffChoices.map(a=>`<option value="${esc(a.staff_id)}" ${current?.staff_id===a.staff_id?"selected":""}>${esc(a.staff_name||a.staff_id)} (${esc(a.staff_id)})</option>`).join("");
+      id("saContent").innerHTML=`<div class="sa-card"><h3>👩‍🏫 Student Absence — Class Teacher Assignment</h3><p class="sa-note">Admin only. Changes apply to Student Absence, not Marks, Results or Smart Attendance. Previous attendance history is preserved.</p><div class="sa-toolbar"><label class="sa-field">Select Class<select id="saAssignClass" onchange="saAssignmentClassChanged(this.value)">${SA_CLASSES.map(c=>`<option value="${esc(c)}" ${c===selected?'selected':''}>${esc(c)}</option>`).join('')}</select></label><label class="sa-field">Assigned Teacher<select id="saAssignTeacher"><option value="">— Select Staff —</option>${options}</select></label></div><p class="sa-note">Current: <strong>${current?esc(current.staff_name||current.staff_id)+' ('+esc(current.staff_id)+')':'Not assigned'}</strong></p><button class="sa-btn green" onclick="saSaveAssignment()" type="button">Save Teacher Assignment</button></div><div class="sa-card"><h3>Current Class Assignments</h3><div class="sa-table-wrap"><table class="sa-table" style="min-width:550px"><thead><tr><th>Class</th><th>Teacher</th><th>Status</th></tr></thead><tbody>${SA_CLASSES.map(c=>{const a=state.assignments.find(x=>x.class_name===c&&x.enabled);return `<tr><td>${esc(c)}</td><td>${a?esc(a.staff_name||a.staff_id)+' ('+esc(a.staff_id)+')':'— Unassigned —'}</td><td>${a?'Active':'Not assigned'}</td></tr>`}).join('')}</tbody></table></div></div>`;
+      msg("","info");
+    }catch(e){id("saContent").innerHTML=`<div class="sa-empty">${esc(friendlyError(e))}</div>`;msg(friendlyError(e),"error");}
+  }
+
+  window.saAssignmentClassChanged=async function(cls){await renderTeacherAssignments(cls);};
+  window.saSaveAssignment=async function(){
+    if(state.source!=="admin"||!adminReady())return;
+    const cls=id("saAssignClass")?.value||"",staff=id("saAssignTeacher")?.value||"";
+    if(!SA_CLASSES.includes(cls)||!staff){msg("Select a Class and Teacher.","error");return;}
+    const selected=state.staffChoices.find(x=>x.staff_id===staff);
+    if(!selected){msg("Selected staff account is not available.","error");return;}
+    const previous=state.assignments.find(a=>a.class_name===cls&&a.enabled);
+    if(!window.confirm(`Assign ${selected.staff_name||staff} to ${cls} Student Absence?${previous?'\nPrevious teacher: '+(previous.staff_name||previous.staff_id):''}\nExisting attendance history will not change.`))return;
+    const btn=document.querySelector('#saContent .sa-btn.green');if(btn)btn.disabled=true;
+    try{
+      await rpc("sa_admin_set_absence_teacher",{p_class_name:cls,p_staff_id:staff});
+      await renderTeacherAssignments(cls);msg("Teacher assignment saved. New teacher can reopen Student Absence with their own Staff Login.","success");
+    }catch(e){msg(friendlyError(e),"error");if(btn)btn.disabled=false;}
   };
 
   async function renderMonitor(){

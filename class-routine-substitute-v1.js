@@ -170,6 +170,7 @@
   function navItems(){
     const a=[
       ['daily','📅 Daily Class Routine'],
+      ...(launchMode==='staff'&&isStaffLoggedIn()?[['myclasses','📚 My Classes']]:[]),
       ['absent','🚫 Absent Teachers'],
       ['subview','🔁 Substitute Routine']
     ];
@@ -209,12 +210,14 @@
   };
   window.closeClassRoutineV1=function(){const ov=byId(MOD_ID);if(ov)ov.style.display='none';document.body.style.overflow='auto';};
   window.crtShowView=async function(view){
+    if(view==='myclasses'&&(launchMode!=='staff'||!isStaffLoggedIn()))return;
     if(view==='substitute'&&!ctx?.can_manage)return;
     if(view==='permanent'&&!ctx?.can_edit_class_routine)return;
     if(view==='access'&&!ctx?.can_delegate)return;
     activeView=view;renderNav();
     try{
       if(view==='daily')await renderDailyTab();
+      else if(view==='myclasses')await renderMyClasses();
       else if(view==='absent')await renderAbsentTab();
       else if(view==='subview')await renderSubstituteTab();
       else if(view==='substitute')await renderSubstituteManagement();
@@ -266,10 +269,28 @@
     byId('crtPage').innerHTML='<div class="crt-card">Loading daily class routine…</div>';
     const data=await loadTodayPublic();
     byId('crtPage').innerHTML=`${managerQuickActions()}
+      ${launchMode==='staff'&&isStaffLoggedIn()?'<div style="margin-bottom:12px"><button class="crt-btn primary" type="button" onclick="crtShowView(\'myclasses\')">📚 MY CLASSES — View My Periods</button></div>':''}
       <section class="crt-card crt-today-section crt-section-daily">
         <div class="crt-section-banner"><div><h3>📅 Daily Class Routine</h3><div class="crt-note">${esc(data.today_bs)} • ${esc(data.day_key)} • Same permanent routine for the whole academic year</div></div><span class="crt-badge published">PERMANENT ROUTINE</span></div>
         <div class="crt-section-body">${dailyRoutineHtml(data)}</div>
       </section>`;
+  }
+
+  // Staff-only personalized view of the published permanent routine.
+  // Match the authenticated staff ID, not a manually entered name or browser setting.
+  async function renderMyClasses(){
+    if(launchMode!=='staff'||!isStaffLoggedIn())return;
+    const user=actorStaff();
+    const staffId=lower(user?.username);
+    if(!staffId){byId('crtPage').innerHTML='<div class="crt-empty">Staff identity unavailable. Please log in again.</div>';return;}
+    byId('crtTitle').textContent='My Classes';
+    byId('crtPage').innerHTML='<div class="crt-card">Loading your classes…</div>';
+    const data=await loadTodayPublic();
+    // Data comes from routine_get_today; no changes are written to the database.
+    const entries=(data?.routine_entries||[]).filter(r=>lower(r.teacher_staff_id)===staffId)
+      .sort((a,b)=>Number(a.period_no)-Number(b.period_no)||classOrder(a.class_name)-classOrder(b.class_name));
+    const cards=entries.map(r=>`<div class="crt-mini"><strong>Period ${Number(r.period_no)}</strong><div style="font-size:15px;font-weight:900;color:#174e75;margin:6px 0">${esc(r.class_name)}</div><div>${esc(r.subject_name||'—')}</div></div>`).join('');
+    byId('crtPage').innerHTML=`<section class="crt-card"><div class="crt-section-head"><div><h3>📚 My Classes</h3><div class="crt-note">${esc(user?.name||staffId)} • ${esc(data?.today_bs||'')} • ${esc(data?.day_key||'')} • Published permanent daily routine</div></div><span class="crt-badge published">${entries.length} PERIOD${entries.length===1?'':'S'}</span></div>${entries.length?`<div class="crt-grid">${cards}</div>`:'<div class="crt-empty">No classes are assigned to your staff account in the published permanent routine. If you expect classes here, ask Admin to check your Teacher assignment and publish the routine.</div>'}</section>`;
   }
 
   async function renderAbsentTab(){

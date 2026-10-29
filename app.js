@@ -11012,7 +11012,7 @@ umeRenderTeacherProject=function(){
 /* ---------- Clean Teacher project list: choose Academic Year first ---------- */
 function umeEnsureTeacherYearFilterFinal(){
   const picker=document.querySelector("#umeTeacherPanel .ume-picker");if(!picker||document.getElementById("umeTeacherYearFilter"))return;
-  const wrap=document.createElement("div");wrap.id="umeTeacherYearFilter";wrap.className="ume-filter-bar ume-project-year-wrap";wrap.innerHTML='<label class="ume-field">Academic Year / Session<select id="umeTeacherYearSelect" onchange="umeTeacherYearChangedFinal(this.value)"><option value="">— Select Year —</option></select></label><div class="ume-subtitle">Choose a year first. Only your Marks files from that year will appear.</div>';picker.parentElement.insertBefore(wrap,picker);
+  const wrap=document.createElement("div");wrap.id="umeTeacherYearFilter";wrap.className="ume-filter-bar ume-project-year-wrap";wrap.innerHTML='<label class="ume-field">Academic Year / Session<select id="umeTeacherYearSelect" onchange="umeTeacherYearChangedFinal(this.value)"><option value="">— Select Year —</option></select></label>';picker.parentElement.insertBefore(wrap,picker);
 }
 function umeTeacherYearChangedFinal(value){umeFinalFilters.teacherYear=String(value||"");umeRenderTeacherProjectOptionsFinal();}
 function umeRenderTeacherProjectOptionsFinal(preferredId=""){

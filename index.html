@@ -3538,7 +3538,7 @@
           <label class="ume-field">Subject Name<input id="umeCreateSubject" list="umeSubjectSuggestions" maxlength="100" placeholder="Choose or type a Subject" autocomplete="off" required>
             <datalist id="umeSubjectSuggestions"><option value="NEPALI"></option><option value="ENGLISH"></option><option value="MATH"></option><option value="SCIENCE"></option><option value="SEROPHERO"></option><option value="SURYODAYA"></option><option value="SOCIAL"></option><option value="HEALTH"></option><option value="COMPUTER"></option><option value="MORAL"></option><option value="G.K."></option><option value="ACCOUNT"></option><option value="ECONOMICS"></option></datalist>
           </label>
-          <label class="ume-field">Term / Examination<input id="umeCreateTerm" maxlength="100" placeholder="Example: Second Term" required></label>
+          <label class="ume-field">Term / Examination<select id="umeCreateTerm" required><option value="First Term">First Term</option><option value="Second Term">Second Term</option><option value="Third Term" selected>Third Term</option><option value="Final Term">Final Term</option></select></label>
           <label class="ume-field">Academic Session<input id="umeCreateSession" maxlength="40" placeholder="Example: 2083" required></label>
           <button id="umeCreateBtn" type="submit" class="ume-btn ume-primary">CREATE SUBJECT</button>
         </form>
@@ -3959,6 +3959,7 @@
 
 
 <script src="app.js?v=20261027-admin-submitted-only-v3"></script>
+  <script src="marks-third-term-workspace.js?v=20261029-responsive-final-v2"></script>
   <script src="question-submission.js?v=20260918-qs-v1_4_1-final"></script>
   <script src="exam-marks-progress.js?v=20261008-safe-v5"></script>
   <script src="student-absence.js?v=20260919-student-absence-v1-1"></script>

@@ -63,6 +63,70 @@
     @media(max-width:850px){.qs-grid,.qs-grid.two{grid-template-columns:1fr}.qs-hero{display:block}.qs-role{display:inline-flex;margin-top:10px}.qs-box{width:97vw;max-height:96vh}.qs-body{padding:12px}.qs-row-head{display:block}.qs-row-head .qs-status{margin-top:7px}#staffDashboardQuestionSubmissionAction{width:100%!important;min-height:72px!important}}
   `;document.head.appendChild(st);}
 
+  // Local DOCX preview (read-only). Legacy .doc remains downloadable.
+  let qsPreviewRequest=0;
+  function qsEnsurePreview(){
+    if(id('qsPreviewModal'))return;
+    const modal=document.createElement('div');modal.id='qsPreviewModal';modal.className='qs-modal';
+    modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');
+    modal.innerHTML=`<div class="qs-preview-shell"><div class="qs-preview-head"><div><strong id="qsPreviewTitle">Question Preview</strong><div class="qs-note">Read-only preview — original Word file is unchanged.</div></div><button type="button" class="qs-btn secondary" onclick="qsClosePreview()">✕ CLOSE</button></div><div class="qs-preview-actions" id="qsPreviewActions"></div><div id="qsPreviewContent" class="qs-preview-content">Loading…</div></div>`;
+    document.body.appendChild(modal);
+    if(!id('qsPreviewStyles')){const st=document.createElement('style');st.id='qsPreviewStyles';st.textContent=`
+      #qsPreviewModal{z-index:100900;padding:12px}#qsPreviewModal .qs-preview-shell{background:#f3f6fa;border-radius:17px;width:min(1150px,98vw);height:min(92dvh,950px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 65px #0005}
+      .qs-preview-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;background:white;border-bottom:1px solid #dce4ed}.qs-preview-head strong{font-size:17px;color:#173954}
+      .qs-preview-actions{display:flex;flex-wrap:wrap;gap:8px;padding:9px 14px;background:#fff;border-bottom:1px solid #e2e8f0}.qs-preview-content{flex:1;overflow:auto;padding:12px;background:#e7ebf1}
+      #qsPreviewContent .docx-wrapper{padding:12px!important;min-height:100%}#qsPreviewContent .docx{max-width:100%;box-sizing:border-box}
+      @media(max-width:650px){#qsPreviewModal{padding:0}#qsPreviewModal .qs-preview-shell{width:100vw;height:100dvh;max-height:none;border-radius:0}.qs-preview-head{padding:10px}.qs-preview-head strong{font-size:14px}.qs-preview-content{padding:3px}.qs-preview-actions .qs-btn{font-size:12px;padding:8px}}
+      @media print{body.qs-preview-print > *:not(#qsPreviewModal){display:none!important}body.qs-preview-print #qsPreviewModal{display:block!important;position:static!important;padding:0!important;background:#fff!important}body.qs-preview-print .qs-preview-head,body.qs-preview-print .qs-preview-actions{display:none!important}body.qs-preview-print .qs-preview-shell{height:auto!important;width:100%!important;overflow:visible!important;box-shadow:none!important}body.qs-preview-print .qs-preview-content{overflow:visible!important;background:#fff!important;padding:0!important}body.qs-preview-print #qsPreviewContent .docx-wrapper{padding:0!important;background:white!important}}
+    `;document.head.appendChild(st)}
+    modal.addEventListener('click',e=>{if(e.target===modal)qsClosePreview();});
+  }
+  window.qsClosePreview=function(){++qsPreviewRequest;id('qsPreviewModal')?.classList.remove('show');document.body.classList.remove('qs-preview-print')};
+  function qsLoadPreviewScript(url,test){
+    if(test())return Promise.resolve();
+    if(!window.__qsPreviewScripts)window.__qsPreviewScripts={};
+    if(window.__qsPreviewScripts[url])return window.__qsPreviewScripts[url];
+    window.__qsPreviewScripts[url]=new Promise((resolve,reject)=>{const tag=document.createElement('script');tag.src=url;tag.onload=()=>test()?resolve():reject(new Error('Preview library did not initialize.'));tag.onerror=()=>reject(new Error('Preview library could not load.'));document.head.appendChild(tag)});
+    return window.__qsPreviewScripts[url];
+  }
+  async function qsPrepareDocx(){
+    await qsLoadPreviewScript('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',()=>typeof window.JSZip!=='undefined');
+    await qsLoadPreviewScript('https://cdn.jsdelivr.net/npm/docx-preview@0.3.7/dist/docx-preview.min.js',()=>typeof window.docx?.renderAsync==='function');
+  }
+  window.qsShowQuestionPreview=async function(submissionId){
+    if(!state.isReviewer)return;
+    const r=state.review.find(x=>Number(x.id)===Number(submissionId));if(!r)return;
+    const token=++qsPreviewRequest;
+    qsEnsurePreview();id('qsPreviewModal').classList.add('show');
+    id('qsPreviewTitle').textContent=`${r.class_name} — ${r.subject_name}`;
+    const actions=id('qsPreviewActions'),host=id('qsPreviewContent');
+    const isDocx=/\.docx$/i.test(r.current_file_name||r.current_file_path||'');
+    const isDoc=/\.doc$/i.test(r.current_file_name||r.current_file_path||'');
+    const own=!state.isAdmin&&r.staff_id===actorStaffId();
+    const canAct=r.status==='pending'&&!own;
+    actions.innerHTML=`${canAct?`<button class="qs-btn green" onclick="qsApprove(${Number(r.id)})">✓ APPROVE</button><button class="qs-btn orange" onclick="qsClosePreview();qsOpenReturnModal(${Number(r.id)})">↩ RETURN</button>`:''}${state.isAdmin?`<button class="qs-btn secondary" onclick="qsDownloadReviewFile(${Number(r.id)})">⬇ DOWNLOAD WORD</button>${isDocx?'<button class="qs-btn secondary" onclick="qsPrintPreview()">🖨 PRINT PREVIEW</button>':''}`:''}`;
+    host.textContent='Preparing question preview…';
+    try{
+      if(!isDocx){host.innerHTML='<div class="qs-card">Legacy .doc files cannot be safely displayed in this browser preview. Please open the original Word file. Future uploads in .docx format will preview here.</div>';return;}
+      const url=await signedUrl(r.current_file_path);
+      if(!url)throw new Error('Secure file link unavailable.');
+      const response=await fetch(url,{credentials:'omit'});
+      if(!response.ok)throw new Error('Question file could not be fetched ('+response.status+').');
+      const bytes=await response.arrayBuffer();
+      await qsPrepareDocx();
+      if(token!==qsPreviewRequest)return;
+      host.replaceChildren();
+      await window.docx.renderAsync(bytes,host,host,{breakPages:true,renderHeaders:true,renderFooters:true,useBase64URL:true});
+    }catch(e){if(token===qsPreviewRequest)host.textContent='Preview unavailable: '+(e.message||e)+'. Admin can download and open the original Word file.';}
+  };
+  window.qsDownloadReviewFile=async function(submissionId){
+    if(!state.isReviewer||!state.isAdmin)return;
+    const row=state.review.find(r=>Number(r.id)===Number(submissionId));if(!row)return;
+    try{const url=await signedUrl(row.current_file_path);window.open(url,'_blank','noopener');}catch(e){msg(qsFriendlyError(e),'error')}
+  };
+  window.qsPrintPreview=function(){if(!state.isAdmin)return;document.body.classList.add('qs-preview-print');window.print();document.body.classList.remove('qs-preview-print')};
+  window.addEventListener('afterprint',()=>document.body.classList.remove('qs-preview-print'));
+
   function ensurePopup(){
     if(id("questionSubmissionPopup"))return;
     const wrap=document.createElement("div");wrap.id="questionSubmissionPopup";wrap.className="popup";wrap.setAttribute("role","dialog");wrap.setAttribute("aria-modal","true");wrap.innerHTML=`
@@ -236,7 +300,7 @@
     try{const db=client();let q=db.from("question_submissions").select("id,period_id,entry_id,class_name,subject_name,staff_id,staff_name,status,return_reason,current_version,current_file_path,current_file_name,submitted_at,reviewed_at,reviewed_by_name").order("submitted_at",{ascending:false});const pid=id("qsReviewPeriod")?.value||"",cls=id("qsReviewClass")?.value||"",st=id("qsReviewStatus")?.value||"";if(pid)q=q.eq("period_id",Number(pid));if(cls)q=q.eq("class_name",cls);if(st)q=q.eq("status",st);const {data,error}=await q;if(error)throw error;state.review=data||[];host.innerHTML=state.review.length?state.review.map(renderReviewRow).join(""):'<div class="qs-note">No matching Question submissions.</div>';}
     catch(e){host.innerHTML=`<div class="qs-reason">${esc(qsFriendlyError(e))}</div>`;}
   };
-  function renderReviewRow(r){const p=getPeriod(r.period_id),own=!state.isAdmin&&r.staff_id===actorStaffId(),canAct=r.status==="pending"&&!own;return `<div class="qs-row"><div class="qs-row-head"><div><div class="qs-row-title">${esc(r.class_name)} — ${esc(r.subject_name)}</div><div class="qs-row-meta">${esc(p?.academic_year||"")} • ${esc(p?.term_name||"")}<br>Submitted by: <strong>${esc(r.staff_name||r.staff_id)}</strong> • ${esc(fmtDate(r.submitted_at))} • Version ${Number(r.current_version||1)}</div></div><span class="qs-status ${statusClass(r.status)}">${esc(statusLabel(r.status))}</span></div>${r.status==="returned"&&r.return_reason?`<div class="qs-reason"><strong>Return Note:</strong> ${esc(r.return_reason)}</div>`:""}<div class="qs-actions" style="margin-top:10px"><button class="qs-btn secondary" type="button" onclick="qsOpenReviewFile(${Number(r.id)})">OPEN WORD FILE</button>${canAct?`<button class="qs-btn green" type="button" onclick="qsApprove(${Number(r.id)})">✓ APPROVE</button><button class="qs-btn orange" type="button" onclick="qsOpenReturnModal(${Number(r.id)})">↩ RETURN</button>`:""}${state.isAdmin?`<button class="qs-btn red" type="button" onclick="qsAdminDeleteSubmission(${Number(r.id)})">DELETE WRONG QUESTION</button>`:""}${own&&r.status==="pending"?'<span class="qs-note">You cannot approve/return your own Question.</span>':""}${r.status==="approved"?'<span class="qs-note">Exam Routine tracker is marked Submitted automatically.</span>':""}</div></div>`;}
+  function renderReviewRow(r){const p=getPeriod(r.period_id),own=!state.isAdmin&&r.staff_id===actorStaffId(),canAct=r.status==="pending"&&!own;return `<div class="qs-row"><div class="qs-row-head"><div><div class="qs-row-title">${esc(r.class_name)} — ${esc(r.subject_name)}</div><div class="qs-row-meta">${esc(p?.academic_year||"")} • ${esc(p?.term_name||"")}<br>Submitted by: <strong>${esc(r.staff_name||r.staff_id)}</strong> • ${esc(fmtDate(r.submitted_at))} • Version ${Number(r.current_version||1)}</div></div><span class="qs-status ${statusClass(r.status)}">${esc(statusLabel(r.status))}</span></div>${r.status==="returned"&&r.return_reason?`<div class="qs-reason"><strong>Return Note:</strong> ${esc(r.return_reason)}</div>`:""}<div class="qs-actions" style="margin-top:10px"><button class="qs-btn secondary" type="button" onclick="qsShowQuestionPreview(${Number(r.id)})">👁 VIEW QUESTION</button>${canAct?`<button class="qs-btn green" type="button" onclick="qsApprove(${Number(r.id)})">✓ APPROVE</button><button class="qs-btn orange" type="button" onclick="qsOpenReturnModal(${Number(r.id)})">↩ RETURN</button>`:""}${state.isAdmin?`<button class="qs-btn red" type="button" onclick="qsAdminDeleteSubmission(${Number(r.id)})">DELETE WRONG QUESTION</button>`:""}${own&&r.status==="pending"?'<span class="qs-note">You cannot approve/return your own Question.</span>':""}${r.status==="approved"?'<span class="qs-note">Exam Routine tracker is marked Submitted automatically.</span>':""}</div></div>`;}
   window.qsOpenReviewFile=async function(submissionId){try{const r=state.review.find(x=>Number(x.id)===Number(submissionId));if(!r)throw new Error("Submission not found.");const url=await signedUrl(r.current_file_path);if(!url)throw new Error("Could not create secure file link.");window.open(url,"_blank","noopener");}catch(e){msg(qsFriendlyError(e),"error")}};
   window.qsApprove=async function(submissionId){if(!confirm("Approve this Question?\n\nThe matching Exam Routine tracker will automatically become Submitted."))return;try{msg("Approving Question...","info");await rpc("qs_review_question",{p_submission_id:Number(submissionId),p_action:"approve",p_reason:null,p_reviewer_name:actorName()});await loadReviewRows();await refreshExamTrackerIfOpen();msg("Question approved. Exam Routine tracker updated to Submitted.","success");}catch(e){msg(qsFriendlyError(e),"error")}};
 
@@ -329,7 +393,11 @@
     if(!period)throw new Error(`No matching PUBLISHED Exam Routine was found for ${ctx.session} • ${ctx.term}. Use the same Academic Session and Term name in Marks and Exam Management.`);
     const {data:entries,error:entryError}=await db.from("exam_routine_entries").select("id,period_id,class_name,activity_title,question_required").eq("period_id",Number(period.id)).eq("class_name",ctx.className);
     if(entryError)throw entryError;
-    const target=(entries||[]).find(e=>qsSubjectKey(e.activity_title)===qsSubjectKey(ctx.subject));
+    // Only the exact displayed subject (case/spacing ignored) can be accepted automatically.
+     // Combined routine entries are deliberately manual, never inferred.
+     const matchName=v=>String(v??"").trim().replace(/\s+/g," ").toLowerCase();
+     const combined=v=>/[\/\+&,]/.test(String(v??""));
+     const target=(entries||[]).find(e=>!combined(e.activity_title)&&!combined(ctx.subject)&&matchName(e.activity_title)===matchName(ctx.subject));
     if(!target)throw new Error(`No matching Exam Routine subject was found for ${ctx.className} — ${ctx.subject}. Check the subject name in Overall Routine.`);
     return target;
   }
@@ -483,6 +551,9 @@
         const out=await original.apply(this,arguments);
         await qsMergeMarksTrackerStatus();
         if(typeof examRenderAll==="function")examRenderAll();
+        // Refresh the read-only marks-progress overlay whenever an Exam Routine
+        // is loaded or selected, including a Routine published months later.
+        if(typeof window.saMarksProgressRefresh==="function")window.saMarksProgressRefresh();
         return out;
       };
       wrapped.__qsMarksWrapped=true;examLoadCurrentPeriodData=wrapped;
