@@ -28,7 +28,33 @@
   function key(cls,period){return `${cls}|${period}`;}
   function normal(v){return String(v??'').trim();}
   function lower(v){return normal(v).toLowerCase();}
-  function staffDirectory(){try{return typeof STAFF_LOGIN_DIRECTORY!=='undefined'&&STAFF_LOGIN_DIRECTORY?STAFF_LOGIN_DIRECTORY:{};}catch(_){return {};}}
+  // Merge login identities with live Staff Management records; do not mutate the login directory.
+  // The routine's dropdown must not depend solely on the hardcoded login accounts.
+  let routineStaffCache={};
+  function staffDirectory(){
+    const merged={};
+    try{if(typeof STAFF_LOGIN_DIRECTORY!=='undefined'&&STAFF_LOGIN_DIRECTORY)Object.assign(merged,STAFF_LOGIN_DIRECTORY);}catch(_){}
+    try{if(typeof adminManagedStaff!=='undefined'&&adminManagedStaff){
+      Object.entries(adminManagedStaff).forEach(([key,s])=>{
+        const id=normal(s?.staffKey||key);if(id&&s?.name)merged[id]={...(merged[id]||{}),name:s.name,designation:s.designation||'Staff'};
+      });
+    }}catch(_){}
+    Object.assign(merged,routineStaffCache);
+    return merged;
+  }
+  async function refreshRoutineStaff(){
+    const client=db();if(!client)return;
+    try{
+      const {data,error}=await client.from('staff').select('staff_key,name,designation');
+      if(error)throw error;
+      const fresh={};
+      (data||[]).forEach(s=>{
+        const id=normal(s?.staff_key);if(id&&normal(s?.name))fresh[id]={name:s.name,designation:s.designation||'Staff'};
+      });
+      // Update only after a successful fetch. Retain last good list on a temporary network error.
+      routineStaffCache=fresh;
+    }catch(e){console.warn('Class Routine: Staff directory refresh unavailable; using existing staff list.',e);}
+  }
   function actorStaff(){try{return typeof loggedInStaff!=='undefined'?loggedInStaff:null;}catch(_){return null;}}
   function isStaffLoggedIn(){try{return !!actorStaff()&&typeof staffAuthSession!=='undefined'&&!!staffAuthSession;}catch(_){return false;}}
   function isAdminLoggedIn(){try{return typeof studentAdminSession!=='undefined'&&!!studentAdminSession;}catch(_){return false;}}
@@ -176,6 +202,7 @@
     byId('crtPage').innerHTML='<div class="crt-card">Loading secure Class Routine…</div>';
     try{
       ctx=await rpc('routine_context');
+      await refreshRoutineStaff();
       classState.year=ctx.academic_year||'2083';
       activeView='daily';renderNav();setMeta();await renderDailyTab();
     }catch(e){byId('crtPage').innerHTML=`<div class="crt-card"><div class="crt-empty">${esc(errText(e))}</div></div>`;}
@@ -406,6 +433,7 @@
     byId('crtTitle').textContent='Permanent Class Routine';
     const clean=normal(year)||'2083';classState.year=clean;
     byId('crtPage').innerHTML='<div class="crt-card">Loading permanent routine…</div>';
+    await refreshRoutineStaff();
     const current=await rpc('routine_get_current',{p_academic_year:clean});
     const draft=await rpc('routine_get_draft',{p_academic_year:clean});
     const h=permanentHeader(current,draft),active=h.active||{};
