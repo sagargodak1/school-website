@@ -4,118 +4,91 @@
 (()=>{'use strict';
 const $=(s,r=document)=>r.querySelector(s);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+if(!document.getElementById('saResultStaffDashStyles')){const st=document.createElement('style');st.id='saResultStaffDashStyles';st.textContent='.sa-rp-dash{color:#183653;font-family:Arial,sans-serif}.sa-rp-banner{background:linear-gradient(105deg,#173e65,#23678f);color:#fff;border-radius:14px;padding:24px;display:flex;justify-content:space-between;gap:16px;align-items:center}.sa-rp-banner h2{margin:7px 0}.sa-rp-banner small{letter-spacing:1px}.sa-rp-banner p{margin:0;color:#d9e9f6}.sa-rp-banner>strong{background:#ffffff22;padding:12px;border-radius:10px}.sa-rp-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin:18px 0}.sa-rp-filters label{font-size:12px;font-weight:700}.sa-rp-filters select,.sa-rp-filters input{display:block;margin-top:7px;box-sizing:border-box;width:100%;padding:12px;border:1px solid #cad7e6;border-radius:8px;background:white;color:#163b5c}.sa-rp-actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:15px 0}.sa-rp-actions button,.sa-rp-student-table button{border:1px solid #b5c8da;border-radius:7px;padding:9px 12px;background:#fff;cursor:pointer}.sa-rp-actions .sa-rp-primary{background:#17558d;color:white}.sa-rp-meta{font-weight:600;color:#4c6884}.sa-rp-student-table{overflow:auto;border:1px solid #dce5ec;border-radius:12px}.sa-rp-student-table table{width:100%;border-collapse:collapse;min-width:580px}.sa-rp-student-table th,.sa-rp-student-table td{padding:12px;border-bottom:1px solid #e3eaf1;text-align:left}.sa-rp-student-table th{background:#ebf2f9}.sa-rp-student-table tr:hover{background:#f7fafc}@media(max-width:700px){.sa-rp-banner{display:block;padding:16px}.sa-rp-banner>strong{display:inline-block;margin-top:14px}}';document.head.appendChild(st)}
 const cls=['Nursery','LKG','UKG',...Array.from({length:10},(_,i)=>'Class '+(i+1))];
 async function rpc(db,name,args){if(!db)throw Error('Supabase connection is unavailable');const {data,error}=await db.rpc(name,args);if(error)throw Error(error.message);return data||[]}
 function overlay(title){$('#saResultPortalView')?.remove();const host=document.createElement('div');host.id='saResultPortalView';host.style.cssText='position:fixed;inset:0;z-index:2147483600;background:#102b44b5;overflow:auto;padding:15px;font:14px Arial,sans-serif;color:#1c3047';host.innerHTML='<section style="max-width:1000px;margin:15px auto;background:#fff;border-radius:12px;padding:20px;box-shadow:0 10px 40px #0003"><header style="display:flex;align-items:center;justify-content:space-between;gap:12px"><h2 style="margin:0">'+esc(title)+'</h2><button id="saRPclose" type="button">Close</button></header><div id="saRPbody" style="padding-top:14px">Loading…</div></section>';document.body.appendChild(host);$('#saRPclose',host).onclick=()=>host.remove();return $('#saRPbody',host)}
 function marksTable(subjects){if(!Array.isArray(subjects)||!subjects.length)return '<p>No subject grade in the published snapshot.</p>';return '<table style="border-collapse:collapse;width:100%"><thead><tr><th>Subject</th><th>Final Grade</th></tr></thead><tbody>'+subjects.map(s=>'<tr><td style="border:1px solid #ccc;padding:7px">'+esc(s.subject||s.name||'')+'</td><td style="border:1px solid #ccc;padding:7px">'+esc(s.final||s.grade||'—')+'</td></tr>').join('')+'</tbody></table>'}
+function topFiveStudents(p){return (p.students||[]).filter(s=>s&&Number.isFinite(Number(s.gpa))&&String(s.gpa??'').trim()!=='').sort((a,b)=>Number(b.gpa)-Number(a.gpa)||String(a.roll??'').localeCompare(String(b.roll??''),undefined,{numeric:true})||String(a.name??'').localeCompare(String(b.name??''))).slice(0,5)}
+function topFiveMarkup(p){const best=topFiveStudents(p);return `<section style="background:#f1f8ff;border:1px solid #ccdfef;border-radius:13px;padding:15px;margin:13px 0"><h3 style="margin:0 0 5px;color:#17466b">🏆 Top 5 GPA · ${esc(p.className)}</h3><p style="margin:0 0 10px;color:#5a7894;font-size:12px">Published GPA only. Same GPA: roll number used to order display; equal GPA is not a different academic rank.</p>${best.length?'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px">'+best.map((st,i)=>`<div style="border:1px solid #d7e4ee;background:white;border-radius:10px;padding:11px"><div style="font-size:11px;color:#647b90">${i+1}. ${esc(st.roll??'—')}</div><div style="font-weight:700;margin:5px 0">${esc(st.name||st.id)}</div><div style="color:#0f684b;font-weight:bold">GPA ${esc(st.gpa)}</div></div>`).join('')+'</div>':'<p>No valid GPA is stored in this published snapshot.</p>'}</section>`}
 function studentCard(st,p){const att=st.attendance||{};return '<article style="padding:14px;border:1px solid #ddd;border-radius:9px;margin:12px 0;background:#fff"><h3 style="margin-top:0">'+esc(st.name||st.id)+'</h3><p>Student ID: '+esc(st.id)+' · '+esc(p.className)+' · '+esc(p.academicYear)+' · '+esc(p.term)+'</p>'+marksTable(st.subjects)+'<p><b>GPA: '+esc(st.gpa??'—')+'</b>　 Attendance: '+esc(att.present??'—')+'/'+esc(att.opening??'—')+' ('+esc(att.percentage??'—')+')</p><p>Prepared By: '+esc(p.teacher||'—')+'　 Date of Issue: '+esc(p.dateOfIssue||'—')+'</p></article>'}
-// Uses the same 718 x 1019 canvas and object metrics as Grade Sheet Designer.
-// Only transforms the already-published snapshot for display. No writes.
-function sheetMarkup(st,p){
- const template=p.template;
- if(!template||!Array.isArray(template.objects)||!Array.isArray(st.gradeRows))return '<div class="sa-rp-unavailable">The published Grade Sheet Design is unavailable.</div>';
- const vals={StudentName:st.name||'',ClassName:p.className||'',RollNo:st.roll??'—',SymbolNo:st.id||'',IEMIS_ID:st.iemis||'—',AcademicYear:p.academicYear||'',TermName:p.term||'',TeacherName:p.teacher||'',PublishedBS:p.dateOfIssue||'',GPA:st.gpa??'—',OpeningDays:st.attendance?.opening??'—',PresentDays:st.attendance?.present??'—',AttendancePercentage:st.attendance?.percentage??'—'};
- const num=(v,def,lo,hi)=>Math.max(lo,Math.min(hi,Number.isFinite(Number(v))?Number(v):def));
- const color=v=>/^#[0-9a-f]{6}$/i.test(v||'')?v:'#203047';
- const style=o=>{
-  const f=['Arial','Calibri','Georgia','Verdana','Times New Roman'].includes(o.font)?o.font:'Arial';
-  return `left:${num(o.x,0,0,708)}px;top:${num(o.y,0,0,1009)}px;width:${num(o.w,60,10,718)}px;height:${num(o.h,20,12,1019)}px;font-size:${num(o.size,12,8,40)}px;font-family:'${f}';font-weight:${o.bold?'700':'400'};font-style:${o.italic?'italic':'normal'};text-decoration:${o.underline?'underline':'none'};color:${color(o.color)};text-align:${['center','right'].includes(o.align)?o.align:'left'};background:${o.transparent===false?color(o.bg||'#ffffff'):'transparent'};`;
- };
- const gradeTable=o=>{
-  const sw=num(o.subjectWidth,38,20,58),h=num(o.rowHeight,22,16,55);
-  return `<table class="sa-rp-grade-table" style="--sa-rp-row:${h}px"><colgroup><col style="width:6%"><col style="width:${sw}%"><col style="width:${(94-sw)*.23}%"><col style="width:${(94-sw)*.23}%"><col style="width:${(94-sw)*.24}%"><col style="width:${(94-sw)*.30}%"></colgroup><thead><tr><th>S.N.</th><th>SUBJECT</th><th>CREDIT HOUR</th><th>GRADE POINT</th><th>GRADE</th><th>FINAL GRADE</th></tr></thead><tbody>`+
-   st.gradeRows.map((r,i)=>`<tr><td rowspan="2">${i+1}</td><td class="sa-rp-subject">${esc(r.subject)} (IN)</td><td>${esc(r.inCH??'—')}</td><td>${esc(r.inGP??'—')}</td><td>${esc(r.inGrade??'—')}</td><td rowspan="2"><b>${esc(r.final??'—')}</b></td></tr><tr><td class="sa-rp-subject">${esc(r.subject)} (TH)</td><td>${esc(r.thCH??'—')}</td><td>${esc(r.thGP??'—')}</td><td>${esc(r.thGrade??'—')}</td></tr>`).join('')+
-   `<tr class="sa-rp-gpa"><td colspan="5"><strong>GRADE POINT AVERAGE (GPA)</strong></td><td><strong>${esc(st.gpa??'—')}</strong></td></tr></tbody></table>`;
- };
- const objMarkup=o=>{
-  let inside='';
-  if(o.type==='table')inside=gradeTable(o);
-  else if(o.type==='attendance'){
-   const names=String(o.text||'TOTAL SCHOOL OPENING DAYS|TOTAL PRESENT DAYS|PRESENT PERCENTAGE').split('|');
-   inside='<div class="sa-rp-att">'+[vals.OpeningDays,vals.PresentDays,vals.AttendancePercentage].map((v,i)=>`<div><span>${esc(names[i]||'')}</span><strong>${esc(v)}</strong></div>`).join('')+'</div>';
-  }else if(o.type==='legend'){
-   const names=String(o.text||'').split('|');inside='<div class="sa-rp-legend">'+[0,1].map(i=>`<span>${esc(names[i]||'').replace(/\n/g,'<br>')}</span>`).join('')+'</div>';
-  }else if(o.type==='logo'&&/^data:image\/(png|jpeg|webp);base64,/.test(o.src||''))inside='<img style="display:block;width:100%;height:100%;object-fit:contain" src="'+o.src+'">';
-  else if(o.type==='field')inside=esc(vals[o.text]??'—');
-  else if(o.type==='box')inside='';
-  else if(o.type!=='line')inside=esc(o.text||'');
-  const border=o.type==='box'?`border:${num(o.borderWidth,2,1,8)}px solid ${color(o.color)};`:o.type==='line'?`border-top:${num(o.borderWidth,2,1,8)}px solid ${color(o.color)};`:'';
-  return `<div class="sa-rp-object sa-rp-${esc(o.type)}" style="${style(o)}${border}">${inside}</div>`;
- };
- const watermark=cfg=>{
-  if(!cfg?.enabled||!String(cfg.text||'').trim())return '';
-  const caption=String(cfg.text).replace(/\s+/g,' ').trim().slice(0,180);
-  const sz=num(cfg.size,10,8,60),gap=num(cfg.spacing,8,0,100),angle=num(cfg.angle,0,-90,90),opacity=num(cfg.opacity,.22,.01,.7);
-  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');let width=caption.length*sz*.56;
-  if(ctx){ctx.font=`${sz}px Arial`;width=ctx.measureText(caption).width;}
-  const tw=Math.max(1,Math.ceil(width+Math.max(6,sz*.65))),th=Math.max(sz+3,Math.ceil(sz+gap));
-  const id='saRpWm'+Math.random().toString(36).slice(2);
-  return `<svg class="sa-rp-watermark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 718 1019" preserveAspectRatio="none"><defs><pattern id="${id}" patternUnits="userSpaceOnUse" width="${tw}" height="${th}" ${angle?`patternTransform="rotate(${angle})"`:''}><text x="0" y="${sz+1}" font-family="Arial,sans-serif" font-size="${sz}" fill="${color(cfg.color||'#9a9a9a')}" opacity="${opacity}">${esc(caption)}</text></pattern></defs><rect width="100%" height="100%" fill="url(#${id})"/></svg>`;
- };
- // Some saved templates include two identical TERM ASSESSMENT labels.
- // Suppress only identical duplicates in the published view, never mutate stored design.
- const seenTerm=new Set();
- const objects=template.objects.filter(o=>{
-  if(o.type!=='text'||!/^term\s+assessment$/i.test(String(o.text||'').trim().replace(/\s+/g,' ')))return true;
-  const key=String(o.text).trim().toLowerCase().replace(/\s+/g,' ');
-  if(seenTerm.has(key))return false;
-  seenTerm.add(key);return true;
- });
- return `<div class="sa-rp-paper">${watermark(template.watermark)}${objects.map(objMarkup).join('')}</div>`;
+function sheetMarkup(st,p,digital=false){
+ const template=p.template;const hasTemplate=template&&Array.isArray(template.objects)&&Array.isArray(st.gradeRows);
+ if(!hasTemplate)return '<div class="sa-rp-unavailable">This result was published before the Grade Sheet Design was synced. Admin must re-publish and Sync this class once to enable the official Grade Sheet.</div>';
+ const vals={StudentName:st.name||'',ClassName:p.className||'',RollNo:st.roll||'—',SymbolNo:st.id||'',IEMIS_ID:st.iemis||'—',AcademicYear:p.academicYear||'',TermName:p.term||'',TeacherName:p.teacher||'',PublishedBS:p.dateOfIssue||'',GPA:st.gpa||'—',OpeningDays:st.attendance?.opening??'—',PresentDays:st.attendance?.present??'—',AttendancePercentage:st.attendance?.percentage??'—'};
+ const style=o=>{const n=(x,def)=>Math.max(0,Math.min(1024,Number(x)||def));return `position:absolute;left:${n(o.x,0)}px;top:${n(o.y,0)}px;width:${n(o.w,60)}px;height:${n(o.h,20)}px;font-size:${Math.min(40,Math.max(7,Number(o.size)||12))}px;font-family:${['Arial','Calibri','Georgia','Verdana','Times New Roman'].includes(o.font)?o.font:'Arial'};font-weight:${o.bold?'700':'400'};color:${/^#[0-9a-f]{6}$/i.test(o.color)?o.color:'#243746'};text-align:${['center','right'].includes(o.align)?o.align:'left'};${o.italic?'font-style:italic;':''}${o.underline?'text-decoration:underline;':''}`};
+ const gradeTable=()=>'<table class="sa-rp-grade-table"><thead><tr><th>S.N.</th><th>SUBJECT</th><th>CREDIT HOUR</th><th>GRADE POINT</th><th>GRADE</th><th>FINAL GRADE</th></tr></thead><tbody>'+st.gradeRows.map((r,i)=>`<tr><td rowspan="2">${i+1}</td><td>${esc(r.subject)} (IN)</td><td>${esc(r.inCH??'—')}</td><td>${esc(r.inGP??'—')}</td><td>${esc(r.inGrade??'—')}</td><td rowspan="2">${esc(r.final)}</td></tr><tr><td>${esc(r.subject)} (TH)</td><td>${esc(r.thCH??'—')}</td><td>${esc(r.thGP??'—')}</td><td>${esc(r.thGrade??'—')}</td></tr>`).join('')+`<tr><td colspan="5"><b>GRADE POINT AVERAGE (GPA)</b></td><td><b>${esc(st.gpa)}</b></td></tr></tbody></table>`;
+ const objMarkup=o=>{let inside='';if(o.type==='table')inside=gradeTable();else if(o.type==='attendance'){const names=String(o.text||'SCHOOL OPENING DAYS|PRESENT DAYS|PRESENT PERCENTAGE').split('|');inside='<div class="sa-rp-att">'+[vals.OpeningDays,vals.PresentDays,vals.AttendancePercentage].map((v,i)=>`<div>${esc(names[i]||'')}<strong>${esc(v)}</strong></div>`).join('')+'</div>'}else if(o.type==='legend'){inside='<div class="sa-rp-legend">'+String(o.text||'').split('|').map(s=>'<div>'+esc(s).replace(/\n/g,'<br>')+'</div>').join('')+'</div>'}else if(o.type==='logo'&&/^data:image\/(png|jpeg|webp);base64,/.test(o.src||''))inside='<img style="width:100%;height:100%;object-fit:contain" src="'+o.src+'">';else if(o.type==='field')inside=esc(vals[o.text]??'—');else if(o.type==='box')inside='';else inside=esc(o.text||'').replace(/\n/g,'<br>');return `<div class="sa-rp-object sa-rp-${esc(o.type)}" style="${style(o)}${o.type==='box'?'border:1px solid currentColor;':''}">${inside}</div>`};
+ let wm='';const w=template.watermark;if(w?.enabled&&w.text){const t=esc(w.text),size=Math.min(28,Math.max(8,Number(w.size)||10)),col=/^#[0-9a-f]{6}$/i.test(w.color)?w.color:'#aaa';const repeat=Array.from({length:47},()=>Array.from({length:6},()=>t).join('　')).join('\n');wm=`<div class="sa-rp-watermark" style="font-size:${size}px;color:${col};opacity:${Math.min(.5,Math.max(.02,Number(w.opacity)||.12))}">${repeat}</div>`}
+ // Position the notice directly BELOW the GPA row / grade table, not at the A4 footer.
+ // The published designer uses absolute positions; do not move the official objects.
+ const gradeObject=template.objects.find(o=>o.type==='table');
+ const gpaObject=template.objects.find(o=>o.type==='field'&&String(o.text||'').trim()==='GPA');
+ const anchor=gradeObject||gpaObject;
+ const clamp=(value,min,max)=>Math.min(max,Math.max(min,value));
+ const noteTop=anchor?clamp((Number(anchor.y)||0)+(Number(anchor.h)||0)+8,0,952):820;
+ const noteLeft=anchor?clamp(Number(anchor.x)||0,12,110):18;
+ const noteWidth=anchor?clamp(Number(anchor.w)||680,490,718-noteLeft-12):682;
+ const digitalNote=digital?`<div class="sa-rp-digital-note" style="top:${noteTop}px;left:${noteLeft}px;width:${noteWidth}px"><strong>DIGITAL COPY</strong><span>This is a digital copy and is not valid for official use. If you need an official certificate, please contact the School Administration.</span></div>`:'';
+ return `<div class="sa-rp-paper">${wm}${template.objects.map(objMarkup).join('')}${digitalNote}</div>`;
 }
-function sheetsCSS(){return `
-.sa-rp-paper,.sa-rp-paper *{box-sizing:border-box}
-.sa-rp-paper{position:relative;width:718px;height:1019px;overflow:hidden;background:#fff;flex:none;color:#203047;font-family:Arial,sans-serif}
-.sa-rp-object{position:absolute;z-index:1;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25;overflow:visible;border:1px solid transparent}
-.sa-rp-object.sa-rp-table{z-index:2}
-.sa-rp-watermark{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.sa-rp-grade-table{border-collapse:collapse;table-layout:fixed;width:100%;height:auto;font-size:inherit;line-height:1.08;color:inherit;text-align:center}
-.sa-rp-grade-table th,.sa-rp-grade-table td{border:1px solid #22344b;padding:2px 3px;background:transparent;overflow-wrap:normal}
-.sa-rp-grade-table td:first-child{text-align:left}
-.sa-rp-grade-table .sa-rp-subject{text-align:left}
-.sa-rp-grade-table th{font-size:.86em}
-.sa-rp-grade-table tbody tr:not(.sa-rp-gpa){height:var(--sa-rp-row)}
-.sa-rp-grade-table .sa-rp-gpa{height:34px}
-.sa-rp-grade-table .sa-rp-gpa td{height:34px;padding:4px 6px}
-.sa-rp-att{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:100%;align-items:center;text-align:center;gap:5px}
-.sa-rp-att>div{display:flex;flex-direction:column;gap:10px}
-.sa-rp-att span{font-size:.85em}.sa-rp-att strong{font-size:1.15em}
-.sa-rp-legend{display:grid;grid-template-columns:1fr 1fr;gap:15px;height:100%;line-height:1.45;align-items:center;border:1px solid #31435b;padding:8px}
-.sa-rp-unavailable{padding:20px;border:1px solid #d9a85e;background:#fff6df;color:#503b18}
-@page{size:A4 portrait;margin:0}
-@media print{
- html,body{margin:0!important;padding:0!important;width:210mm!important;height:auto!important;overflow:visible!important}
- .sa-rp-paper{width:718px;height:1019px;transform:scale(1.105);transform-origin:top left;margin:0!important;break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- .sa-rp-paper:last-child{break-after:auto;page-break-after:auto}
- .sa-rp-watermark{display:block!important;visibility:visible!important}
-}`}
-function viewSheet(st,p){const markup=sheetMarkup(st,p);const host=document.createElement('div');host.style.cssText='position:fixed;inset:0;z-index:2147483610;background:#142a43cc;overflow:auto;padding:12px';host.innerHTML='<div style="max-width:790px;margin:auto;background:#fff;padding:12px;border-radius:12px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px"><strong>'+esc(st.name)+'</strong><span><button id="saRpOnePrint">Print / Save PDF</button> <button id="saRpOneClose">Close</button></span></div><div class="sa-rp-mobile-wrap">'+markup+'</div></div>';document.body.appendChild(host);const mobile=document.createElement('style');mobile.textContent=sheetsCSS()+`.sa-rp-mobile-wrap{width:100%;overflow:auto;display:flex;justify-content:center}.sa-rp-mobile-wrap>.sa-rp-paper{transform-origin:top center;zoom:var(--sa-rp-zoom,1)}@media(max-width:770px){.sa-rp-mobile-wrap{justify-content:flex-start}}`;host.appendChild(mobile);function resize(){const width=host.querySelector('.sa-rp-mobile-wrap').clientWidth;host.style.setProperty('--sa-rp-zoom',String(Math.min(1,width/718)))}resize();window.addEventListener('resize',resize);const close=()=>{window.removeEventListener('resize',resize);host.remove()};host.querySelector('#saRpOneClose').onclick=close;host.querySelector('#saRpOnePrint').onclick=()=>printPages([{st,p}])}
-function printPages(items){
+function sheetsCSS(){return `*{box-sizing:border-box}.sa-rp-paper{position:relative;width:718px;height:1019px;overflow:hidden;background:#fff;flex:none;color:#213346}.sa-rp-object{overflow:hidden;z-index:2}.sa-rp-watermark{position:absolute;inset:0;overflow:hidden;z-index:0;white-space:pre-wrap;line-height:1.8;word-break:break-all;pointer-events:none}.sa-rp-grade-table{width:100%;border-collapse:collapse;font-size:inherit;table-layout:fixed}.sa-rp-grade-table th,.sa-rp-grade-table td{border:1px solid #667885;padding:3px;text-align:center;overflow-wrap:anywhere;background:transparent}.sa-rp-grade-table th:nth-child(2){width:36%}.sa-rp-att{display:grid;grid-template-columns:repeat(3,1fr);height:100%;border:1px solid #6b7a8d}.sa-rp-att>div{border-right:1px solid #6b7a8d;padding:6px;text-align:center;font-size:10px}.sa-rp-att strong{display:block;font-size:14px;margin:5px}.sa-rp-legend{display:grid;grid-template-columns:1fr 1fr;gap:8px;border:1px solid #6b7a8d;padding:6px;height:100%;white-space:normal}.sa-rp-digital-note{position:absolute;z-index:100;text-align:center;color:#c41424!important;background:white;padding:3px 6px;border-top:1px solid #c41424;font-family:Arial,sans-serif;font-size:10px;font-weight:700;line-height:1.25}.sa-rp-digital-note strong{display:block;font-size:13px;letter-spacing:1.3px}.sa-rp-digital-note span{display:block}.sa-rp-unavailable{padding:20px;border:1px solid #d9a85e;background:#fff6df;color:#503b18}@page{size:A4;margin:0}@media print{body{margin:0!important}.sa-rp-paper{width:718px;height:1019px;break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}.sa-rp-paper:last-child{break-after:auto;page-break-after:auto}}`}
+function viewSheet(st,p,digital=false){const markup=sheetMarkup(st,p,digital);const host=document.createElement('div');host.style.cssText='position:fixed;inset:0;z-index:2147483610;background:#142a43cc;overflow:auto;padding:12px';host.innerHTML='<div style="max-width:790px;margin:auto;background:#fff;padding:12px;border-radius:12px"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px"><strong>'+esc(st.name)+'</strong><span><button id="saRpOnePrint">Print / Save PDF</button> <button id="saRpOneClose">Close</button></span></div><div class="sa-rp-mobile-wrap">'+markup+'</div></div>';document.body.appendChild(host);const mobile=document.createElement('style');mobile.textContent=sheetsCSS()+`.sa-rp-mobile-wrap{width:100%;overflow:auto;display:flex;justify-content:center}.sa-rp-mobile-wrap>.sa-rp-paper{transform-origin:top center;zoom:var(--sa-rp-zoom,1)}@media(max-width:770px){.sa-rp-mobile-wrap{justify-content:flex-start}}`;host.appendChild(mobile);function resize(){const width=host.querySelector('.sa-rp-mobile-wrap').clientWidth;host.style.setProperty('--sa-rp-zoom',String(Math.min(1,width/718)))}resize();window.addEventListener('resize',resize);const close=()=>{window.removeEventListener('resize',resize);host.remove()};host.querySelector('#saRpOneClose').onclick=close;host.querySelector('#saRpOnePrint').onclick=()=>printPages([{st,p}],digital)}
+function printPages(items,digital=false){
  if(!items.length){alert('Select at least one student.');return}
  if(items.some(({p,st})=>!p.template||!st.gradeRows)){alert('Official grade-sheet design is not synced for this class. Ask Admin to re-publish and sync.');return}
- const html=items.map(({st,p})=>sheetMarkup(st,p)).join('');const win=window.open('','_blank');if(!win){alert('Allow the print popup.');return}
- win.document.open();win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>St Augustine Grade Sheets</title><style>'+sheetsCSS()+'</style></head><body>'+html+'</body></html>');win.document.close();setTimeout(()=>{try{win.focus();win.print()}catch(e){alert(e.message)}},350);
+ const html=items.map(({st,p})=>sheetMarkup(st,p,digital)).join('');const win=window.open('','_blank');if(!win){alert('Allow the print popup.');return}
+ win.document.open();win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>St Augustine Grade Sheets</title><style>'+sheetsCSS()+'body{margin:0}.sa-rp-paper{page-break-after:always}</style></head><body>'+html+'</body></html>');win.document.close();setTimeout(()=>{try{win.focus();win.print()}catch(e){alert(e.message)}},350);
 }
 async function staff(){
- const body=overlay('Published Results');
+ const body=overlay('Results · Staff Dashboard');
  try{
   if(typeof umeStaffDb!=='function')throw Error('Staff login is required');
-  const rows=await rpc(umeStaffDb(),'sa_result_staff_read_v1',{});
-  if(!Array.isArray(rows)||!rows.length){body.textContent='No published results available for your assigned classes.';return}
-  const selections=new Map();
-  body.innerHTML='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button type="button" id="saRPall">Select All</button><button type="button" id="saRPclear">Clear Selection</button><button type="button" id="saRPprint">Print / Save PDF — Selected</button></div><div id="saRPclasses"></div><div id="saRPpreview"></div>';
-  const host=$('#saRPclasses',body);
-  rows.forEach((p,pi)=>{
-   const section=document.createElement('section');section.style.cssText='margin:14px 0;border:1px solid #cbd5e1;border-radius:10px;padding:12px';
-   section.innerHTML=`<h3 style="margin:0 0 8px">${esc(p.className)} · ${esc(p.academicYear)} · ${esc(p.term)}</h3><p>${(p.students||[]).length} students</p><div style="overflow:auto"><table style="border-collapse:collapse;width:100%"><thead><tr><th style="text-align:left;padding:8px">Tick</th><th style="text-align:left;padding:8px">Roll</th><th style="text-align:left;padding:8px">Student</th><th style="text-align:left;padding:8px">Symbol No.</th><th style="text-align:left;padding:8px">GPA</th><th style="text-align:left;padding:8px">View</th></tr></thead><tbody>${(p.students||[]).map((st,si)=>`<tr><td style="border-top:1px solid #ddd;padding:8px"><input type="checkbox" data-student="${pi}:${si}" aria-label="Select ${esc(st.name||st.id)}"></td><td style="border-top:1px solid #ddd;padding:8px">${esc(st.roll??'—')}</td><td style="border-top:1px solid #ddd;padding:8px">${esc(st.name||st.id)}</td><td style="border-top:1px solid #ddd;padding:8px">${esc(st.id)}</td><td style="border-top:1px solid #ddd;padding:8px">${esc(st.gpa??'—')}</td><td style="border-top:1px solid #ddd;padding:8px"><button type="button" data-view="${pi}:${si}">View</button></td></tr>`).join('')}</tbody></table></div>`;
-   host.appendChild(section);
-  });
-  const chosen=()=>[...body.querySelectorAll('input[data-student]:checked')].map(el=>{const [pi,si]=el.dataset.student.split(':').map(Number);return {p:rows[pi],st:rows[pi].students[si]}});
-  $('#saRPall',body).onclick=()=>body.querySelectorAll('input[data-student]').forEach(el=>el.checked=true);
-  $('#saRPclear',body).onclick=()=>body.querySelectorAll('input[data-student]').forEach(el=>el.checked=false);
-  $('#saRPprint',body).onclick=()=>printPages(chosen());
-  host.addEventListener('click',e=>{const btn=e.target.closest('[data-view]');if(!btn)return;const [pi,si]=btn.dataset.view.split(':').map(Number);const p=rows[pi],st=p.students[si];const preview=$('#saRPpreview',body);viewSheet(st,p)});
- }catch(e){body.textContent='Could not open published results: '+e.message}
+  const db=umeStaffDb();
+  const rows=await rpc(db,'sa_result_staff_read_v1',{});
+  // Read layout separately from published marks. Failed template reads retain the last published layout.
+  try {
+    const {data:liveTemplates,error:layoutError}=await db.rpc('sa_result_live_template_read_v1',{});
+    if(layoutError) throw layoutError;
+    if(Array.isArray(liveTemplates)) {
+      for(const p of rows){
+        const isLower=/^(nursery|lkg|ukg|class\s*[1-5]|[1-5])$/i.test(String(p.className||'').trim());
+        const slot=isLower?'lower':'upper';
+        const layout=liveTemplates.find(x=>x.template_group===slot)?.template;
+        if(layout && Array.isArray(layout.objects) && layout.objects.length) p.template=layout;
+      }
+    }
+  } catch(layoutError){console.warn('Using last published grade-sheet design:',layoutError.message);}
+
+  let access=[];let accessFailed=false;
+  try{const {data,error}=await db.rpc('sa_result_staff_access_status_v1',{});if(error)throw error;access=Array.isArray(data)?data:[];}catch(e){accessFailed=true;console.warn('Result access-status unavailable; showing published results only:',e.message)}
+  const years=[...new Set([...rows.map(p=>String(p.academicYear||'')),...access.map(a=>String(a.academicYear||''))])].filter(Boolean).sort().reverse();
+  const termOrder=['first','second','third','final'];
+  const escOpts=items=>items.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  body.innerHTML=`<div class="sa-rp-dash"><div class="sa-rp-banner"><div><small>ST. AUGUSTINE · RESULTS</small><h2>Grade Sheet Dashboard</h2><p>Authorized classes · Published grade sheets · GPA leaders</p></div><strong>${rows.length} Published Result(s)</strong></div><div class="sa-rp-filters"><label>Academic Year<select id="saRPyear">${escOpts(years)}</select></label><label>Term<select id="saRPterm"></select></label><label>Class<select id="saRPclass"></select></label><label>Find Student<input id="saRPsearch" placeholder="Name, roll or ID"></label></div><div id="saRPstatus" aria-live="polite"></div><div id="saRPtop"></div><div class="sa-rp-meta" id="saRPmeta"></div><div class="sa-rp-actions"><button id="saRPall">Select All Visible</button><button id="saRPclear">Clear</button><button id="saRPprint" class="sa-rp-primary">Print / Save PDF — Selected</button><span id="saRPcount">0 selected</span></div><div class="sa-rp-student-table" id="saRPstudents"></div></div>`;
+  const q=s=>$(s,body),year=q('#saRPyear'),term=q('#saRPterm'),cl=q('#saRPclass'),search=q('#saRPsearch'),list=q('#saRPstudents');
+  const selected=new Set(),key=(p,st)=>[p.academicYear,p.term,p.className,st.id].join('|');
+  const inTerm=(p)=>String(p.academicYear)===year.value&&String(p.term).toLowerCase()===term.value;
+  const authorized=()=>access.filter(a=>String(a.academicYear)===year.value&&String(a.term).toLowerCase()===term.value);
+  const published=()=>rows.filter(inTerm);
+  function fillTerms(){const terms=[...new Set([...rows.filter(p=>String(p.academicYear)===year.value).map(p=>String(p.term).toLowerCase()),...access.filter(p=>String(p.academicYear)===year.value).map(p=>String(p.term).toLowerCase())])].sort((a,b)=>termOrder.indexOf(a)-termOrder.indexOf(b));const old=term.value;term.innerHTML=escOpts(terms);if(terms.includes(old))term.value=old;fillClasses()}
+  function fillClasses(){const opts=new Map();authorized().forEach(a=>opts.set(String(a.className).toLowerCase(),{name:a.className,ready:false}));published().forEach(p=>opts.set(String(p.className).toLowerCase(),{name:p.className,ready:true}));const all=[...opts.values()].sort((a,b)=>cls.indexOf(a.name)-cls.indexOf(b.name));const old=cl.value;cl.innerHTML=all.map(x=>`<option value="${esc(x.name)}">${esc(x.name)}${x.ready?' · Published':' · Not Published'}</option>`).join('');if(all.some(x=>x.name===old))cl.value=old;renderList()}
+  function current(){return published().find(p=>String(p.className).toLowerCase()===cl.value.toLowerCase())}
+  function visible(){const p=current();if(!p)return [];const needle=search.value.trim().toLowerCase();return (p.students||[]).filter(s=>!needle||[s.name,s.id,s.roll].some(v=>String(v||'').toLowerCase().includes(needle))).map(st=>({p,st}))}
+  function renderList(){const p=current(),arr=visible();const actionButtons=[q('#saRPall'),q('#saRPclear'),q('#saRPprint')];actionButtons.forEach(b=>b.disabled=!p);
+   q('#saRPtop').innerHTML=p?topFiveMarkup(p):'';
+   if(!p){const noClass=!cl.value;q('#saRPstatus').innerHTML=`<div style="border-radius:12px;background:#fff5df;color:#704a14;border:1px solid #edd8aa;padding:15px;margin:12px 0"><strong>${noClass?'No result classes available':'Access Granted — Result Not Yet Published'}</strong><p style="margin:6px 0">${noClass?(accessFailed?'The server status service is not installed. Published results only are shown.':'No published result or authorized class for this year/term.'):'This class is assigned to you, but no published grade sheet can be viewed until publication.'}</p></div>`;q('#saRPmeta').textContent='';q('#saRPcount').textContent='0 selected';list.innerHTML='';return}
+   q('#saRPstatus').innerHTML='<div style="padding:10px 14px;background:#e4f6ec;border-radius:9px;margin:10px 0;color:#13633e">✓ Published · Authorized to view</div>';
+   q('#saRPmeta').textContent=`${p.className} · ${p.academicYear} · ${p.term} · ${(p.students||[]).length} students · ${arr.length} shown`;
+   q('#saRPcount').textContent=arr.filter(({p,st})=>selected.has(key(p,st))).length+' selected on screen';
+   list.innerHTML=`<table><thead><tr><th>Select</th><th>Roll</th><th>Student</th><th>Symbol No.</th><th>GPA</th><th>Grade Sheet</th></tr></thead><tbody>${arr.map(({p,st},i)=>`<tr><td><input type="checkbox" data-pick="${i}" ${selected.has(key(p,st))?'checked':''}></td><td>${esc(st.roll??'—')}</td><td><strong>${esc(st.name||st.id)}</strong></td><td>${esc(st.id)}</td><td>${esc(st.gpa??'—')}</td><td><button type="button" data-view="${i}">View / Print</button></td></tr>`).join('')}</tbody></table>`;
+  }
+  year.onchange=fillTerms;term.onchange=fillClasses;cl.onchange=()=>{search.value='';renderList()};search.oninput=renderList;
+  list.addEventListener('change',e=>{const el=e.target.closest('[data-pick]');if(!el)return;const item=visible()[Number(el.dataset.pick)];if(!item)return;el.checked?selected.add(key(item.p,item.st)):selected.delete(key(item.p,item.st));renderList()});
+  list.addEventListener('click',e=>{const el=e.target.closest('[data-view]');if(!el)return;const item=visible()[Number(el.dataset.view)];if(item)viewSheet(item.st,item.p,true)});
+  q('#saRPall').onclick=()=>{visible().forEach(({p,st})=>selected.add(key(p,st)));renderList()};q('#saRPclear').onclick=()=>{selected.clear();renderList()};q('#saRPprint').onclick=()=>{const items=rows.flatMap(p=>(p.students||[]).filter(st=>selected.has(key(p,st))).map(st=>({p,st})));printPages(items,true)};
+  fillTerms();
+ }catch(e){body.textContent='Could not open results: '+e.message}
 }
 async function parent(){const body=overlay('My Published Result');try{const token=sessionStorage.getItem('saaf_parent_portal_token');if(!token)throw Error('Parent login is required');if(typeof initStudentSupabase!=='function')throw Error('Parent portal connection unavailable');const rows=await rpc(initStudentSupabase(),'sa_result_parent_read_v1',{p_token:token});if(!rows.length){body.textContent='Your result has not been published.';return}const content=document.createElement('div');body.innerHTML='<div><button id="saRPprint" type="button">Print / Save PDF</button></div>';body.appendChild(content);rows.forEach(p=>{const b=document.createElement('button');b.type='button';b.textContent='View Grade Sheet — '+String(p.student?.name||'Student');b.onclick=()=>viewSheet(p.student,p);content.appendChild(b)});$('#saRPprint',body).onclick=()=>printPages(rows.map(p=>({p,st:p.student})))}catch(e){body.textContent='Could not open your result: '+e.message}}
 function attach(){const quick=$('#staffDashboardPopup .staff-dashboard-quick-actions');if(quick){const existing=$('#saStaffResultAction',quick);const added=$('#saRPstaffBtn',quick);if(existing){if(existing.onclick!==staff)existing.onclick=staff;if(added)added.remove()}else if(added){if(added.onclick!==staff)added.onclick=staff}else{const b=document.createElement('button');b.id='saRPstaffBtn';b.type='button';b.className='staff-dashboard-action';b.innerHTML='<span class="staff-dashboard-action-icon">📄</span><span class="staff-dashboard-action-copy"><strong>RESULT</strong><small>Published grade sheets</small></span>';b.onclick=staff;quick.appendChild(b)}}const parentPanel=$('#parentPortalPopup');if(parentPanel&&!$('#saRPparentBtn',parentPanel)){const b=document.createElement('button');b.id='saRPparentBtn';b.type='button';b.textContent='📄 MY PUBLISHED RESULT';b.style.cssText='margin:10px;padding:10px 16px;border-radius:8px;cursor:pointer';b.onclick=parent;const host=$('#parentPortalHero',parentPanel)||parentPanel;host.after(b)}}

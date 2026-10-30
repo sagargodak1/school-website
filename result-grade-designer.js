@@ -296,7 +296,7 @@ function sardOpenDashboard(){
  if(document.getElementById('sardDashboard'))return;
  const escd=esc;
  const dash=document.createElement('div');dash.id='sardDashboard';dash.className='sard-dashboard';
- dash.innerHTML=`<div class="sard-dash-app"><aside class="sard-dash-side"><div class="sard-dash-brand"><b>SA</b><span><strong>ST. AUGUSTINE</strong><small>RESULT MANAGEMENT</small></span></div><label>ACADEMIC YEAR<select id="sardDashYear"><option>Loading…</option></select></label><div class="sard-dash-menu"><button data-tab="dashboard" class="on">▦ &nbsp; Dashboard</button><button data-tab="subjects">▤ &nbsp; Subject Setup / CH</button><button data-tab="verification">✓ &nbsp; Marks & Grade Verification</button><button data-tab="register">▦ &nbsp; Class Marks Register</button><button data-tab="attendance">▤ &nbsp; Attendance</button><button data-tab="sheets">▤ &nbsp; Grade Sheets</button><button data-tab="students">▤ &nbsp; Student Details</button><button data-tab="publication">▣ &nbsp; Publish / Unpublish</button><button data-tab="portalPreview">◉ &nbsp; Published Result Access</button><button id="sardDashDesigner">▤ &nbsp; Grade Sheet Designer</button><button id="sardDashInspector">◫ &nbsp; Original Marks Inspector</button></div><p>Class-wise local publication · No Supabase changes</p></aside><main class="sard-dash-main"><div class="sard-dash-head"><div><small>ACADEMIC MANAGEMENT / RESULT DASHBOARD</small><h1 id="sardDashTitle">Dashboard</h1></div><button id="sardDashClose">✕ Close</button></div><div class="sard-dash-hero"><div><small>ST. AUGUSTINE · ACADEMIC YEAR <span id="sardDashHeroYear">—</span></small><h2>Every class. Every result.</h2><p>SECOND TERMINAL EXAMINATION</p></div><div class="sard-dash-filters"><label>Class<select id="sardDashClass"><option value="">Select Class</option></select></label><label>Term / Examination<select id="sardDashTerm"><option value="second">Second Terminal Examination</option></select></label><button id="sardDashRefresh">Refresh</button></div></div><div id="sardDashStatus">Loading existing submitted marks…</div><section id="sardDashContent"></section></main></div>`;
+ dash.innerHTML=`<div class="sard-dash-app"><aside class="sard-dash-side"><div class="sard-dash-brand"><b>SA</b><span><strong>ST. AUGUSTINE</strong><small>RESULT MANAGEMENT</small></span></div><label>ACADEMIC YEAR<select id="sardDashYear"><option>Loading…</option></select></label><div class="sard-dash-menu"><button data-tab="dashboard" class="on">▦ &nbsp; Dashboard</button><button data-tab="subjects">▤ &nbsp; Subject Setup / CH</button><button data-tab="verification">✓ &nbsp; Marks & Grade Verification</button><button data-tab="register">▦ &nbsp; Class Marks Register</button><button data-tab="attendance">▤ &nbsp; Attendance</button><button data-tab="sheets">▤ &nbsp; Grade Sheets</button><button data-tab="students">▤ &nbsp; Student Details</button><button data-tab="publication">▣ &nbsp; Publish / Unpublish</button><button data-tab="portalPreview">◉ &nbsp; Published Result Access</button><button id="sardDashDesigner">▤ &nbsp; Grade Sheet Designer</button><button id="sardDashInspector">◫ &nbsp; Original Marks Inspector</button></div><p>Official publication · Supabase confirmation required</p></aside><main class="sard-dash-main"><div class="sard-dash-head"><div><small>ACADEMIC MANAGEMENT / RESULT DASHBOARD</small><h1 id="sardDashTitle">Dashboard</h1></div><button id="sardDashClose">✕ Close</button></div><div class="sard-dash-hero"><div><small>ST. AUGUSTINE · ACADEMIC YEAR <span id="sardDashHeroYear">—</span></small><h2>Every class. Every result.</h2><p>SECOND TERMINAL EXAMINATION</p></div><div class="sard-dash-filters"><label>Class<select id="sardDashClass"><option value="">Select Class</option></select></label><label>Term / Examination<select id="sardDashTerm"><option value="second">Second Terminal Examination</option></select></label><button id="sardDashRefresh">Refresh</button></div></div><div id="sardDashStatus">Loading existing submitted marks…</div><section id="sardDashContent"></section></main></div>`;
  document.body.appendChild(dash);
  const q=s=>dash.querySelector(s);
  let groups=[],state=null,bundles=[],attendance=null,attendanceError='',tab='dashboard',busy=0,classes=[];
@@ -327,6 +327,50 @@ function sardOpenDashboard(){
   const valid=opening!==null&&opening!==undefined&&opening!==''&&present!==null&&present!==undefined&&present!==''&&Number.isFinite(days)&&days>0&&Number.isFinite(att)&&att>=0&&att<=days;
   return {opening:valid?days:null,present:valid?att:null,percentage:valid?(100*att/days).toFixed(2)+'%':null,status:valid?'READY':'MISSING'};
  };
+   // Local draft fingerprint is captured only after Supabase confirms a publication.
+   // It detects changes to browser-local settings; it does NOT certify that live source
+   // marks/attendance are unchanged. Older publications remain UNVERIFIED, not CLEAN.
+   const pubBaselineStore='sa-result-published-local-fingerprints-v1';
+   const readPubBaselines=()=>{try{const o=JSON.parse(localStorage.getItem(pubBaselineStore)||'{}');return o&&typeof o==='object'?o:{}}catch{return {}}};
+   const canonical=(value)=>JSON.stringify(value,(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b))):v);
+   const fingerprintOf=(cl)=>{
+     const key=sardKey(q('#sardDashYear').value,'second',cl),lower=groupOfClass(cl);
+     const ch=sardReadCH()[key]||{},regs=sardReadRegister()[key]||{};
+     const detail=readStudentDetails(),items=Object.fromEntries(Object.entries(detail).filter(([k])=>k.startsWith(key+'||')));
+     const footer=(()=>{try{return JSON.parse(localStorage.getItem('sa-result-footer-v1::'+key)||'{}')}catch{return {invalid:true}}})();
+     const tplRaw=localStorage.getItem('sa-result-template-group-v1-'+lower)||(lower==='lower'?localStorage.getItem(LEGACY_TEMPLATE_KEY):null);
+     let tpl;try{tpl=tplRaw?JSON.parse(tplRaw):null}catch{tpl={invalid:true}};
+     return canonical({ch,regs,items,footer,tpl});
+   };
+   // Store per-section checksums as well as the combined fingerprint. This is advisory
+   // browser-local change tracking; it never claims live source marks/attendance are unchanged.
+   const draftSections=(cl)=>{
+     const key=sardKey(q('#sardDashYear').value,'second',cl),lower=groupOfClass(cl);
+     const details=readStudentDetails();
+     const tplRaw=localStorage.getItem('sa-result-template-group-v1-'+lower)||(lower==='lower'?localStorage.getItem(LEGACY_TEMPLATE_KEY):null);
+     const footerRaw=localStorage.getItem('sa-result-footer-v1::'+key);
+     const safeParse=(v)=>{try{return v?JSON.parse(v):null}catch{return {invalidJSON:true}}};
+     return {
+       'Grade Sheet Design':safeParse(tplRaw),
+       'Subject / Credit Hours':sardReadCH()[key]||{},
+       'Marks Corrections':sardReadRegister()[key]||{},
+       'Student Details':Object.fromEntries(Object.entries(details).filter(([k])=>k.startsWith(key+'||'))),
+       'Class Teacher / Date':safeParse(footerRaw)
+     };
+   };
+   const draftSectionFingerprints=cl=>Object.fromEntries(Object.entries(draftSections(cl)).map(([name,val])=>[name,canonical(val)]));
+   const markPublishedBaseline=(cl,revision)=>{const all=readPubBaselines(),key=sardKey(q('#sardDashYear').value,'second',cl);all[key]={revision:Number(revision),fingerprint:fingerprintOf(cl),sections:draftSectionFingerprints(cl)};localStorage.setItem(pubBaselineStore,JSON.stringify(all))};
+   const isPublished=r=>!!r&&(r.is_published===true||r.isPublished===true);
+   const draftStatus=(cl,record)=>{
+     if(!record||!isPublished(record))return 'Not published';
+     const baseline=readPubBaselines()[sardKey(q('#sardDashYear').value,'second',cl)];
+     if(!baseline||Number(baseline.revision)!==Number(record.revision))return 'NOT VERIFIED — published earlier/elsewhere';
+     if(baseline.fingerprint===fingerprintOf(cl))return 'NO LOCAL EDITS DETECTED — live marks/attendance not checked';
+     if(!baseline.sections)return 'CHANGES NOT PUBLISHED — older tracking format (details unknown)';
+     const now=draftSectionFingerprints(cl);
+     const changed=Object.keys(now).filter(name=>now[name]!==baseline.sections[name]);
+     return 'CHANGES NOT PUBLISHED — '+(changed.join(', ')||'local settings');
+   };
  const publicationStore='sa-result-local-publication-v1';
  const readPublications=()=>{try{return JSON.parse(localStorage.getItem(publicationStore)||'{}')}catch{return {}}};
  const publicationKey=(cl)=>sardKey(q('#sardDashYear').value,'second',cl);
@@ -459,30 +503,107 @@ function sardOpenDashboard(){
  }
  if(tab==='publication'){
    const published=readPublications(),year=q('#sardDashYear').value;
-   const rows=classes.map(g=>{const snap=published[publicationKey(g.className)];return `<tr><td><input type="checkbox" class="sard-pub-check" value="${escd(g.className)}" aria-label="Select ${escd(g.className)}"></td><td>${escd(g.className)}</td><td>${snap?'PUBLISHED':'UNPUBLISHED'}</td><td>${snap?escd(snap.publishedAt):'—'}</td><td>${snap?snap.students.length:'—'}</td></tr>`}).join('');
-   host.innerHTML=`<div class="sard-dash-card"><h2>Class-wise Result Publication</h2><div class="sard-dash-actions"><button type="button" id="sardPubSelectAll">Select All</button><button type="button" id="sardPubClear">Clear</button><button type="button" class="primary" id="sardPublishSelected">Publish Selected Classes</button><button type="button" id="sardUnpublishSelected">Unpublish Selected Classes</button></div><div class="sard-dash-table"><table><thead><tr><th>Select</th><th>Class</th><th>Status</th><th>Published At</th><th>Students</th></tr></thead><tbody>${rows}</tbody></table></div><p id="sardPubMessage" role="status"></p><p>Publication is saved on this computer only. Staff, Parent and Student Portals are not connected yet.</p></div>`;
+   let serverRows=null, serverError='', loadingStatus=true;
+   const serverKey=v=>String(v??'').trim().toLowerCase();
+   const serverMatch=cl=>(serverRows||[]).find(r=>serverKey(r.academic_year??r.academicYear)===serverKey(year)&&serverKey(r.term_key??r.term??'second')=== 'second'&&serverKey(r.class_name??r.className)===serverKey(cl));
+   const redrawStatus=()=>{if(!host.isConnected||!host.querySelector('#sardPubLiveStatus'))return;for(const tr of host.querySelectorAll('tr[data-pub-class]')){try{const cl=tr.dataset.pubClass,record=serverMatch(cl),status=tr.querySelector('[data-server-status]');if(!status)continue;status.textContent=loadingStatus?'Checking Supabase…':serverError?'ERROR — status unknown':record?(isPublished(record)?'PUBLISHED':'UNPUBLISHED'):'UNPUBLISHED';const rev=tr.querySelector('[data-server-revision]');if(rev)rev.textContent=record?String(record.revision??'—'):'—';const ct=tr.querySelector('[data-server-students]');if(ct)ct.textContent=record?String(record.student_count??record.studentCount??'—'):'—';const local=!!published[publicationKey(cl)];const draft=tr.querySelector('[data-draft-status]');if(draft){
+       if(serverError)draft.textContent='UNKNOWN — Supabase unavailable';
+       else if(loadingStatus)draft.textContent='Checking…';
+       else {try{draft.textContent=draftStatus(cl,record)}catch(e){draft.textContent='LOCAL CHECK ERROR — '+String(e?.message||e);console.error('Publication local change check:',cl,e)}}
+     }const difference=tr.querySelector('[data-server-diff]');if(difference)difference.textContent=loadingStatus?'Checking…':serverError?'Unknown':local!==!!isPublished(record)?'Local / Supabase differ':'—';}catch(e){console.error('Publication row render error',e);const s=tr.querySelector('[data-draft-status]');if(s)s.textContent='CHECK ERROR — '+String(e?.message||e);const s2=tr.querySelector('[data-server-status]');if(s2&&s2.textContent==='Checking Supabase…')s2.textContent='CHECK ERROR';}}const update=host.querySelector('#sardPubLiveStatus');if(update)update.textContent=loadingStatus?'Loading actual Supabase publication status…':serverError?'Supabase status unavailable: '+serverError:'Live status verified from Supabase. Local change tracking cannot verify external edits to original marks or attendance. Older publications may show NOT VERIFIED.';host.querySelectorAll('#sardPublishSelected,#sardUnpublishSelected').forEach(btn=>btn.disabled=loadingStatus||!!serverError);};
+   const fetchServer=async()=>{if(writing)return;loadingStatus=true;serverError='';redrawStatus();try{const result=await publicationApi().list();if(!Array.isArray(result))throw Error('Unexpected Supabase status response; expected list.');serverRows=result;}catch(e){serverRows=null;serverError=String(e?.message||e)}finally{loadingStatus=false;try{redrawStatus()}catch(e){serverError='Publication status display error: '+String(e?.message||e);console.error(e);const label=host.querySelector('#sardPubLiveStatus');if(label)label.textContent=serverError;host.querySelectorAll('#sardPublishSelected,#sardUnpublishSelected').forEach(b=>b.disabled=true)}}};
+   const rows=classes.map(g=>{const snap=published[publicationKey(g.className)];return `<tr data-pub-class="${escd(g.className)}"><td><input type="checkbox" class="sard-pub-check" value="${escd(g.className)}" aria-label="Select ${escd(g.className)}"></td><td>${escd(g.className)}</td><td data-server-status>Checking Supabase…</td><td data-server-revision>—</td><td>${snap?escd(snap.publishedAt):'—'}</td><td data-server-students>—</td><td>${snap?snap.students.length:'—'}</td><td data-server-diff>—</td><td data-draft-status>Checking…</td></tr>`}).join('');
+   host.innerHTML=`<div class="sard-dash-card"><h2>Class-wise Result Publication</h2><div class="sard-dash-actions"><button type="button" id="sardPubSelectAll">Select All</button><button type="button" id="sardPubClear">Clear</button><button type="button" class="primary" id="sardPublishSelected">Publish / Update Selected</button><button type="button" id="sardUnpublishSelected">Unpublish Selected</button></div><div class="sard-dash-table"><table><thead><tr><th>Select</th><th>Class</th><th>Supabase Status</th><th>Revision</th><th>Saved Local Snapshot At</th><th>Supabase Students</th><th>Local Students</th><th>Difference</th><th>Local changes since confirmed update</th></tr></thead><tbody>${rows}</tbody></table></div><p id="sardPubLiveStatus" role="status">Checking Supabase…</p><div class="sard-dash-actions"><button type="button" id="sardPubReload">Refresh Supabase Status</button></div><p id="sardPubMessage" role="status"></p><p><strong>Supabase status controls visibility.</strong> A saved local snapshot is retained on Unpublish and is not proof of public access. Edit/save locally first, then review and Publish / Update to send a new snapshot. If an error appears after a write, refresh status and inspect revision before retrying.</p></div>`;
    const checks=()=>[...host.querySelectorAll('.sard-pub-check')];const chosen=()=>checks().filter(x=>x.checked).map(x=>x.value);
    host.querySelector('#sardPubSelectAll').onclick=()=>checks().forEach(x=>x.checked=true);
    host.querySelector('#sardPubClear').onclick=()=>checks().forEach(x=>x.checked=false);
    const say=m=>{const e=host.querySelector('#sardPubMessage');if(e)e.textContent=m};
-   host.querySelector('#sardUnpublishSelected').onclick=()=>{const picked=chosen();if(!picked.length){say('Select at least one class.');return}const store=readPublications(),targets=picked.filter(c=>store[publicationKey(c)]);if(!targets.length){say('Selected classes are not published.');return}if(!confirm(`Unpublish ${targets.length} selected class(es)?`))return;for(const c of targets)delete store[publicationKey(c)];try{localStorage.setItem(publicationStore,JSON.stringify(store));render()}catch(e){say('Could not save: '+e.message)}};
-   host.querySelector('#sardPublishSelected').onclick=async()=>{const picked=chosen();if(!picked.length){say('Select at least one class.');return}if(!confirm(`Publish results for ${picked.length} selected class(es) on this browser only?`))return;
-     const button=host.querySelector('#sardPublishSelected');button.disabled=true;const current=q('#sardDashClass').value,store=readPublications(),done=[],failed=[];
-     for(const cl of picked){try{
-       const group=classes.find(g=>g.className===cl);if(!group)throw Error('Class not found');
-       q('#sardDashClass').value=cl;await selectClass();if(!state)throw Error('Marks not loaded');
-       const all=results(),footer=readFooter();if(!all.length)throw Error('No students');
-       if(!footer.teacher||!footer.date)throw Error('Save Class Teacher and Date of Issue in Grade Sheets');
-       if(all.some(r=>r.status==='CHECK'))throw Error('Incomplete marks/CH');
-       if(all.some(r=>attendanceFor(r.student).status!=='READY'))throw Error('Missing attendance');
-       const subjectOrder=orderedSubjects(),chSettings=sardReadCH()[keyFor()]||{};
-       const students=all.map(r=>{const comps=sardBuildGradeRows(entriesFor(r.student),sardIsLowerClass(cl));const details=studentDisplayDetails(r.student);return {id:r.student.student_id,name:r.student.student_name||r.student.name,roll:details.roll,symbol:details.symbol,iemis:details.iemis,gpa:r.gpa,status:r.status,subjects:r.subjects,attendance:attendanceFor(r.student),gradeRows:comps.sort((a,b)=>subjectOrder.indexOf(a.subject)-subjectOrder.indexOf(b.subject)).map(s=>({subject:displaySubject(s.subject),inCH:chSettings[s.subject.toLowerCase()]?.IN??null,thCH:chSettings[s.subject.toLowerCase()]?.TH??null,inGP:s.IN.gp,inGrade:s.IN.grade,thGP:s.TH.gp,thGrade:s.TH.grade,final:r.subjects.find(t=>t.subject===s.subject)?.final||'CHECK'}))}});
-       const tplGroup=groupOfClass(cl),tplRaw=localStorage.getItem('sa-result-template-group-v1-'+tplGroup)||(tplGroup==='lower'?localStorage.getItem(LEGACY_TEMPLATE_KEY):null);const tpl=tplRaw?JSON.parse(tplRaw):defaults();
-       store[publicationKey(cl)]={academicYear:year,term:'second',className:cl,teacher:footer.teacher,dateOfIssue:footer.date,publishedAt:new Date().toISOString(),templateGroup:tplGroup,template:tpl,students};done.push(cl);
-     }catch(err){failed.push(cl+': '+(err?.message||'Unknown error'))}}
-     try{localStorage.setItem(publicationStore,JSON.stringify(store))}catch(err){failed.push('Local save failed: '+err.message);done.length=0}
-     q('#sardDashClass').value=current;await selectClass();render();const status=q('#sardDashStatus');status.textContent=`Locally published: ${done.join(', ')||'none'}. ${failed.length?'Not published: '+failed.join(' | '):''}`;
+   // Single-step official publication: the server must confirm the write before local status changes.
+   const publicationApi=()=>{const api=window.saResultPublicationApi;if(!api||!api.upsert||!api.unpublish||!api.list)throw Error('Publication connection missing. Load 04_ADMIN_LOCAL_SYNC.js after result-grade-designer.js.');return api};
+   let writing=false;
+   const working=(busy)=>{writing=busy;host.querySelectorAll('#sardPublishSelected,#sardUnpublishSelected,#sardPubReload').forEach(b=>{if(b)b.disabled=busy||((b.id!=='sardPubReload')&&(loadingStatus||!!serverError))})};
+   const safeReload=async()=>{try{await fetchServer()}catch(e){say('Status refresh failed: '+String(e?.message||e))}};
+   const verifyChange=async(cl,shouldBePublished,previousRevision=null,expectedStudents=null)=>{
+     const data=await publicationApi().list();
+     if(!Array.isArray(data))throw Error('Supabase verification returned invalid data.');
+     const key=v=>String(v??'').trim().toLowerCase();
+     const match=data.find(r=>key(r.academic_year??r.academicYear)===key(year)&&key(r.term_key??r.term??'second')==='second'&&key(r.class_name??r.className)===key(cl));
+     if(!match)throw Error('Supabase did not return the publication record. Do not retry before checking SQL.');
+     if(!!isPublished(match)!==shouldBePublished)throw Error('Supabase did not confirm the requested publication status. Refresh and check before retrying.');
+     // A successful RPC response alone is not enough to claim the update was saved.
+     // Only compare fields that the installed admin list RPC actually returns.
+     if(previousRevision!==null && match.revision!==undefined && match.revision!==null && Number(match.revision)<previousRevision)throw Error('Supabase revision moved backward; review server state before retrying.');
+     if(shouldBePublished){
+       if(!match)throw Error('Supabase publication record was not returned. Verify in SQL before retrying.');
+       const rawRevision=match.revision;
+       if(rawRevision===undefined||rawRevision===null||!Number.isInteger(Number(rawRevision))||Number(rawRevision)<1)throw Error('Supabase revision is missing or invalid. Do not retry before checking.');
+       if(previousRevision!==null&&Number(rawRevision)<=previousRevision)throw Error('Publication revision did not advance. Refresh Supabase and inspect before retrying.');
+       if(expectedStudents!==null){
+         const count=match.student_count??match.studentCount;
+         if(count===undefined||count===null||!Number.isInteger(Number(count))||Number(count)!==expectedStudents)throw Error('Supabase student count was missing or mismatched. Verify before retrying.');
+       }
+     }
+     return match;
    };
+   host.querySelector('#sardUnpublishSelected').onclick=async()=>{
+     if(writing)return;
+     const picked=chosen();if(!picked.length){say('Select at least one class.');return}
+     if(loadingStatus||serverError||!serverRows){say('Supabase status is not verified. Refresh first.');return}
+     const store=readPublications(),targets=picked.filter(c=>isPublished(serverMatch(c)));
+     if(!targets.length){say('Selected classes are not published in Supabase.');return}
+     if(targets.length!==picked.length){say('Selection includes unpublished classes. Select only published classes to unpublish.');return}
+     if(!confirm(`Unpublish ${targets.length} class(es) from Supabase? Parents and staff will no longer see their results. Original marks will not be deleted.`))return;
+     working(true);const done=[],failed=[];
+     try{const api=publicationApi();for(const cl of targets){try{
+       const before=serverMatch(cl);
+       await api.unpublish({academicYear:year,term:'second',className:cl});
+       await verifyChange(cl,false,before&&Number.isFinite(Number(before.revision))?Number(before.revision):null);
+       // Preserve last known local snapshot for recovery; public visibility is determined by Supabase.
+       done.push(cl);
+     }catch(e){failed.push(cl+': '+String(e?.message||e)+' — Refresh Supabase Status and verify SQL before retrying.');break}}}
+     catch(e){failed.push(String(e?.message||e))}
+     finally{working(false)}
+     await safeReload();say(`Unpublished: ${done.join(', ')||'none'}. ${failed.length?'Errors: '+failed.join(' | '):''}`);q('#sardDashStatus').textContent=`Supabase unpublished: ${done.join(', ')||'none'}. ${failed.length?'Errors: '+failed.join(' | '):''}`;
+   };
+   host.querySelector('#sardPublishSelected').onclick=async()=>{
+     if(writing)return;
+     const picked=chosen();if(!picked.length){say('Select at least one class.');return}
+     if(loadingStatus||serverError||!serverRows){say('Supabase status is not verified. Refresh first.');return}
+     if(picked.length>1&&!confirm(`You selected ${picked.length} classes. Each class publishes separately (not a single database transaction). If a write fails, previously completed classes may remain published. Continue?`))return;
+     const review=picked.map(cl=>{const rec=serverMatch(cl);const snap=readPublications()[publicationKey(cl)];return cl+' — '+(isPublished(rec)?'UPDATE EXISTING RESULT (rev '+String(rec?.revision??'?')+')':'PUBLISH NEW RESULT')+(snap?.students?.length?' · local snapshot '+snap.students.length+' students':'');}).join('\n');
+     if(!confirm('CONFIRM DIRECT SUPABASE PUBLICATION\n\n'+review+'\n\nThis updates what parents/staff may see immediately. Review marks, attendance and Grade Sheet before confirming.'))return;
+     working(true);const current=q('#sardDashClass').value,store=readPublications(),done=[],failed=[];
+     try{
+       const api=publicationApi();
+       for(const cl of picked){try{
+         const group=classes.find(g=>g.className===cl);if(!group)throw Error('Class not found');
+         q('#sardDashClass').value=cl;await selectClass();if(!state)throw Error('Marks not loaded');
+         const all=results(),footer=readFooter();if(!all.length)throw Error('No students');
+         if(!footer.teacher||!footer.date)throw Error('Save Class Teacher and Date of Issue in Grade Sheets');
+         if(all.some(r=>r.status==='CHECK'))throw Error('Incomplete marks/CH');
+         if(all.some(r=>attendanceFor(r.student).status!=='READY'))throw Error('Missing attendance');
+         const subjectOrder=orderedSubjects(),chSettings=sardReadCH()[keyFor()]||{};
+         const students=all.map(r=>{const comps=sardBuildGradeRows(entriesFor(r.student),sardIsLowerClass(cl));const details=studentDisplayDetails(r.student);return {id:r.student.student_id,name:r.student.student_name||r.student.name,roll:details.roll,symbol:details.symbol,iemis:details.iemis,gpa:r.gpa,status:r.status,subjects:r.subjects,attendance:attendanceFor(r.student),gradeRows:comps.sort((a,b)=>subjectOrder.indexOf(a.subject)-subjectOrder.indexOf(b.subject)).map(s=>({subject:displaySubject(s.subject),inCH:chSettings[s.subject.toLowerCase()]?.IN??null,thCH:chSettings[s.subject.toLowerCase()]?.TH??null,inGP:s.IN.gp,inGrade:s.IN.grade,thGP:s.TH.gp,thGrade:s.TH.grade,final:r.subjects.find(t=>t.subject===s.subject)?.final||'CHECK'}))}});
+         const tplGroup=groupOfClass(cl),tplRaw=localStorage.getItem('sa-result-template-group-v1-'+tplGroup)||(tplGroup==='lower'?localStorage.getItem(LEGACY_TEMPLATE_KEY):null);const tpl=tplRaw?JSON.parse(tplRaw):defaults();
+         if(!valid(tpl))throw Error('Grade Sheet Design invalid. Check saved template.');
+         const snapshot={academicYear:year,term:'second',className:cl,teacher:footer.teacher,dateOfIssue:footer.date,publishedAt:new Date().toISOString(),templateGroup:tplGroup,template:tpl,students};
+         const beforeRecord=serverMatch(cl);
+         const beforeRevision=beforeRecord&&Number.isFinite(Number(beforeRecord.revision))?Number(beforeRecord.revision):null;
+         await api.upsert(snapshot); // Require confirmation BEFORE marking the class as locally published.
+         const confirmed=await verifyChange(cl,true,beforeRevision,students.length);
+         // A failure to store this advisory fingerprint must never undo a successful server write.
+         try{markPublishedBaseline(cl,confirmed.revision)}catch(baselineError){failed.push(cl+': published, but local change tracking could not save: '+baselineError.message)}
+         store[publicationKey(cl)]=snapshot;
+         try{localStorage.setItem(publicationStore,JSON.stringify(store))}catch(localErr){failed.push(cl+': Supabase updated, but local copy could not save: '+localErr.message)}
+         done.push(cl);
+       }catch(err){failed.push(cl+': '+(err?.message||'Unknown error')+' — A write may already have succeeded. Refresh Supabase Status and verify SQL before retrying.');break}}
+     }catch(err){failed.push(String(err?.message||err))}
+     finally{q('#sardDashClass').value=current;try{await selectClass()}catch{}working(false)}
+     // Rebuild the publication tab after asynchronous class selections, then display the verified status.
+     render();const finalMsg=`Supabase verified published/updated: ${done.join(', ')||'none'}. ${failed.length?'Check required: '+failed.join(' | '):''}`;q('#sardDashStatus').textContent=finalMsg;const out=q('#sardPubMessage');if(out)out.textContent=finalMsg;
+   };
+   host.querySelector('#sardPubReload').onclick=fetchServer;
+   fetchServer();
    return;
  }
  if(!state){host.innerHTML='<div class="sard-dash-card">Select an academic year and class to view its submitted marks.</div>';return}
@@ -580,7 +701,42 @@ function sardOpenDashboard(){
   host.querySelector('#sardRegisterEdit').onclick=()=>{
    const editHost=host.querySelector('#sardRegisterEditHost');editHost.innerHTML=`<h3>Edit Student Marks</h3><label>Student <select id="sardRegStudent">${rows.map((st,i)=>`<option value="${i}">${escd(st.student_name||st.name||st.student_id)}</option>`).join('')}</select></label><div id="sardRegFields"></div>`;
    const studentSel=editHost.querySelector('#sardRegStudent');const buildFields=()=>{const st=rows[Number(studentSel.value)],all=entriesFor(st);editHost.querySelector('#sardRegFields').innerHTML=`<div class="sard-dash-table"><table><thead><tr><th>Subject</th><th>Component</th><th>Full Marks</th><th>Original</th><th>Verified Marks</th></tr></thead><tbody>${all.map((v,i)=>`<tr><td>${escd(displaySubject(v.subject))}</td><td>${escd(v.component)}</td><td>${escd(v.full)}</td><td>${escd(v.original)}</td><td><input data-edit="${i}" value="${escd(v.marks)}" type="text" inputmode="decimal" style="width:85px"></td></tr>`).join('')}</tbody></table></div><label>Correction Reason <input id="sardRegReason" placeholder="Required for any marks change"></label><div class="sard-dash-actions"><button class="primary" id="sardRegSave">Save Corrections</button></div>`;
-   editHost.querySelector('#sardRegSave').onclick=()=>{const store=sardReadRegister(),key=keyFor(),bucket=store[key]||{subjects:{},edits:{}},updates=[];bucket.edits=bucket.edits||{};for(const [i,v] of all.entries()){const value=editHost.querySelector(`[data-edit="${i}"]`).value.trim();if(value===String(v.marks))continue;const full=Number(v.full);if(!value||!Number.isFinite(Number(value))||Number(value)<0||!Number.isFinite(full)||Number(value)>full){alert(`Invalid marks for ${v.subject} ${v.component}.`);return}updates.push({id:[st.student_id,v.subject,v.componentId].join('||'),value:Number(value),from:v.marks})}if(!updates.length){alert('No marks changed.');return}const reason=editHost.querySelector('#sardRegReason').value.trim();if(reason.length<5){alert('Enter a correction reason (at least 5 characters).');return}for(const u of updates){const previous=bucket.edits[u.id];bucket.edits[u.id]={value:u.value,reason,updatedAt:new Date().toISOString(),history:[...(previous?.history||[]),{from:u.from,to:u.value,reason,at:new Date().toISOString()}]}}store[key]=bucket;try{localStorage.setItem(sardRegisterStore,JSON.stringify(store));q('#sardDashStatus').textContent=`Saved ${updates.length} local correction(s). Excel and GPA use corrected values. Not synced to Supabase.`;render()}catch(e){alert('Cannot save: '+e.message)}};
+   editHost.querySelector('#sardRegSave').onclick=()=>{
+     const store=sardReadRegister(), key=keyFor();
+     const bucket=store[key]&&typeof store[key]==='object'?{...store[key]}:{};
+     bucket.edits={...(bucket.edits||{})};
+     const updates=[];
+     for(const [i,v] of all.entries()){
+       const input=editHost.querySelector(`[data-edit="${i}"]`);
+       if(!input){alert('Marks input is missing. Reopen Edit Student Marks.');return;}
+       const value=input.value.trim(), old=String(v.marks??'').trim();
+       if(value===old || (value!==''&&old!==''&&Number.isFinite(Number(value))&&Number.isFinite(Number(old))&&Number(value)===Number(old)))continue;
+       const full=Number(v.full), mark=Number(value);
+       if(!value||!Number.isFinite(mark)||mark<0||!Number.isFinite(full)||full<=0||mark>full){alert(`Invalid marks for ${v.subject} / ${v.component}. Enter a number between 0 and ${v.full}.`);input.focus();return;}
+       updates.push({id:[st.student_id,v.subject,v.componentId].join('||'),value:mark,from:v.marks,subject:v.subject,component:v.component});
+     }
+     if(!updates.length){alert('No marks changed. Enter a different value in Verified Marks.');return;}
+     const reason=editHost.querySelector('#sardRegReason')?.value.trim()||'';
+     if(reason.length<5){alert('Correction Reason is required (at least 5 characters).');editHost.querySelector('#sardRegReason')?.focus();return;}
+     const now=new Date().toISOString();
+     for(const u of updates){const previous=bucket.edits[u.id];bucket.edits[u.id]={value:u.value,reason,updatedAt:now,history:[...(previous?.history||[]),{from:u.from,to:u.value,reason,at:now}]};}
+     store[key]=bucket;
+     try{
+       localStorage.setItem(sardRegisterStore,JSON.stringify(store));
+       // Verify that the actual saved values can be read back before announcing success.
+       const saved=JSON.parse(localStorage.getItem(sardRegisterStore)||'null');
+       if(!saved?.[key]?.edits||updates.some(u=>Number(saved[key].edits[u.id]?.value)!==u.value))throw Error('Saved marks could not be verified.');
+       const studentIndex=Number(studentSel.value);
+       render();
+       // Restore the edit panel with the same student so the corrected marks are visible immediately.
+       const reopen=host.querySelector('#sardRegisterEdit');
+       reopen?.click();
+       const selector=host.querySelector('#sardRegStudent');
+       if(selector){selector.value=String(studentIndex);selector.dispatchEvent(new Event('change'));}
+       q('#sardDashStatus').textContent=`Saved and verified ${updates.length} correction(s) for ${st.student_name||st.name||st.student_id}. Register / GPA recalculated locally. Published Supabase result is NOT updated yet.`;
+       alert(`Saved and verified ${updates.length} marks correction(s). Check the updated Verified Marks. To show this in the published result, use Publish / Update Selected.`);
+     }catch(e){alert('Correction save/verification failed: '+e.message+'. Do not publish until corrected marks are visible.');}
+   };
    };studentSel.onchange=buildFields;buildFields();
   };return;
  }
