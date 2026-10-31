@@ -7422,3 +7422,6 @@ body.dark-mode .gallery-load-more-btn{
 #adminBirthdayNotice[hidden]{display:none!important}
 #adminBirthdayNotice{margin:12px 0 18px;padding:13px 18px;border:1px solid #e7c77c;border-radius:12px;background:linear-gradient(100deg,#fff4d8,#fffaf0);color:#183b64;font-size:16px;font-weight:800;line-height:1.6}
 #adminBirthdayNotice>div+div{margin-top:5px}
+#approvedStaffLeaveList .approved-leave-name.leave-ended {
+    color: red;
+}

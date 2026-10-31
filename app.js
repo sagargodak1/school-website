@@ -4476,12 +4476,50 @@ async function loadApprovedStaffLeaves(){
         return;
     }
 
-    host.innerHTML=rows.map(row=>`
-        <div class="approved-leave-row">
-            <span class="approved-leave-name">${escapeHtml(formatLeaveValue(row.staff_name,"Staff"))}</span>
-            <span class="approved-leave-date">${escapeHtml(formatApprovedLeaveDate(row))}</span>
-        </div>
-    `).join("");
+       // B.S. मितिलाई तुलना गर्न मिल्ने एउटै ढाँचामा मिलाउने
+    function leaveDateKey(value){
+        const text=String(value??"").trim()
+            .replace(/[०-९]/g, digit=>"०१२३४५६७८९".indexOf(digit));
+
+        const match=text.match(/^([0-9]{4})[-/]([0-9]{1,2})[-/]([0-9]{1,2})$/);
+if(!match) return "";
+
+        const month=Number(match[2]);
+        const day=Number(match[3]);
+        if(month<1 || month>12 || day<1 || day>32) return "";
+
+        return `${match[1]}-${match[2].padStart(2,"0")}-${match[3].padStart(2,"0")}`;
+    }
+
+    // विद्यालयको प्रणालीबाट आजको B.S. मिति लिने
+    let todayBs="";
+    try{
+        const result=await db.rpc("sa_today_bs");
+        if(result.error) throw result.error;
+
+        let value=result.data;
+        if(Array.isArray(value)) value=value[0];
+        if(value && typeof value==="object") value=Object.values(value)[0];
+
+        todayBs=leaveDateKey(value);
+    }catch(error){
+        console.warn("आजको B.S. मिति लिन सकिएन:",error);
+    }
+
+    host.innerHTML=rows.map(row=>{
+        const endDate=leaveDateKey(
+            row.leave_to_bs || row.leave_from_bs
+        );
+
+        const ended=!!todayBs && !!endDate && endDate<todayBs;
+
+        return `
+            <div class="approved-leave-row">
+                <span class="approved-leave-name${ended?" leave-ended":""}">${escapeHtml(formatLeaveValue(row.staff_name,"Staff"))}</span>
+                <span class="approved-leave-date">${escapeHtml(formatApprovedLeaveDate(row))}</span>
+            </div>
+        `;
+    }).join("");
 }
 
 /* Add the staff history area once. */
