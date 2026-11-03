@@ -1,0 +1,110 @@
+/* ST. AUGUSTINE LESSON PLAN STUDIO — scoped stylesheet, does not change older modules */
+#lessonPlanPopup.lp-overlay{display:none;position:fixed;inset:0;z-index:250000;overflow-y:auto;background:rgba(4,20,42,.84);padding:18px;font-family:Arial,'Segoe UI',sans-serif;color:#24394e}
+#lessonPlanPopup .lp-shell{max-width:1240px;margin:10px auto 25px;background:#f2f7fd;border-radius:18px;padding:22px;min-height:85vh;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+#lessonPlanPopup *{box-sizing:border-box}
+#lessonPlanPopup .lp-top-actions{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;margin:0 0 14px}
+#lessonPlanPopup button,#lessonPlanPopup .lp-import{display:inline-block;cursor:pointer;border:1px solid #c7d9eb;background:white;color:#123c69;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:750;text-decoration:none;line-height:1.4}
+#lessonPlanPopup button:hover,#lessonPlanPopup .lp-import:hover{background:#e3effa}
+#lessonPlanPopup button:focus-visible,#lessonPlanPopup input:focus-visible,#lessonPlanPopup select:focus-visible,#lessonPlanPopup textarea:focus-visible{outline:3px solid #6ba7dd;outline-offset:2px}
+#lessonPlanPopup button.lp-danger{color:#b53140}
+#lessonPlanPopup .lp-heading{background:linear-gradient(120deg,#103960,#1c6da8);border-radius:14px;color:#fff;padding:22px 25px;margin-bottom:13px}
+#lessonPlanPopup .lp-heading h2{color:#fff;font-size:24px;margin:0 0 6px;line-height:1.3}
+#lessonPlanPopup .lp-heading small{font-size:10px;letter-spacing:.06em;background:#e7f6ed;color:#176141;border-radius:15px;padding:5px 8px;vertical-align:middle}
+#lessonPlanPopup .lp-heading p{font-size:13px;color:#e3f2ff;margin:0}
+#lessonPlanPopup .lp-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+#lessonPlanPopup .lp-tabs button{background:#fff;padding:12px 14px}
+#lessonPlanPopup .lp-tabs button.active{background:#123c69;color:#fff;border-color:#123c69}
+#lessonPlanPopup .lp-context{display:grid;grid-template-columns:1fr 1fr 1.5fr auto;gap:12px;align-items:end;background:white;border:1px solid #d7e4ef;padding:17px;border-radius:12px;margin:10px 0}
+#lessonPlanPopup label{font-size:12px;font-weight:700;display:flex;flex-direction:column;gap:6px;color:#445a70}
+#lessonPlanPopup input:not([type=file]),#lessonPlanPopup select,#lessonPlanPopup textarea{background:#fff;color:#24394e;display:block;width:100%;border:1px solid #bfd1df;border-radius:8px;font:inherit;font-size:14px;padding:10px;min-height:40px}
+#lessonPlanPopup textarea{resize:vertical}
+#lessonPlanPopup .lp-context button,#lessonPlanPopup form button[type=submit]{background:#123c69;color:#fff;border-color:#123c69;min-height:40px}
+#lessonPlanPopup .lp-msg{color:#266348;font-size:12px;min-height:20px;margin:7px 2px}
+#lessonPlanPopup .lp-msg.lp-error{color:#b53140}
+#lessonPlanPopup .lp-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+#lessonPlanPopup .lp-stats>div{background:#fff;border:1px solid #d7e4ef;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:7px}
+#lessonPlanPopup .lp-stats b{font-size:29px;color:#123c69}
+#lessonPlanPopup .lp-stats small{color:#64768b;font-size:12px}
+#lessonPlanPopup .lp-card{background:#fff;border:1px solid #d7e4ef;border-radius:12px;padding:20px;margin:14px 0;min-width:0}
+#lessonPlanPopup .lp-card h3{font-size:17px;color:#123c69;margin:0 0 16px}
+#lessonPlanPopup .lp-card.lp-tip{background:#edf5ff;font-size:13px;line-height:1.6}
+#lessonPlanPopup .lp-assignment-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#lessonPlanPopup .lp-assignment-list button{text-align:left;display:flex;flex-direction:column;gap:6px;padding:17px;border:1px solid #d0e2f3;background:#f8fbff}
+#lessonPlanPopup .lp-assignment-list strong{color:#123c69;font-size:14px}
+#lessonPlanPopup .lp-assignment-list span{font-size:14px}
+#lessonPlanPopup .lp-assignment-list small{color:#60788d;font-weight:400}
+#lessonPlanPopup .lp-inline-form{display:grid;grid-template-columns:1fr 2fr auto;gap:12px;align-items:end}
+#lessonPlanPopup .lp-week-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+#lessonPlanPopup .lp-wide{grid-column:1/-1}
+#lessonPlanPopup .lp-note{margin:12px 0 0;color:#63768b;line-height:1.6;font-size:12px}
+#lessonPlanPopup .lp-table-wrap{overflow-x:auto}
+#lessonPlanPopup table{width:100%;border-collapse:collapse;min-width:660px;font-size:13px}
+#lessonPlanPopup th{background:#edf4fb;text-align:left;color:#47627b;font-size:11px;text-transform:uppercase}
+#lessonPlanPopup td,#lessonPlanPopup th{padding:10px 12px;border-bottom:1px solid #e2eaf1;vertical-align:top;line-height:1.65}
+#lessonPlanPopup .lp-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#lessonPlanPopup .lp-row h3{margin:0}
+#lessonPlanPopup .lp-term{border:1px solid #e1e9f0;border-radius:10px;margin:15px 0;overflow:hidden}
+#lessonPlanPopup .lp-term>h4{background:#e8f2fd;color:#123c69;padding:12px 14px;margin:0;font-size:14px}
+#lessonPlanPopup .lp-term>p{padding:12px}
+#lessonPlanPopup .lp-unit{padding:14px;border-top:1px solid #e1e9f0}
+#lessonPlanPopup .lp-unit strong{color:#173b62}
+#lessonPlanPopup .lp-unit ol{margin:9px 0 0 24px;padding:0;line-height:2}
+#lessonPlanPopup .lp-unit li{padding:4px 0;border-bottom:1px dotted #e5ecf4}
+#lessonPlanPopup .lp-import input{max-width:170px;font-size:11px}
+#lessonPlanPopup .lp-print-head{display:none}
+#lessonPlanPopup .lp-week-form button{margin-right:8px}
+#staffDashboardPopup .staff-dashboard-action.lesson-plan-action{background:linear-gradient(135deg,#eef8ff,#e1f3ff);color:#123c69}
+@media(max-width:900px){#lessonPlanPopup .lp-context{grid-template-columns:repeat(2,minmax(0,1fr))}#lessonPlanPopup .lp-assignment-list{grid-template-columns:repeat(2,minmax(0,1fr))}#lessonPlanPopup .lp-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){#lessonPlanPopup.lp-overlay{padding:0}#lessonPlanPopup .lp-shell{border-radius:0;margin:0;min-height:100vh;padding:12px}#lessonPlanPopup .lp-context,#lessonPlanPopup .lp-inline-form,#lessonPlanPopup .lp-week-form,#lessonPlanPopup .lp-assignment-list{grid-template-columns:1fr}#lessonPlanPopup .lp-wide{grid-column:auto}#lessonPlanPopup .lp-heading h2{font-size:20px}#lessonPlanPopup .lp-tabs button{flex:1 1 42%;font-size:11px}}
+@media print{body:has(#lessonPlanPopup[style*="block"])> :not(#lessonPlanPopup){display:none!important}#lessonPlanPopup.lp-overlay{display:block!important;position:static!important;overflow:visible!important;padding:0!important;background:#fff!important;color:black!important}#lessonPlanPopup .lp-shell{max-width:none;min-height:0;box-shadow:none;background:white;padding:0;margin:0}#lessonPlanPopup .lp-no-print,#lessonPlanPopup .lp-tabs,#lessonPlanPopup .lp-top-actions,#lessonPlanPopup .lp-context,#lessonPlanPopup .lp-heading,#lessonPlanPopup .lp-msg,#lessonPlanPopup .lp-stats{display:none!important}#lessonPlanPopup .lp-print-head{display:block;margin-bottom:14px;text-align:center}#lessonPlanPopup .lp-print-head h2{font-size:17px}#lessonPlanPopup .lp-card{border:0;padding:0;margin:0 0 15px}#lessonPlanPopup .lp-term,#lessonPlanPopup .lp-unit{break-inside:avoid}#lessonPlanPopup table{min-width:0;font-size:10px}#lessonPlanPopup td,#lessonPlanPopup th{padding:6px}#lessonPlanPopup button{display:none!important}}
+
+/* Principal review workflow — local prototype */
+#lessonPlanPopup .lp-review-filters{display:grid;grid-template-columns:repeat(5,minmax(140px,1fr));gap:10px;margin-top:18px}
+#lessonPlanPopup .lp-review-filters label{display:block;font-size:12px;font-weight:700;color:#435a73}
+#lessonPlanPopup .lp-review-filters select,#lessonPlanPopup .lp-review-filters input{display:block;width:100%;margin-top:7px;padding:10px;border-radius:8px;border:1px solid #d9e3ec}
+#lessonPlanPopup .lp-review-card{border-left:4px solid #2c6c9f}
+#lessonPlanPopup .lp-review-detail{margin-top:14px;padding-top:12px;border-top:1px solid #e3ecf4;line-height:1.7}
+#lessonPlanPopup .lp-review-detail p{margin:8px 0}
+#lessonPlanPopup .lp-review-detail textarea{width:100%;min-height:80px;display:block;padding:10px;margin:8px 0;border:1px solid #bfcfdc;border-radius:8px}
+#lessonPlanPopup .lp-review-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+#lessonPlanPopup .lp-review-note{border-left:3px solid #c7963b;background:#fff9e9;padding:9px 12px;margin:9px 0;font-size:12px}
+@media(max-width:1000px){#lessonPlanPopup .lp-review-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){#lessonPlanPopup .lp-review-filters{grid-template-columns:1fr}}
+
+/* V4: Last dashboard action. High-contrast, works in dark-mode too. */
+#staffDashboardPopup .staff-dashboard-quick-actions #staffDashboardLessonPlanAction{
+  background:linear-gradient(125deg,#124773,#236a9f)!important;
+  color:#fff!important;border:2px solid #8ccdf5!important;
+  box-shadow:0 4px 14px rgba(9,44,79,.23)!important;
+  opacity:1!important;visibility:visible!important;
+}
+#staffDashboardPopup #staffDashboardLessonPlanAction .staff-dashboard-action-copy strong,
+#staffDashboardPopup #staffDashboardLessonPlanAction .staff-dashboard-action-copy small,
+#staffDashboardPopup #staffDashboardLessonPlanAction .staff-dashboard-action-icon,
+#staffDashboardPopup #staffDashboardLessonPlanAction .staff-dashboard-action-arrow{color:#fff!important;opacity:1!important;text-shadow:none!important}
+#staffDashboardPopup #staffDashboardLessonPlanAction:hover{background:linear-gradient(125deg,#07365b,#165986)!important}
+#websiteAdminPanel #websiteAdminLessonPlanButton{background:#124773!important;color:#fff!important;border:1px solid #8ccdf5!important;font-weight:750!important}
+
+/* v14: responsive multi-subtopic syllabus and progress dashboard */
+#lessonPlanPopup .lp-title-form{grid-template-columns:1fr 2fr auto}
+#lessonPlanPopup .lp-title-form .lp-wide{grid-column:1/-1}
+#lessonPlanPopup .lp-subtopic-list{padding:7px 0 8px 10px}
+#lessonPlanPopup .lp-subtopic-line{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px dashed #d8e3ed;padding:8px 0;font-size:13px}
+#lessonPlanPopup .lp-completed-label{color:#127650;font-weight:800;margin-left:6px}
+#lessonPlanPopup .lp-incomplete-label{color:#a16e19;margin-left:6px}
+#lessonPlanPopup .lp-check-row{display:flex;flex-direction:row;align-items:flex-start;gap:12px;padding:10px 8px;border-bottom:1px solid #e3edf5;font-size:13px;cursor:pointer}
+#lessonPlanPopup .lp-check-row input[type=checkbox]{width:19px;min-width:19px;height:19px;min-height:19px;margin:0}
+#lessonPlanPopup .lp-subtopic-picker{background:#f7fbff;border:1px solid #d7e4ef;border-radius:10px;padding:14px;max-height:350px;overflow:auto}
+#lessonPlanPopup .lp-multiline{white-space:pre-line;display:inline-block;line-height:1.75}
+#lessonPlanPopup .lp-progress-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+#lessonPlanPopup .lp-progress-layout{display:flex;align-items:center;justify-content:center;gap:30px;flex-wrap:wrap;padding:15px 0}
+#lessonPlanPopup .lp-pie{width:210px;height:210px;flex:none;border-radius:50%;background:conic-gradient(#15976e 0 var(--lp-percent),#dfe8f0 var(--lp-percent) 100%);display:grid;place-items:center}
+#lessonPlanPopup .lp-pie>div{width:133px;height:133px;border-radius:50%;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 1px #dce5ef}
+#lessonPlanPopup .lp-pie strong{font-size:34px;color:#123c69}
+#lessonPlanPopup .lp-pie small{font-size:12px;color:#5d7183}
+#lessonPlanPopup .lp-progress-legend{font-size:14px;max-width:350px}
+#lessonPlanPopup .lp-progress-legend p{margin:9px 0}
+#lessonPlanPopup .lp-dot{width:12px;height:12px;display:inline-block;border-radius:50%;vertical-align:middle;margin-right:7px}
+#lessonPlanPopup .lp-dot-done{background:#15976e}#lessonPlanPopup .lp-dot-todo{background:#dfe8f0;border:1px solid #9eafbf}
+@media(max-width:760px){#lessonPlanPopup .lp-progress-filters{grid-template-columns:repeat(2,minmax(0,1fr))}#lessonPlanPopup .lp-title-form{grid-template-columns:1fr}#lessonPlanPopup .lp-subtopic-picker{max-height:290px}#lessonPlanPopup .lp-progress-layout{gap:12px}}
+@media(max-width:430px){#lessonPlanPopup .lp-progress-filters{grid-template-columns:1fr}#lessonPlanPopup .lp-subtopic-line button{padding:7px;font-size:11px}#lessonPlanPopup .lp-pie{width:175px;height:175px}#lessonPlanPopup .lp-pie>div{width:111px;height:111px}}
