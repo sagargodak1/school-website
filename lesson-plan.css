@@ -108,3 +108,17 @@
 #lessonPlanPopup .lp-dot-done{background:#15976e}#lessonPlanPopup .lp-dot-todo{background:#dfe8f0;border:1px solid #9eafbf}
 @media(max-width:760px){#lessonPlanPopup .lp-progress-filters{grid-template-columns:repeat(2,minmax(0,1fr))}#lessonPlanPopup .lp-title-form{grid-template-columns:1fr}#lessonPlanPopup .lp-subtopic-picker{max-height:290px}#lessonPlanPopup .lp-progress-layout{gap:12px}}
 @media(max-width:430px){#lessonPlanPopup .lp-progress-filters{grid-template-columns:1fr}#lessonPlanPopup .lp-subtopic-line button{padding:7px;font-size:11px}#lessonPlanPopup .lp-pie{width:175px;height:175px}#lessonPlanPopup .lp-pie>div{width:111px;height:111px}}
+
+/* v18: title-first weekly subtitle selector; scoped to Lesson Plan only. */
+#lessonPlanPopup .lp-title-first-picker{max-height:440px;overflow:auto}
+#lessonPlanPopup .lp-title-choice{background:#fff;border:1px solid #d8e4ef;border-radius:10px;margin:9px 0;overflow:hidden}
+#lessonPlanPopup .lp-title-toggle{display:flex;align-items:center;gap:12px;padding:13px 12px;cursor:pointer;color:#163c64;font-size:14px}
+#lessonPlanPopup .lp-title-toggle>input{width:20px;min-width:20px;height:20px;min-height:20px;margin:0}
+#lessonPlanPopup .lp-title-toggle>span:nth-child(2){display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+#lessonPlanPopup .lp-title-toggle small{color:#667b91;font-size:12px}
+#lessonPlanPopup .lp-title-subtitles{padding:3px 12px 10px 38px;background:#f4f9fe;border-top:1px solid #e0eaf3}
+#lessonPlanPopup .lp-title-subtitles[hidden],#lessonPlanPopup .lp-title-choice[hidden]{display:none!important}
+#lessonPlanPopup .lp-title-chevron{font-size:20px;color:#53728b}
+#lessonPlanPopup .lp-title-search-label{display:flex;flex-direction:column;gap:5px;font-weight:700;margin-top:12px}
+#lessonPlanPopup .lp-title-search-label input{width:100%;padding:10px;border-radius:8px;border:1px solid #b4c6d8;background:#fff;color:#123c69}
+@media(max-width:600px){#lessonPlanPopup .lp-title-subtitles{padding-left:16px}#lessonPlanPopup .lp-title-first-picker{max-height:55vh}}
