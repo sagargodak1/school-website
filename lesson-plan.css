@@ -122,3 +122,11 @@
 #lessonPlanPopup .lp-title-search-label{display:flex;flex-direction:column;gap:5px;font-weight:700;margin-top:12px}
 #lessonPlanPopup .lp-title-search-label input{width:100%;padding:10px;border-radius:8px;border:1px solid #b4c6d8;background:#fff;color:#123c69}
 @media(max-width:600px){#lessonPlanPopup .lp-title-subtitles{padding-left:16px}#lessonPlanPopup .lp-title-first-picker{max-height:55vh}}
+
+/* v19: Teaching-completion controls on saved weekly plans */
+#lessonPlanPopup .lp-week-completion{margin-top:10px;border:1px solid #d7e5f0;border-radius:9px;padding:10px;background:#f7fbff;min-width:220px}
+#lessonPlanPopup .lp-week-completion>strong{display:block;font-size:12px;color:#123c69;margin-bottom:7px}
+#lessonPlanPopup .lp-completion-item{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px dashed #d8e3ed;padding:7px 0;font-size:12px}
+#lessonPlanPopup .lp-completion-item button{font-size:11px;padding:6px 9px;white-space:nowrap;background:#e9f5ef;color:#146c4b;border-color:#a5d8c1}
+#lessonPlanPopup .lp-completion-item button:hover{background:#d4ebdf}
+@media print{#lessonPlanPopup .lp-completion-item button{display:none!important}}
