@@ -7434,3 +7434,16 @@ body.dark-mode .gallery-load-more-btn{
 
 /* SOCIAIR production dashboard and permission panels */
 .in-section{padding:20px 24px;border-top:1px solid #dbe5f2}.in-section h3{color:#17456f;margin:0 0 12px}.in-dashboard-cards{padding:16px;margin-top:12px;border:1px solid #c4d9ef;border-radius:12px;background:#eef6ff;color:#123c69;font-weight:700;line-height:1.8}.in-tabs button[hidden],.in-section[hidden]{display:none!important}.in-history-row pre{max-height:260px;overflow:auto}.in-history-row ul{word-break:break-word}body.dark-mode .in-dashboard-cards{background:#1d3754;color:#d5eeff}body.dark-mode .in-section h3{color:#a8d8ff}@media(max-width:600px){.in-section{padding:14px}}
+
+/* SMS FIX: never show a principal-only quick action to other staff. */
+#staffDashboardPopup #inPrincipalOpen[hidden],
+#websiteAdminPanel #inAdminOpen[hidden],
+#websiteAdminPanel #inAdminAccessOpen[hidden],
+#infoNoticePopup [data-admin-only][hidden]{display:none!important;}
+/* Ensure text remains legible on principal's staff-dashboard action tile. */
+#staffDashboardPopup #inPrincipalOpen:not([hidden]){background:linear-gradient(135deg,#124374,#236ba0)!important;color:#fff!important;border:1px solid #76b5e6!important;}
+#staffDashboardPopup #inPrincipalOpen:not([hidden]) .staff-dashboard-action-copy strong,
+#staffDashboardPopup #inPrincipalOpen:not([hidden]) .staff-dashboard-action-copy small,
+#staffDashboardPopup #inPrincipalOpen:not([hidden]) .staff-dashboard-action-icon,
+#staffDashboardPopup #inPrincipalOpen:not([hidden]) .staff-dashboard-action-arrow{color:#fff!important;opacity:1!important;text-shadow:none!important;}
+#staffDashboardPopup #inPrincipalOpen:not([hidden]) .staff-dashboard-action-copy small{color:#eaf5ff!important;}

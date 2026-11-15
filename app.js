@@ -12401,11 +12401,13 @@ document.addEventListener('DOMContentLoaded',()=>{setInterval(birthdayAdminNotic
 ========================================================= */
 const IN=(()=>{
  'use strict';
- const s={tab:'staff',selected:new Set(),normal:[],parents:[],sheet:null,staff:[]};
+ const s={tab:'staff',context:null,selected:new Set(),normal:[],parents:[],sheet:null,staff:[]};
  const $=id=>document.getElementById(id);
  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- function authorized(){return !!((typeof studentAdminSession!=='undefined'&&studentAdminSession&&typeof isWebsiteAdminSession==='function'&&isWebsiteAdminSession(studentAdminSession))||(typeof loggedInStaff!=='undefined'&&loggedInStaff&&typeof staffAuthSession!=='undefined'&&staffAuthSession&&String(loggedInStaff.username).toLowerCase()==='joseph'));}
- function principal(){return typeof loggedInStaff!=='undefined'&&!!loggedInStaff&&typeof staffAuthSession!=='undefined'&&!!staffAuthSession&&String(loggedInStaff.username).toLowerCase()==='joseph';}
+ // IMPORTANT: keep Admin and Principal sessions separate even when both remain cached.
+ function hasAdminSession(){return !!(typeof studentAdminSession!=='undefined'&&studentAdminSession&&typeof isWebsiteAdminSession==='function'&&isWebsiteAdminSession(studentAdminSession));}
+ function principal(){return !!(typeof loggedInStaff!=='undefined'&&loggedInStaff&&typeof staffAuthSession!=='undefined'&&staffAuthSession&&String(loggedInStaff.username).toLowerCase()==='joseph'&&String(staffAuthSession.user?.email||'').toLowerCase()==='joseph@staff.staugustine.edu.np');}
+ function authorized(){return s.context==='admin'?hasAdminSession():s.context==='principal'&&principal();}
  function currentStaff(){
   const map=new Map();
   const listed=typeof STAFF_LOGIN_DIRECTORY!=='undefined'?STAFF_LOGIN_DIRECTORY:{};
@@ -12427,7 +12429,7 @@ const IN=(()=>{
  function recipients(){const rows=[];if(s.tab==='staff'){for(const st of s.staff)if(s.selected.has(st.id)&&phone(st.phone))rows.push({phone:phone(st.phone),name:st.name,source:'Staff'});}else{const entries=s.tab==='normal'?s.normal:s.parents;entries.forEach(n=>rows.push({phone:n,name:'',source:s.tab==='normal'?'Normal':'Parents'}));if($('inIncludeStaff').checked){for(const st of s.staff){const n=phone(st.phone);if(n)rows.push({phone:n,name:st.name,source:'Staff'});}}}const seen=new Map();for(const r of rows)if(!seen.has(r.phone))seen.set(r.phone,r);return [...seen.values()];}
  function units(t){if(!t)return 0;const basic=/^[\x00-\x7F]*$/.test(t);const single=basic?160:70,multi=basic?153:67;return t.length<=single?1:Math.ceil(t.length/multi);}
  function stats(){const n=recipients().length,t=$('inNoticeText').value; $('inCount').textContent=`${n} unique recipient${n===1?'':'s'}`;$('inLength').textContent=`${t.length} characters`;$('inUnits').textContent=`Estimated units: ${units(t)*n} (${units(t)} per recipient; approximate)`;}
- function isAdmin(){return !!(typeof studentAdminSession!=='undefined'&&studentAdminSession&&typeof isWebsiteAdminSession==='function'&&isWebsiteAdminSession(studentAdminSession));}
+ function isAdmin(){return s.context==='admin'&&hasAdminSession();}
  let permission=false;
  async function checkPermission(){
   const result=await sociairCall('permissions');permission=!!result.can_use;
@@ -12451,7 +12453,9 @@ const IN=(()=>{
   if(tab==='balance')await loadBalance();
   if(tab==='access')await loadAccess();
  }
- async function open(tab='staff'){
+ async function open(tab='staff', context='none'){
+  // Never infer privileged role from cached sessions. Button explicitly supplies context.
+  s.context=(context==='admin'&&hasAdminSession())?'admin':(context==='principal'&&principal())?'principal':null;
   if(!authorized()){alert('Only authenticated Website Admin or Principal may open Information Notice.');return;}
   try{await checkPermission();}catch(e){alert(e.message);return;}
   s.selected=new Set();s.normal=[];s.parents=[];s.sheet=null;
@@ -12460,7 +12464,7 @@ const IN=(()=>{
   document.querySelectorAll('[data-admin-only]').forEach(el=>el.hidden=!isAdmin());
   $('infoNoticePopup').style.display='block';document.body.style.overflow='hidden';await setTab(tab);
  }
- function close(){$('infoNoticePopup').style.display='none';document.body.style.overflow='auto';}
+ function close(){$('infoNoticePopup').style.display='none';s.context=null;document.body.style.overflow='auto';}
  function preview(){
   const r=recipients(),t=$('inNoticeText').value.trim();
   if(!t||!r.length){notify('Enter a message and choose at least one valid mobile number.');return false;}
@@ -12493,7 +12497,7 @@ const IN=(()=>{
   // LIVE SOCIAIR: only this protected Edge Function communicates with Sociair.
   async function sociairCall(action, payload={}){
    if(!authorized())throw Error('Not permitted. Sign in as Website Admin or Principal.');
-   const usingAdmin=!!(typeof studentAdminSession!=='undefined'&&studentAdminSession&&typeof isWebsiteAdminSession==='function'&&isWebsiteAdminSession(studentAdminSession));
+   const usingAdmin=isAdmin();
    const session=usingAdmin?studentAdminSession:staffAuthSession;
    const db=usingAdmin?initStudentSupabase():initStaffSupabase();
    if(!db||!session?.access_token)throw Error('Login session unavailable. Please log in again.');
@@ -12555,13 +12559,13 @@ const IN=(()=>{
   $('infoNoticePopup').addEventListener('click',e=>{if(e.target.id==='infoNoticePopup')close();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('infoNoticePopup').style.display==='block')close();});
   /* Admin + Principal buttons are inserted but shown ONLY with their respective active login. */
-  const adminTabs=document.querySelector('#websiteAdminPanel .website-admin-tabs');if(adminTabs&&!$('inAdminOpen')){const b=document.createElement('button');b.id='inAdminOpen';b.type='button';b.textContent='📣 Information Notice';b.onclick=()=>open();adminTabs.appendChild(b);}
-  const quick=document.querySelector('#staffDashboardPopup .staff-dashboard-quick-actions');if(quick&&!$('inPrincipalOpen')){const b=document.createElement('button');b.id='inPrincipalOpen';b.type='button';b.className='staff-dashboard-action information-notice';b.innerHTML='<span class="staff-dashboard-action-icon">📣</span><span class="staff-dashboard-action-copy"><strong>Information Notice</strong><small>Staff, normal & parents SMS</small></span><span class="staff-dashboard-action-arrow">→</span>';b.onclick=()=>open();quick.appendChild(b);}
-  if(adminTabs&&!$('inAdminAccessOpen')){const b=document.createElement('button');b.id='inAdminAccessOpen';b.type='button';b.textContent='🔐 Principal SMS Access';b.onclick=()=>open('access');adminTabs.appendChild(b);}
-  const update=()=>{const a=$('inAdminOpen'),p=$('inPrincipalOpen');if(a)a.hidden=!isAdmin();const m=$('inAdminAccessOpen');if(m)m.hidden=!isAdmin();if(p)p.hidden=!principal();if($('infoNoticePopup').style.display==='block'&&!authorized())close();};
+  const adminTabs=document.querySelector('#websiteAdminPanel .website-admin-tabs');if(adminTabs&&!$('inAdminOpen')){const b=document.createElement('button');b.id='inAdminOpen';b.type='button';b.textContent='📣 Information Notice';b.onclick=()=>open('staff','admin');adminTabs.appendChild(b);}
+  const quick=document.querySelector('#staffDashboardPopup .staff-dashboard-quick-actions');if(quick&&!$('inPrincipalOpen')){const b=document.createElement('button');b.id='inPrincipalOpen';b.type='button';b.className='staff-dashboard-action information-notice';b.innerHTML='<span class="staff-dashboard-action-icon">📣</span><span class="staff-dashboard-action-copy"><strong>Information Notice</strong><small>Staff, normal & parents SMS</small></span><span class="staff-dashboard-action-arrow">→</span>';b.onclick=()=>open('staff','principal');quick.appendChild(b);}
+  if(adminTabs&&!$('inAdminAccessOpen')){const b=document.createElement('button');b.id='inAdminAccessOpen';b.type='button';b.textContent='🔐 Principal SMS Access';b.onclick=()=>open('access','admin');adminTabs.appendChild(b);}
+  const update=()=>{const a=$('inAdminOpen'),p=$('inPrincipalOpen');if(a)a.hidden=!hasAdminSession();const m=$('inAdminAccessOpen');if(m)m.hidden=!hasAdminSession();if(p){p.hidden=!principal();p.setAttribute('aria-hidden',p.hidden?'true':'false');}if($('infoNoticePopup').style.display==='block'&&!authorized())close();};
   update();setInterval(update,800);document.addEventListener('visibilitychange',update);
   // Re-check a live Principal popup periodically; server enforces revocation on every action.
-  setInterval(async()=>{if(!principal() || $('infoNoticePopup').style.display!=='block')return;try{await checkPermission();}catch(e){close();alert('Access Not Granted. Please contact Admin.');}},15000);
+  setInterval(async()=>{if(s.context!=='principal'||!principal() || $('infoNoticePopup').style.display!=='block')return;try{await checkPermission();}catch(e){close();alert('Access Not Granted. Please contact Admin.');}},15000);
  }
  document.addEventListener('DOMContentLoaded',setup);
  return {open,close};
