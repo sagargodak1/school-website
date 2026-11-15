@@ -12560,9 +12560,40 @@ const IN=(()=>{
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('infoNoticePopup').style.display==='block')close();});
   /* Admin + Principal buttons are inserted but shown ONLY with their respective active login. */
   const adminTabs=document.querySelector('#websiteAdminPanel .website-admin-tabs');if(adminTabs&&!$('inAdminOpen')){const b=document.createElement('button');b.id='inAdminOpen';b.type='button';b.textContent='📣 Information Notice';b.onclick=()=>open('staff','admin');adminTabs.appendChild(b);}
-  const quick=document.querySelector('#staffDashboardPopup .staff-dashboard-quick-actions');if(quick&&!$('inPrincipalOpen')){const b=document.createElement('button');b.id='inPrincipalOpen';b.type='button';b.className='staff-dashboard-action information-notice';b.innerHTML='<span class="staff-dashboard-action-icon">📣</span><span class="staff-dashboard-action-copy"><strong>Information Notice</strong><small>Staff, normal & parents SMS</small></span><span class="staff-dashboard-action-arrow">→</span>';b.onclick=()=>open('staff','principal');quick.appendChild(b);}
+  // A Principal-only dashboard tile must never be created for ordinary staff.
+  // Build/remove it on active identity change instead of relying on CSS [hidden].
+  function syncPrincipalNoticeButton(){
+   const quick=document.querySelector('#staffDashboardPopup .staff-dashboard-quick-actions');
+   let button=$('inPrincipalOpen');
+   if(!quick || !principal()){
+    if(button)button.remove();
+    return;
+   }
+   if(!button){
+    button=document.createElement('button');
+    button.id='inPrincipalOpen';
+    button.type='button';
+    button.className='staff-dashboard-action information-notice';
+    button.innerHTML='<span class="staff-dashboard-action-icon">📣</span><span class="staff-dashboard-action-copy"><strong>Information Notice</strong><small>Staff, normal & parents SMS</small></span><span class="staff-dashboard-action-arrow">→</span>';
+    button.onclick=()=>open('staff','principal');
+    quick.appendChild(button);
+   }
+   // Explicit inline styles keep text legible even if an old CSS file is cached.
+   button.style.setProperty('background','linear-gradient(135deg,#124374,#236ba0)','important');
+   button.style.setProperty('color','#ffffff','important');
+   button.style.setProperty('border','1px solid #76b5e6','important');
+   button.querySelectorAll('.staff-dashboard-action-icon,.staff-dashboard-action-copy strong,.staff-dashboard-action-copy small,.staff-dashboard-action-arrow').forEach(element=>{
+    element.style.setProperty('color','#ffffff','important');
+    element.style.setProperty('opacity','1','important');
+   });
+  }
   if(adminTabs&&!$('inAdminAccessOpen')){const b=document.createElement('button');b.id='inAdminAccessOpen';b.type='button';b.textContent='🔐 Principal SMS Access';b.onclick=()=>open('access','admin');adminTabs.appendChild(b);}
-  const update=()=>{const a=$('inAdminOpen'),p=$('inPrincipalOpen');if(a)a.hidden=!hasAdminSession();const m=$('inAdminAccessOpen');if(m)m.hidden=!hasAdminSession();if(p){p.hidden=!principal();p.setAttribute('aria-hidden',p.hidden?'true':'false');}if($('infoNoticePopup').style.display==='block'&&!authorized())close();};
+  const update=()=>{
+   const a=$('inAdminOpen');if(a)a.hidden=!hasAdminSession();
+   const m=$('inAdminAccessOpen');if(m)m.hidden=!hasAdminSession();
+   syncPrincipalNoticeButton();
+   if($('infoNoticePopup').style.display==='block'&&!authorized())close();
+  };
   update();setInterval(update,800);document.addEventListener('visibilitychange',update);
   // Re-check a live Principal popup periodically; server enforces revocation on every action.
   setInterval(async()=>{if(s.context!=='principal'||!principal() || $('infoNoticePopup').style.display!=='block')return;try{await checkPermission();}catch(e){close();alert('Access Not Granted. Please contact Admin.');}},15000);

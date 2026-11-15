@@ -7447,3 +7447,10 @@ body.dark-mode .gallery-load-more-btn{
 #staffDashboardPopup #inPrincipalOpen:not([hidden]) .staff-dashboard-action-icon,
 #staffDashboardPopup #inPrincipalOpen:not([hidden]) .staff-dashboard-action-arrow{color:#fff!important;opacity:1!important;text-shadow:none!important;}
 #staffDashboardPopup #inPrincipalOpen:not([hidden]) .staff-dashboard-action-copy small{color:#eaf5ff!important;}
+
+/* SMS button v2: precise role visibility and readable contrast */
+#staffDashboardPopup #inPrincipalOpen{background:linear-gradient(135deg,#124374,#236ba0)!important;border:1px solid #76b5e6!important;color:#fff!important;}
+#staffDashboardPopup #inPrincipalOpen .staff-dashboard-action-copy strong,
+#staffDashboardPopup #inPrincipalOpen .staff-dashboard-action-copy small,
+#staffDashboardPopup #inPrincipalOpen .staff-dashboard-action-icon,
+#staffDashboardPopup #inPrincipalOpen .staff-dashboard-action-arrow{color:#fff!important;opacity:1!important;}
