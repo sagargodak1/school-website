@@ -12396,13 +12396,11 @@ document.addEventListener('DOMContentLoaded',()=>{setInterval(birthdayAdminNotic
 
 
 /* =========================================================
-   INFORMATION NOTICE — LOCAL TEST ONLY (2026-11-13)
-   No real provider call; do not treat local test as delivery.
-   Future integration must use secured server-side API/RLS.
+   INFORMATION NOTICE — SOCIAIR PRODUCTION (2026-11-15)
+   History/access are server-authorized. No local test records or token.
 ========================================================= */
 const IN=(()=>{
  'use strict';
- const KEY='saaf_notice_local_test_v1'; // Preserve existing local test history
  const s={tab:'staff',selected:new Set(),normal:[],parents:[],sheet:null,staff:[]};
  const $=id=>document.getElementById(id);
  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -12429,25 +12427,69 @@ const IN=(()=>{
  function recipients(){const rows=[];if(s.tab==='staff'){for(const st of s.staff)if(s.selected.has(st.id)&&phone(st.phone))rows.push({phone:phone(st.phone),name:st.name,source:'Staff'});}else{const entries=s.tab==='normal'?s.normal:s.parents;entries.forEach(n=>rows.push({phone:n,name:'',source:s.tab==='normal'?'Normal':'Parents'}));if($('inIncludeStaff').checked){for(const st of s.staff){const n=phone(st.phone);if(n)rows.push({phone:n,name:st.name,source:'Staff'});}}}const seen=new Map();for(const r of rows)if(!seen.has(r.phone))seen.set(r.phone,r);return [...seen.values()];}
  function units(t){if(!t)return 0;const basic=/^[\x00-\x7F]*$/.test(t);const single=basic?160:70,multi=basic?153:67;return t.length<=single?1:Math.ceil(t.length/multi);}
  function stats(){const n=recipients().length,t=$('inNoticeText').value; $('inCount').textContent=`${n} unique recipient${n===1?'':'s'}`;$('inLength').textContent=`${t.length} characters`;$('inUnits').textContent=`Estimated units: ${units(t)*n} (${units(t)} per recipient; approximate)`;}
- function setTab(tab){if(!authorized()){close();return;}s.tab=tab;document.querySelectorAll('[data-in-tab]').forEach(b=>b.classList.toggle('active',b.dataset.inTab===tab));$('inComposer').hidden=tab==='history';$('inHistoryPane').hidden=tab!=='history';['staff','normal','parents'].forEach(x=>{$('in'+x[0].toUpperCase()+x.slice(1)+'Pane').hidden=x!==tab;});$('inIncludeWrap').hidden=tab==='staff'||tab==='history';$('inPreviewPanel').hidden=true;if($('inLiveResult'))$('inLiveResult').hidden=true;notify('');renderStaff();chips('inNormalList',s.normal,'normal');chips('inParentsList',s.parents,'parents');stats();if(tab==='history')renderHistory();}
- function open(){if(!authorized()){alert('Only authenticated Website Admin or Principal may open Information Notice.');return;}s.selected=new Set();s.normal=[];s.parents=[];s.sheet=null;$('inNormalInput').value='';$('inExcelFile').value='';$('inExcelConfig').hidden=true;$('inIncludeStaff').checked=false;$('inNoticeText').value='';$('infoNoticePopup').style.display='block';document.body.style.overflow='hidden';setTab('staff');}
+ function isAdmin(){return !!(typeof studentAdminSession!=='undefined'&&studentAdminSession&&typeof isWebsiteAdminSession==='function'&&isWebsiteAdminSession(studentAdminSession));}
+ let permission=false;
+ async function checkPermission(){
+  const result=await sociairCall('permissions');permission=!!result.can_use;
+  if(!permission)throw Error('Access Not Granted. Please contact Admin.');
+  return result;
+ }
+ async function setTab(tab){
+  if(!authorized()){close();return;}
+  if((tab==='balance'||tab==='access')&&!isAdmin()){notify('Admin access required.');return;}
+  if(!isAdmin()){try{await checkPermission();}catch(e){close();alert(e.message);return;}}
+  s.tab=tab;
+  document.querySelectorAll('[data-in-tab]').forEach(b=>b.classList.toggle('active',b.dataset.inTab===tab));
+  $('inComposer').hidden=['history','balance','access'].includes(tab);
+  $('inHistoryPane').hidden=tab!=='history';
+  $('inBalancePane').hidden=tab!=='balance';$('inAccessPane').hidden=tab!=='access';
+  ['staff','normal','parents'].forEach(x=>{$('in'+x[0].toUpperCase()+x.slice(1)+'Pane').hidden=x!==tab;});
+  $('inIncludeWrap').hidden=tab==='staff'||tab==='history';
+  $('inPreviewPanel').hidden=true; if($('inLiveResult'))$('inLiveResult').hidden=true;
+  notify('');renderStaff();chips('inNormalList',s.normal,'normal');chips('inParentsList',s.parents,'parents');stats();
+  if(tab==='history')await renderHistory();
+  if(tab==='balance')await loadBalance();
+  if(tab==='access')await loadAccess();
+ }
+ async function open(tab='staff'){
+  if(!authorized()){alert('Only authenticated Website Admin or Principal may open Information Notice.');return;}
+  try{await checkPermission();}catch(e){alert(e.message);return;}
+  s.selected=new Set();s.normal=[];s.parents=[];s.sheet=null;
+  $('inNormalInput').value='';$('inExcelFile').value='';$('inExcelConfig').hidden=true;
+  $('inIncludeStaff').checked=false;$('inNoticeText').value='';
+  document.querySelectorAll('[data-admin-only]').forEach(el=>el.hidden=!isAdmin());
+  $('infoNoticePopup').style.display='block';document.body.style.overflow='hidden';await setTab(tab);
+ }
  function close(){$('infoNoticePopup').style.display='none';document.body.style.overflow='auto';}
- function preview(mode="local"){const r=recipients(),t=$('inNoticeText').value.trim();if(!t||!r.length){notify('Enter a message and choose at least one valid mobile number.');return false;}const p=$('inPreviewPanel');p.hidden=false;p.textContent=`${mode==="live"?"REAL SMS PREVIEW — SENDING WILL COST BALANCE":"LOCAL TEST PREVIEW — NO SMS WILL BE SENT"}\n\nCategory: ${s.tab.toUpperCase()}\nRecipients: ${r.length}\nEstimated units: ${units(t)*r.length}\n\nMESSAGE:\n${t}\n\nRECIPIENTS:\n${r.map(x=>`${x.phone}${x.name?' — '+x.name:''} (${x.source})`).join('\n')}`;notify('Preview ready. Verify recipients carefully.');p.scrollIntoView({behavior:'smooth',block:'nearest'});return true;}
- function history(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[];}catch{return [];}}
- function save(){if(!preview())return;if(!confirm('Save this as a LOCAL TEST record? No real SMS will be sent.'))return;const rows=recipients(),t=$('inNoticeText').value.trim();const rec={id:Date.now()+'-'+Math.random().toString(36).slice(2,8),time:new Date().toISOString(),type:s.tab,author:principal()?(loggedInStaff.name||'Principal'):'Website Admin',message:t,recipients:rows,status:'TEST ONLY — NOT SENT'};try{localStorage.setItem(KEY,JSON.stringify([rec,...history()]));notify('Saved in this browser as TEST ONLY. No SMS was sent.');$('inPreviewPanel').hidden=true;}catch(e){notify('Browser storage unavailable: '+e.message);}}
- function renderHistory(){const h=history();$('inHistoryList').innerHTML=h.length?h.map(r=>`<article class="in-history-row"><label><input type="checkbox" data-history-id="${esc(r.id)}"><span><strong>${esc((r.type||'').toUpperCase())} — ${esc(r.message.slice(0,75))}</strong><br><small>${esc(r.time?new Date(r.time).toLocaleString('en-NP',{timeZone:'Asia/Kathmandu'}):'')} • ${esc(r.author)} • ${r.recipients?.length||0} recipients • NOT SENT</small></span></label><details><summary>View message and recipients</summary><pre>${esc(r.message)}</pre><ul>${(r.recipients||[]).map(x=>`<li>${esc(x.phone)} ${x.name?'— '+esc(x.name):''} (${esc(x.source)}) — TEST ONLY</li>`).join('')}</ul></details></article>`).join(''):'<p class="in-muted">No local test records yet.</p>';}
+ function preview(){
+  const r=recipients(),t=$('inNoticeText').value.trim();
+  if(!t||!r.length){notify('Enter a message and choose at least one valid mobile number.');return false;}
+  const p=$('inPreviewPanel');p.hidden=false;
+  p.textContent=`SMS PREVIEW — REAL SENDING MAY DEDUCT BALANCE\n\nCategory: ${s.tab.toUpperCase()}\nRecipients: ${r.length}\nEstimated units: ${units(t)*r.length}\n\nMESSAGE:\n${t}\n\nRECIPIENTS:\n${r.map(x=>`${x.phone}${x.name?' — '+x.name:''} (${x.source})`).join('\n')}`;
+  notify('Preview ready. Verify recipients carefully.');p.scrollIntoView({behavior:'smooth',block:'nearest'});return true;
+ }
+ async function renderHistory(){
+  const list=$('inHistoryList');list.textContent='Loading SMS history...';
+  try{
+   const data=await sociairCall('history');
+   const h=data.batches||[];
+   list.innerHTML=h.length?h.map(r=>`<article class="in-history-row"><label><input type="checkbox" data-history-id="${esc(r.request_id)}"><span><strong>${esc(String(r.category||'').toUpperCase())} — ${esc(String(r.message||'').slice(0,75))}</strong><br><small>${esc(new Date(r.created_at).toLocaleString('en-NP',{timeZone:'Asia/Kathmandu'}))} • ${esc(r.actor_email||'')} • ${Number(r.recipient_count)||0} recipients • ${esc(r.status)}</small></span></label><details><summary>View message and recipients</summary><pre>${esc(r.message)}</pre><ul>${(r.items||[]).map(x=>`<li>${esc(x.mobile)} — ${esc(x.status)}${x.provider_reason?' ('+esc(x.provider_reason)+')':''}</li>`).join('')}</ul></details></article>`).join(''):'<p class="in-muted">No SMS history records yet.</p>';
+  }catch(e){list.textContent='Could not load SMS History: '+e.message;}
+ }
+ async function loadAccess(){
+  if(!isAdmin())return;
+  $('inAccessStatus').textContent='Loading access...';
+  try{const data=await sociairCall('permissions');$('inPrincipalAccess').checked=!!data.principal_access;$('inAccessStatus').textContent=data.principal_access?'Principal Access Granted':'Principal Access Not Granted';}
+  catch(e){$('inAccessStatus').textContent=e.message;}
+ }
+ async function loadBalance(){
+  if(!isAdmin())return;
+  $('inBalanceData').textContent='Checking SMS balance...';
+  try{const data=await sociairCall('balance');$('inBalanceData').textContent=`Balance: ${data.balance} | NTC Rate: ${data.ntc_rate??'-'} | Ncell Rate: ${data.ncell_rate??'-'} | Smartcell Rate: ${data.smartcell_rate??'-'}`;}
+  catch(e){$('inBalanceData').textContent='Balance check failed: '+e.message;}
+ }
  async function readExcel(file){const name=file.name.toLowerCase();if(name.endsWith('.csv')){const text=await file.text();const rows=typeof XLSX!=='undefined'?XLSX.utils.sheet_to_json(XLSX.read(text,{type:'string'}).Sheets[XLSX.read(text,{type:'string'}).SheetNames[0]],{header:1,defval:''}):text.split(/\r?\n/).map(line=>line.split(','));return rows;}if(typeof XLSX==='undefined')throw Error('Excel reader not available; check XLSX library or use CSV.');const data=await file.arrayBuffer();const wb=XLSX.read(data,{type:'array'});return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:false});}
  function addParents(){if(!s.sheet)return;const col=Number($('inExcelColumn').value),raw=s.sheet.slice(1).map(row=>row?.[col]);const valid=addUniq(s.parents,raw);const before=s.parents.length;s.parents=valid;chips('inParentsList',s.parents,'parents');stats();notify(`Imported ${s.parents.length-before} unique valid numbers. Invalid/duplicate values skipped.`);}
- function setup(){if(!$('infoNoticePopup'))return;
-  document.querySelectorAll('[data-in-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.inTab)));
-  $('inSelectAllStaff').addEventListener('change',e=>{for(const v of s.staff){if(phone(v.phone)){if(e.target.checked)s.selected.add(v.id);else s.selected.delete(v.id);}}renderStaff();stats();});
-  $('inStaffList').addEventListener('change',e=>{const el=e.target.closest('[data-staff-id]');if(!el)return;if(el.checked)s.selected.add(el.dataset.staffId);else s.selected.delete(el.dataset.staffId);renderStaff();stats();});
-  $('inAddNumbers').addEventListener('click',()=>{const input=$('inNormalInput');const tokens=input.value.split(/[\s,;]+/).filter(Boolean);const old=s.normal.length;s.normal=addUniq(s.normal,tokens);input.value='';chips('inNormalList',s.normal,'normal');stats();notify(`Added ${s.normal.length-old} valid number(s). Invalid/duplicate entries skipped.`);});
-  $('inNormalList').addEventListener('click',removeChip);$('inParentsList').addEventListener('click',removeChip);
-  function removeChip(e){const btn=e.target.closest('[data-chip]');if(!btn)return;const key=btn.dataset.chip;const i=Number(btn.dataset.index);s[key].splice(i,1);chips(key==='normal'?'inNormalList':'inParentsList',s[key],key);stats();}
-  $('inIncludeStaff').addEventListener('change',stats);$('inNoticeText').addEventListener('input',stats);
-  $('inExcelFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{const rows=await readExcel(file);if(!rows.length)throw Error('File is empty');s.sheet=rows;const select=$('inExcelColumn');const heads=rows[0]||[];const count=Math.max(...rows.slice(0,20).map(x=>x?.length||0),heads.length);select.innerHTML=Array.from({length:count},(_,i)=>`<option value="${i}">${esc(String(heads[i]||'Column '+(i+1)))} (Column ${i+1})</option>`).join('');const suggested=heads.findIndex(h=>/mobile|phone|contact|number|cell|मोबाइल|फोन/i.test(String(h)));select.value=String(suggested>=0?suggested:0);$('inExcelConfig').hidden=false;notify(`Loaded ${Math.max(rows.length-1,0)} data rows. Select number column and click Import.`);}catch(ex){notify('Excel import error: '+ex.message);}});
-  $('inImportColumn').addEventListener('click',addParents);$('inPreview').addEventListener('click',()=>preview());$('inTestSend').addEventListener('click',save);
   // LIVE SOCIAIR: only this protected Edge Function communicates with Sociair.
   async function sociairCall(action, payload={}){
    if(!authorized())throw Error('Not permitted. Sign in as Website Admin or Principal.');
@@ -12463,18 +12505,25 @@ const IN=(()=>{
    if(!data?.ok)throw Error(data?.error||'SMS operation failed');
    return data;
   }
+
+ function setup(){if(!$('infoNoticePopup'))return;
+  document.querySelectorAll('[data-in-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.inTab)));
+  $('inSelectAllStaff').addEventListener('change',e=>{for(const v of s.staff){if(phone(v.phone)){if(e.target.checked)s.selected.add(v.id);else s.selected.delete(v.id);}}renderStaff();stats();});
+  $('inStaffList').addEventListener('change',e=>{const el=e.target.closest('[data-staff-id]');if(!el)return;if(el.checked)s.selected.add(el.dataset.staffId);else s.selected.delete(el.dataset.staffId);renderStaff();stats();});
+  $('inAddNumbers').addEventListener('click',()=>{const input=$('inNormalInput');const tokens=input.value.split(/[\s,;]+/).filter(Boolean);const old=s.normal.length;s.normal=addUniq(s.normal,tokens);input.value='';chips('inNormalList',s.normal,'normal');stats();notify(`Added ${s.normal.length-old} valid number(s). Invalid/duplicate entries skipped.`);});
+  $('inNormalList').addEventListener('click',removeChip);$('inParentsList').addEventListener('click',removeChip);
+  function removeChip(e){const btn=e.target.closest('[data-chip]');if(!btn)return;const key=btn.dataset.chip;const i=Number(btn.dataset.index);s[key].splice(i,1);chips(key==='normal'?'inNormalList':'inParentsList',s[key],key);stats();}
+  $('inIncludeStaff').addEventListener('change',stats);$('inNoticeText').addEventListener('input',stats);
+  $('inExcelFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{const rows=await readExcel(file);if(!rows.length)throw Error('File is empty');s.sheet=rows;const select=$('inExcelColumn');const heads=rows[0]||[];const count=Math.max(...rows.slice(0,20).map(x=>x?.length||0),heads.length);select.innerHTML=Array.from({length:count},(_,i)=>`<option value="${i}">${esc(String(heads[i]||'Column '+(i+1)))} (Column ${i+1})</option>`).join('');const suggested=heads.findIndex(h=>/mobile|phone|contact|number|cell|मोबाइल|फोन/i.test(String(h)));select.value=String(suggested>=0?suggested:0);$('inExcelConfig').hidden=false;notify(`Loaded ${Math.max(rows.length-1,0)} data rows. Select number column and click Import.`);}catch(ex){notify('Excel import error: '+ex.message);}});
+  $('inImportColumn').addEventListener('click',addParents);$('inPreview').addEventListener('click',preview);
   function showLive(msg){const el=$('inLiveResult');el.hidden=false;el.textContent=msg;el.scrollIntoView({block:'nearest',behavior:'smooth'});}
-  $('inBalance').addEventListener('click',async()=>{
-   const btn=$('inBalance');btn.disabled=true;notify('Checking SMS balance securely...');
-   try{const data=await sociairCall('balance');showLive(`Sociair balance: ${data.balance} | NTC rate: ${data.ntc_rate??'-'} | Ncell rate: ${data.ncell_rate??'-'}`);notify('Balance check completed.');}
-   catch(e){notify('Balance check failed: '+e.message);}finally{btn.disabled=false;}
-  });
+  $('inBalance').addEventListener('click',loadBalance);
   $('inLiveSend').addEventListener('click',async()=>{
-   if(!preview('live'))return;
+   if(!preview())return;
    const r=recipients(),message=$('inNoticeText').value.trim();
    if(r.length>30){notify('For safety, send at most 30 unique numbers per batch.');return;}
    const estimated=units(message)*r.length;
-   if(!confirm(`REAL SMS SEND\nRecipients: ${r.length}\nEstimated SMS units: ${estimated}\n\nThis may deduct your Sociair balance. Continue?`))return;
+   if(!confirm(`SEND SMS\nRecipients: ${r.length}\nEstimated SMS units: ${estimated}\n\nThis may deduct your Sociair balance. Continue?`))return;
    const btn=$('inLiveSend');btn.disabled=true;notify('Sending request. Do not click twice.');
    // New ID only for a fresh explicit send. Ambiguous provider responses are never blindly retried.
    const requestId=crypto.randomUUID();
@@ -12482,18 +12531,37 @@ const IN=(()=>{
     const data=await sociairCall('send',{request_id:requestId,category:s.tab,message,mobiles:r.map(x=>x.phone)});
     showLive(`Request: ${requestId}\nAccepted by Sociair: ${data.accepted_count}\nRejected/errors: ${data.failed_count}\nStatus: ${data.status}\nThis does not confirm delivery to the handset.\n${(data.details||[]).map(x=>x.mobile+' — '+x.status).join('\n')}`);
     notify('Provider responses recorded in Supabase. Check results; do not resend uncertain numbers without verification.');
-   }catch(e){notify('Real SMS not completed: '+e.message+' Do not immediately retry if provider outcome is uncertain.');}
+   }catch(e){notify('SMS sending not completed: '+e.message+' Do not immediately retry if provider outcome is uncertain.');}
    finally{btn.disabled=false;}
   });
   $('inHistorySelectAll').addEventListener('click',()=>{const boxes=[...$('inHistoryList').querySelectorAll('[data-history-id]')];const all=boxes.every(x=>x.checked);boxes.forEach(x=>x.checked=!all);});
-  $('inHistoryDelete').addEventListener('click',()=>{const ids=[...$('inHistoryList').querySelectorAll('[data-history-id]:checked')].map(x=>x.dataset.historyId);if(!ids.length){notify('Select test history records to delete.');return;}if(!confirm(`Delete ${ids.length} selected LOCAL TEST record(s)?`))return;localStorage.setItem(KEY,JSON.stringify(history().filter(x=>!ids.includes(x.id))));renderHistory();notify(`Deleted ${ids.length} local test record(s).`);});
+  $('inHistoryRefresh').addEventListener('click',renderHistory);
+  $('inHistoryDelete').addEventListener('click',async()=>{
+   const ids=[...$('inHistoryList').querySelectorAll('[data-history-id]:checked')].map(x=>x.dataset.historyId);
+   if(!ids.length){notify('Select history entries to delete.');return;}
+   if(!confirm(`Hide ${ids.length} selected SMS history record(s)? The audit log remains preserved.`))return;
+   const btn=$('inHistoryDelete');btn.disabled=true;
+   try{const d=await sociairCall('history_delete',{ids});notify(`${d.deleted_count} history record(s) hidden. Audit retained.`);await renderHistory();}
+   catch(e){notify('History delete failed: '+e.message);}finally{btn.disabled=false;}
+  });
+  $('inAccessSave').addEventListener('click',async()=>{
+   if(!isAdmin())return;
+   const granted=$('inPrincipalAccess').checked;
+   if(!confirm(`Are you sure you want to ${granted?'GRANT':'REVOKE'} Principal SMS access?`))return;
+   const btn=$('inAccessSave');btn.disabled=true;
+   try{const d=await sociairCall('access_set',{principal_access:granted});$('inAccessStatus').textContent=d.principal_access?'Principal Access Granted':'Principal Access Not Granted';notify('Principal SMS access saved.');}
+   catch(e){notify('Could not save access: '+e.message);await loadAccess();}finally{btn.disabled=false;}
+  });
   $('infoNoticePopup').addEventListener('click',e=>{if(e.target.id==='infoNoticePopup')close();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('infoNoticePopup').style.display==='block')close();});
   /* Admin + Principal buttons are inserted but shown ONLY with their respective active login. */
-  const adminTabs=document.querySelector('#websiteAdminPanel .website-admin-tabs');if(adminTabs&&!$('inAdminOpen')){const b=document.createElement('button');b.id='inAdminOpen';b.type='button';b.textContent='📣 Information Notice';b.onclick=open;adminTabs.appendChild(b);}
-  const quick=document.querySelector('#staffDashboardPopup .staff-dashboard-quick-actions');if(quick&&!$('inPrincipalOpen')){const b=document.createElement('button');b.id='inPrincipalOpen';b.type='button';b.className='staff-dashboard-action information-notice';b.innerHTML='<span class="staff-dashboard-action-icon">📣</span><span class="staff-dashboard-action-copy"><strong>Information Notice</strong><small>Staff, normal & parents SMS</small></span><span class="staff-dashboard-action-arrow">→</span>';b.onclick=open;quick.appendChild(b);}
-  const update=()=>{const a=$('inAdminOpen'),p=$('inPrincipalOpen');if(a)a.hidden=!(typeof studentAdminSession!=='undefined'&&studentAdminSession&&typeof isWebsiteAdminSession==='function'&&isWebsiteAdminSession(studentAdminSession));if(p)p.hidden=!principal();if($('infoNoticePopup').style.display==='block'&&!authorized())close();};
+  const adminTabs=document.querySelector('#websiteAdminPanel .website-admin-tabs');if(adminTabs&&!$('inAdminOpen')){const b=document.createElement('button');b.id='inAdminOpen';b.type='button';b.textContent='📣 Information Notice';b.onclick=()=>open();adminTabs.appendChild(b);}
+  const quick=document.querySelector('#staffDashboardPopup .staff-dashboard-quick-actions');if(quick&&!$('inPrincipalOpen')){const b=document.createElement('button');b.id='inPrincipalOpen';b.type='button';b.className='staff-dashboard-action information-notice';b.innerHTML='<span class="staff-dashboard-action-icon">📣</span><span class="staff-dashboard-action-copy"><strong>Information Notice</strong><small>Staff, normal & parents SMS</small></span><span class="staff-dashboard-action-arrow">→</span>';b.onclick=()=>open();quick.appendChild(b);}
+  if(adminTabs&&!$('inAdminAccessOpen')){const b=document.createElement('button');b.id='inAdminAccessOpen';b.type='button';b.textContent='🔐 Principal SMS Access';b.onclick=()=>open('access');adminTabs.appendChild(b);}
+  const update=()=>{const a=$('inAdminOpen'),p=$('inPrincipalOpen');if(a)a.hidden=!isAdmin();const m=$('inAdminAccessOpen');if(m)m.hidden=!isAdmin();if(p)p.hidden=!principal();if($('infoNoticePopup').style.display==='block'&&!authorized())close();};
   update();setInterval(update,800);document.addEventListener('visibilitychange',update);
+  // Re-check a live Principal popup periodically; server enforces revocation on every action.
+  setInterval(async()=>{if(!principal() || $('infoNoticePopup').style.display!=='block')return;try{await checkPermission();}catch(e){close();alert('Access Not Granted. Please contact Admin.');}},15000);
  }
  document.addEventListener('DOMContentLoaded',setup);
  return {open,close};
