@@ -12431,15 +12431,16 @@ const IN=(()=>{
  function stats(){const n=recipients().length,t=$('inNoticeText').value; $('inCount').textContent=`${n} unique recipient${n===1?'':'s'}`;$('inLength').textContent=`${t.length} characters`;$('inUnits').textContent=`Estimated units: ${units(t)*n} (${units(t)} per recipient; approximate)`;}
  function isAdmin(){return s.context==='admin'&&hasAdminSession();}
  let permission=false;
+ let openSequence=0; // Ignore stale permission responses after closing or switching identity.
  async function checkPermission(){
   const result=await sociairCall('permissions');permission=!!result.can_use;
   if(!permission)throw Error('Access Not Granted. Please contact Admin.');
   return result;
  }
- async function setTab(tab){
+ async function setTab(tab, permissionAlreadyChecked=false){
   if(!authorized()){close();return;}
   if((tab==='balance'||tab==='access')&&!isAdmin()){notify('Admin access required.');return;}
-  if(!isAdmin()){try{await checkPermission();}catch(e){close();alert(e.message);return;}}
+  if(!isAdmin() && !permissionAlreadyChecked){try{await checkPermission();}catch(e){close();alert(e.message);return;}}
   s.tab=tab;
   document.querySelectorAll('[data-in-tab]').forEach(b=>b.classList.toggle('active',b.dataset.inTab===tab));
   $('inComposer').hidden=['history','balance','access'].includes(tab);
@@ -12454,17 +12455,29 @@ const IN=(()=>{
   if(tab==='access')await loadAccess();
  }
  async function open(tab='staff', context='none'){
-  // Never infer privileged role from cached sessions. Button explicitly supplies context.
+  // The modal opens instantly, but sensitive content remains hidden until server permission succeeds.
+  const token=++openSequence;
   s.context=(context==='admin'&&hasAdminSession())?'admin':(context==='principal'&&principal())?'principal':null;
   if(!authorized()){alert('Only authenticated Website Admin or Principal may open Information Notice.');return;}
-  try{await checkPermission();}catch(e){alert(e.message);return;}
-  s.selected=new Set();s.normal=[];s.parents=[];s.sheet=null;
-  $('inNormalInput').value='';$('inExcelFile').value='';$('inExcelConfig').hidden=true;
-  $('inIncludeStaff').checked=false;$('inNoticeText').value='';
-  document.querySelectorAll('[data-admin-only]').forEach(el=>el.hidden=!isAdmin());
-  $('infoNoticePopup').style.display='block';document.body.style.overflow='hidden';await setTab(tab);
+  $('infoNoticePopup').style.display='block';document.body.style.overflow='hidden';
+  $('inOpenLoading').hidden=false;
+  $('inOpenContent').hidden=true;
+  $('inOpenLoadingMessage').textContent='Checking SMS access securely...';
+  try{
+   await checkPermission(); // One check on initial open, not two for Principal.
+   if(token!==openSequence || !authorized())return;
+   s.selected=new Set();s.normal=[];s.parents=[];s.sheet=null;
+   $('inNormalInput').value='';$('inExcelFile').value='';$('inExcelConfig').hidden=true;
+   $('inIncludeStaff').checked=false;$('inNoticeText').value='';
+   document.querySelectorAll('[data-admin-only]').forEach(el=>el.hidden=!isAdmin());
+   $('inOpenContent').hidden=false;$('inOpenLoading').hidden=true;
+   await setTab(tab,true);
+  }catch(e){
+   if(token!==openSequence)return;
+   close();alert(e.message||'Could not verify SMS access.');
+  }
  }
- function close(){$('infoNoticePopup').style.display='none';s.context=null;document.body.style.overflow='auto';}
+ function close(){++openSequence;$('infoNoticePopup').style.display='none';$('inOpenLoading').hidden=true;$('inOpenContent').hidden=false;s.context=null;document.body.style.overflow='auto';}
  function preview(){
   const r=recipients(),t=$('inNoticeText').value.trim();
   if(!t||!r.length){notify('Enter a message and choose at least one valid mobile number.');return false;}

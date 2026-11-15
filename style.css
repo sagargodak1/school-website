@@ -7454,3 +7454,13 @@ body.dark-mode .gallery-load-more-btn{
 #staffDashboardPopup #inPrincipalOpen .staff-dashboard-action-copy small,
 #staffDashboardPopup #inPrincipalOpen .staff-dashboard-action-icon,
 #staffDashboardPopup #inPrincipalOpen .staff-dashboard-action-arrow{color:#fff!important;opacity:1!important;}
+
+/* Information Notice fast open: no information content before server access succeeds. */
+#inOpenLoading[hidden],#inOpenContent[hidden]{display:none!important}
+.in-open-loading{min-height:280px;display:flex;align-items:center;justify-content:center;padding:24px}
+.in-open-loading-card{background:#fff;color:#143653;border-radius:18px;box-shadow:0 12px 40px #0004;padding:30px;text-align:center;width:min(100%,380px)}
+.in-open-loading-card strong{display:block;font-size:19px}.in-open-loading-card p{margin:12px 0 18px}
+.in-open-loading-card button{border:1px solid #9dbbd3;background:#eaf3fc;color:#143653;border-radius:8px;padding:9px 20px;font-weight:700;cursor:pointer}
+.in-open-spinner{width:32px;height:32px;margin:0 auto 14px;border:3px solid #d8e8f7;border-top-color:#17629e;border-radius:50%;animation:in-spin .7s linear infinite}
+@keyframes in-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.in-open-spinner{animation:none}}
