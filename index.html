@@ -2099,6 +2099,7 @@
             Existing website design and student portfolio photos remain unchanged.
         </div>
 
+        <button id="rdAdminEntry" type="button" class="rd-btn rd-admin-launch" onclick="openRoadDuty('admin')">🚦 ROAD DUTY CONTROL</button>
         <div class="website-admin-tabs">
             <button type="button" onclick="showWebsiteAdminTab('staff')">👨‍🏫 Staff</button>
             <button type="button" onclick="showWebsiteAdminTab('staffAccounts')">🔑 Staff Accounts</button>
@@ -2685,7 +2686,8 @@
                     <button id="staffDashboardInternalEvaluationAction" type="button" class="staff-dashboard-action internal-evaluation"
                             onclick="openInternalEvaluationHub()">Internal Evaluation</button>
                     <!-- LESSON PLAN: standalone local-test module; original actions retained -->
-                                        <button id="staffDashboardLessonPlanAction" type="button" class="staff-dashboard-action lesson-plan-action"
+                                                            <button id="staffDashboardRoadDutyAction" hidden type="button" class="staff-dashboard-action road-duty-action" onclick="openRoadDuty('staff')"><span class="staff-dashboard-action-icon">🚦</span><span class="staff-dashboard-action-copy"><strong>Road Duty</strong><small>My Turn · Rotation · Status</small></span><span class="staff-dashboard-action-arrow">→</span></button>
+<button id="staffDashboardLessonPlanAction" type="button" class="staff-dashboard-action lesson-plan-action"
                                                 onclick="openLessonPlanStudio()">
                                             <span class="staff-dashboard-action-icon">📚</span>
                                             <span class="staff-dashboard-action-copy"><strong>Lesson Plan</strong><small>Yearly &amp; Weekly Planning</small></span>
@@ -4263,5 +4265,38 @@
 <script src="10_ADMIN_TOP5_GPA.js"></script>
 <script src="11_LIVE_TEMPLATE_ADMIN_SYNC.js"></script>
 <script src="12_OPTIONAL_FIRST_ADMIN.js"></script>
+
+<!-- ROAD DUTY: secure staff-only interface. No public dashboard markup. -->
+<template id="rdSecureTemplate">
+  <div id="roadDutyPopup" class="popup rd-popup" hidden role="dialog" aria-modal="true" aria-label="Road Duty">
+    <div class="popup-box rd-panel">
+      <button type="button" class="rd-close" onclick="closeRoadDuty()" aria-label="Close">×</button>
+      <h2>Road Duty</h2>
+      <div id="rdDutyAlert" class="rd-duty-alert" hidden role="status"><strong>ROAD DUTY — YOUR TURN! DON'T FORGET.</strong><small id="rdDutyAlertDetail"></small></div>
+      <div id="rdOwnAction" aria-live="polite"></div><div id="rdNextTurn" class="rd-next-info" hidden></div>
+      <p id="rdMessage" role="status"></p>
+      <button id="rdRefresh" type="button" class="rd-btn">Refresh</button>
+      <section id="rdStaffView">
+        <h3>Duty Rotation — All Teachers</h3><div id="rdRoster"></div>
+      </section>
+      <section id="rdManage" hidden>
+        <hr><h3>Road Duty Manager</h3>
+        <h4>Select Teachers</h4><div id="rdCandidates"></div>
+        <div id="rdStartBlock" hidden class="rd-next-info"><strong>Rotation has not started.</strong> Select and order teachers, then <button id="rdStartNow" type="button" class="rd-btn">Start Rotation Now</button></div>
+        <h4>Teacher Sequence Numbers</h4><p class="rd-muted">Enter a position (1, 2, 3 ...). Other teachers move automatically.</p><div id="rdOrder"></div>
+        <h4>Review Submitted Duties</h4><div id="rdReviews"></div>
+        <h4>Open Duty — Resolve if Not Done</h4><div id="rdActiveManage"></div>
+      </section>
+      <section id="rdAdminOnly" hidden>
+        <hr><h3>Main Admin — Manager Access</h3>
+        <p class="rd-muted">Grant or revoke Road Duty Manager access only. No other website privileges.</p>
+        <div id="rdDelegates"></div>
+      </section>
+    </div>
+  </div>
+</template>
+<link rel="stylesheet" href="road-duty.css?v=8-active-green">
+<script src="road-duty.js?v=10-staff-directory" defer></script>
+
 </body>
 </html>

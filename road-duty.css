@@ -1,0 +1,64 @@
+.rd-panel{max-width:920px!important;text-align:left!important;padding:22px!important;color:#1e293b}
+.rd-panel h2{text-align:left!important;margin:0 48px 12px 0!important;font-size:25px!important;color:#123c69!important}
+.rd-panel h3{margin:24px 0 10px;color:#123c69}.rd-panel h4{margin:14px 0 8px}.rd-panel hr{margin:22px 0;border:0;border-top:1px solid #dbe3ef}
+.rd-close{position:absolute;right:14px;top:8px;font-size:30px;background:none;border:0;cursor:pointer;color:#555}
+.rd-banner{background:#e8f2ff;border-left:4px solid #2563eb;padding:12px 14px;border-radius:9px;font-size:16px;margin:10px 0}
+.rd-muted{font-size:13px;color:#64748b}.rd-line{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border-bottom:1px solid #e2e8f0;flex-wrap:wrap}
+.rd-line small{color:#475569}.rd-verified{background:#f0fdf4}.rd-submitted{background:#fffbeb}.rd-rejected{background:#fef2f2}
+.rd-btn{border:0;background:#123c69;color:#fff;border-radius:7px;padding:8px 11px;cursor:pointer;font-weight:600;margin:2px}.rd-green{background:#15803d}.rd-red{background:#b91c1c}
+.rd-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.rd-controls input{padding:10px;border:1px solid #cbd5e1;border-radius:8px;min-width:150px}
+.rd-popup .popup-box{margin:24px auto}.rd-panel input[type=checkbox]{width:20px;height:20px;accent-color:#123c69}
+.road-duty-action{background:linear-gradient(135deg,#0e7490,#155e75)!important;color:#fff!important}
+body.dark-mode .rd-panel{background:#1d2935;color:#f8fafc}body.dark-mode .rd-line{border-color:#475569}body.dark-mode .rd-panel h2,body.dark-mode .rd-panel h3{color:#93c5fd!important}body.dark-mode .rd-banner{background:#25415c}body.dark-mode .rd-muted{color:#cbd5e1}body.dark-mode .rd-verified,body.dark-mode .rd-submitted,body.dark-mode .rd-rejected{background:#283b4b}
+@media(max-width:650px){.rd-panel{padding:16px!important}.rd-panel h2{font-size:20px!important}.rd-line{align-items:flex-start}.rd-controls input{width:100%}}
+
+body.student-admin-mode #rdAdminEntry{display:inline-block!important;background:#0e7490;color:#fff;border:0;padding:10px 15px;border-radius:8px;font-weight:700;cursor:pointer}
+
+/* Security UX: Road Duty is never shown in public / logged-out state. */
+#roadDutyPopup[hidden],#roadDutyPopup:not(.rd-open){display:none!important}
+#roadDutyPopup.rd-open:not([hidden]){display:block!important}
+#staffDashboardRoadDutyAction[hidden],#rdAdminEntry[hidden],#rdManage[hidden],#rdAdminOnly[hidden]{display:none!important}
+body:not(.student-admin-mode) #rdAdminEntry{display:none!important}
+
+/* V3: dialog lives in an inert template until authenticated; no public render path. */
+#rdSecureTemplate{display:none!important}
+#roadDutyPopup[hidden]{display:none!important}
+#roadDutyPopup:not(.rd-open){display:none!important}
+#staffDashboardRoadDutyAction[hidden]{display:none!important}
+.rd-admin-launch{display:inline-block;margin:10px 0 16px}
+
+/* V4: no Nepali text, strict manager-only controls and separated teacher views. */
+#roadDutyPopup #rdManage[hidden],#roadDutyPopup #rdAdminOnly[hidden]{display:none!important}
+.rd-self-submit{background:#15803d;padding:12px 18px;margin:10px 0;font-size:15px}
+.rd-banner.rd-verified{background:#dcfce7;border-left-color:#15803d}
+.rd-banner.rd-submitted{background:#fef3c7;border-left-color:#d97706}
+.rd-banner.rd-rejected{background:#fee2e2;border-left-color:#dc2626}
+.rd-banner.rd-scheduled{background:#e8f2ff;border-left-color:#2563eb}
+
+/* V5 strict role visibility: normal staff cannot see management sections. */
+#roadDutyPopup #rdManage[hidden],#roadDutyPopup #rdAdminOnly[hidden],
+#roadDutyPopup [hidden]{display:none!important;}
+
+/* V6: assignment reminder is private to authenticated, currently assigned staff. */
+.rd-duty-alert{margin:12px 0;padding:16px;border:2px solid #d97706;border-radius:12px;
+ background:#fff7ed;color:#9a3412;text-align:center;animation:rdPulse 1.45s ease-in-out infinite}
+.rd-duty-alert strong{display:block;font-size:18px;letter-spacing:.4px}
+.rd-duty-alert small{display:block;margin-top:5px;color:#7c2d12}
+.rd-your-turn{outline:3px solid #f59e0b!important;animation:rdPulse 1.45s ease-in-out infinite}
+.rd-duty-reminder{display:block;margin-top:5px;color:#fef08a;font-weight:800;font-size:12px}
+.rd-self-submit{font-size:16px!important;min-height:44px;display:block;width:100%;margin:12px 0}
+.rd-duty-alert[hidden]{display:none!important}
+@keyframes rdPulse{0%,100%{box-shadow:0 0 0 1px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 7px rgba(245,158,11,.4)}}
+@media(prefers-reduced-motion:reduce){.rd-your-turn,.rd-duty-alert{animation:none!important}}
+body.dark-mode .rd-duty-alert{background:#422006;color:#fde68a}
+
+/* V7 persistent queue: numbered sequence and prominent active duty. */
+.rd-sequence-number{width:76px!important;min-width:76px!important;padding:8px!important;border:1px solid #94a3b8;border-radius:8px;font-weight:700;text-align:center;font-size:16px}
+.rd-active-line{background:#fff7ed;border-left:4px solid #f59e0b}
+.rd-status{font-weight:700;font-size:13px}.rd-status-active{color:#b45309}.rd-status-verified{color:#15803d}.rd-status-pending{color:#a16207}.rd-status-upcoming{color:#475569}.rd-status-skipped{color:#b91c1c}
+.rd-next-info{padding:10px 14px;margin:12px 0;background:#e8f2ff;border-radius:8px;font-size:14px}
+body.dark-mode .rd-next-info{background:#25415c}body.dark-mode .rd-active-line{background:#422006}
+
+/* V8: make the currently active teacher's name green in every staff roster. */
+.rd-current-teacher-name{color:#15803d!important;font-weight:800}
+body.dark-mode .rd-current-teacher-name{color:#86efac!important}
