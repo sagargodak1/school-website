@@ -12640,7 +12640,11 @@ const IN=(()=>{
   function available(){
     const db=typeof initStaffSupabase==="function"?initStaffSupabase():null;
     return db && typeof db.auth?.signInWithPasskey==="function" &&
-      typeof db.auth?.registerPasskey==="function" && db.auth.passkey;
+      typeof db.auth?.registerPasskey==="function" &&
+      typeof db.auth.passkey?.startRegistration==="function" &&
+      typeof db.auth.passkey?.verifyRegistration==="function" &&
+      typeof db.auth.passkey?.startAuthentication==="function" &&
+      typeof db.auth.passkey?.verifyAuthentication==="function";
   }
   function message(value){
     const el=document.getElementById("saPasskeySettingsMessage");
@@ -12655,8 +12659,96 @@ const IN=(()=>{
   function friendlyError(error){
     const code=String(error?.code||error?.error_code||"");
     if(code==="passkey_disabled")return "Passkey is not enabled in Supabase Authentication settings yet. Password login still works.";
-    if(error?.name==="NotAllowedError"||/cancel|abort/i.test(String(error?.message||"")))return "Passkey request was cancelled or timed out.";
+    if(error?.name==="NotAllowedError"||/cancel|abort/i.test(String(error?.message||"")))return "Passkey setup was cancelled, unavailable, or timed out. Check iCloud Passwords & Keychain and try Safari.";
+    if(error?.name==="SecurityError")return "Passkey domain mismatch. Check the Supabase Passkeys RP ID and website domain.";
+    if(error?.name==="NotSupportedError")return "This device/browser cannot create the requested phone passkey. Check iPhone settings.";
     return "Passkey operation failed. Check your phone, network and Supabase Passkeys setup. Password login is still available.";
+  }
+  // Supabase's one-step WebAuthn helpers currently favour cross-platform
+  // security keys. The two-step challenge/verify API lets us request the
+  // phone's platform authenticator while Supabase validates the result.
+  function base64urlBytes(value){
+    if(typeof value!=="string")throw new Error("Invalid WebAuthn challenge data.");
+    const normalized=value.replace(/-/g,"+").replace(/_/g,"/");
+    const raw=atob(normalized+"=".repeat((4-normalized.length%4)%4));
+    return Uint8Array.from(raw,c=>c.charCodeAt(0)).buffer;
+  }
+  function bytesBase64url(value){
+    const bytes=new Uint8Array(value);
+    let raw="";
+    for(const byte of bytes)raw+=String.fromCharCode(byte);
+    return btoa(raw).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
+  }
+  function creationOptions(raw){
+    if(window.PublicKeyCredential?.parseCreationOptionsFromJSON){
+      return PublicKeyCredential.parseCreationOptionsFromJSON(raw);
+    }
+    return {...raw,challenge:base64urlBytes(raw.challenge),
+      user:{...raw.user,id:base64urlBytes(raw.user.id)},
+      excludeCredentials:(raw.excludeCredentials||[]).map(c=>({...c,id:base64urlBytes(c.id)}))};
+  }
+  function requestOptions(raw){
+    if(window.PublicKeyCredential?.parseRequestOptionsFromJSON){
+      return PublicKeyCredential.parseRequestOptionsFromJSON(raw);
+    }
+    return {...raw,challenge:base64urlBytes(raw.challenge),
+      allowCredentials:(raw.allowCredentials||[]).map(c=>({...c,id:base64urlBytes(c.id)}))};
+  }
+  function serializeCredential(credential){
+    if(typeof credential.toJSON==="function")return credential.toJSON();
+    const response=credential.response;
+    const result={id:credential.id,rawId:bytesBase64url(credential.rawId),type:credential.type,
+      response:{clientDataJSON:bytesBase64url(response.clientDataJSON)},
+      clientExtensionResults:credential.getClientExtensionResults?.()||{}};
+    if(response.attestationObject){
+      result.response.attestationObject=bytesBase64url(response.attestationObject);
+      if(typeof response.getTransports==="function")result.response.transports=response.getTransports();
+      if(typeof response.getAuthenticatorData==="function")result.response.authenticatorData=bytesBase64url(response.getAuthenticatorData());
+      if(typeof response.getPublicKey==="function"&&response.getPublicKey())result.response.publicKey=bytesBase64url(response.getPublicKey());
+      if(typeof response.getPublicKeyAlgorithm==="function")result.response.publicKeyAlgorithm=response.getPublicKeyAlgorithm();
+    }else{
+      result.response.authenticatorData=bytesBase64url(response.authenticatorData);
+      result.response.signature=bytesBase64url(response.signature);
+      if(response.userHandle)result.response.userHandle=bytesBase64url(response.userHandle);
+    }
+    if(credential.authenticatorAttachment)result.authenticatorAttachment=credential.authenticatorAttachment;
+    return result;
+  }
+  async function registerPhonePasskey(client){
+    const start=await client.auth.passkey.startRegistration();
+    if(start.error)throw start.error;
+    const challenge=start.data;
+    if(!challenge?.options||!challenge.challenge_id)throw new Error("Invalid passkey registration challenge.");
+    const options=creationOptions(challenge.options);
+    // Do not replace server challenge, RP ID, user ID or exclusion list.
+    options.authenticatorSelection={...options.authenticatorSelection,
+      authenticatorAttachment:"platform",residentKey:"required",
+      requireResidentKey:true,userVerification:"required"};
+    options.hints=["client-device"];
+    options.attestation="none";
+    const credential=await navigator.credentials.create({publicKey:options});
+    if(!credential)throw new DOMException("Passkey creation was cancelled.","NotAllowedError");
+    const result=await client.auth.passkey.verifyRegistration({
+      challengeId:challenge.challenge_id,credential:serializeCredential(credential)
+    });
+    if(result.error)throw result.error;
+    return result.data;
+  }
+  async function signInPhonePasskey(client){
+    const start=await client.auth.passkey.startAuthentication();
+    if(start.error)throw start.error;
+    const challenge=start.data;
+    if(!challenge?.options||!challenge.challenge_id)throw new Error("Invalid passkey login challenge.");
+    const options=requestOptions(challenge.options);
+    options.userVerification="required";
+    options.hints=["client-device"];
+    const credential=await navigator.credentials.get({publicKey:options});
+    if(!credential)throw new DOMException("Passkey sign-in was cancelled.","NotAllowedError");
+    const result=await client.auth.passkey.verifyAuthentication({
+      challengeId:challenge.challenge_id,credential:serializeCredential(credential)
+    });
+    if(result.error)throw result.error;
+    return result.data;
   }
   async function verifyStaffIdentity(client,authResult){
     const session=authResult?.session, user=authResult?.user||session?.user;
@@ -12682,8 +12774,7 @@ const IN=(()=>{
     showStaffMessage("Confirm on your phone...","success");
     const client=initStaffSupabase();
     try{
-      const {data,error}=await client.auth.signInWithPasskey();
-      if(error)throw error;
+      const data=await signInPhonePasskey(client);
       try{await verifyStaffIdentity(client,data);}catch(identityError){
         await client.auth.signOut();throw identityError;
       }
@@ -12707,8 +12798,7 @@ const IN=(()=>{
         message("Password verification failed. Passkey not registered.");return;
       }
       message("Approve the passkey registration on your phone...");
-      const {error}=await client.auth.registerPasskey();
-      if(error)throw error;
+      await registerPhonePasskey(client);
       message("Passkey registered. You can now log in on your phone without typing your password.");
       await window.saStaffPasskeyRefresh();
     }catch(error){message(friendlyError(error));}
