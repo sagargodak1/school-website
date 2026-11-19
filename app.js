@@ -4158,7 +4158,8 @@ function initStaffSupabase(){
                 persistSession:true,
                 autoRefreshToken:true,
                 detectSessionInUrl:false,
-                storageKey:"staugustine-staff-auth"
+                storageKey:"staugustine-staff-auth",
+                experimental:{passkey:true}
             }
         }
     );
@@ -12613,4 +12614,152 @@ const IN=(()=>{
  }
  document.addEventListener('DOMContentLoaded',setup);
  return {open,close};
+})();
+
+
+/* =============================================================
+   ST. AUGUSTINE — OPTIONAL MOBILE PASSKEY (Supabase Auth WebAuthn)
+   No biometric templates / private keys / credential secrets here.
+   Supabase Auth validates the signed WebAuthn challenge SERVER-SIDE.
+   Password login remains unchanged. This is a UI device preference,
+   not a security boundary: synced passkeys may work on other devices.
+   ============================================================= */
+(function(){
+  "use strict";
+  let busy=false;
+  function phone(){
+    // UI only; a device/browser can spoof its user agent.
+    const ua=navigator.userAgent||"";
+    return /Android|iPhone|iPad|iPod/i.test(ua) ||
+      (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+  }
+  function supported(){
+    return !!(window.isSecureContext && window.PublicKeyCredential &&
+      navigator.credentials && phone());
+  }
+  function available(){
+    const db=typeof initStaffSupabase==="function"?initStaffSupabase():null;
+    return db && typeof db.auth?.signInWithPasskey==="function" &&
+      typeof db.auth?.registerPasskey==="function" && db.auth.passkey;
+  }
+  function message(value){
+    const el=document.getElementById("saPasskeySettingsMessage");
+    if(el)el.textContent=value;
+  }
+  function refreshVisibility(){
+    const area=document.getElementById("staffPasskeyLoginArea");
+    const settings=document.getElementById("saStaffPasskeySettings");
+    if(area)area.hidden=!supported()||!available()||!!loggedInStaff;
+    if(settings)settings.hidden=!supported()||!available()||!loggedInStaff||!staffAuthSession;
+  }
+  function friendlyError(error){
+    const code=String(error?.code||error?.error_code||"");
+    if(code==="passkey_disabled")return "Passkey is not enabled in Supabase Authentication settings yet. Password login still works.";
+    if(error?.name==="NotAllowedError"||/cancel|abort/i.test(String(error?.message||"")))return "Passkey request was cancelled or timed out.";
+    return "Passkey operation failed. Check your phone, network and Supabase Passkeys setup. Password login is still available.";
+  }
+  async function verifyStaffIdentity(client,authResult){
+    const session=authResult?.session, user=authResult?.user||session?.user;
+    const email=String(user?.email||"").toLowerCase();
+    const suffix="@"+STAFF_INTERNAL_DOMAIN.toLowerCase();
+    if(!session||!user?.id||!email.endsWith(suffix))throw new Error("Not a school staff account.");
+    const username=normalizeStaffId(email.slice(0,-suffix.length));
+    const profile=await umeResolveStaffLoginProfile(username);
+    if(!profile)throw new Error("Staff account not authorized.");
+    staffAuthSession=session;
+    loggedInStaff={username,...profile};
+    updateStaffLoginUI();
+    closeStaffLogin();
+    if(typeof showStaffDashboardWelcome==="function")showStaffDashboardWelcome();
+    else openStaffDashboard();
+    refreshVisibility();
+  }
+  window.saStaffPasskeySignIn=async function(){
+    if(busy||!supported()||!available())return;
+    busy=true;
+    const btn=document.getElementById("staffPasskeyLoginBtn");
+    if(btn)btn.disabled=true;
+    showStaffMessage("Confirm on your phone...","success");
+    const client=initStaffSupabase();
+    try{
+      const {data,error}=await client.auth.signInWithPasskey();
+      if(error)throw error;
+      try{await verifyStaffIdentity(client,data);}catch(identityError){
+        await client.auth.signOut();throw identityError;
+      }
+      clearStaffMessage();
+    }catch(error){showStaffMessage(friendlyError(error));}
+    finally{busy=false;if(btn)btn.disabled=false;refreshVisibility();}
+  };
+  window.saStaffPasskeyEnroll=async function(){
+    if(busy||!supported()||!available()||!loggedInStaff||!staffAuthSession)return;
+    busy=true;
+    const client=initStaffSupabase();
+    try{
+      // Fresh password proof prevents adding a passkey from an unattended
+      // unlocked browser session. Never store or log this password.
+      const password=window.prompt("For security, enter your current staff password to enable Passkey on this phone:");
+      if(!password){message("Passkey enrollment cancelled.");return;}
+      const expectedId=staffAuthSession.user.id;
+      const username=loggedInStaff.username;
+      const {data:proof,error:proofError}=await client.auth.signInWithPassword({email:staffInternalEmail(username),password});
+      if(proofError||!proof?.user||proof.user.id!==expectedId){
+        message("Password verification failed. Passkey not registered.");return;
+      }
+      message("Approve the passkey registration on your phone...");
+      const {error}=await client.auth.registerPasskey();
+      if(error)throw error;
+      message("Passkey registered. You can now log in on your phone without typing your password.");
+      await window.saStaffPasskeyRefresh();
+    }catch(error){message(friendlyError(error));}
+    finally{busy=false;refreshVisibility();}
+  };
+  window.saStaffPasskeyRefresh=async function(){
+    if(!supported()||!available()||!loggedInStaff||!staffAuthSession)return;
+    const list=document.getElementById("saPasskeyList");
+    if(!list)return;
+    list.replaceChildren();
+    const client=initStaffSupabase();
+    try{
+      const {data,error}=await client.auth.passkey.list();
+      if(error)throw error;
+      if(!Array.isArray(data)||!data.length){list.textContent="No passkeys registered. Password login remains active.";return;}
+      for(const item of data){
+        const wrapper=document.createElement("div");wrapper.className="sa-passkey-item";
+        const detail=document.createElement("span");
+        detail.textContent=(item.friendly_name||"Passkey")+" · "+(item.created_at?new Date(item.created_at).toLocaleDateString():"Registered");
+        const del=document.createElement("button");del.type="button";del.textContent="Remove";
+        del.addEventListener("click",()=>window.saStaffPasskeyRemove(item.id));
+        wrapper.append(detail,del);list.append(wrapper);
+      }
+    }catch(error){list.textContent=friendlyError(error);}
+  };
+  window.saStaffPasskeyRemove=async function(id){
+    if(busy||!supported()||!available()||!loggedInStaff||!staffAuthSession)return;
+    // A user removing a synced passkey revokes access to that credential.
+    if(!window.confirm("Remove this passkey? Password login will continue to work."))return;
+    busy=true;
+    try{
+      const {error}=await initStaffSupabase().auth.passkey.delete({passkeyId:id});
+      if(error)throw error;
+      message("Passkey removed. Password login is still available.");
+      await window.saStaffPasskeyRefresh();
+    }catch(error){message(friendlyError(error));}
+    finally{busy=false;}
+  };
+  document.addEventListener("DOMContentLoaded",()=>{
+    refreshVisibility();
+    const mo=new MutationObserver(refreshVisibility);
+    const popup=document.getElementById("staffLoginPopup");
+    if(popup)mo.observe(popup,{attributes:true,attributeFilter:["style"]});
+    // No polling; normal login/session lifecycle calls updateStaffLoginUI.
+    if(typeof updateStaffLoginUI==="function"){
+      const old=updateStaffLoginUI;
+      updateStaffLoginUI=function(){old.apply(this,arguments);refreshVisibility();};
+    }
+    const open=window.openStaffDashboard;
+    if(typeof open==="function")window.openStaffDashboard=function(){
+      refreshVisibility();return open.apply(this,arguments);
+    };
+  });
 })();

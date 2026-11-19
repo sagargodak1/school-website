@@ -7464,3 +7464,23 @@ body.dark-mode .gallery-load-more-btn{
 .in-open-spinner{width:32px;height:32px;margin:0 auto 14px;border:3px solid #d8e8f7;border-top-color:#17629e;border-radius:50%;animation:in-spin .7s linear infinite}
 @keyframes in-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.in-open-spinner{animation:none}}
+
+
+/* OPTIONAL MOBILE PASSKEY controls; never display on unsupported devices */
+.sa-passkey-login[hidden],.sa-passkey-settings[hidden]{display:none!important}
+.sa-passkey-login{margin-top:18px;text-align:center}
+.sa-passkey-or{display:block;color:#6b7280;font-size:13px;margin-bottom:12px}
+.sa-passkey-button{width:100%;padding:13px 12px;border:0;border-radius:12px;background:#104f83;color:white;font-size:15px;font-weight:700;cursor:pointer}
+.sa-passkey-button:disabled{opacity:.65;cursor:wait}
+.sa-passkey-login small{display:block;color:#64748b;line-height:1.6;margin-top:8px}
+.sa-passkey-settings{margin:15px 0 22px;padding:16px;border-radius:13px;border:1px solid #c8d9ea;background:#f5faff;color:#16324d}
+.sa-passkey-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sa-passkey-head span{font-size:12px;color:#435a71}
+.sa-passkey-settings p{margin:8px 0 12px;line-height:1.5;font-size:13px}
+.sa-passkey-controls{display:flex;flex-wrap:wrap;gap:8px}
+.sa-passkey-controls button,.sa-passkey-item button{border:0;border-radius:8px;padding:9px 12px;cursor:pointer;font-weight:700;background:#124c80;color:white}
+.sa-passkey-item{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:8px;border:1px solid #d0dce6;border-radius:9px;overflow-wrap:anywhere}
+.sa-passkey-item button{background:#a53030;flex-shrink:0}
+#saPasskeySettingsMessage{margin-top:10px;font-size:13px}
+body.dark-mode .sa-passkey-settings{background:#20364c;border-color:#49647d;color:#eef5fd}
+body.dark-mode .sa-passkey-head span{color:#c1d2e0}
