@@ -45,7 +45,7 @@
   async function refreshRoutineStaff(){
     const client=db();if(!client)return;
     try{
-      const {data,error}=await client.from('staff').select('staff_key,name,designation');
+      const {data,error}=await withTimeout(client.from('staff').select('staff_key,name,designation'),7000,'Staff directory');
       if(error)throw error;
       const fresh={};
       (data||[]).forEach(s=>{
@@ -70,18 +70,37 @@
     return null;
   }
   function db(){return launchMode==='admin'?(adminDb()||staffDb()):(staffDb()||adminDb());}
+  function withTimeout(promise, milliseconds, label){
+    let timer;
+    return Promise.race([
+      Promise.resolve(promise),
+      new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(`${label} did not respond within ${Math.round(milliseconds/1000)} seconds. Check Internet, Supabase connection and browser Console (F12). No data was changed.`)),milliseconds);})
+    ]).finally(()=>clearTimeout(timer));
+  }
   async function rpc(name,args={}){
     const c=db();
     if(!c)throw new Error('Supabase session is not ready. Please login again.');
-    const {data,error}=await c.rpc(name,args);
-    if(error)throw error;
-    return data;
+    let result;
+    try{
+      result=await withTimeout(c.rpc(name,args),12000,`Supabase ${name}`);
+    }catch(e){
+      console.error('[Class Routine] RPC request failed:',name,e);
+      throw new Error(`${name}: ${String(e?.message||e)}`);
+    }
+    if(result?.error){
+      const error=result.error;
+      console.error('[Class Routine] Database error in '+name,{code:error.code,message:error.message,details:error.details,hint:error.hint});
+      const details=[error.message,error.details,error.hint].filter(Boolean).join(' | ');
+      throw new Error(`${name}: ${error.code?'['+error.code+'] ':''}${details||'Unknown database error'}`);
+    }
+    return result?.data;
   }
   function errText(e){
-    const m=String(e?.message||e||'Unknown error');
-    if(/routine_unpublish_class_routine/i.test(m))return 'Permanent Unpublish database update is missing. Run CLASS_ROUTINE_SUBSTITUTE_V1_1_UPGRADE.sql in Supabase SQL Editor, then refresh.';
-    if(/routine_|class_routine|does not exist|schema cache/i.test(m))return 'Class Routine database is not ready. If V1 SQL was already run, run CLASS_ROUTINE_SUBSTITUTE_V1_1_UPGRADE.sql; otherwise run the FULL SQL once, then refresh.';
-    return m;
+    // Do not mask real Postgres errors with outdated V1-install guidance.
+    // Only show a sanitized error message; never show credentials or RPC arguments.
+    const msg=String(e?.message||e||'Unknown error');
+    console.error('[Class Routine] Full error',e);
+    return msg.length>1000?msg.slice(0,1000)+'…':msg;
   }
   function toast(message,kind='info'){
     const el=byId('crtToast');if(!el)return;
@@ -226,7 +245,9 @@
     }catch(e){toast(errText(e),'err');}
   };
 
-  function routineMap(entries=[]){const m=new Map();entries.forEach(r=>m.set(key(r.class_name,Number(r.period_no)),r));return m;}
+  function routineMap(entries=[]){const m=new Map();entries.forEach(r=>{const k=key(r.class_name,Number(r.period_no));if(!m.has(k))m.set(k,[]);m.get(k).push(r);});return m;}
+  function displayAssignments(rows=[]){return rows.length?rows.map(r=>`<div class="crt-slot-display"><div class="crt-cell-subject">${esc(r.subject_name||'—')}</div><div class="crt-cell-teacher">${esc(r.teacher_name||'—')}</div></div>`).join(''):'<span class="crt-small">—</span>';}
+  function entryKey(e){return String(e.id||'new')+'|'+key(e.class_name,Number(e.period_no));}
   function classOrder(name){const i=CLASSES.indexOf(name);return i<0?999:i;}
   function publishedStatus(data){return data?.run_status==='published'?'<span class="crt-badge published">PUBLISHED ✓</span>':data?.run_status==='draft'?'<span class="crt-badge draft">DRAFT</span>':'<span class="crt-badge none">NO DAILY SUBSTITUTE PUBLISHED</span>';}
 
@@ -234,7 +255,7 @@
     const entries=data?.routine_entries||[],count=Number(data?.period_count||8),map=routineMap(entries);
     if(!entries.length)return '<div class="crt-empty">No published permanent Class Routine is available for this day yet.</div>';
     const head=Array.from({length:count},(_,i)=>`<th>Period ${i+1}</th>`).join('');
-    const body=CLASSES.map(cls=>`<tr><td><strong>${esc(cls)}</strong></td>${Array.from({length:count},(_,i)=>{const r=map.get(key(cls,i+1));return `<td><div class="crt-read-cell">${r?.subject_name?`<div class="crt-cell-subject">${esc(r.subject_name)}</div>`:'<span class="crt-small">—</span>'}${r?.teacher_name?`<div class="crt-cell-teacher">${esc(r.teacher_name)}</div>`:''}</div></td>`;}).join('')}</tr>`).join('');
+    const body=CLASSES.map(cls=>`<tr><td><strong>${esc(cls)}</strong></td>${Array.from({length:count},(_,i)=>{const rows=map.get(key(cls,i+1))||[];return `<td><div class="crt-read-cell">${displayAssignments(rows)}</div></td>`;}).join('')}</tr>`).join('');
     return `<div class="crt-table-wrap"><table class="crt-table"><thead><tr><th>Class</th>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
   function absencesHtml(rows=[]){
@@ -340,11 +361,11 @@
     const s=new Set();(data?.routine_entries||[]).forEach(r=>{if(Number(r.period_no)===Number(period)&&r.teacher_staff_id)s.add(lower(r.teacher_staff_id));});return s;
   }
   function busySub(period,data,exceptClass){
-    const s=new Set();(data?.substitutions||[]).forEach(r=>{if(Number(r.period_no)===Number(period)&&r.class_name!==exceptClass&&r.substitute_teacher_staff_id)s.add(lower(r.substitute_teacher_staff_id));});return s;
+    const s=new Set();(data?.substitutions||[]).forEach(r=>{if(Number(r.period_no)===Number(period)&&r.routine_entry_id!==exceptClass&&r.substitute_teacher_staff_id)s.add(lower(r.substitute_teacher_staff_id));});return s;
   }
   function substituteOptions(row,data,current=''){
     const absent=new Set((data.absences||[]).map(a=>lower(a.staff_id)));
-    const busyN=busyNormal(row.period_no,data),busyS=busySub(row.period_no,data,row.class_name),cur=lower(current);
+    const busyN=busyNormal(row.period_no,data),busyS=busySub(row.period_no,data,row.id),cur=lower(current);
     return eligibleDirectory().filter(s=>{
       const id=lower(s.id);if(id===cur)return true;if(absent.has(id))return false;if(busyN.has(id))return false;if(busyS.has(id))return false;return true;
     }).map(s=>`<option value="${esc(s.id)}" ${lower(s.id)===cur?'selected':''}>${esc(s.name)} — ${esc(s.designation)}</option>`).join('');
@@ -364,9 +385,9 @@
   function vacantRows(data){
     const absentMap=new Map((data.absences||[]).map(a=>[lower(a.staff_id),a]));
     const vacancies=(data.routine_entries||[]).filter(r=>r.teacher_staff_id&&absentMap.has(lower(r.teacher_staff_id))).sort((a,b)=>Number(a.period_no)-Number(b.period_no)||classOrder(a.class_name)-classOrder(b.class_name));
-    const subs=new Map((data.substitutions||[]).map(s=>[key(s.class_name,Number(s.period_no)),s]));
+    const subs=new Map((data.substitutions||[]).map(s=>[String(s.routine_entry_id),s]));
     if(!vacancies.length)return '<div class="crt-empty">Tick an absent teacher above. That teacher’s scheduled Period / Class / Subject will appear here automatically.</div>';
-    return `<div class="crt-table-wrap"><table class="crt-table"><thead><tr><th>Period</th><th>Class</th><th>Subject</th><th>Absent Teacher</th><th>Substitute Teacher</th><th>Status</th></tr></thead><tbody>${vacancies.map(r=>{const s=subs.get(key(r.class_name,Number(r.period_no)))||{};const cur=s.substitute_teacher_staff_id||'';return `<tr class="crt-vacant"><td><strong>Period ${Number(r.period_no)}</strong></td><td><strong>${esc(r.class_name)}</strong></td><td>${esc(r.subject_name||'—')}</td><td>${esc(r.teacher_name||'—')}</td><td><select ${data.run_status==='draft'?'':'disabled'} onchange="crtAssignSubstitute(this,${Number(r.id)},'${esc(r.class_name)}',${Number(r.period_no)},'${esc(r.subject_name||'')}','${esc(r.teacher_staff_id||'')}','${esc(r.teacher_name||'')}')"><option value="">— Select Substitute —</option>${substituteOptions(r,data,cur)}</select></td><td>${cur?'<span class="crt-badge draft">READY</span>':'<span class="crt-badge pending">UNASSIGNED</span>'}</td></tr>`;}).join('')}</tbody></table></div>`;
+    return `<div class="crt-table-wrap"><table class="crt-table"><thead><tr><th>Period</th><th>Class</th><th>Subject</th><th>Absent Teacher</th><th>Substitute Teacher</th><th>Status</th></tr></thead><tbody>${vacancies.map(r=>{const s=subs.get(String(r.id))||{};const cur=s.substitute_teacher_staff_id||'';return `<tr class="crt-vacant"><td><strong>Period ${Number(r.period_no)}</strong></td><td><strong>${esc(r.class_name)}</strong></td><td>${esc(r.subject_name||'—')}</td><td>${esc(r.teacher_name||'—')}</td><td><select ${data.run_status==='draft'?'':'disabled'} onchange="crtAssignSubstitute(this,${Number(r.id)},'${esc(r.class_name)}',${Number(r.period_no)},'${esc(r.subject_name||'')}','${esc(r.teacher_staff_id||'')}','${esc(r.teacher_name||'')}')"><option value="">— Select Substitute —</option>${substituteOptions(r,data,cur)}</select></td><td>${cur?'<span class="crt-badge draft">READY</span>':'<span class="crt-badge pending">UNASSIGNED</span>'}</td></tr>`;}).join('')}</tbody></table></div>`;
   }
 
   async function renderSubstituteManagement(){
@@ -418,21 +439,26 @@
   function capturePermanentGrid(){
     if(!classState.editable)return;
     const page=byId('crtPage');if(!page)return;
-    const existing=new Map(classState.entries.map(e=>[key(e.class_name,Number(e.period_no)),{...e,day_key:'Sunday'}]));
+    const entries=[];
     page.querySelectorAll('.crt-edit-cell[data-class-name]').forEach(cell=>{
       const cls=cell.dataset.className,period=Number(cell.dataset.period);
-      const subject=normal(cell.querySelector('.crt-subject-input')?.value),teacherId=normal(cell.querySelector('.crt-teacher-select')?.value),teacher=staffDirectory()[teacherId];
-      const k=key(cls,period);
-      if(subject||teacherId)existing.set(k,{day_key:'Sunday',class_name:cls,period_no:period,subject_name:subject||null,teacher_staff_id:teacherId||null,teacher_name:teacherId?(teacher?.name||teacherId):null});
-      else existing.delete(k);
+      cell.querySelectorAll('.crt-assignment-row').forEach(row=>{
+        const subject=normal(row.querySelector('.crt-subject-input')?.value);
+        const teacherId=normal(row.querySelector('.crt-teacher-select')?.value);
+        const teacher=staffDirectory()[teacherId];
+        if(subject||teacherId)entries.push({id:row.dataset.entryId?Number(row.dataset.entryId):null,day_key:'Sunday',class_name:cls,period_no:period,subject_name:subject||null,teacher_staff_id:teacherId||null,teacher_name:teacherId?(teacher?.name||teacherId):null});
+      });
     });
-    classState.entries=[...existing.values()];
+    classState.entries=entries;
   }
-  function classEntry(cls,period){return classState.entries.find(e=>e.class_name===cls&&Number(e.period_no)===Number(period));}
+  function classEntries(cls,period){return classState.entries.filter(e=>e.class_name===cls&&Number(e.period_no)===Number(period));}
+  function assignmentEditor(e={},removable=false){return `<div class="crt-assignment-row" data-entry-id="${Number(e.id)||''}"><input class="crt-subject-input" list="crtSubjectList" value="${esc(e.subject_name||'')}" placeholder="Subject"><select class="crt-teacher-select">${directoryOptions(e.teacher_staff_id||'',e.teacher_name||'')}</select>${removable?'<button class="crt-slot-remove" type="button" onclick="crtRemoveAssignment(this)" title="Remove this assignment">×</button>':''}</div>`;}
+  window.crtAddAssignment=function(button){const cell=button.closest('.crt-edit-cell');if(!cell)return;const rows=cell.querySelector('.crt-assignment-list');rows.insertAdjacentHTML('beforeend',assignmentEditor({},true));};
+  window.crtRemoveAssignment=function(button){const cell=button.closest('.crt-edit-cell');if(!cell)return;const row=button.closest('.crt-assignment-row');if(row?.dataset.entryId&&!confirm('Remove this assignment from the NEW draft? Previously published routine stays archived.'))return;row?.remove();};
   function permanentGridHtml(){
     const count=Number(classState.periodCount||8),editable=classState.editable;
     const head=Array.from({length:count},(_,i)=>`<th>Period ${i+1}</th>`).join('');
-    const body=CLASSES.map(cls=>`<tr><td><strong>${esc(cls)}</strong></td>${Array.from({length:count},(_,i)=>{const p=i+1,e=classEntry(cls,p)||{};if(!editable)return `<td><div class="crt-read-cell">${e.subject_name?`<div class="crt-cell-subject">${esc(e.subject_name)}</div>`:'<span class="crt-small">—</span>'}${e.teacher_name?`<div class="crt-cell-teacher">${esc(e.teacher_name)}</div>`:''}</div></td>`;return `<td><div class="crt-edit-cell" data-class-name="${esc(cls)}" data-period="${p}"><input class="crt-subject-input" list="crtSubjectList" value="${esc(e.subject_name||'')}" placeholder="Subject"><select class="crt-teacher-select">${directoryOptions(e.teacher_staff_id||'',e.teacher_name||'')}</select></div></td>`;}).join('')}</tr>`).join('');
+    const body=CLASSES.map(cls=>`<tr><td><strong>${esc(cls)}</strong></td>${Array.from({length:count},(_,i)=>{const p=i+1,rows=classEntries(cls,p);if(!editable)return `<td><div class="crt-read-cell">${displayAssignments(rows)}</div></td>`;return `<td><div class="crt-edit-cell" data-class-name="${esc(cls)}" data-period="${p}"><div class="crt-assignment-list">${rows.length?rows.map((e,j)=>assignmentEditor(e,j>0)).join(''):assignmentEditor()}</div><button class="crt-slot-add" type="button" onclick="crtAddAssignment(this)">+ Add Subject / Teacher</button></div></td>`;}).join('')}</tr>`).join('');
     return `<div class="crt-table-wrap"><table class="crt-table crt-edit-table"><thead><tr><th>Class</th>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
   function detectClassConflicts(entries){
@@ -506,7 +532,7 @@
     capturePermanentGrid();
     const entries=classState.entries.filter(e=>Number(e.period_no)<=classState.periodCount&&(e.subject_name||e.teacher_staff_id)).map(e=>({...e,day_key:'Sunday'}));
     const conflicts=detectClassConflicts(entries);if(conflicts.length)throw new Error('Teacher conflict: '+conflicts[0]);
-    await rpc('routine_save_class_draft',{p_academic_year:classState.year,p_period_count:Number(classState.periodCount),p_entries:entries});
+    await rpc('routine_save_class_draft_multi',{p_academic_year:classState.year,p_period_count:Number(classState.periodCount),p_entries:entries});
     if(showToast)toast('Class Routine draft saved. Staff view is unchanged until Publish.','ok');
   }
   window.crtSaveClassDraft=async function(){try{await saveClassDraftCore(true);await loadPermanentRoutine(classState.year);}catch(e){toast(errText(e),'err');}};

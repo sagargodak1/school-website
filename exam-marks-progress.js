@@ -73,32 +73,28 @@
         examDays.forEach((day, dayIdx) => {
           const cell = tr.cells[dayIdx + 1];
           if (!cell) return;
-          const entry = examEntryFor(day.id, cls);
+          const entries = typeof window.examEntriesFor === 'function'
+            ? window.examEntriesFor(day.id, cls) : [examEntryFor(day.id, cls)].filter(Boolean);
           const old = cell.querySelector('.sa-marks-progress');
-          if (!entry || !entry.question_required || !entry.activity_title) {
-            if (old) old.remove();
-            return;
-          }
-          // A combined exam slot (e.g. Moral / Computer) must not inherit
-          // an individual subject's automatic state; use Admin manual Marks tick.
-          const combined = /[\/\+&,]/.test(String(entry.activity_title || ''));
-          const row = combined ? null : records.get(keyFor(entry.class_name, entry.activity_title));
-          const adminAccepted = !!row?.admin_accepted;
-          let label, style = '';
-          if (errorMessage) { label = 'Marks Progress: Unavailable'; style = 'unavailable'; }
-          else if (requestedPeriod !== String(period.id)) { label = 'Marks Progress: Loading...'; }
-          else if (combined) { label = 'Marks Progress: Manual Tracking'; style = 'none'; }
-          else if (!row) { label = 'Marks Progress: No Marks File'; style = 'none'; }
-          else if (adminAccepted) { label = 'Marks Progress: Admin Accepted ✓'; style = 'accepted'; }
-          else {
-            label = 'Marks Progress: ' + (labels[row.status] || row.status || 'Unknown');
-            if (String(row.status).startsWith('returned')) style = 'returned';
-          }
+          const eligible = entries.filter(e => e.question_required && e.activity_title);
+          if (!eligible.length) { if (old) old.remove(); return; }
+          const lines = eligible.map(entry => {
+            const combined = /[\/\+&,]/.test(String(entry.activity_title || ''));
+            const record = combined ? null : records.get(keyFor(entry.class_name, entry.activity_title));
+            let label, style='';
+            if(errorMessage) {label='Unavailable';style='unavailable';}
+            else if(requestedPeriod !== String(period.id)) label='Loading...';
+            else if(combined) {label='Manual Tracking';style='none';}
+            else if(!record) {label='No Marks File';style='none';}
+            else if(record.admin_accepted) {label='Admin Accepted ✓';style='accepted';}
+            else {label=labels[record.status]||record.status||'Unknown';if(String(record.status).startsWith('returned'))style='returned';}
+            return {title:String(entry.activity_title),label,style};
+          });
           const target = old || document.createElement('div');
-          if (target.textContent !== label) target.textContent = label;
-          target.className = 'sa-marks-progress' + (style ? ' ' + style : '');
-          if (row?.subject_teacher_name) target.title = 'Subject Teacher: ' + row.subject_teacher_name;
-          if (!old) cell.appendChild(target);
+          const label = lines.map(l=>l.title+': '+l.label).join(' | ');
+          if(target.textContent!==label)target.textContent=label;
+          target.className='sa-marks-progress'+(lines.some(l=>l.style==='returned')?' returned':lines.every(l=>l.style==='accepted')?' accepted':'');
+          if(!old)cell.appendChild(target);
         });
       });
     } finally { applying = false; }
